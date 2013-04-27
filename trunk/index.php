@@ -1603,8 +1603,8 @@ function builddb() {
     function getAbout() {
    	$aboutString="<div id='aboutBox'>";
    	$aboutString.="<span class='close help'>x</span>";
-   	$aboutString.="<span class='about bold'><a target='_blank' href='http://musicco.sourceforge.net/'><img src='apple-touch-icon.png'/></a></span>";
-   	$aboutString.="<span class='about bold'><a target='_blank' href='http://musicco.sourceforge.net/'>musicco</a></span>";
+   	$aboutString.="<span class='about bold'><a target='_blank' href='http://https://sf.net/projects/musicco/'><img src='apple-touch-icon.png'/></a></span>";
+   	$aboutString.="<span class='about bold'><a target='_blank' href='https://sf.net/projects/musicco/'>musicco</a></span>";
    	$aboutString.="<span class='about bold'>A web based player for your music collection</span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
