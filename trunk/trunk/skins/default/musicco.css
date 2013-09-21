@@ -10,14 +10,23 @@ sup,
 #big-shuffle, 
 #big-repeat, 
 #clear-playlist,
-#includeOlAdlbums {
+#includeOlAdlbums,
+#updateCoverArt, 
+#clear,
+#findIt {
  cursor:pointer;
 }
 
-
+#loadingIcon {
+	vertical-align: bottom;
+}
 .current {
 	font-weight:bold;
 	color: #FFB90F;
+}
+
+.infoPanelLink {
+	color:#F39366;
 }
 
 .hits {
@@ -215,7 +224,7 @@ display:inline;
   height: 320px;
   position: relative;
   top: 0px;
-  z-index: 1;
+  z-index: 0;
 }
 
 
@@ -248,7 +257,7 @@ display:inline;
  border:0px;
 }
 
-#lyricsPanel, #infoPanel, #lyricsPanel a, #infoPanel a {
+#lyricsPanel, #infoPanel, #lyricsPanel a {
 	font-family: sans-serif;
 	font-size: small;
 	background: white;
@@ -285,6 +294,20 @@ display:inline;
   z-index: 0;
 }
 
+
+#updateCoverArt {
+ display:none;
+ background-color: #272727;
+ color: #FFB90F;
+ font-size: xx-small;
+ opacity: 0.1;
+ float:right;
+ position: relative;
+ padding-left:2px;
+ padding-right:2px;
+ top: -320px;
+}
+
 #big-controls img {
   width: 100px;
 }
@@ -305,7 +328,6 @@ div.selected,
 div.shown {
   background-position-y: -32px;  
 }
-
 
 #clear-playlist {
   background-image: url("clear32.png");

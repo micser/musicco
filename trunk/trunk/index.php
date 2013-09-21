@@ -12,6 +12,17 @@ $_CONFIG['domain'] = getDomain();
 // Default: $_CONFIG['appName'] = "musicco";
 $_CONFIG['appName'] = "musicco";
 
+// The application version. This is used for sending as part of the user-agent string
+// as part of fair use of external services APIs.
+// Default: $_CONFIG['appVersion'] = "1.0.1";
+$_CONFIG['appVersion'] = "1.0.1";
+
+// Additional application information. This is used for sending as part of the user-agent string
+// as part of fair use of external services APIs.
+// Default: $_CONFIG['appInfo'] = "1.0.1";
+$_CONFIG['appInfo'] = "(https://sourceforge.net/p/musicco)";
+
+
 // Choose a language. See bel ow in the language section for options.
 // Default: $_CONFIG['lang'] = "en";
 $_CONFIG['lang'] = "en";
@@ -114,7 +125,8 @@ $_TRANSLATIONS["en"] = array(
 	"noInfoFoundFor" => "No information found about ",
 	"updateRequiredTitle" => "Upgrade Required",
 	"updateRequiredText" => "To play the media you will need to either update your browser to a recent version or update your ",
-	"updateRequiredLink" => "Flash"
+	"updateRequiredLink" => "Flash",
+	"longCoverArtText" => "update album art"
 );
 
 
@@ -144,7 +156,8 @@ $_TRANSLATIONS["fr"] = array(
 	"noInfoFoundFor" => "Pas d'information sur ",
 	"updateRequiredTitle" => "Upgrade nécessaire",
 	"updateRequiredText" => "Pour lire ce contenu, il est nécessaire de faire un upgrade de ",
-	"updateRequiredLink" => "Flash"
+	"updateRequiredLink" => "Flash",
+	"longCoverArtText" => "mettre à jour la couverture"
 );
 
 
@@ -658,9 +671,18 @@ function togglePlaylist() {
 
 function updateSelection(toggle, panel) {
   $('.shown').not(toggle).removeClass('shown');
+  $('.panel').not(panel).removeClass('shown');
   $('.panel').not(panel).hide();
   $(toggle).toggleClass('shown');
+  $(panel).toggleClass('shown');
   $(panel).toggle();
+  var panelsZindex='';
+  if ($('.shown').size() == 0) {
+  	panelsZindex = 0;
+  } else {
+  	panelsZindex = 1;
+  }
+  $('#panels').css('z-index', panelsZindex);
 }
 
 
@@ -672,6 +694,7 @@ $('.my-playlist').scrollTop(
 function  displayCover() {
 	var coverurl = nowPlaying("poster");
 	if (coverurl == "skins/<?php print Musicco::getConfig('skin'); ?>/cover.png") {
+		printCover(coverurl);
 		fetchCover();
 	} else {
 		printCover(coverurl);
@@ -705,7 +728,16 @@ function printCover(coverurl) {
 		var marginTop = (320-height)/2;
 		$('.cover').css('margin-top',  marginTop +'px'); 
 		$('.cover').fadeIn(2000);
+		$('#updateCoverArt').show();
 	});
+}
+
+function showLoadingIcon() {
+	$("#loadingIcon").show();
+}
+
+function hideLoadingIcon() {
+	$('#loadingIcon').hide();
 }
 
 function fetchCover() {
@@ -726,6 +758,7 @@ function fetchCover() {
 						if (data.responseText.indexOf(releaseId) < 0) {
 							printCover(coverUrl);
 							saveCover(coverUrl, nowPlaying("path"));
+							$('#updateCoverArt').hide();
 						} else {
 							printCover("skins/<?php print Musicco::getConfig('skin'); ?>/cover.png");
 						}
@@ -735,6 +768,29 @@ function fetchCover() {
 			}
 	});
 }
+
+$('#big-cover').hover(
+    function() { 
+      $('#updateCoverArt').fadeTo( "fast", 0.8 );
+      },
+    function() { 
+      $('#updateCoverArt').fadeTo( "fast", 0.1 );
+      }
+);
+
+$('#updateCoverArt').hover(
+    function() { 
+      $(this).text("<?php print $this->getString("longCoverArtText"); ?>"); 
+      },
+    function() { 
+      $(this).text("<?php print $this->getString("..."); ?>"); 
+      }
+);
+
+
+$('#updateCoverArt').click(function () {
+  fetchCover();
+});
 
 $('#includeOlAdlbums').click(function () {
   if ($(this).is(':checked')) {
@@ -747,15 +803,15 @@ $('#includeOlAdlbums').click(function () {
 
 $("#searchForm").submit(function(event) {
   event.preventDefault();
+  showLoadingIcon();
   var resultString="&nbsp;";
   $("#searchResults").html("<?php print $this->getString("searchingLibrary"); ?>");
   $("#clear").click();
   var $form = $( this ),
       term = $form.find( 'input[name="s"]' ).val();
-  	  $.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
+  $.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
     var hits= data;
-    if (hits==null)
-    {
+    if (hits==null) {
     	resultString="<?php print $this->getString("noResultsForThisSearch"); ?>";
     }
     $("#searchResults").html(resultString);
@@ -774,7 +830,7 @@ $("#searchForm").submit(function(event) {
       hitLink+="<a href=\"javascript:;\" class=\"queue searchResult\" parent=\""+parent+"\" item=\""+name+"\" type=\""+type+"\">"+ name +"</a></div>";
       $("#searchResults").before(hitLink);
     });
-  }, "json");
+  hideLoadingIcon();}, "json");
 });
 
 $('#clear').click(function () {
@@ -782,6 +838,7 @@ $('.hits').remove();
 });
   
 $(document).on("click", ".closed", function() {
+  showLoadingIcon();
   $(this).toggleClass('closed open');
   var item=$(this).attr("item");
   var level=$(this).attr("level");
@@ -794,7 +851,7 @@ $(document).on("click", ".closed", function() {
         type =  encodeURIComponent(files[i].type);
         $(".item[item=\""+item+"\"][parent=\""+parent+"\"]").after(treelink(root, fileUrl, level, type));
       });
-    }, "json");
+  	hideLoadingIcon(); }, "json");
 	});
 		
 	$(document).on("click", ".close", function() {
@@ -803,7 +860,7 @@ $(document).on("click", ".closed", function() {
 		
 	$(document).on("click", ".infolink", function() {
     var artist=$(this).attr("artist").replace(/<?php print $this->getConfig('new_marker'); ?>/g, "");
-    updateInfoPanel(artist);
+    updateInfoPanel(wikiLink(artist));
     toggleInfo();
 		});
 
@@ -869,8 +926,13 @@ function treelink(root, fileUrl, level, type) {
   link+="</span> ";
   return link;
 }
+$(document).on("click", ".infoPanelLink", function() {
+	event.preventDefault();
+	updateInfoPanel(wikiLink($(this).attr('href').replace(/\/wiki\//g, "")));
+});
 
 $(document).on("click", ".queue", function() {
+  showLoadingIcon();
   var item = $(this).attr("item");
   var parent = $(this).attr("parent");
   var type = $(this).attr("type");
@@ -902,22 +964,30 @@ $(document).on("click", ".queue", function() {
         });
 	musiccoPlaylist.play();
       });
-  }, "json");
+  hideLoadingIcon(); }, "json");
 });
 
-function updateInfoPanel(artist) {
-    $('#infoPanel').html("");
-    $.getJSON('https://en.wikipedia.org/w/api.php?action=parse&redirects&page='+artist+'&prop=text&format=json&callback=?', function(json) { 
-    if (json.parse) {
-      $('#infoPanel').html(json.parse.text['*']);
-      $("#infoPanel").find("a:not(.toc a,.references a)").attr("href", function(){ return "https://www.wikipedia.org" + $(this).attr("href");}); 
-      $("#infoPanel").find("a:not(.toc a)").attr("target", "_blank"); 
-      $("#infoPanel").find("*").removeAttr("style"); 
-    } else {
-      $('#infoPanel').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist);
-    }
-  });
+function wikiLink(page) {
+	return 'https://en.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
 }
+function updateInfoPanel(url) {
+    $('#infoPanel').html("");
+    $.ajax({
+	  tupe: "GET",
+	  dataType: "jsonP",
+	  url: url,
+	  success: function(json) {
+		  if (json.parse) {
+			$('#infoPanel').html(json.parse.text['*']);
+			$("#infoPanel").find("a:not(.toc a)").addClass("infoPanelLink"); 
+			$("#infoPanel").find("*").removeAttr("style"); 
+			$("#infoPanel").find(".mw-editsection").hide(); 
+		} else {
+			$('#infoPanel').html("<?php print $this->getString("noInfoFoundFor"); ?>" + nowPlaying("artist"));
+		}
+	}
+	});
+	}
 
 function updateLyricsPanel(artist, song) {
 	artist=nowPlaying("artist");
@@ -950,8 +1020,13 @@ function updateLyricsPanel(artist, song) {
 function saveCover(coverURL, path) {
  	$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
  	});	
+ 	for (var i=0; i<musiccoPlaylist.playlist.length; i++) {
+  		if (musiccoPlaylist.playlist[i].path == path) {
+    		musiccoPlaylist.playlist[i].poster = path + 'cover.png';
+  		}
+	}
+	savePlaylist();
 }
-
 
 function savePlaylist() {
  	var user = "<?php echo AuthManager::getUserName(); ?>";
@@ -978,7 +1053,9 @@ $("#musiccoplayer").on($.jPlayer.event.play, function(event) {
     $('#big-jp-play').hide();
     $('#big-jp-pause').show();
     showNotification();
-    updateInfoPanel(nowPlaying("artist"));
+    if (!$('#track-wiki').hasClass('shown')) {
+    	updateInfoPanel(wikiLink(nowPlaying("artist")));
+    }
     updateLyricsPanel(nowPlaying("artist"), nowPlaying("song"));
     displayCover();
     savePlaylist();
@@ -1240,6 +1317,7 @@ else
 <?php
 	//print "<span id=\"test\"><a href=\"javascript:;\">".$this->getString("standard_version")."</a> | </span>";
 	//print "<span id=\"untest\"><a href=\"javascript:;\">".$this->getString("mobile_version")."</a> | </span>";
+  print "<span><img id=\"loadingIcon\" src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
   if (AuthManager::isAdmin()) {
     print "<span id=\"reset_db\"><a href=\"javascript;\">".$this->getString("reset_db")."</a> | </span>";
 	}
@@ -1268,8 +1346,8 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
   <div id="lyricsPanel" class="panel moveable"></div>
   <div id="searchPanel" class="panel moveable">
 		<form action="?" id="searchForm">
-		 <input type="text" id="searchText" class="nokeyboard" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
-		 <input type="submit" value="<?php print $this->getString("search_button"); ?>" />
+		 <input id="searchText" type="text" class="nokeyboard" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
+		 <input id="findIt" type="submit" value="<?php print $this->getString("search_button"); ?>" />
 		 <input id="clear" type="button" value="x" />
 		</form>
 		<div id="searchResults">&nbsp;</div>
@@ -1294,7 +1372,9 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
   <!-- END: browser -->
 </div>
 <!-- END: panels -->
-  <div id="big-cover" class="moveable"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/cover.png" class="cover" /></div>
+  <div id="big-cover" class="moveable"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/cover.png" class="cover" />
+  	<div id="updateCoverArt" ><?php print $this->getString("..."); ?></div>
+  </div>
   <div id="big-jp-progress" class="moveable"></div>
   <div id="big-info" class="moveable">&nbsp;</div>
   <div id="big-timer" class="moveable"></div>
@@ -1646,6 +1726,7 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>Release History</span>";
    	$aboutString.="<span class='about'>v1.0: initial release</span>";
+   	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }
