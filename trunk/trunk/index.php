@@ -14,12 +14,12 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "1.0.1";
-$_CONFIG['appVersion'] = "1.0.1";
+// Default: $_CONFIG['appVersion'] = "1.0.2";
+$_CONFIG['appVersion'] = "1.0.2";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appInfo'] = "1.0.1";
+// Default: $_CONFIG['appInfo'] = "(https://sourceforge.net/p/musicco)";
 $_CONFIG['appInfo'] = "(https://sourceforge.net/p/musicco)";
 
 
@@ -670,7 +670,7 @@ function togglePlaylist() {
 }
 
 function updateSelection(toggle, panel) {
-  $('.shown').not(toggle).removeClass('shown');
+  $('.toggles').not(toggle).removeClass('shown');
   $('.panel').not(panel).removeClass('shown');
   $('.panel').not(panel).hide();
   $(toggle).toggleClass('shown');
@@ -693,6 +693,8 @@ $('.my-playlist').scrollTop(
 
 function  displayCover() {
 	var coverurl = nowPlaying("poster");
+	$('#big-cover').removeClass("hit");
+	$('#big-cover').removeClass("no-hit");
 	if (coverurl == "skins/<?php print Musicco::getConfig('skin'); ?>/cover.png") {
 		printCover(coverurl);
 		fetchCover();
@@ -741,6 +743,7 @@ function hideLoadingIcon() {
 }
 
 function fetchCover() {
+	$('#big-cover').toggleClass("fetching", true);
 	var releaseUrl = "https://musicbrainz.org/ws/2/release/?query=release:"+nowPlaying("album")+"%20AND%20artist:"+nowPlaying("artist")+"&limit=1"
 	$.ajax({
 		type: "GET",
@@ -759,8 +762,14 @@ function fetchCover() {
 							printCover(coverUrl);
 							saveCover(coverUrl, nowPlaying("path"));
 							$('#updateCoverArt').hide();
+							$('#big-cover').toggleClass("hit", true);
+							$('#big-cover').toggleClass("no-hit", false);
+							$('#big-cover').removeClass("fetching");
 						} else {
-							printCover("skins/<?php print Musicco::getConfig('skin'); ?>/cover.png");
+							printCover(nowPlaying("cover"));
+							$('#big-cover').toggleClass("hit", false);
+							$('#big-cover').toggleClass("no-hit", true);
+							$('#big-cover').removeClass("fetching");
 						}
 					}
     			});
@@ -813,6 +822,7 @@ $("#searchForm").submit(function(event) {
     var hits= data;
     if (hits==null) {
     	resultString="<?php print $this->getString("noResultsForThisSearch"); ?>";
+    	hideLoadingIcon();
     }
     $("#searchResults").html(resultString);
     $.each(hits, function (i, elem) {
@@ -1209,8 +1219,7 @@ function hotkey(keyCode) {
   } else if (keyCode==191){
      // /
      updateSelection('','');
-     $('#browser-toggle').addClass('shown');
-     $('#browser').show();
+     toggleBrowser();
      $('#filterText').select();
      $('#filterText').focus();
      event.preventDefault();
@@ -1727,6 +1736,7 @@ function builddb() {
    	$aboutString.="<span class='about'>Release History</span>";
    	$aboutString.="<span class='about'>v1.0: initial release</span>";
    	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
+   	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }

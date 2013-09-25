@@ -200,7 +200,7 @@ a.jp-next:hover {
 /* @group progress bar */
 
 div.jp-progress {
-	overflow:hidden;
+	/*overflow:hidden;*/
 	background-color: #272727;
 }
 div.jp-audio div.jp-progress {
