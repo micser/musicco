@@ -1,0 +1,439 @@
+/* General styles */
+
+.close,
+.hideable, 
+sup, 
+.node,
+#rootfolder, 
+#big-volume-down, 
+#big-volume-up , 
+#big-shuffle, 
+#big-repeat, 
+#clear-playlist,
+#includeOlAdlbums,
+#updateCoverArt, 
+#clear,
+#findIt {
+ cursor:pointer;
+}
+
+#loadingIcon {
+	vertical-align: bottom;
+}
+.current {
+	font-weight:bold;
+	color: #FFB90F;
+}
+
+.infoPanelLink {
+	color:#F39366;
+}
+
+.hits {
+	font-size: .8em;
+}
+
+.searchResult {
+	color: #FFB90F;
+}
+
+.searchResultParent {
+	
+}
+
+.editsection {
+	display:none;
+}
+
+body {
+	background-color:#272727;
+	font-family: Verdana;
+	font-size:small;
+	margin:0px;
+	overflow:hidden;
+}
+
+A {
+	color: #999999;
+	text-decoration: none;
+}
+
+A:hover {
+	text-decoration: underline;
+}
+
+input {
+  border: 0px;
+  background-color: #666;
+  color: #FFB90F;
+}
+
+
+label {
+  color: #999999;
+}
+
+
+.spacer {
+  padding: 0px 16px 0px 0px;
+}
+
+#filterForm, #loadtime, #logout {
+	color: #999999;
+}
+
+#filterButton {
+color: #FFB90F;
+}
+
+#filterForm {
+  float:right;
+}
+
+#filterButton {
+  padding: 2px;
+}
+
+#musiccoplayer {
+  position: relative;
+  top: -2000px;
+  left: -500px;
+}
+
+#error {
+	max-width:320px;
+	background-color:#FFE4E1;
+	color:#ff6666;
+	padding:7pt;
+	position: relative;
+	margin: 10pt auto;
+	text-align:center;
+	border: 1px dotted #CDD2D6;
+}
+
+#helpBox {
+  opacity: .8;
+  background: #000000;
+}
+
+#aboutBox {
+  background:#272727;
+}
+
+.help {
+  color: #fff;
+  display:block;
+  padding-left: 30px;
+  padding-right: 15px;
+  font-size: larger;
+}
+
+.yellow {
+  color: #dd0;
+}
+
+.close {
+  color: #FFB90F;
+  font-size: xx-small;
+  text-align: right;
+}
+.about {
+  background-color:#272727;
+  color: #999999;
+  text-align:center;
+  font-size: larger;
+  display:block;
+}
+
+#aboutBox span input, #aboutBox span a {
+  background-color:#272727;
+  color: #FFB90F;
+  font-size: large;
+}
+
+.bold {
+  font-size: larger;
+  font-weight: bold;
+}
+
+.big {
+  font-size: x-large;
+}
+
+.bar{
+	width:320px;
+	clear:both;
+	height:1px;
+}
+
+/* Playlist */
+
+.timer {
+color: #FFB90F;
+display: inline;
+font-size: small;
+}
+
+#filter {
+  width: 85%;
+  background-color: #272727;
+  position: absolute;
+  top:1px;
+  right:10%;
+}
+
+#playlist-controls {
+}
+
+.node {
+ display:block;
+}
+
+/* Info area */ 
+
+#header {
+	background-color:#272727;
+	font-family: Verdana;
+	font-size: xx-small;
+	text-align: right;
+	width: 100%;
+}
+
+#untest {
+  display:none;
+}
+
+form {
+display:inline;
+}
+
+
+/* Login bar (at the bottom of the page) */
+#login_bar {
+	margin: 0 auto;
+	margin-top:2px;
+	max-width:320px;
+}
+
+#login_bar input.submit{
+	float:right;
+}
+
+#panels {
+  width: 100%;
+  height: 320px;
+  position: relative;
+  top: 0px;
+  z-index: 0;
+}
+
+
+.browserimg {
+  vertical-align: middle;
+  width: 32px;
+  height: 32px;
+}
+
+
+#searchPanel, #infoPanel, #lyricsPanel, #helpPanel, #aboutPanel, #playlistPanel, #browser {
+  display:none;
+  opacity: .95;
+  min-width: 320px;
+  width: 90%;
+  height: 320px;
+  border:1px solid #FFB90F;
+  overflow-x:hidden;
+  overflow-y:scroll;
+  background: #272727;
+  color: #949494;
+  margin: auto;
+  text-align: left;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#helpPanel {
+ background: none;
+ border:0px;
+}
+
+#lyricsPanel, #infoPanel, #lyricsPanel a {
+	font-family: sans-serif;
+	font-size: small;
+	background: white;
+	color: black;
+	opacity: .9;
+}
+
+#browser {
+
+}
+
+#playlistPanel {
+  height: 320px;
+  position: relative;
+  top: 1210px;
+  left: 502px;
+  z-index: 1;
+  margin: auto;
+}
+
+
+#big-player {
+  width: 100%;
+  height: 100%;
+  overflow:auto;
+  background: #000000;
+  color: #999999;
+  text-align: center;
+}
+
+#playlist-controls, #big-cover, #big-jp-progress, #big-info, #big-timer, #big-controls {
+  position: relative;
+  top: -320px;
+  z-index: 0;
+}
+
+
+#updateCoverArt {
+ display:none;
+ background-color: #272727;
+ color: #FFB90F;
+ font-size: xx-small;
+ opacity: 0.1;
+ float:right;
+ position: relative;
+ padding-left:2px;
+ padding-right:2px;
+ top: -320px;
+}
+
+#big-controls img {
+  width: 100px;
+}
+
+div.toggles {
+  background-repeat: no-repeat;
+  background-position-x: 0px;
+  background-position-y: 0px;
+  display:inline-block;
+  width: 32px;
+  height: 32px;
+  color: #FFB90F;
+	font-size: x-small;
+}
+
+div.toggles:hover,
+div.selected,
+div.shown {
+  background-position-y: -32px;  
+}
+
+#clear-playlist {
+  background-image: url("clear32.png");
+}
+#playlist-toggle {
+  background-image: url("playlist32.png");
+}
+#browser-toggle {
+  background-image: url("browser32.png");
+}
+#search-toggle {
+  background-image: url("search32.png");
+}
+#track-wiki {
+  background-image: url("info32.png");
+}
+#track-lyrics {
+  background-image: url("lyrics32.png");
+}
+#big-shuffle {
+  background-image: url("shuffle32.png");
+}
+#big-repeat {
+  background-image: url("repeat32.png");
+}
+#big-mute {
+  background-image: url("mute32.png");
+}
+#big-volume-down {
+  background-image: url("volume-down32.png");
+}
+#big-volume-up {
+  background-image: url("volume-up32.png");
+}
+
+#big-cover {
+  width: 320px;
+  height: 320px;
+  margin: 0px auto;
+  vertical-align: middle;
+  border: 1px solid;
+  border-color: #272727;
+  background: url(cover.png) no-repeat;
+}
+
+#big-cover img {
+  width:100%;
+  vertical-align: middle;
+  display:block;
+}
+
+#big-jp-progress, .jp-progress, .jp-seek-bar, .jp-play-bar {
+  height: 18px;
+}
+  
+#big-jp-progress {
+  width: 320px;
+  border: 1px solid;
+  border-color: #272727;
+  margin: 0px auto;
+}
+
+#big-volume-bar {
+  height: 150px;
+  width: 10px;
+  border:1px solid;
+  background: #FFB90F;
+  position: fixed;
+  top: 100px;
+  left: 300px;
+  z-index: 2;
+}
+
+#volume-value {
+  width: 10px;
+  background:black;
+}
+
+#big-controls {
+  padding-top: 5px;  
+}
+
+#big-toggles {
+  width: 320px;
+  margin: 0px auto;
+	color:#FFB90F;
+	font-size:medium; 
+}
+
+
+/* Login area */
+
+#login {
+	max-width: 320px;
+	text-align:right;
+	margin:15px auto 50px auto;
+}
+
+#login div {
+	display:block;
+	width:320px;
+	margin-top:5px;
+}
+
+#login label{
+	width: 120px;
+	text-align: right;
+}
+
