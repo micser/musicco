@@ -129,6 +129,7 @@ $_TRANSLATIONS["en"] = array(
 	"updateCoverArt" => "update album art",
 	"noAlbum" => "album not recognised",
 	"fetchingAlbumArt" => "fetching album art...",
+	"fetchedAlbumArt" => "cover art up to date",
 	"noAlbumArt" => "no album art found"
 	
 );
@@ -164,6 +165,7 @@ $_TRANSLATIONS["fr"] = array(
 	"updateCoverArt" => "mettre à jour la couverture",
 	"noAlbum" => "album non reconnu",
 	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
+	"fetchedAlbumArt" => "couverture mise à jour",
 	"noAlbumArt" => "Pas de couverture trouvée"
 );
 
@@ -767,6 +769,7 @@ function fetchCover() {
 			if (albumFound != 0) {
 				var releaseId=$(xml).find('release').attr('id');
 				var coverUrl = "https://coverartarchive.org/release/"+releaseId+"/front";
+				setCoverInfoStatus("<?php print $this->getString("fetchingAlbumArt"); ?>");
 				$.ajax({
        			 type: "GET",
         		 url: "?fetch&url="+coverUrl,
@@ -774,7 +777,7 @@ function fetchCover() {
 						if (data.responseText.indexOf(releaseId) < 0) {
 							printCover(coverUrl);
 							saveCover(coverUrl, nowPlaying("path"));
-							setCoverInfoStatus("<?php print $this->getString("fetchingAlbumArt"); ?>");
+							setCoverInfoStatus("<?php print $this->getString("fetchedAlbumArt"); ?>");
 						} else {
 							setCoverInfoStatus("<?php print $this->getString("noAlbumArt"); ?>"); 
 							printCover(nowPlaying("cover"));
