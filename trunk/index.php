@@ -14,8 +14,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "1.0.2";
-$_CONFIG['appVersion'] = "1.0.2";
+// Default: $_CONFIG['appVersion'] = "1.0.3";
+$_CONFIG['appVersion'] = "1.0.3";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
@@ -126,7 +126,11 @@ $_TRANSLATIONS["en"] = array(
 	"updateRequiredTitle" => "Upgrade Required",
 	"updateRequiredText" => "To play the media you will need to either update your browser to a recent version or update your ",
 	"updateRequiredLink" => "Flash",
-	"longCoverArtText" => "update album art"
+	"updateCoverArt" => "update album art",
+	"noAlbum" => "album not recognised",
+	"fetchingAlbumArt" => "fetching album art...",
+	"noAlbumArt" => "no album art found"
+	
 );
 
 
@@ -157,7 +161,10 @@ $_TRANSLATIONS["fr"] = array(
 	"updateRequiredTitle" => "Upgrade nécessaire",
 	"updateRequiredText" => "Pour lire ce contenu, il est nécessaire de faire un upgrade de ",
 	"updateRequiredLink" => "Flash",
-	"longCoverArtText" => "mettre à jour la couverture"
+	"updateCoverArt" => "mettre à jour la couverture",
+	"noAlbum" => "album non reconnu",
+	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
+	"noAlbumArt" => "Pas de couverture trouvée"
 );
 
 
@@ -418,11 +425,12 @@ class Musicco
 <!-- <meta charset="<?php print $this->getConfig('charset'); ?>" /> -->
 <link rel="icon" type="image/ico" href="favicon.ico">
 <link rel="apple-touch-icon" type="image/png" href="apple-touch-icon.png" />
-<script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script type="text/javascript" src="lib/jquery.jplayer.min.js"></script>
 <script type="text/javascript" src="lib/jplayer.playlist.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
 var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
 var options = { playlistOptions: {
   autoPlay: false,
@@ -693,14 +701,20 @@ $('.my-playlist').scrollTop(
 
 function  displayCover() {
 	var coverurl = nowPlaying("poster");
-	$('#big-cover').removeClass("hit");
-	$('#big-cover').removeClass("no-hit");
+	resetFetchingStatus();
 	if (coverurl == "skins/<?php print Musicco::getConfig('skin'); ?>/cover.png") {
 		printCover(coverurl);
 		fetchCover();
 	} else {
 		printCover(coverurl);
 	}
+}
+
+function resetFetchingStatus() {
+	fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
+	$('#updateCoverArt').show();
+	$('#updateCoverArt').addClass('canFetch');
+
 }
 
 function nowPlaying(key) {
@@ -730,7 +744,6 @@ function printCover(coverurl) {
 		var marginTop = (320-height)/2;
 		$('.cover').css('margin-top',  marginTop +'px'); 
 		$('.cover').fadeIn(2000);
-		$('#updateCoverArt').show();
 	});
 }
 
@@ -743,7 +756,7 @@ function hideLoadingIcon() {
 }
 
 function fetchCover() {
-	$('#big-cover').toggleClass("fetching", true);
+	$('#updateCoverArt').removeClass('canFetch');
 	var releaseUrl = "https://musicbrainz.org/ws/2/release/?query=release:"+nowPlaying("album")+"%20AND%20artist:"+nowPlaying("artist")+"&limit=1"
 	$.ajax({
 		type: "GET",
@@ -761,44 +774,45 @@ function fetchCover() {
 						if (data.responseText.indexOf(releaseId) < 0) {
 							printCover(coverUrl);
 							saveCover(coverUrl, nowPlaying("path"));
-							$('#updateCoverArt').hide();
-							$('#big-cover').toggleClass("hit", true);
-							$('#big-cover').toggleClass("no-hit", false);
-							$('#big-cover').removeClass("fetching");
+							setCoverInfoStatus("<?php print $this->getString("fetchingAlbumArt"); ?>");
 						} else {
+							setCoverInfoStatus("<?php print $this->getString("noAlbumArt"); ?>"); 
 							printCover(nowPlaying("cover"));
-							$('#big-cover').toggleClass("hit", false);
-							$('#big-cover').toggleClass("no-hit", true);
-							$('#big-cover').removeClass("fetching");
 						}
 					}
     			});
-				}
+			} else {
+				setCoverInfoStatus("<?php print $this->getString("noAlbum"); ?>");
+				
 			}
+		}
 	});
+}
+
+function setCoverInfoStatus(statusText) {
+	fetchStatus = statusText;
+	$("#updateCoverArt").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
+	$("#updateCoverArt").mouseleave();
+	n();	
+	}).fadeIn(500).fadeOut(500);
 }
 
 $('#big-cover').hover(
     function() { 
+      $('#updateCoverArt').text(fetchStatus); 
       $('#updateCoverArt').fadeTo( "fast", 0.8 );
       },
     function() { 
+      $('#updateCoverArt').text("<?php print $this->getString("..."); ?>"); 
       $('#updateCoverArt').fadeTo( "fast", 0.1 );
-      }
-);
-
-$('#updateCoverArt').hover(
-    function() { 
-      $(this).text("<?php print $this->getString("longCoverArtText"); ?>"); 
-      },
-    function() { 
-      $(this).text("<?php print $this->getString("..."); ?>"); 
       }
 );
 
 
 $('#updateCoverArt').click(function () {
-  fetchCover();
+  if ($(this).hasClass('canFetch')) {
+  	fetchCover();
+  }
 });
 
 $('#includeOlAdlbums').click(function () {
@@ -1728,7 +1742,7 @@ function builddb() {
       $aboutString.="<span class='about'>Like musicco? Wanna buy me a beer?</span>";
       $aboutString.="<span class='about'><br/></span>";
       $aboutString.="<span class='about'>";
-      $aboutString.="<form action='https://www.paypal.com/cgi-bin/webscr' method='post' target='_top'><input type='hidden' name='cmd' value='_s-xclick'><input type='hidden' name='hosted_button_id' value='CWRGBQ6A65642'><input type='image' src='https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif' border='0' name='submit' alt='PayPal - The safer, easier way to pay online!'><img alt='' border='0' src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif' width='1' height='1'></form>";
+      $aboutString.="<form action='https://www.paypal.com/cgi-bin/webscr' method='post' target='_top'><input id='paypalCMD' type='hidden' name='cmd' value='_s-xclick'><input type='hidden' name='hosted_button_id' value='CWRGBQ6A65642'><input id='paypalIMG' type='image' src='https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif' border='0' name='submit' alt='PayPal - The safer, easier way to pay online!'><img alt='' border='0' src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif' width='1' height='1'></form>";
       $aboutString.="</span>"; 
    	}
    	$aboutString.="<span class='about'><br/></span>";
@@ -1737,6 +1751,7 @@ function builddb() {
    	$aboutString.="<span class='about'>v1.0: initial release</span>";
    	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
+   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress. Also upgraded to jplayer 2.4.0/JQuery 1.10.2</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }
