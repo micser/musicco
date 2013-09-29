@@ -19,8 +19,8 @@ $_CONFIG['appVersion'] = "1.0.3";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appInfo'] = "(https://sourceforge.net/p/musicco)";
-$_CONFIG['appInfo'] = "(https://sourceforge.net/p/musicco)";
+// Default: $_CONFIG['appInfo'] = "(//sourceforge.net/p/musicco)";
+$_CONFIG['appInfo'] = "(//sourceforge.net/p/musicco)";
 
 
 // Choose a language. See bel ow in the language section for options.
@@ -427,7 +427,7 @@ class Musicco
 <!-- <meta charset="<?php print $this->getConfig('charset'); ?>" /> -->
 <link rel="icon" type="image/ico" href="favicon.ico">
 <link rel="apple-touch-icon" type="image/png" href="apple-touch-icon.png" />
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script type="text/javascript" src="lib/jquery.jplayer.min.js"></script>
 <script type="text/javascript" src="lib/jplayer.playlist.min.js"></script>
 <script type="text/javascript">
@@ -759,7 +759,7 @@ function hideLoadingIcon() {
 
 function fetchCover() {
 	$('#updateCoverArt').removeClass('canFetch');
-	var releaseUrl = "https://musicbrainz.org/ws/2/release/?query=release:"+nowPlaying("album")+"%20AND%20artist:"+nowPlaying("artist")+"&limit=1"
+	var releaseUrl = "//musicbrainz.org/ws/2/release/?query=release:"+nowPlaying("album")+"%20AND%20artist:"+nowPlaying("artist")+"&limit=1"
 	$.ajax({
 		type: "GET",
 		url: releaseUrl,
@@ -768,7 +768,7 @@ function fetchCover() {
 			var albumFound = $(xml).find('release-list').attr('count');
 			if (albumFound != 0) {
 				var releaseId=$(xml).find('release').attr('id');
-				var coverUrl = "https://coverartarchive.org/release/"+releaseId+"/front";
+				var coverUrl = "//coverartarchive.org/release/"+releaseId+"/front";
 				setCoverInfoStatus("<?php print $this->getString("fetchingAlbumArt"); ?>");
 				$.ajax({
        			 type: "GET",
@@ -995,7 +995,7 @@ $(document).on("click", ".queue", function() {
 });
 
 function wikiLink(page) {
-	return 'https://en.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
+	return '//en.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
 }
 function updateInfoPanel(url) {
     $('#infoPanel').html("");
@@ -1470,7 +1470,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 				</div>
 				<div class="jp-no-solution">
 					<span><?php print $this->getString("updateRequiredTitle"); ?></span>
-					<?php print $this->getString("updateRequiredText"); ?><a href="http://get.adobe.com/flashplayer/" target="_blank"><?php print $this->getString("updateRequiredLink"); ?></a>.
+					<?php print $this->getString("updateRequiredText"); ?><a href="//get.adobe.com/flashplayer/" target="_blank"><?php print $this->getString("updateRequiredLink"); ?></a>.
 				</div>
 			</div>
 		</div>
@@ -1709,8 +1709,8 @@ function builddb() {
     function getAbout() {
    	$aboutString="<div id='aboutBox'>";
    	$aboutString.="<span class='close help'>x</span>";
-   	$aboutString.="<span class='about bold'><a target='_blank' href='http://https://sf.net/projects/musicco/'><img src='apple-touch-icon.png'/></a></span>";
-   	$aboutString.="<span class='about bold'><a target='_blank' href='https://sf.net/projects/musicco/'>musicco</a></span>";
+   	$aboutString.="<span class='about bold'><a target='_blank' href='//sf.net/projects/musicco/'><img src='apple-touch-icon.png'/></a></span>";
+   	$aboutString.="<span class='about bold'><a target='_blank' href='//sf.net/projects/musicco/'>musicco</a></span>";
    	$aboutString.="<span class='about bold'>A web based player for your music collection</span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
@@ -1724,21 +1724,21 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>musicco is inspired by</span>";
-   	$aboutString.="<span class='about'><a target='_blank' href='https://github.com/henrik242/musicbrowser#readme'>musicbrowser</a></span>";
+   	$aboutString.="<span class='about'><a target='_blank' href='//github.com/henrik242/musicbrowser#readme'>musicbrowser</a></span>";
    	$aboutString.="<span class='about'>♪</span>";
-   	$aboutString.="<span class='about'><a target='_blank' href='http://encode-explorer.siineiolekala.net/'>Encode Explorer</a></span>";
+   	$aboutString.="<span class='about'><a target='_blank' href='//encode-explorer.siineiolekala.net/'>Encode Explorer</a></span>";
    	$aboutString.="<span class='about'>♪</span>";
-   	$aboutString.="<span class='about'><a target='_blank' href='coverart.katastrophos.net'>katastrophos.net's <br/> cover art downloader</a></span>";
+   	$aboutString.="<span class='about'><a target='_blank' href='//coverart.katastrophos.net'>katastrophos.net's <br/> cover art downloader</a></span>";
    	$aboutString.="<span class='about'>♪</span>";
-   	$aboutString.="<span class='about'><a target='_blank' href='http://www.doublejdesign.co.uk'>Double-J Design's <br/> super mono icons</a></span>";
+   	$aboutString.="<span class='about'><a target='_blank' href='//www.doublejdesign.co.uk'>Double-J Design's <br/> super mono icons</a></span>";
    	$aboutString.="<span class='about'>♪</span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>musicco scans your music folder and builds a database of your music collection,</span>";
-   	$aboutString.="<span class='about'>retrieving missing cover art from <a target='_blank' href='http://www.coverartarchive.org'>coverartarchive.org</a>,</span>";
-   	$aboutString.="<span class='about'>artist information from <a target='_blank' href='http://en.wikipedia.org/'>wikipedia.org</a></span>";
-   	$aboutString.="<span class='about'>and song lyrics from <a target='_blank' href='http://www.chartlyrics.com'>chartlyrics.com</a>.</span>";
-   	$aboutString.="<span class='about'>The audio player component uses <a target='_blank' href='http://jplayer.org/'>jPlayer</a>.</span>";
+   	$aboutString.="<span class='about'>retrieving missing cover art from <a target='_blank' href='//www.coverartarchive.org'>coverartarchive.org</a>,</span>";
+   	$aboutString.="<span class='about'>artist information from <a target='_blank' href='//en.wikipedia.org/'>wikipedia.org</a></span>";
+   	$aboutString.="<span class='about'>and song lyrics from <a target='_blank' href='//www.chartlyrics.com'>chartlyrics.com</a>.</span>";
+   	$aboutString.="<span class='about'>The audio player component uses <a target='_blank' href='//jplayer.org/'>jPlayer</a>.</span>";
    	if (Musicco::getConfig('show_donate_button')) {
       $aboutString.="<span class='about'><br/></span>";
       $aboutString.="<span class='about'><br/></span>";
@@ -1754,7 +1754,7 @@ function builddb() {
    	$aboutString.="<span class='about'>v1.0: initial release</span>";
    	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
-   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress. Also upgraded to jplayer 2.4.0/JQuery 1.10.2</span>";
+   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress. Also upgraded to jplayer 2.4.0/JQuery 2.0.3</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }
