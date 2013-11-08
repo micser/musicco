@@ -743,7 +743,7 @@ function printCover(coverurl) {
 	$('.cover').attr('src', coverurl); 
 	$('.cover').load(function() {
 		var height = $('.cover').height();
-		var marginTop = (320-height)/2;
+		var marginTop = (310-height)/2;
 		$('.cover').css('margin-top',  marginTop +'px'); 
 		$('.cover').fadeIn(2000);
 	});
@@ -759,7 +759,7 @@ function hideLoadingIcon() {
 
 function fetchCover() {
 	$('#updateCoverArt').removeClass('canFetch');
-	var releaseUrl = "//musicbrainz.org/ws/2/release/?query=release:"+nowPlaying("album")+"%20AND%20artist:"+nowPlaying("artist")+"&limit=1"
+	var releaseUrl = "https://musicbrainz.org/ws/2/release/?query=release:"+nowPlaying("album")+"%20AND%20artist:"+nowPlaying("artist")+"&limit=1"
 	$.ajax({
 		type: "GET",
 		url: releaseUrl,
@@ -768,7 +768,7 @@ function fetchCover() {
 			var albumFound = $(xml).find('release-list').attr('count');
 			if (albumFound != 0) {
 				var releaseId=$(xml).find('release').attr('id');
-				var coverUrl = "//coverartarchive.org/release/"+releaseId+"/front";
+				var coverUrl = "https://coverartarchive.org/release/"+releaseId+"/front";
 				setCoverInfoStatus("<?php print $this->getString("fetchingAlbumArt"); ?>");
 				$.ajax({
        			 type: "GET",
@@ -1089,6 +1089,12 @@ $("#musiccoplayer").on($.jPlayer.event.play, function(event) {
 	scrollToCurrentSong();
 });
 
+function promptNotification() {
+  if ((window.webkitNotifications) && (!window.webkitNotifications.checkPermission() == 0)) {
+  	window.webkitNotifications.requestPermission(showNotification);
+  }
+ }
+
 function showNotification() {
   if (window.webkitNotifications) {
     if (window.webkitNotifications.checkPermission() == 0) { // 0 is PERMISSION_ALLOWED
@@ -1097,12 +1103,7 @@ function showNotification() {
       notif.show();
       setTimeout(function(){
       notif.cancel();}, 4000);
-    } else {
-      window.webkitNotifications.requestPermission();
     }
-  }
-  else {
-    console.log("Notifications are not supported for this Browser/OS version yet.");
   }
 }
 
@@ -1192,43 +1193,43 @@ function hotkey(keyCode) {
   if(keyCode==223 || keyCode==179 || keyCode==178 || keyCode==32){
     //grave
     if($("#jquery_jplayer_2").data("jPlayer").status.paused) { 
-        musiccoPlaylist.play();
+        $('#big-jp-play').trigger('click');
       } else {
-        musiccoPlaylist.pause();
+        $('#big-jp-pause').trigger('click');
       }
   } else if (keyCode==38 || keyCode==175){
      //up arrow
-     ChangeVolume("+");
      event.preventDefault();
+     ChangeVolume("+");
   } else if (keyCode==40 || keyCode==174){
 		 //down arrow
-     ChangeVolume("-");
      event.preventDefault();
+     ChangeVolume("-");
   } else if (keyCode==37 || keyCode==177){
      //left arrow
-     musiccoPlaylist.previous();
      event.preventDefault();
+     $('#big-jp-previous').trigger('click');
   } else if (keyCode==39 || keyCode==176){
      //right arrow
-     musiccoPlaylist.next();
      event.preventDefault();
+     $('#big-jp-next').trigger('click');
   } else if (keyCode==83){
      //s
-     toggleSearch();
+     $('#search-toggle').trigger('click');
      $('#searchText').select();
      $('#searchText').focus();
   } else if (keyCode==80){
      //p
-     togglePlaylist();
      event.preventDefault();
+     $('#playlist-toggle').trigger('click');
   } else if (keyCode==73){
      //i
-     toggleInfo();
      event.preventDefault();
+     $('#track-wiki').trigger('click');
   } else if (keyCode==76){
      //l
-     toggleLyrics();
      event.preventDefault();
+     $('#track-lyrics').trigger('click');
   } else if (keyCode==66){
      //b
      toggleBrowser();
@@ -1264,6 +1265,7 @@ $('#big-jp-previous').click(function() {
 
 $('#big-jp-play').click(function() {
   $('.jp-play').trigger('click');
+  promptNotification();
 });
 
 $('#big-jp-pause').click(function() {
@@ -1754,7 +1756,7 @@ function builddb() {
    	$aboutString.="<span class='about'>v1.0: initial release</span>";
    	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
-   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress. Also upgraded to jplayer 2.4.0/JQuery 2.0.3</span>";
+   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result.</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }
