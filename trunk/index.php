@@ -1096,16 +1096,22 @@ function promptNotification() {
  }
 
 function showNotification() {
-  if (window.webkitNotifications) {
-    if (window.webkitNotifications.checkPermission() == 0) { // 0 is PERMISSION_ALLOWED
-      var notif = webkitNotifications.createNotification(nowPlaying("poster")+"/96x96", nowPlaying("song") + " - " + nowPlaying("artist"), nowPlaying("album"));
+  if ((window.webkitNotifications)  && (window.webkitNotifications.checkPermission() == 0)) { 
+  	  // 0 is PERMISSION_ALLOWED
+      notif = new Notification(
+                    nowPlaying("song") + " - " + nowPlaying("artist"),
+                    {
+                      'icon': nowPlaying("poster")+"/96x96",
+                      'body': nowPlaying("album"),
+                      'tag' : 'musicconowplayingnotification'
+                    }
+                );
       notif.onclick = function(x) { window.focus(); this.cancel(); };
       notif.show();
       setTimeout(function(){
-      notif.cancel();}, 4000);
+      notif.cancel();}, 5000);
     }
   }
-}
 
 $("#musiccoplayer").on($.jPlayer.event.pause, function(event) { 
     $('#big-jp-play').show();
