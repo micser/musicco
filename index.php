@@ -107,6 +107,7 @@ $_TRANSLATIONS["en"] = array(
 	"mobile_version" => "small player",
 	"standard_version" => "full player",
 	"reset_db" => "update library",
+	"uncover" => "uncover!",
 	"rebuildingLibrary" => "refreshing library...",
 	"libraryRebuiltIn" => "library updated in ",
 	"log_in" => "Log in",
@@ -143,6 +144,7 @@ $_TRANSLATIONS["fr"] = array(
 	"mobile_version" => "version mobile",
 	"standard_version" => "version desktop",
 	"reset_db" => "rafraichir la discothèque",
+	"uncover" => "dévoiler",
 	"rebuildingLibrary" => "scan en cours...",
 	"libraryRebuiltIn" => "discothèque rafraichie en  ",
 	"log_in" => "Connexion",
@@ -914,6 +916,31 @@ $(document).on("click", "#reset_db", function() {
 	});
 });
 
+$(document).on("click", "#uncover", function() {
+  event.preventDefault();
+  showLoadingIcon();
+  $.post('?', {querydb: '', root: '', type: 'uncover'}, function (response) {
+      var hits=response;
+      $.each(hits, function (i, elem) {
+      	var slash="/";
+      	var parent = hits[i].parent;
+      	var name = hits[i].name;
+      	var type = hits[i].type;
+      	var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
+      	var parentItem = parent.substr(levelUp.length);
+      	var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
+      	var hitLink="<div class=\"hits\">";
+		  if (parentItemName=="") {
+			parentItemName="home";
+		  }
+      	hitLink+="<a href=\"javascript:;\" class=\"queue searchResultParent uncoverLink\" id=\"" + i +"\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a>";
+		  $("#searchResults").before(hitLink);
+		  var thisHit = "#"+i;
+		  $(thisHit).trigger('click');
+      });
+	  $(".uncoverLink").remove(); 
+   	  hideLoadingIcon(); }, "json");
+});
 
 $('#infoPanel').scroll(function() {
 	event.preventDefault();
@@ -1196,7 +1223,6 @@ function scrollBrowserPanel() {
 }
 
 function hotkey(keyCode) {
-  //console.log(keyCode);
   if(keyCode==223 || keyCode==179 || keyCode==178 || keyCode==32){
     //grave
     if($("#jquery_jplayer_2").data("jPlayer").status.paused) { 
@@ -1353,6 +1379,7 @@ else
 	//print "<span id=\"test\"><a href=\"javascript:;\">".$this->getString("standard_version")."</a> | </span>";
 	//print "<span id=\"untest\"><a href=\"javascript:;\">".$this->getString("mobile_version")."</a> | </span>";
   print "<span><img id=\"loadingIcon\" src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
+  print "<span id=\"uncover\"><a href=\"javascript;\">".$this->getString("uncover")."</a> | </span>";
   if (AuthManager::isAdmin()) {
     print "<span id=\"reset_db\"><a href=\"javascript;\">".$this->getString("reset_db")."</a> | </span>";
 	}
@@ -1545,6 +1572,9 @@ function querydb($query_root, $query_type) {
 		break;
 		case "search":
 		$query = "SELECT item.id, item.name, item.type, item.parent FROM item WHERE item.name LIKE \"%$query_root%\" ORDER BY item.parent, item.name COLLATE NOCASE";
+		break;
+		case "uncover":
+		$query = "SELECT id, name, type, parent FROM item WHERE type in (2) ORDER BY RANDOM() LIMIT 10";
 		break;
 		case "add1":
 		$query = "SELECT item.id, item.name, item.type, item.parent, (SELECT file FROM cover WHERE parent = item.parent LIMIT 1)AS file FROM item WHERE item.parent LIKE \"$query_root%\" AND type IN (2) ORDER BY item.parent, item.name COLLATE NOCASE";
@@ -1763,7 +1793,7 @@ function builddb() {
    	$aboutString.="<span class='about'>v1.0: initial release</span>";
    	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
-   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result.</span>";
+   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }
