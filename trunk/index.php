@@ -677,6 +677,7 @@ function toggleAbout() {
 }
 
 function togglePlaylist() {
+  formatPlaylist();
   updateSelection('#playlist-toggle', '#playlistPanel');
   scrollToCurrentSong();
 }
@@ -1012,7 +1013,7 @@ $(document).on("click", ".queue", function() {
           title: title,
           artist: artist,
           album: album,
-          free:<?php print (AuthManager::isAdmin()?"true":"false"); ?>,
+          free:<?php print (AuthManager::isAdmin()?"false":"false"); ?>,
           path: path,
           mp3:  fileUrl.join(slash),
           poster: cover
@@ -1021,6 +1022,24 @@ $(document).on("click", ".queue", function() {
       });
   hideLoadingIcon(); }, "json");
 });
+
+function formatPlaylist() {
+	$('.itemHeader').remove();
+	$('#playlistPanel > ul > li >div').each(function(){
+		var index = $(this).parent('li').index();
+		var previousAlbum = "";
+		if (index > 0) {
+			previousAlbum = musiccoPlaylist.playlist[(index -1)].album;
+		} 
+		var thisAlbum = musiccoPlaylist.playlist[index].album;
+		if (thisAlbum != previousAlbum) {
+			var artist = musiccoPlaylist.playlist[index].artist;
+			var cover = musiccoPlaylist.playlist[index].poster;
+			var itemHearder = "<span class=\"itemHeader\"><img width=\"100\" height=\"100\" src=\"" + cover + "\"/><b>&nbsp;" + thisAlbum + "</b><br/></span>";
+			$(this).before(itemHearder);
+		}
+	});
+}
 
 function wikiLink(page) {
 	return '//en.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
@@ -1793,7 +1812,7 @@ function builddb() {
    	$aboutString.="<span class='about'>v1.0: initial release</span>";
    	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
-   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
+   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }
