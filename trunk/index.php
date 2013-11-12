@@ -1008,7 +1008,6 @@ $(document).on("click", ".queue", function() {
         	artist = decodeURIComponent(fileUrl[j]);
         }
         var cover =  files[i].cover;
-        cover = (cover=="none")? "skins/<?php print Musicco::getConfig('skin'); ?>/cover.png":files[i].parent+cover;
         musiccoPlaylist.add({
           title: title,
           artist: artist,
@@ -1624,7 +1623,7 @@ function querydb($query_root, $query_type) {
 		if ($query_type=="browse") {
 			$cover="";
 		} else {
-			$cover = ($row['file']=="")? "none":$row['file'];
+			$cover = ($row['file']=="")? "skins/".Musicco::getConfig('skin')."/cover.png":$row['parent'].$row['file'];
 		}
 		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover);
 	}
@@ -1813,6 +1812,7 @@ function builddb() {
    	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
+   	$aboutString.="<span class='about'>v1.1: Under the hood improvements to work with the Android client.</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }
