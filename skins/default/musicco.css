@@ -260,6 +260,8 @@ display:inline;
   background: #272727;
   color: #949494;
   margin: auto;
+  padding-left:5px;
+  padding-right:5px;
   text-align: left;
 }
 
@@ -284,7 +286,7 @@ display:inline;
   height: 310px;
   position: relative;
   top: 1184px;
-  left: 502px;
+  left: 500px;
   z-index: 1;
   margin: auto;
 }
