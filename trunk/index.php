@@ -641,7 +641,7 @@ $("#untest").click(function() {
   updateSelection('','');
   $("#test").toggle();
   $("#untest").toggle();
-  window.resizeTo(340, 570);
+  window.resizeTo(340, 580);
 });
 $("#clear-playlist").click(function() {
 	musiccoPlaylist.remove();
@@ -730,7 +730,6 @@ function nowPlaying(key) {
 	var mp3 = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3;
 	var path = musiccoPlaylist.playlist[musiccoPlaylist.current].path;
 	var poster = musiccoPlaylist.playlist[musiccoPlaylist.current].poster;
-	var song = title.substring(title.indexOf("_") + 1, title.indexOf(".mp3"));
 
 	var trackInfo = new Array();
 	trackInfo['artist'] = artist;
@@ -740,7 +739,15 @@ function nowPlaying(key) {
 	trackInfo['mp3'] = mp3;
 	trackInfo['path'] = path;
 	trackInfo['poster'] = poster;
-	trackInfo['song'] = song;
+	trackInfo['big-info'] = "<span id=\"nowPlayingTitle\">" 
+							+ title
+							+ "</span><br/>" 
+							+ "<span id=\"nowPlayingArtist\">" 
+							+ artist
+							+ "</span><br/>" 
+							+ "<span id=\"nowPlayingAlbum\">" 
+							+ album 
+							+ "</span>" 
 	return trackInfo[key];
 }
 
@@ -1023,13 +1030,20 @@ function formatPlaylist() {
 		var thisAlbum = musiccoPlaylist.playlist[index].album;
 		if (thisAlbum != previousAlbum) {
 			var year = musiccoPlaylist.playlist[index].year
+			if (year != "") {
+				year = ", " + year;
+			}
 			var artist = musiccoPlaylist.playlist[index].artist;
 			var cover = musiccoPlaylist.playlist[index].poster;
 			var itemHearder = "<span class=\"itemHeader\">"
-							+ "<img width=\"100\" height=\"100\" src=\"" + cover + "\"/>"
-							+ "<span><b>&nbsp;" + thisAlbum + "</b><br/>"
-							+ "&nbsp;" + artist + ", " + year + "<br/>"
-							+ "</span></span>";
+							+ "<table class=\"itemHeaderDetails\">"
+							+ "<td><img width=\"100\" height=\"100\" src=\"" + cover + "\"/></td>"
+							+ "<td class=\"itemHeaderDetails\">"
+							+ "<span class=\"itemHeaderAlbum\">" + thisAlbum + "</span><br/>"
+							+ "<span class=\"itemHeaderArtist\">" + artist + "</span>"
+							+ "<span class=\"itemHeaderYear\">" +  year + "</span>"
+							+ "</td></table>"
+							+ "</span>";
 			$(this).before(itemHearder);
 		}
 	});
@@ -1059,7 +1073,7 @@ function updateInfoPanel(url) {
 
 function updateLyricsPanel(artist, song) {
 	artist=nowPlaying("artist");
-	song=song.replace(/^dd[_\s-]/g, "").replace(/.mp3$/g, "");
+	song=nowPlaying("title");
 	$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
 	var url="?fetch&url="+ encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
 	$.ajax({
@@ -1116,15 +1130,14 @@ function loadPlaylist() {
 
 
 $("#musiccoplayer").on($.jPlayer.event.play, function(event) { 
-    $("#track-info").html($('a.jp-playlist-current').html());
-    $("#big-info").html($('a.jp-playlist-current').html());
+    $("#big-info").html(nowPlaying('big-info'));
     $('#big-jp-play').hide();
     $('#big-jp-pause').show();
     showNotification();
     if (!$('#track-wiki').hasClass('shown')) {
     	updateInfoPanel(wikiLink(nowPlaying("artist")));
     }
-    updateLyricsPanel(nowPlaying("artist"), nowPlaying("song"));
+    updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
     displayCover();
     savePlaylist();
 	scrollToCurrentSong();
@@ -1140,7 +1153,7 @@ function showNotification() {
   if ((window.webkitNotifications)  && (window.webkitNotifications.checkPermission() == 0)) { 
   	  // 0 is PERMISSION_ALLOWED
       notif = new Notification(
-                    nowPlaying("song") + " - " + nowPlaying("artist"),
+                    nowPlaying("title") + " - " + nowPlaying("artist"),
                     {
                       'icon': nowPlaying("poster")+"/96x96",
                       'body': nowPlaying("album"),
@@ -1161,7 +1174,7 @@ $("#musiccoplayer").on($.jPlayer.event.pause, function(event) {
 
 $("#musiccoplayer").on($.jPlayer.event.ready, function(event) { 
     loadPlaylist();
-    window.resizeTo(340, 570);
+    window.resizeTo(340, 580);
     updateVolumeValue();
 });
 
@@ -1173,7 +1186,8 @@ $('a.fader:has(img)').hover(
       $('img', this).fadeIn(3000); 
       }
 );
-$('.timer').appendTo('#big-timer');
+$('.jp-current-time').appendTo('#big-timer');
+$('.jp-duration').appendTo('#big-timer');
 $('.jp-progress').appendTo('#big-jp-progress');
 
 function updateVolumeValue() {
@@ -1449,10 +1463,11 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 <!-- END: panels -->
   <div id="big-cover" class="moveable"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/cover.png" class="cover" />
   	<div id="updateCoverArt" ><?php print $this->getString("..."); ?></div>
+  	<div id="big-volume-bar"><div id="volume-value"></div></div>
   </div>
+  <div id="big-timer" class="moveable"></div>
   <div id="big-jp-progress" class="moveable"></div>
   <div id="big-info" class="moveable">&nbsp;</div>
-  <div id="big-timer" class="moveable"></div>
 	<div id="playlist-controls">
   	<div id="big-mute" class="toggles jp-mute">&nbsp;</div>
 		<div id="clear-playlist" class="toggles">&nbsp;</div>
@@ -1469,7 +1484,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
     <a href="javascript:;" id="big-jp-next"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
   </div>
   <!-- END: big controls -->
-  <div id="big-volume-bar"><div id="volume-value"></div></div>
+
   
 </div>
 <!-- END: big player -->
@@ -1507,7 +1522,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
               </ul>
 							<ul class="jp-toggles">
                 <li id="volume"><div class="jp-volume-bar"><div class="jp-volume-bar-value"></div></div></li>
-                <li><div class="timer"><div class="jp-current-time"></div>&nbsp;/&nbsp;<div class="jp-duration"></div></div></li>
+                <li><div class="jp-current-time"></div><div class="jp-duration"></div></li>
                 <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
 								<li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
 								<li><a href="javascript:;" class="jp-shuffle" tabindex="1" title="shuffle">shuffle</a></li>
