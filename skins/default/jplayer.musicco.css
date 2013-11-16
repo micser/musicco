@@ -202,6 +202,7 @@ a.jp-next:hover {
 div.jp-progress {
 	/*overflow:hidden;*/
 	background-color: #272727;
+	border-radius: 10px;	
 }
 div.jp-audio div.jp-progress {
 	height:3px;
@@ -222,14 +223,16 @@ div.jp-video div.jp-progress {
 div.jp-seek-bar {
 	/*background: url("jplayer.musicco.png") 0 -276px repeat-x;*/
 	/*background: #7dbb46;*/
-	background: #000000;
+	/*background: #000000;*/
 	width:0px;
 	cursor: pointer;
+	border-radius: 10px;
 }
 div.jp-play-bar {
 	/*background: url("jplayer.musicco.png") 0 -291px repeat-x ;*/
 	background: #fbb114;
 	width:0px;
+	border-radius: 10px;
 }
 
 /* The seeking class is added/removed inside jPlayer */
@@ -313,11 +316,20 @@ div.jp-audio div.jp-type-playlist div.jp-time-holder {
 }
 
 div.jp-current-time,
-div.jp-duration,
-div.timer {
-	display:inline;
-	width:60px;
+div.jp-duration {
+	display:inline-block;
 	font-style:oblique;
+	color: #FFB90F;
+	font-size: small;
+	width: 155px;
+}
+
+div.jp-duration {
+	text-align: right;
+}
+
+div.jp-current-time {
+	text-align: left;
 }
 /* @end */
 
@@ -405,9 +417,27 @@ div.jp-type-playlist div.jp-playlist span.jp-free-media a:hover{
 	color:#FFB90F;
 }
 
-span.itemHeader, span.jp-artist {
+span.jp-artist {
 	font-size:.8em;
 	color:#FFB90F;
+}
+
+table.itemHeaderDetails {
+	width: 100%;
+}
+
+td.itemHeaderDetails {
+	vertical-align: bottom;
+	text-align: right;
+}
+
+span.itemHeaderAlbum {
+	font-size: larger;
+	color:#FFB90F;
+}
+
+span.itemHeaderArtist, span.itemHeaderYear {
+	font-size: smaller;
 }
 
 span.jp-artist {
