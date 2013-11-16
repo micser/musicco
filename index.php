@@ -1677,7 +1677,7 @@ function querydb($query_root, $query_type) {
 			}
 		}
 
-		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "trackNumber", $trackNumber);
+		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "trackNumber" => $trackNumber);
 	}
 	//print "Displayed Data in ".(microtime(TRUE) - $_START_DISPLAY)."<br/>";
 	if ($query_type=="browse") {
