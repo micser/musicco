@@ -404,9 +404,14 @@ div.jp-type-playlist div.jp-playlist span.jp-free-media a{
 div.jp-type-playlist div.jp-playlist span.jp-free-media a:hover{
 	color:#FFB90F;
 }
-span.jp-artist {
+
+span.itemHeader, span.jp-artist {
 	font-size:.8em;
 	color:#FFB90F;
+}
+
+span.jp-artist {
+	display:none;
 }
 
 /* @end */
