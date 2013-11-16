@@ -723,8 +723,9 @@ function resetFetchingStatus() {
 }
 
 function nowPlaying(key) {
-	var artist = musiccoPlaylist.playlist[musiccoPlaylist.current].artist.replace(/<?php print $this->getConfig('new_marker'); ?>/g, "");
+	var artist = musiccoPlaylist.playlist[musiccoPlaylist.current].artist;
 	var album = musiccoPlaylist.playlist[musiccoPlaylist.current].album;
+	var year = musiccoPlaylist.playlist[musiccoPlaylist.current].year;
 	var title = musiccoPlaylist.playlist[musiccoPlaylist.current].title;
 	var mp3 = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3;
 	var path = musiccoPlaylist.playlist[musiccoPlaylist.current].path;
@@ -734,6 +735,7 @@ function nowPlaying(key) {
 	var trackInfo = new Array();
 	trackInfo['artist'] = artist;
 	trackInfo['album'] = album;
+	trackInfo['year'] = year;
 	trackInfo['title'] = title;
 	trackInfo['mp3'] = mp3;
 	trackInfo['path'] = path;
@@ -890,7 +892,7 @@ $(document).on("click", ".closed", function() {
 	});
 		
 	$(document).on("click", ".infolink", function() {
-    var artist=$(this).attr("artist").replace(/<?php print $this->getConfig('new_marker'); ?>/g, "");
+    var artist=$(this).attr("artist");
     updateInfoPanel(wikiLink(artist));
     toggleInfo();
 		});
@@ -992,30 +994,18 @@ $(document).on("click", ".queue", function() {
   var item = $(this).attr("item");
   var parent = $(this).attr("parent");
   var type = $(this).attr("type");
-  var slash = encodeURIComponent("/");
   $.post('?', {querydb: '', root: decodeURIComponent(parent + item), type: 'add'+type}, function (response) {
       var files=response;
       $.each(files, function (i, elem) {
-        var path = files[i].parent.replace(/\"/g,"");
-      	fileUrl =  encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")).split(slash);
-        var title = decodeURIComponent(fileUrl[fileUrl.length -1]);
-        var album = decodeURIComponent(fileUrl[fileUrl.length -2]).replace(/\[....\]\s/g, "");
-        album = (album.match(/^disc\s|cd\s?\d*$/gi) != null)? decodeURIComponent(fileUrl[fileUrl.length -3])+" - " + album:album;
-        var j=1;
-        var artist = decodeURIComponent(fileUrl[j]);
-        while ((artist.match(/^!divers|soundtracks|Audiobooks|christmas|compilations|génériques|humour|inclassables|ringtones|$/gi).length > 1) && (j < fileUrl.length)) {
-        	j+=1;
-        	artist = decodeURIComponent(fileUrl[j]);
-        }
-        var cover =  files[i].cover;
         musiccoPlaylist.add({
-          title: title,
-          artist: artist,
-          album: album,
+          title: files[i].title,
+          artist: files[i].artist,
+          year: files[i].year,
+          album: files[i].album,
           free:<?php print (AuthManager::isAdmin()?"false":"false"); ?>,
-          path: path,
-          mp3:  fileUrl.join(slash),
-          poster: cover
+          path: files[i].parent.replace(/\"/g,""),
+          mp3:  encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
+          poster: files[i].cover
         });
 	musiccoPlaylist.play();
       });
@@ -1032,9 +1022,14 @@ function formatPlaylist() {
 		} 
 		var thisAlbum = musiccoPlaylist.playlist[index].album;
 		if (thisAlbum != previousAlbum) {
+			var year = musiccoPlaylist.playlist[index].year
 			var artist = musiccoPlaylist.playlist[index].artist;
 			var cover = musiccoPlaylist.playlist[index].poster;
-			var itemHearder = "<span class=\"itemHeader\"><img width=\"100\" height=\"100\" src=\"" + cover + "\"/><b>&nbsp;" + thisAlbum + "</b><br/></span>";
+			var itemHearder = "<span class=\"itemHeader\">"
+							+ "<img width=\"100\" height=\"100\" src=\"" + cover + "\"/>"
+							+ "<span><b>&nbsp;" + thisAlbum + "</b><br/>"
+							+ "&nbsp;" + artist + ", " + year + "<br/>"
+							+ "</span></span>";
 			$(this).before(itemHearder);
 		}
 	});
@@ -1616,16 +1611,46 @@ function querydb($query_root, $query_type) {
 	//print "Queried DB in ".(microtime(TRUE) - $_START_QUERY)."<br/>";
 	$_START_DISPLAY = microtime(TRUE);
 	foreach($result as $row) {
+		$trackNumber = '';
+		$title = '';
+		$album = '';
+		$artist = '';
+		$year = '';
 		$id = $row['id'];
 		$name = $row['name'];
 		$type = $row['type'];
 		$parent = $row['parent'];
+		
+		// Return the default cover or a specific cover
 		if ($query_type=="browse") {
 			$cover="";
 		} else {
 			$cover = ($row['file']=="")? "skins/".Musicco::getConfig('skin')."/cover.png":$row['parent'].$row['file'];
 		}
-		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover);
+		
+		// compute artist, album, title and year
+		if (($query_type=="add1") || ($query_type=="add2")) {
+			$trackNumber = preg_replace("/(\d+)_.*\.mp3/", "$1", $name);
+			$title = preg_replace("/\d+_(.*)\.mp3/", "$1", $name);
+
+			$year = preg_replace("/^.*\/\[(\d\d\d\d)\]\s.*\/$/", "$1", $parent);
+			$exploded_parent = explode("/", $parent);
+			$album = $exploded_parent[sizeOf($exploded_parent) -2];
+			if (strpos($album, $year) === FALSE) {
+    			$album = $exploded_parent[sizeOf($exploded_parent) -3] ." (". $exploded_parent[sizeOf($exploded_parent) -2].")";
+			}
+			$album = str_replace("[$year] ", "", $album);
+			
+			$i=1;
+			$artist = $exploded_parent[$i];
+			$artist_pattern = "/^!divers|soundtracks|Audiobooks|christmas|compilations|génériques|humour|inclassables|ringtones$/i";
+			while(($i < sizeOf($exploded_parent)) && (preg_match($artist_pattern, $artist))) {
+				$i+=1;
+				$artist = $exploded_parent[$i];
+			}
+		}
+
+		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "trackNumber", $trackNumber);
 	}
 	//print "Displayed Data in ".(microtime(TRUE) - $_START_DISPLAY)."<br/>";
 	if ($query_type=="browse") {
