@@ -40,6 +40,13 @@ $_CONFIG['charset'] = "UTF-8";
 // to be on the safe side
 $_CONFIG['musicRoot'] = "music";
 
+// The number of random albums to add to your playlist
+// when clicking the "uncover!" button in the UI
+// Depending on your server and client's performance really...
+// 5 is safe, 10 is a bit on the heavy side.
+// Default: $_CONFIG['uncover_limit'] = "5";
+$_CONFIG['uncover_limit'] = 5;
+
 
 // A character combination you use to mark your folders as unlistened in your library.
 // I use the suffix "__" at the end of folders I have not listened to yet.
@@ -809,7 +816,7 @@ function setCoverInfoStatus(statusText) {
 	$("#updateCoverArt").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
 	$("#updateCoverArt").mouseleave();
 	n();	
-	}).fadeIn(500).fadeOut(500);
+	}).fadeTo("fast", 0.8).fadeTo("slow", 0.1);
 }
 
 $('#big-cover').hover(
@@ -1602,7 +1609,7 @@ function querydb($query_root, $query_type) {
 		$query = "SELECT item.id, item.name, item.type, item.parent FROM item WHERE item.name LIKE \"%$query_root%\" ORDER BY item.parent, item.name COLLATE NOCASE";
 		break;
 		case "uncover":
-		$query = "SELECT id, name, type, parent FROM item WHERE type in (2) ORDER BY RANDOM() LIMIT 10";
+		$query = "SELECT id, name, type, parent FROM item WHERE type in (2) ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		case "add1":
 		$query = "SELECT item.id, item.name, item.type, item.parent, (SELECT file FROM cover WHERE parent = item.parent LIMIT 1)AS file FROM item WHERE item.parent LIKE \"$query_root%\" AND type IN (2) ORDER BY item.parent, item.name COLLATE NOCASE";
@@ -1647,12 +1654,17 @@ function querydb($query_root, $query_type) {
 		if (($query_type=="add1") || ($query_type=="add2")) {
 			$trackNumber = preg_replace("/(\d+)_.*\.mp3/", "$1", $name);
 			$title = preg_replace("/\d+_(.*)\.mp3/", "$1", $name);
-
-			$year = preg_replace("/^.*\/\[(\d\d\d\d)\]\s.*\/$/", "$1", $parent);
+			
+			$year_pattern = "/^.*\/\[(\d\d\d\d)\]\s.*\/$/";
+			if (preg_match($year_pattern, $parent, $year_matches)) {
+				$year = $year_matches[1];
+			}
+			
 			$exploded_parent = explode("/", $parent);
+			$album_pattern = "/^disc\s|cd\s?\d*$/i";
 			$album = $exploded_parent[sizeOf($exploded_parent) -2];
-			if (strpos($album, $year) === FALSE) {
-    			$album = $exploded_parent[sizeOf($exploded_parent) -3] ." (". $exploded_parent[sizeOf($exploded_parent) -2].")";
+			if (preg_match($album_pattern, $album)) {
+    			$album = $exploded_parent[sizeOf($exploded_parent) -3];
 			}
 			$album = str_replace("[$year] ", "", $album);
 			
