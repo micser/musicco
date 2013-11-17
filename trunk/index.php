@@ -1020,7 +1020,8 @@ $(document).on("click", ".queue", function() {
           path: files[i].parent.replace(/\"/g,""),
           mp3:  encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
           extension: files[i].extension,
-          poster: files[i].cover
+          poster: files[i].cover,
+          number: files[i].number
         });
 	musiccoPlaylist.play();
       });
@@ -1638,7 +1639,7 @@ function querydb($query_root, $query_type) {
 	//print "Queried DB in ".(microtime(TRUE) - $_START_QUERY)."<br/>";
 	$_START_DISPLAY = microtime(TRUE);
 	foreach($result as $row) {
-		$trackNumber = '';
+		$number = '';
 		$title = '';
 		$album = '';
 		$artist = '';
@@ -1682,7 +1683,7 @@ function querydb($query_root, $query_type) {
 			
 			$filename_pattern = "/^(\d+)(_|\s-\s)(.*)\.(mp3)$/i";
 			if (preg_match($filename_pattern, $name, $filename_matches)) {
-				$trackNumber = $filename_matches[1];
+				$number = $filename_matches[1];
 				$title = $filename_matches[3];
 				$extension = $filename_matches[4];
 			} else {
@@ -1690,7 +1691,7 @@ function querydb($query_root, $query_type) {
 			}
 		}
 
-		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "trackNumber" => $trackNumber, "extension" => $extension);
+		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "number" => $number, "extension" => $extension);
 	}
 	//print "Displayed Data in ".(microtime(TRUE) - $_START_DISPLAY)."<br/>";
 	if ($query_type=="browse") {
