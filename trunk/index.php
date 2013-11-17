@@ -1019,6 +1019,7 @@ $(document).on("click", ".queue", function() {
           free:<?php print (AuthManager::isAdmin()?"false":"false"); ?>,
           path: files[i].parent.replace(/\"/g,""),
           mp3:  encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
+          extension: files[i].extension,
           poster: files[i].cover
         });
 	musiccoPlaylist.play();
@@ -1561,7 +1562,11 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 // This is where the system is activated. 
 	if(isset($_POST['loadPlaylist'])) {
 		$user = $_POST['u'];
-  		return print_r(file_get_contents(dirname(__FILE__)."/playlists/".$user.".playlist"));
+  		$response = file_get_contents(dirname(__FILE__)."/playlists/".$user.".playlist");
+  		if ($response == "") {
+  			$response = '{"song": "0" , "playlist": "[]"}';
+  		}
+  		return  print_r($response);
   		exit;
 	} elseif (isset($_POST['savePlaylist'])) {
 		$user = $_POST['u'];
@@ -1642,6 +1647,7 @@ function querydb($query_root, $query_type) {
 		$name = $row['name'];
 		$type = $row['type'];
 		$parent = $row['parent'];
+		$extension = '';
 		
 		// Return the default cover or a specific cover
 		if ($query_type=="browse") {
@@ -1652,9 +1658,7 @@ function querydb($query_root, $query_type) {
 		
 		// compute artist, album, title and year
 		if (($query_type=="add1") || ($query_type=="add2")) {
-			$trackNumber = preg_replace("/(\d+)_.*\.mp3/", "$1", $name);
-			$title = preg_replace("/\d+_(.*)\.mp3/", "$1", $name);
-			
+
 			$year_pattern = "/^.*\/\[(\d\d\d\d)\]\s.*\/$/";
 			if (preg_match($year_pattern, $parent, $year_matches)) {
 				$year = $year_matches[1];
@@ -1675,9 +1679,18 @@ function querydb($query_root, $query_type) {
 				$i+=1;
 				$artist = $exploded_parent[$i];
 			}
+			
+			$filename_pattern = "/^(\d+)(_|\s-\s)(.*)\.(mp3)$/i";
+			if (preg_match($filename_pattern, $name, $filename_matches)) {
+				$trackNumber = $filename_matches[1];
+				$title = $filename_matches[3];
+				$extension = $filename_matches[4];
+			} else {
+				$title = str_ireplace(" - ", " ", str_ireplace($artist, "", str_ireplace(".mp3", "", $name)));
+			}
 		}
 
-		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "trackNumber" => $trackNumber);
+		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "trackNumber" => $trackNumber, "extension" => $extension);
 	}
 	//print "Displayed Data in ".(microtime(TRUE) - $_START_DISPLAY)."<br/>";
 	if ($query_type=="browse") {
