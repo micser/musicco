@@ -114,7 +114,6 @@ $_TRANSLATIONS["en"] = array(
 	"mobile_version" => "small player",
 	"standard_version" => "full player",
 	"reset_db" => "update library",
-	"uncover" => "uncover!",
 	"rebuildingLibrary" => "refreshing library...",
 	"libraryRebuiltIn" => "library updated in ",
 	"log_in" => "Log in",
@@ -151,7 +150,6 @@ $_TRANSLATIONS["fr"] = array(
 	"mobile_version" => "version mobile",
 	"standard_version" => "version desktop",
 	"reset_db" => "rafraichir la discothèque",
-	"uncover" => "dévoiler",
 	"rebuildingLibrary" => "scan en cours...",
 	"libraryRebuiltIn" => "discothèque rafraichie en  ",
 	"log_in" => "Connexion",
@@ -1415,7 +1413,6 @@ else
 	//print "<span id=\"test\"><a href=\"javascript:;\">".$this->getString("standard_version")."</a> | </span>";
 	//print "<span id=\"untest\"><a href=\"javascript:;\">".$this->getString("mobile_version")."</a> | </span>";
   print "<span><img id=\"loadingIcon\" src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
-  print "<span id=\"uncover\"><a href=\"javascript;\">".$this->getString("uncover")."</a> | </span>";
   if (AuthManager::isAdmin()) {
     print "<span id=\"reset_db\"><a href=\"javascript;\">".$this->getString("reset_db")."</a> | </span>";
 	}
@@ -1480,6 +1477,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 	<div id="playlist-controls">
   	<div id="big-mute" class="toggles jp-mute">&nbsp;</div>
 		<div id="clear-playlist" class="toggles">&nbsp;</div>
+		<div id="uncover" class="toggles">&nbsp;</div>
 		<div id="big-shuffle" class="toggles touch-jp-shuffle">&nbsp;</div>
 		<div id="big-repeat" class="toggles touch-jp-repeat">&nbsp;</div>
 		<div id="big-volume-down" class="toggles">&nbsp;</div>

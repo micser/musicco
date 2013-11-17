@@ -363,6 +363,9 @@ div.shown {
 #clear-playlist {
   background-image: url("clear32.png");
 }
+#uncover {
+  background-image: url("uncover32.png");
+}
 #playlist-toggle {
   background-image: url("playlist32.png");
 }
