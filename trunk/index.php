@@ -1680,6 +1680,7 @@ function querydb($query_root, $query_type) {
 				$i+=1;
 				$artist = $exploded_parent[$i];
 			}
+			$artist = str_replace(Musicco::getConfig('new_marker'), "", $artist);
 			
 			$filename_pattern = "/^(\d+)(_|\s-\s)(.*)\.(mp3)$/i";
 			if (preg_match($filename_pattern, $name, $filename_matches)) {
