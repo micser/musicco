@@ -1572,7 +1572,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		$playlist = str_replace("\"", "\\\"", $_POST['p']);
 		$song = $_POST['s'];
 		$save = "{\"song\": \"".$song."\" , \"playlist\": \"".$playlist."\"}";
-		return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", mb_convert_encoding($save, Musicco::getConfig('charset')));
+		return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
 		exit;
   	} elseif (isset($_POST['saveCover'])) {
 		$url = $_POST['u'];
@@ -1630,7 +1630,7 @@ function querydb($query_root, $query_type) {
 		default:
 		//exit;
 	}
-	//error_log($query);
+
 	$db = new PDO('sqlite:library.db');
 	$_START_QUERY = microtime(TRUE);
 	$result = $db->query($query);
