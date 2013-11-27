@@ -1119,9 +1119,11 @@ function saveCover(coverURL, path) {
 
 function savePlaylist() {
  	var user = "<?php echo AuthManager::getUserName(); ?>";
- 	var playlist = JSON.stringify(musiccoPlaylist.playlist);
- 	var song = musiccoPlaylist.current;
- 	$.post('?', {savePlaylist: '', u: user, p: playlist, s: song}, function (response) {
+ 	var playlist = JSON.stringify(musiccoPlaylist.original);
+ 	var current = musiccoPlaylist.current;
+ 	var loop = musiccoPlaylist.loop;
+ 	var shuffled = musiccoPlaylist.shuffled;
+ 	$.post('?', {savePlaylist: '', u: user, p: playlist, c: current, l: loop, s: shuffled}, function (response) {
  	});	
 }
 
@@ -1130,7 +1132,15 @@ function loadPlaylist() {
  	if (user!="") {
         $.post('?', {loadPlaylist: '', u: user}, function(response) {
       musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
-      musiccoPlaylist.select(parseInt(response.song));
+      musiccoPlaylist.select(parseInt(response.current));
+      musiccoPlaylist.loop = response.loop;
+  	  if (musiccoPlaylist.loop) {
+  		$(toggleAndUpdate($('#big-repeat'), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
+  	  }
+      musiccoPlaylist.shuffled = response.shuffled;
+      if (musiccoPlaylist.shuffled) {
+  		$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
+      }
     }, "json");	
   }
 }
@@ -1563,15 +1573,17 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		$user = $_POST['u'];
   		$response = file_get_contents(dirname(__FILE__)."/playlists/".$user.".playlist");
   		if ($response == "") {
-  			$response = '{"song": "0" , "playlist": "[]"}';
+  			$response = '{"song": "0" ,"repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
   		}
   		return  print_r($response);
   		exit;
 	} elseif (isset($_POST['savePlaylist'])) {
 		$user = $_POST['u'];
 		$playlist = str_replace("\"", "\\\"", $_POST['p']);
-		$song = $_POST['s'];
-		$save = "{\"song\": \"".$song."\" , \"playlist\": \"".$playlist."\"}";
+		$current = $_POST['c'];
+		$loop = $_POST['l'];
+		$shuffled = $_POST['s'];
+		$save = "{\"current\": \"".$current."\" , \"loop\": \"".$loop."\" , \"shuffled\": \"".$shuffled."\" , \"playlist\": \"".$playlist."\"}";
 		return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
 		exit;
   	} elseif (isset($_POST['saveCover'])) {
@@ -1633,6 +1645,7 @@ function querydb($query_root, $query_type) {
 
 	$db = new PDO('sqlite:library.db');
 	$_START_QUERY = microtime(TRUE);
+	//error_log($query."\n", 3, dirname(__FILE__).'/musicco.log');
 	$result = $db->query($query);
 	//print "Queried DB in ".(microtime(TRUE) - $_START_QUERY)."<br/>";
 	$_START_DISPLAY = microtime(TRUE);
