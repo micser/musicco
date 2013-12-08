@@ -63,7 +63,7 @@ $_CONFIG['new_marker'] = "__";
 // If set to true, you should specify some users as well (see below).
 // Important: This only prevents people from seeing the list.
 // They will still be able to access the files with a direct link.
-$_CONFIG['require_login'] = false;
+$_CONFIG['require_login'] = "false";
 
 // Usernames and passwords for restricting access to the page.
 // The format is: array(username, password, administrator)
@@ -253,7 +253,7 @@ class AuthManager
 	
 	public static function isLoginRequired()
 	{
-		if(Musicco::getConfig("require_login") == false){
+		if(Musicco::getConfig("require_login") == "false"){
 			return false;
 		}
 		return true;
@@ -1586,6 +1586,16 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		$save = "{\"current\": \"".$current."\" , \"loop\": \"".$loop."\" , \"shuffled\": \"".$shuffled."\" , \"playlist\": \"".$playlist."\"}";
 		return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
 		exit;
+	} elseif (isset($_POST['getConfig'])) {
+		$userList = array();
+		$userAccounts = Musicco::getConfig('users');
+		foreach($userAccounts as $id => $accountDetails){
+    			array_push($userList,'{\"login\": \"'.$accountDetails[0].'\"}');
+		}
+  		$response = '{"require_login": "'.Musicco::getConfig('require_login').'", "musicRoot": "'.Musicco::getConfig('musicRoot').'", "skin": "'.Musicco::getConfig('skin').'", "users": "['.join(",",$userList).']"}';
+  		//error_log($response."\n", 3, dirname(__FILE__).'/musicco.log');
+  		return  print_r($response);
+  		exit;		
   	} elseif (isset($_POST['saveCover'])) {
 		$url = $_POST['u'];
 		$path = $_POST['p'];
