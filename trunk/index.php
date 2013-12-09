@@ -1592,7 +1592,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		foreach($userAccounts as $id => $accountDetails){
     			array_push($userList,'{\"login\": \"'.$accountDetails[0].'\"}');
 		}
-  		$response = '{"require_login": "'.Musicco::getConfig('require_login').'", "musicRoot": "'.Musicco::getConfig('musicRoot').'", "skin": "'.Musicco::getConfig('skin').'", "users": "['.join(",",$userList).']"}';
+  		$response = '{"require_login": "'.Musicco::getConfig('require_login').'", "musicRoot": "'.Musicco::getConfig('musicRoot').'", "skin": "'.Musicco::getConfig('skin').'", "new_marker": "'.Musicco::getConfig('new_marker').'", "users": "['.join(",",$userList).']"}';
   		//error_log($response."\n", 3, dirname(__FILE__).'/musicco.log');
   		return  print_r($response);
   		exit;		
