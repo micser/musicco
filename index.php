@@ -760,8 +760,9 @@ function printCover(coverurl) {
 	$('.cover').attr('src', coverurl); 
 	$('.cover').load(function() {
 		var height = $('.cover').height();
-		var marginTop = (310-height)/2;
-		$('.cover').css('margin-top',  marginTop +'px'); 
+		var marginValue = (310-height)/2;
+		$('.cover').css('margin-top',  marginValue +'px'); 
+		$('.cover').css('margin-bottom',  marginValue +'px'); 
 		$('.cover').fadeIn(2000);
 	});
 }
