@@ -431,6 +431,11 @@ td.itemHeaderDetails {
 	text-align: right;
 }
 
+td.itemHeaderRemove {
+	vertical-align: top;
+	text-align: right;
+}
+
 span.itemHeaderAlbum {
 	font-size: larger;
 	color:#FFB90F;

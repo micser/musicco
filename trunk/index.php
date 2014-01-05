@@ -706,7 +706,7 @@ function updateSelection(toggle, panel) {
 
 function scrollToCurrentSong() {
 $('.my-playlist').scrollTop(
-    $('.jp-playlist-current').prev().offset().top - $('.my-playlist').offset().top + $('.my-playlist').scrollTop());
+    $('.jp-playlist-current').prev().offset().top - $('.my-playlist').offset().top - 100 + $('.my-playlist').scrollTop());
 }
 
 function  displayCover() {
@@ -1050,6 +1050,8 @@ function formatPlaylist() {
 							+ "<span class=\"itemHeaderAlbum\">" + thisAlbum + "</span><br/>"
 							+ "<span class=\"itemHeaderArtist\">" + artist + "</span>"
 							+ "<span class=\"itemHeaderYear\">" +  year + "</span>"
+							+ "<td class=\"itemHeaderRemove\">"
+							+ "<a href=\"javascript:;\" class=\"remove-album\" album=\"" + thisAlbum + "\">×</a>"
 							+ "</td></table>"
 							+ "</span>";
 			$(this).before(itemHearder);
@@ -1338,6 +1340,20 @@ function hotkey(keyCode) {
 
 $('#big-jp-previous').click(function() {
   $('.jp-previous').trigger('click');
+});
+
+$(document).on("click", ".remove-album", function() {
+ 	album = $(this).attr('album');
+ 	musiccoPlaylist.removeTime = 0;
+ 	var i=$(this).parents('li').index();
+ 	var interval = setInterval(function() { 
+         				if (musiccoPlaylist.playlist[i].album == album) {
+								musiccoPlaylist.remove(i);
+								i--;
+							}
+                          	i++; 
+                          if(i >= (musiccoPlaylist.playlist.length -1)) clearInterval(interval);
+                   }, 10);
 });
 
 $('#big-jp-play').click(function() {
