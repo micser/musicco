@@ -1135,11 +1135,11 @@ function loadPlaylist() {
       musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
       musiccoPlaylist.select(parseInt(response.current));
       musiccoPlaylist.loop = response.loop;
-  	  if (musiccoPlaylist.loop) {
+      musiccoPlaylist.shuffled = response.shuffled;
+  	  if (musiccoPlaylist.loop == "true") {
   		$(toggleAndUpdate($('#big-repeat'), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
   	  }
-      musiccoPlaylist.shuffled = response.shuffled;
-      if (musiccoPlaylist.shuffled) {
+      if (musiccoPlaylist.shuffled == "true") {
   		$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
       }
     }, "json");	
