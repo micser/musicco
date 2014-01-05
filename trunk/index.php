@@ -1177,10 +1177,9 @@ function showNotification() {
                       'tag' : 'musicconowplayingnotification'
                     }
                 );
-      notif.onclick = function(x) { window.focus(); this.cancel(); };
-      notif.show();
+      notif.onclick = function(x) { window.focus(); this.close(); };
       setTimeout(function(){
-      notif.cancel();}, 5000);
+      notif.close();}, 5000);
     }
   }
 
