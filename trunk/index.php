@@ -76,7 +76,7 @@ $_CONFIG['require_login'] = "false";
 
 // Usernames and passwords for restricting access to the page.
 // The format is: array(username, password, administrator)
-// Administrtors can download tracks from the playlist and refresh the library from the UI.
+// Administrtors can download tracks from the browser and playlist panels and refresh the library from the UI.
 // For example: $_CONFIG['users'] = array(array("username1", "password1", "true"), array("username2", "password2", "false"));
 // Default: $_CONFIG['users'] = array();
 //
@@ -1003,6 +1003,9 @@ function treelink(root, fileUrl, level, type) {
   link+="<a href=\"javascript:;\" class=\"item "+closed+"\" level=\""+myLevel+"\" parent=\""+root+"\" item=\""+fileUrl+slash+"\"\>";
   link+=decodeURIComponent(fileUrl);
   link+="</a> ";
+  if (<?php print AuthManager::isAdmin(); ?> && type==2) {
+  	link+="<a href=\""+root+fileUrl+"\" target=\"_blank\" class=\"download\">[&#8681;]</a>";
+  } 
   link+="</span> ";
   return link;
 }
@@ -1024,7 +1027,7 @@ $(document).on("click", ".queue", function() {
           artist: files[i].artist,
           year: files[i].year,
           album: files[i].album,
-          free:<?php print (AuthManager::isAdmin()?"false":"false"); ?>,
+          free:<?php print (AuthManager::isAdmin()?"true":"false"); ?>,
           path: files[i].parent.replace(/\"/g,""),
           mp3:  encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
           extension: files[i].extension,
@@ -1038,6 +1041,9 @@ $(document).on("click", ".queue", function() {
 
 function formatPlaylist() {
 	$('.itemHeader').remove();
+	$('.jp-playlist-item-free').html("[&#8681;]");
+	$('.jp-playlist-item-free').attr("target", "_blank");
+	$('.jp-playlist-item-free').removeClass('jp-playlist-item-free').addClass('download');
 	$('#playlistPanel > ul > li >div').each(function(){
 		var index = $(this).parent('li').index();
 		var previousAlbum = "";
@@ -1925,7 +1931,7 @@ function builddb() {
    	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
-   	$aboutString.="<span class='about'>v1.1: Under the hood improvements to work with the Android client.</span>";
+   	$aboutString.="<span class='about'>v1.1: Under the hood improvements to work with the Android client, added configuration option for cover name, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }
