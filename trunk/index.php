@@ -40,6 +40,15 @@ $_CONFIG['charset'] = "UTF-8";
 // to be on the safe side
 $_CONFIG['musicRoot'] = "music";
 
+// The name you give to your covert art files
+// in your music library. This is used to find covers
+// on your disk and also to as a file name to 
+// save covers found by the cover art downloader
+// Specify the file name with no extension
+// Default: $_CONFIG['coverFileName'] = "folder";
+$_CONFIG['coverFileName'] = "folder";
+
+
 // The number of random albums to add to your playlist
 // when clicking the "uncover!" button in the UI
 // Depending on your server and client's performance really...
@@ -1114,7 +1123,7 @@ function saveCover(coverURL, path) {
  	});	
  	for (var i=0; i<musiccoPlaylist.playlist.length; i++) {
   		if (musiccoPlaylist.playlist[i].path == path) {
-    		musiccoPlaylist.playlist[i].poster = path + 'cover.png';
+    		musiccoPlaylist.playlist[i].poster = path + '<?php print $this->getConfig('coverFileName'); ?>.png';
   		}
 	}
 	savePlaylist();
@@ -1830,7 +1839,7 @@ function builddb() {
    }
    
    function is_cover($file) {
-   	return (stripos($file, "cover.") > 0);
+   	return (stripos($file, Musicco::getConfig('coverFileName').".") > 0);
    }
    
    // Finally, the contents of the help and about panels
