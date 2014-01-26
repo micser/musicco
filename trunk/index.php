@@ -1003,7 +1003,7 @@ function treelink(root, fileUrl, level, type) {
   link+="<a href=\"javascript:;\" class=\"item "+closed+"\" level=\""+myLevel+"\" parent=\""+root+"\" item=\""+fileUrl+slash+"\"\>";
   link+=decodeURIComponent(fileUrl);
   link+="</a> ";
-  if (<?php print AuthManager::isAdmin(); ?> && type==2) {
+  if (("<?php print AuthManager::isAdmin(); ?>" =="1") && (type==2)) {
   	link+="<a href=\""+root+fileUrl+"\" target=\"_blank\" class=\"download\">[&#8681;]</a>";
   } 
   link+="</span> ";
