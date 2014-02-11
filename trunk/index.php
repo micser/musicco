@@ -29,15 +29,18 @@ $_CONFIG['lang'] = "en";
 
 // The skin you want to use for the player. Only one is provided (default).
 // If you want to create your own, copy the default folder and edit at will.
+// Default: $_CONFIG['skin'] = "default";
 $_CONFIG['skin'] = "default";
 
 // Charset. Use the one that suits for you. 
+// Default: $_CONFIG['charset'] = "UTF-8";
 $_CONFIG['charset'] = "UTF-8";
 
 
 // The name of the folder containing your music.
 // Create a 'music' symbolic lync to your music root folder
 // to be on the safe side
+// Default: $_CONFIG['musicRoot'] = "music";
 $_CONFIG['musicRoot'] = "music";
 
 // The name you give to your covert art files
@@ -61,7 +64,19 @@ $_CONFIG['uncover_limit'] = 5;
 // I use the suffix "__" at the end of folders I have not listened to yet.
 // Any item at the top level of your library containing this marker can be shown or 
 // hidden on the browser page
+// Default: $_CONFIG['new_marker'] = "__";
 $_CONFIG['new_marker'] = "__";
+
+// Whether or not to log queries to 
+// file for debugging
+// Default: $_CONFIG['debug_queries'] = false;
+$_CONFIG['debug_queries'] = false;
+
+// The name of the log file
+// (will be created where index.php lives)
+// Default: $_CONFIG['log_file'] = "musicco.log";
+$_CONFIG['log_file'] = "musicco.log";
+
 
 /*
 * PERMISSIONS
@@ -72,14 +87,16 @@ $_CONFIG['new_marker'] = "__";
 // If set to true, you should specify some users as well (see below).
 // Important: This only prevents people from seeing the list.
 // They will still be able to access the files with a direct link.
+// Defauls: $_CONFIG['require_login'] = "false";
 $_CONFIG['require_login'] = "false";
 
 // Usernames and passwords for restricting access to the page.
 // The format is: array(username, password, administrator)
 // Administrtors can download tracks from the browser and playlist panels and refresh the library from the UI.
 // For example: $_CONFIG['users'] = array(array("username1", "password1", "true"), array("username2", "password2", "false"));
-// Default: $_CONFIG['users'] = array();
-//
+// Default: $_CONFIG['users'] = array(array("admin", "admin", "true"),
+// 	  								  array("guest", "guest", "false")
+//			                          );
 $_CONFIG['users'] = array(array("admin", "admin", "true"),
                           array("guest", "guest", "false")
                           );
@@ -93,13 +110,11 @@ $_CONFIG['users'] = array(array("admin", "admin", "true"),
 // and wish to keep their authentication separate. 
 // The value can contain only letters and numbers. For example: MYSESSION1
 // More info at: http://www.php.net/manual/en/function.session-name.php
-// Default: $_CONFIG['session_name'] = "";
-//
+// Default: $_CONFIG['session_name'] = "musicco";
 $_CONFIG['session_name'] = "musicco";
 
 // Whether or not to show the Donate button on the about page
-//Default: $_CONFIG['show_donate_button'] = true;
-//
+// Default: $_CONFIG['show_donate_button'] = true;
 $_CONFIG['show_donate_button'] = true;
 
 // You can override any of the settings above by copying them into a config.php
@@ -122,6 +137,8 @@ $_TRANSLATIONS["en"] = array(
 	"wrong_pass" => "Wrong username or password",
 	"mobile_version" => "small player",
 	"standard_version" => "full player",
+	"install" => "Install",
+	"android_banner_text" => "musicco is available on Android",
 	"reset_db" => "update library",
 	"rebuildingLibrary" => "refreshing library...",
 	"libraryRebuiltIn" => "library updated in ",
@@ -158,6 +175,8 @@ $_TRANSLATIONS["fr"] = array(
 	"wrong_pass" => "Utilisateur ou mot de passe invalide.",
 	"mobile_version" => "version mobile",
 	"standard_version" => "version desktop",
+	"install" => "Installer",
+	"android_banner_text" => "musicco est disponible sur Android",
 	"reset_db" => "rafraichir la discothèque",
 	"rebuildingLibrary" => "scan en cours...",
 	"libraryRebuiltIn" => "discothèque rafraichie en  ",
@@ -424,6 +443,18 @@ class Musicco
 		</div>
 	<?php 
 		}
+	}
+
+	public function printAndroidPrompt()
+	{
+		?>
+		<div id="android-banner">
+			<span><img class="boxed" src="apple-touch-icon.png" width="32px" height="32px" />
+				<?php print $this->getString("android_banner_text"); ?></span>
+			<span id="banner-close"></span>
+			<span class="install-button"><a href="musicco.apk"><?php print $this->getString("install"); ?></a></span>
+		</div>
+	<?php 
 	}
 
 	//
@@ -921,6 +952,10 @@ $(document).on("click", ".closed", function() {
 
 $(document).on("click", ".open", function() {
 	$(this).parent(".node").children('.node').toggle();
+});
+
+$(document).on("click", "#banner-close", function() {
+	$("#android-banner").toggle();
 });
 
 $(document).on("click", "#reset_db", function() {
@@ -1422,6 +1457,10 @@ $('#big-volume-down').click(function() {
 $('#big-volume-up').click(function() {
   ChangeVolume("+");
 });
+
+if (navigator.userAgent.match(/(android|sailfish)/i)) {
+	$("#android-banner").toggle();
+}
 initBrowser();
 
 });
@@ -1442,6 +1481,7 @@ if(isset($_ERROR) && strlen($_ERROR) > 0)
 if(!AuthManager::isAccessAllowed())
 {
 	$this->printLoginBox();
+	$this->printAndroidPrompt();
 }
 else 
 {
@@ -1589,6 +1629,10 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 <!-- END: Player -->
 
 <?php 
+	if(!AuthManager::isLoginRequired())
+	{
+		$this->printAndroidPrompt();
+	}
 }
 ?>
 </body>
@@ -1606,6 +1650,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
   		if ($response == "") {
   			$response = '{"song": "0" ,"repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
   		}
+  		logMessage("Loaded playlist for ".$user);
   		return  print_r($response);
   		exit;
 	} elseif (isset($_POST['savePlaylist'])) {
@@ -1615,6 +1660,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		$loop = $_POST['l'];
 		$shuffled = $_POST['s'];
 		$save = "{\"current\": \"".$current."\" , \"loop\": \"".$loop."\" , \"shuffled\": \"".$shuffled."\" , \"playlist\": \"".$playlist."\"}";
+		logMessage("Saved playlist for ".$user);
 		return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
 		exit;
 	} elseif (isset($_POST['getConfig'])) {
@@ -1624,25 +1670,30 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
     			array_push($userList,'{\"login\": \"'.$accountDetails[0].'\"}');
 		}
   		$response = '{"require_login": "'.Musicco::getConfig('require_login').'", "musicRoot": "'.Musicco::getConfig('musicRoot').'", "skin": "'.Musicco::getConfig('skin').'", "new_marker": "'.Musicco::getConfig('new_marker').'", "users": "['.join(",",$userList).']"}';
-  		//error_log($response."\n", 3, dirname(__FILE__).'/musicco.log');
+  		logMessage("Android client requested config:");
+  		logMessage($response);
   		return  print_r($response);
   		exit;		
   	} elseif (isset($_POST['saveCover'])) {
 		$url = $_POST['u'];
 		$path = $_POST['p'];
+		logMessage("Saving cover from ".$url." to ".$path);
 		return 	file_put_contents($path."cover.png", file_get_contents($url));
 		exit;
 	} elseif (isset($_GET['fetch'])) {
 		$url =$_GET['url']; 
 		header('Content-type: application/xml');
+		logMessage("Fetching url: ".$url);
 		return print_r(file_get_contents($url));
 		exit;
 	} elseif (isset($_POST['querydb'])) {
 		$query_root = $_POST['root'];
 		$query_type = $_POST['type'];
+		logMessage("Query: ".$query_type);
 		querydb($query_root, $query_type);
 		exit;
 	} elseif (isset($_GET['builddb']) || ((defined('STDIN')) && $argv[1]=="builddb")) {
+		logMessage("User requested library rebuild");
 		builddb();
 		exit;
 	} else {
@@ -1686,9 +1737,9 @@ function querydb($query_root, $query_type) {
 
 	$db = new PDO('sqlite:library.db');
 	$_START_QUERY = microtime(TRUE);
-	//error_log($query."\n", 3, dirname(__FILE__).'/musicco.log');
+	logMessage($query);
 	$result = $db->query($query);
-	//print "Queried DB in ".(microtime(TRUE) - $_START_QUERY)."<br/>";
+	logMessage("Queried DB in ".(microtime(TRUE) - $_START_QUERY));
 	$_START_DISPLAY = microtime(TRUE);
 	foreach($result as $row) {
 		$number = '';
@@ -1746,7 +1797,7 @@ function querydb($query_root, $query_type) {
 
 		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "number" => $number, "extension" => $extension);
 	}
-	//print "Displayed Data in ".(microtime(TRUE) - $_START_DISPLAY)."<br/>";
+	logMessage("Displayed Data in ".(microtime(TRUE) - $_START_DISPLAY));
 	if ($query_type=="browse") {
 		$list=(array_reverse($list)); 
 	}
@@ -1761,6 +1812,11 @@ function querydb($query_root, $query_type) {
 	exit;
 }
 
+function logMessage($log_message) {
+	if (Musicco::getConfig('debug_queries')) {
+		error_log($log_message."\n", 3, dirname(__FILE__).'/'.Musicco::getConfig('log_file'));
+	}
+}
 function builddb() {
   try
     {
@@ -1772,7 +1828,7 @@ function builddb() {
     $sql_insert_cover='INSERT INTO cover (file, parent) VALUES (:file, :parent);';
     $insert_cover = $db->prepare($sql_insert_cover, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 
-		//create the database
+	//create the database
     $db->exec("DELETE FROM item;");    
     $db->exec("DELETE FROM cover;");    
     $db->exec("DELETE FROM type;");    
@@ -1784,29 +1840,25 @@ function builddb() {
     
     $_START_SCAN = microtime(TRUE);
     $library = build_library($folder, ".mp3");
-		//print "<br/>Scanned drive in ".(microtime(TRUE) - $_START_SCAN)."<br/>";
-		
-		$_START_INSERT = microtime(TRUE);
-		$covers=0;
-		$items=0;
-		foreach ($library as $item) {
-			$name= $item[0];
-			$type= $item[1];
-			$parent= $item[2];
-    	if ($type == "3") {
-    		$insert_cover->execute(array(':file' => $name, ':parent' => $parent));
-    		$covers+=1;
-    	} else 
-    	{
-				$insert_item->execute(array(':name' => $name, ':type' => $type, ':parent' => $parent));
-				$items+=1;
-			}
+	logMessage("Scanned drive in ".(microtime(TRUE) - $_START_SCAN));
+	
+	$_START_INSERT = microtime(TRUE);
+	$covers=0;
+	$items=0;
+	foreach ($library as $item) {
+		$name= $item[0];
+		$type= $item[1];
+		$parent= $item[2];
+	if ($type == "3") {
+		$insert_cover->execute(array(':file' => $name, ':parent' => $parent));
+		$covers+=1;
+	} else 
+	{
+			$insert_item->execute(array(':name' => $name, ':type' => $type, ':parent' => $parent));
+			$items+=1;
 		}
-    $_START_DISPLAY = microtime(TRUE);
-    printf("%.1f s",(microtime(TRUE) - $_START_INSERT))."\n";
-
-
-
+	}
+	logMessage("Built library in ".printf("%.1f s",(microtime(TRUE) - $_START_INSERT)));
     // close the database connection
     $db = NULL;
   }
@@ -1927,11 +1979,11 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>Release History</span>";
-   	$aboutString.="<span class='about'>v1.0: initial release</span>";
-   	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
-   	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
+   	$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
-   	$aboutString.="<span class='about'>v1.1: Under the hood improvements to work with the Android client, added configuration option for cover name, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
+   	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
+   	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
+   	$aboutString.="<span class='about'>v1.0: initial release</span>";
    	$aboutString.="</div>";
    	return $aboutString;
    }
