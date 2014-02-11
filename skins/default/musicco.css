@@ -488,3 +488,66 @@ div.shown {
 .jp-free-media {
 	color: #272727;
 }
+
+#android-banner {
+	display: none;
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	background: -webkit-gradient(linear,left top,left bottom,from(#FFF2B7),to(#FFE793));
+}
+
+#banner-close {
+	color: black;
+	float: right;
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+	margin-top: 15px;
+	margin-right: 5px;
+	background-image: url('close.png');
+	opacity: .5;
+	-webkit-transition: opacity .1s ease-in-out;
+}
+
+.install-button {
+	float:right;
+	-webkit-appearance: button;
+	border-left-style: outset;
+	border-left-width: 2px;
+	border-right-style: outset;
+	border-right-width: 2px;
+	border-top-style: outset;
+	border-top-width: 2px;
+	box-sizing: border-box;
+	color: black;
+	cursor: pointer;
+	font-family: Arial;
+	font-size: 13px;
+	font-weight: bold;
+	height: 22px;
+	margin-top: 12px;
+	margin-right: 5px;
+	padding-bottom: 1px;
+	padding-left: 6px;
+	padding-right: 6px;
+	padding-top: 1px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.install-button > a {
+	color: black;
+}
+
+.boxed {
+	border: 1px solid black;
+	border-radius: 5px;
+	background-color: whitesmoke;
+	padding:2px;
+	vertical-align: middle;
+	margin-right: 10px;
+	margin-left: 5px;
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
