@@ -484,7 +484,7 @@ var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musicco
 var options = { playlistOptions: {
   autoPlay: false,
   loopOnPrevious: true,
-  shuffleOnLoop: true,
+  shuffleOnLoop: false,
   enableRemoveControls: true,
   displayTime: 'slow',
   addTime: 'fast',
