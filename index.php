@@ -138,6 +138,7 @@ $_TRANSLATIONS["en"] = array(
 	"mobile_version" => "small player",
 	"standard_version" => "full player",
 	"install" => "Install",
+	"dismiss" => "Dismiss",
 	"android_banner_text" => "musicco is available on Android",
 	"reset_db" => "update library",
 	"rebuildingLibrary" => "refreshing library...",
@@ -176,6 +177,7 @@ $_TRANSLATIONS["fr"] = array(
 	"mobile_version" => "version mobile",
 	"standard_version" => "version desktop",
 	"install" => "Installer",
+	"dismiss" => "Ignorer",
 	"android_banner_text" => "musicco est disponible sur Android",
 	"reset_db" => "rafraichir la discothèque",
 	"rebuildingLibrary" => "scan en cours...",
@@ -449,10 +451,19 @@ class Musicco
 	{
 		?>
 		<div id="android-banner">
-			<span><img class="boxed" src="apple-touch-icon.png" width="32px" height="32px" />
-				<?php print $this->getString("android_banner_text"); ?></span>
-			<span id="banner-close"></span>
-			<span class="install-button"><a href="musicco.apk"><?php print $this->getString("install"); ?></a></span>
+			<div>
+				<img class="boxed" src="apple-touch-icon.png" width="32px" height="32px" />
+				<?php print $this->getString("android_banner_text"); ?>
+				<span class="banner-close close-banner"></span>
+			</div>
+			<div>
+				<span id="left-button" class="install-button close-banner">
+					<a href="#"><?php print $this->getString("dismiss"); ?></a>
+				</span>
+				<span id="right-button" class="install-button" >
+					<a href="musicco.apk"><?php print $this->getString("install"); ?></a>
+				</span>
+			</div>
 		</div>
 	<?php 
 	}
@@ -954,7 +965,7 @@ $(document).on("click", ".open", function() {
 	$(this).parent(".node").children('.node').toggle();
 });
 
-$(document).on("click", "#banner-close", function() {
+$(document).on("click", ".close-banner", function() {
 	$("#android-banner").toggle();
 });
 
