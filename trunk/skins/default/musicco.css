@@ -494,10 +494,26 @@ div.shown {
 	position: absolute;
 	bottom: 0px;
 	width: 100%;
-	background: -webkit-gradient(linear,left top,left bottom,from(#FFF2B7),to(#FFE793));
+	background: rgb(245, 206, 84);
 }
 
-#banner-close {
+.install-button {
+	height: 40px;
+	width: 50%;
+	border: 1px solid gray;
+	text-align: center;
+	margin: -1px;
+	background: #F8F2D4;
+}
+
+.install-button > a{
+	color: black;
+	vertical-align: -webkit-baseline-middle;
+	text-decoration: none;
+	line-height:40px;
+}	
+
+.banner-close {
 	color: black;
 	float: right;
 	width: 16px;
@@ -510,34 +526,12 @@ div.shown {
 	-webkit-transition: opacity .1s ease-in-out;
 }
 
-.install-button {
-	float:right;
-	-webkit-appearance: button;
-	border-left-style: outset;
-	border-left-width: 2px;
-	border-right-style: outset;
-	border-right-width: 2px;
-	border-top-style: outset;
-	border-top-width: 2px;
-	box-sizing: border-box;
-	color: black;
-	cursor: pointer;
-	font-family: Arial;
-	font-size: 13px;
-	font-weight: bold;
-	height: 22px;
-	margin-top: 12px;
-	margin-right: 5px;
-	padding-bottom: 1px;
-	padding-left: 6px;
-	padding-right: 6px;
-	padding-top: 1px;
-	text-align: center;
-	vertical-align: middle;
+#left-button {
+	float: left;
 }
 
-.install-button > a {
-	color: black;
+#right-button {
+	float: right;
 }
 
 .boxed {
