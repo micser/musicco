@@ -1825,7 +1825,7 @@ function querydb($query_root, $query_type) {
 
 function logMessage($log_message) {
 	if (Musicco::getConfig('debug_queries')) {
-		error_log(date('Y-m-d H:i:s')." [".AuthManager::getUserName()."] ".$log_message."\n", 3, dirname(__FILE__).'/'.Musicco::getConfig('log_file'));
+		error_log(date('Y-m-d H:i:s').": ".$log_message."\n", 3, dirname(__FILE__).'/'.Musicco::getConfig('log_file'));
 	}
 }
 function builddb() {
