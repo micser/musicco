@@ -3,7 +3,7 @@
 $_CONFIG = array();
 $_ERROR = "";
 $_CONFIG['domain'] = getDomain();
-
+date_default_timezone_set('CET');
 /* 
  * GENERAL SETTINGS
  */
@@ -1747,11 +1747,11 @@ function querydb($query_root, $query_type) {
 	}
 
 	$db = new PDO('sqlite:library.db');
-	$_START_QUERY = microtime(TRUE);
+	$_START_QUERY = microtime();
 	logMessage($query);
 	$result = $db->query($query);
-	logMessage("Queried DB in ".(microtime(TRUE) - $_START_QUERY));
-	$_START_DISPLAY = microtime(TRUE);
+	logMessage("Queried DB in ".number_format((microtime() - $_START_QUERY), 3));
+	$_START_DISPLAY = microtime();
 	foreach($result as $row) {
 		$number = '';
 		$title = '';
@@ -1808,7 +1808,7 @@ function querydb($query_root, $query_type) {
 
 		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "number" => $number, "extension" => $extension);
 	}
-	logMessage("Displayed Data in ".(microtime(TRUE) - $_START_DISPLAY));
+	logMessage("Displayed Data in ".number_format((microtime() - $_START_DISPLAY), 3));
 	if ($query_type=="browse") {
 		$list=(array_reverse($list)); 
 	}
@@ -1825,7 +1825,7 @@ function querydb($query_root, $query_type) {
 
 function logMessage($log_message) {
 	if (Musicco::getConfig('debug_queries')) {
-		error_log($log_message."\n", 3, dirname(__FILE__).'/'.Musicco::getConfig('log_file'));
+		error_log(date('Y-m-d H:i:s')." [".AuthManager::getUserName()."] ".$log_message."\n", 3, dirname(__FILE__).'/'.Musicco::getConfig('log_file'));
 	}
 }
 function builddb() {
@@ -1849,11 +1849,11 @@ function builddb() {
     $db->exec("INSERT INTO type (id, name) VALUES (1, folder);");    
     $db->exec("INSERT INTO type (id, name) VALUES (2, song);");    
     
-    $_START_SCAN = microtime(TRUE);
+    $_START_SCAN = microtime();
     $library = build_library($folder, ".mp3");
-	logMessage("Scanned drive in ".(microtime(TRUE) - $_START_SCAN));
+	logMessage("Scanned drive in ".number_format((microtime() - $_START_SCAN), 3));
 	
-	$_START_INSERT = microtime(TRUE);
+	$_START_INSERT = microtime();
 	$covers=0;
 	$items=0;
 	foreach ($library as $item) {
@@ -1869,9 +1869,10 @@ function builddb() {
 			$items+=1;
 		}
 	}
-	logMessage("Built library in ".printf("%.1f s",(microtime(TRUE) - $_START_INSERT)));
     // close the database connection
     $db = NULL;
+    printf("%.1s s",(microtime() - $_START_INSERT));
+	logMessage("Built library in ".number_format((microtime() - $_START_INSERT), 3));
   }
 	catch(PDOException $e)
 	{
