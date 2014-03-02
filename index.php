@@ -1025,6 +1025,7 @@ function treelink(root, fileUrl, level, type) {
   var myLevel = parentLevel+1; 
   var image="skins/<?php print Musicco::getConfig('skin'); ?>/folder.png";
   var closed="closed";
+  var isNew="old";
   var slash="/";
   link+="<span class=\"node\" level=\""+myLevel+"\" item=\""+decodeURIComponent(root+fileUrl).toLowerCase()+"\">";
   if (parentLevel==0) {
@@ -1044,10 +1045,13 @@ function treelink(root, fileUrl, level, type) {
   	closed="";
   	slash="";
    }
+   if (fileUrl.indexOf("<?php print Musicco::getConfig('new_marker'); ?>") != -1) {
+   	isNew = "new";
+   }
   link+="<a href=\"javascript:;\" class=\"queue\" parent=\""+root+"\" item=\""+fileUrl+slash+"\" type=\""+type+"\"><img src=\"skins/<?php print Musicco::getConfig('skin'); ?>/add.png\" class=\"browserimg\" /></a>";
   link+="<img alt=\"dir\" src=\""+image+"\" class=\"browserimg\" /> ";
-  link+="<a href=\"javascript:;\" class=\"item "+closed+"\" level=\""+myLevel+"\" parent=\""+root+"\" item=\""+fileUrl+slash+"\"\>";
-  link+=decodeURIComponent(fileUrl);
+  link+="<a href=\"javascript:;\" class=\"item "+closed+" "+isNew+"\" level=\""+myLevel+"\" parent=\""+root+"\" item=\""+fileUrl+slash+"\"\>";
+  link+=decodeURIComponent(fileUrl.replace(/<?php print Musicco::getConfig('new_marker'); ?>/g, ""));
   link+="</a> ";
   if (("<?php print AuthManager::isAdmin(); ?>" =="1") && (type==2)) {
   	link+="<a href=\""+root+fileUrl+"\" target=\"_blank\" class=\"download\">[&#8681;]</a>";
