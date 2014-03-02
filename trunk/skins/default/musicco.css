@@ -29,7 +29,7 @@ sup,
 	font-size: .8em;
 }
 
-.searchResult {
+.searchResult, .new {
 	color: #FFB90F;
 }
 
