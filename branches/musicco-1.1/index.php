@@ -14,8 +14,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "1.1";
-$_CONFIG['appVersion'] = "1.1";
+// Default: $_CONFIG['appVersion'] = "1.1.1-SNAPSHOT";
+$_CONFIG['appVersion'] = "1.1.1-SNAPSHOT";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
@@ -1995,6 +1995,7 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>Release History</span>";
+   	$aboutString.="<span class='about'>v1.1.1: ...</span>";
    	$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
