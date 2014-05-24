@@ -1711,6 +1711,10 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		logMessage("User requested library rebuild");
 		builddb();
 		exit;
+	} elseif (isset($_GET['about'])) {
+		logMessage("Android client requested about");
+		return  print_r(getAboutForAndroid());
+		exit;
 	} else {
 		$musicco = new Musicco();
 		$musicco->init();
@@ -1950,15 +1954,30 @@ function builddb() {
    	return $helpString;
    }
    
+    function getAboutForAndroid() {
+    	$aboutStringForAndroid = "<html>";
+    	$aboutStringForAndroid .= "<head>";
+    	$aboutStringForAndroid .= css();
+    	$aboutStringForAndroid .= "</head>";
+    	$aboutStringForAndroid .= "<body>";
+    	$aboutStringForAndroid .= getAbout();
+    	$aboutStringForAndroid .= "</body>";
+    	$aboutStringForAndroid .= "</html>";
+    	return $aboutStringForAndroid;
+    }
+    
     function getAbout() {
    	$aboutString="<div id='aboutBox'>";
    	$aboutString.="<span class='close help'>x</span>";
    	$aboutString.="<span class='about bold'><a target='_blank' href='//sf.net/projects/musicco/'><img src='apple-touch-icon.png'/></a></span>";
    	$aboutString.="<span class='about bold'><a target='_blank' href='//sf.net/projects/musicco/'>musicco</a></span>";
    	$aboutString.="<span class='about bold'>A web based player for your music collection</span>";
+   	$aboutString.="<span class='about bold'>and its android companion.</span>";
+   	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>musicco is a light-weight, web-based streaming music player for your local library.</span>";
+   	$aboutString.="<span class='about'>it's also got a handy built-in android companion</span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>It runs easily on a NAS like a dns-323.</span>";
    	$aboutString.="<span class='about'><br/></span>";
@@ -1969,13 +1988,13 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>musicco is inspired by</span>";
    	$aboutString.="<span class='about'><a target='_blank' href='//github.com/henrik242/musicbrowser#readme'>musicbrowser</a></span>";
-   	$aboutString.="<span class='about'>♪</span>";
+   	$aboutString.="<span class='about'>&#9834;</span>";
    	$aboutString.="<span class='about'><a target='_blank' href='//encode-explorer.siineiolekala.net/'>Encode Explorer</a></span>";
-   	$aboutString.="<span class='about'>♪</span>";
+   	$aboutString.="<span class='about'>&#9834;</span>";
    	$aboutString.="<span class='about'><a target='_blank' href='//coverart.katastrophos.net'>katastrophos.net's <br/> cover art downloader</a></span>";
-   	$aboutString.="<span class='about'>♪</span>";
+   	$aboutString.="<span class='about'>&#9834;</span>";
    	$aboutString.="<span class='about'><a target='_blank' href='//www.doublejdesign.co.uk'>Double-J Design's <br/> super mono icons</a></span>";
-   	$aboutString.="<span class='about'>♪</span>";
+   	$aboutString.="<span class='about'>&#9834;</span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>musicco scans your music folder and builds a database of your music collection,</span>";
@@ -1995,7 +2014,7 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>Release History</span>";
-   	$aboutString.="<span class='about'>v1.2: ...</span>";
+   	$aboutString.="<span class='about'>v1.2: Android client stability improvements</span>";
    	$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
