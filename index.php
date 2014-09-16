@@ -1066,6 +1066,7 @@ $(document).on("click", ".infoPanelLink", function() {
 
 $(document).on("click", ".queue", function() {
   showLoadingIcon();
+  var playAfter = (musiccoPlaylist.playlist.length < 1);
   var item = $(this).attr("item");
   var parent = $(this).attr("parent");
   var type = $(this).attr("type");
@@ -1084,7 +1085,7 @@ $(document).on("click", ".queue", function() {
           poster: files[i].cover,
           number: files[i].number
         });
-	musiccoPlaylist.play();
+	if (playAfter) musiccoPlaylist.play();
       });
   hideLoadingIcon(); }, "json");
 });
