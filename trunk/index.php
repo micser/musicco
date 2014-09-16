@@ -722,6 +722,8 @@ function toggleBrowser() {
 
 function toggleSearch() {
   updateSelection('#search-toggle', '#searchPanel');
+     $('#searchText').select();
+     $('#searchText').focus();
 }
 
 function toggleHelp() {
