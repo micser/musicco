@@ -1234,15 +1234,31 @@ $("#musiccoplayer").on($.jPlayer.event.play, function(event) {
 	scrollToCurrentSong();
 });
 
+function notificationSupported() {
+	if ('Notification' in window) {
+		return true;
+	}
+	return false;
+}
+
+function notificationAllowed() {
+	if (notificationSupported() && Notification.permission === 'granted') {
+		return true;
+	}
+	return false;
+}
+
 function promptNotification() {
-  if ((window.webkitNotifications) && (!window.webkitNotifications.checkPermission() == 0)) {
-  	window.webkitNotifications.requestPermission(showNotification);
+//console.log("notificationSupported: " + notificationSupported());
+//console.log("notificationAllowed: " + notificationAllowed());
+
+  if ((notificationSupported()) && (notificationAllowed())) {
+  	window.Notification.requestPermission(showNotification);
   }
  }
 
 function showNotification() {
-  if ((window.webkitNotifications)  && (window.webkitNotifications.checkPermission() == 0)) { 
-  	  // 0 is PERMISSION_ALLOWED
+  if ((notificationSupported())  && (notificationAllowed())) { 
       notif = new Notification(
                     nowPlaying("title") + " - " + nowPlaying("artist"),
                     {
