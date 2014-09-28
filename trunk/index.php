@@ -1252,7 +1252,7 @@ function promptNotification() {
 //console.log("notificationSupported: " + notificationSupported());
 //console.log("notificationAllowed: " + notificationAllowed());
 
-  if ((notificationSupported()) && (notificationAllowed())) {
+  if ((notificationSupported()) && (!notificationAllowed())) {
   	window.Notification.requestPermission(showNotification);
   }
  }
