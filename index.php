@@ -915,10 +915,14 @@ $("#searchForm").submit(function(event) {
 		}
 		$("#searchResults").html(resultString);
 		$.each(hits, function (i, elem) {
-		  var slash="/";
 		  var parent = hits[i].parent;
 		  var name = hits[i].name;
 		  var type = hits[i].type;
+		  var slash="/";
+		  var optionalSlash="";
+		  if (type == 1) {
+		  	optionalSlash = slash;
+		  }
 		  var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
 		  var parentItem = parent.substr(levelUp.length);
 		  var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
@@ -927,7 +931,7 @@ $("#searchForm").submit(function(event) {
 			parentItemName="home";
 		  }
 			hitLink+="<a href=\"javascript:;\" class=\"queue searchResultParent\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a> &gt; ";
-		  hitLink+="<a href=\"javascript:;\" class=\"queue searchResult\" parent=\""+parent+"\" item=\""+name+slash+"\" type=\""+type+"\">"+ name +"</a></div>";
+		  hitLink+="<a href=\"javascript:;\" class=\"queue searchResult\" parent=\""+parent+"\" item=\""+name+optionalSlash+"\" type=\""+type+"\">"+ name +"</a></div>";
 		  $("#searchResults").before(hitLink);
 		});
 	  hideLoadingIcon();}, "json");
