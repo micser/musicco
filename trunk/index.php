@@ -1737,8 +1737,9 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 	} elseif (isset($_GET['fetch'])) {
 		$url =$_GET['url']; 
 		header('Content-type: application/xml');
+		header('Charset: UTF-8');
 		logMessage("Fetching url: ".$url);
-		return print_r(file_get_contents($url));
+		return print_r(file_get_contents_utf8($url));
 		exit;
 	} elseif (isset($_POST['querydb'])) {
 		$query_root = $_POST['root'];
@@ -1759,6 +1760,12 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		$musicco->init();
 		AuthManager::init();
 		$musicco->run();
+}
+
+function file_get_contents_utf8($fn) {
+     $content = file_get_contents($fn);
+      return mb_convert_encoding($content, 'UTF-8',
+          mb_detect_encoding($content, 'UTF-8, GB2312, ISO-8859-1', true));
 }
 
 //
