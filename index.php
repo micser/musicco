@@ -1159,27 +1159,40 @@ function updateInfoPanel(url) {
 function updateLyricsPanel(artist, song) {
 	artist=nowPlaying("artist");
 	song=nowPlaying("title");
-	$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
-	var url="?fetch&url="+ encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
+	var LRCurl="?fetch&url="+ nowPlaying('mp3').replace(/.mp3/, ".lrc");
+	var APIurl="?fetch&url="+ encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
+
 	$.ajax({
 		type: "GET",
-		url: url,
-		dataType: "xml",
-		success: function(xml) {
-			$(xml).find('GetLyricResult').each(function(){
-      var lyricArtist=$(this).find('LyricArtist').text();
-      var lyricSong=$(this).find('LyricSong').text();
-      var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
-      var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
-      var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>";
-			//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.      
-      var lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
-      if (lyrics=="") {
-        $('#lyricsPanel').html("<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist);
-      } else {
-        $('#lyricsPanel').html(lyricInfo+lyrics);
-      }
-			});
+		url: LRCurl,
+		dataType: "text",
+		success: function(text) {
+			var lyrics=text.replace(/\[.*\]/g, "<br/>");
+			$('#lyricsPanel').html(lyrics);
+			if (lyrics.length == 0) {
+				$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
+				$.ajax({
+					type: "GET",
+					url: APIurl,
+					dataType: "xml",
+					success: function(xml) {
+						$(xml).find('GetLyricResult').each(function(){
+				  var lyricArtist=$(this).find('LyricArtist').text();
+				  var lyricSong=$(this).find('LyricSong').text();
+				  var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
+				  var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
+				  var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>";
+						//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.      
+				  var lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
+				  if (lyrics=="") {
+					$('#lyricsPanel').html("<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist);
+				  } else {
+					$('#lyricsPanel').html(lyricInfo+lyrics);
+				  }
+						});
+					}
+				});
+			}
 		}
 	});
 }
@@ -2053,7 +2066,7 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>Release History</span>";
-   	$aboutString.="<span class='about'>v1.2: Android client stability improvements</span>";
+   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing.</span>";
    	$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
