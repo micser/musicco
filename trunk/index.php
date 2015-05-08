@@ -163,9 +163,11 @@ $_TRANSLATIONS["en"] = array(
 	"updateCoverArt" => "update album art",
 	"noAlbum" => "album not recognised",
 	"fetchingAlbumArt" => "fetching album art...",
-	"fetchedAlbumArt" => "cover art up to date",
-	"noAlbumArt" => "no album art found"
-	
+	"fetchedAlbumArt" => "cover art fetched",
+	"noAlbumArt" => "no album art found", 
+	"clickToUploadYourOwn" => ", click up upload your own", 
+	"promptCoverURL" => "Album cover URL", 
+	"defaultCoverURL" => "http://"
 );
 
 
@@ -203,7 +205,10 @@ $_TRANSLATIONS["fr"] = array(
 	"noAlbum" => "album non reconnu",
 	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
 	"fetchedAlbumArt" => "couverture mise à jour",
-	"noAlbumArt" => "Pas de couverture trouvée"
+	"noAlbumArt" => "Pas de couverture trouvée",
+	"clickToUploadYourOwn" => ", cliquez pour ajouter la votre", 
+	"promptCoverURL" => "Adresse de la couverture", 
+	"defaultCoverURL" => "http://"
 );
 
 
@@ -864,7 +869,8 @@ function fetchCover() {
 }
 
 function setCoverInfoStatus(statusText) {
-	fetchStatus = statusText;
+	$('#updateCoverArt').addClass('canUpload');
+	fetchStatus = statusText + "<?php print $this->getString("clickToUploadYourOwn"); ?>";
 	$("#updateCoverArt").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
 	$("#updateCoverArt").mouseleave();
 	n();	
@@ -886,8 +892,20 @@ $('#big-cover').hover(
 $('#updateCoverArt').click(function () {
   if ($(this).hasClass('canFetch')) {
   	fetchCover();
-  }
+  } else if ($(this).hasClass('canUpload')) {
+  	uploadCover();
+  } 
 });
+
+function uploadCover() {
+	var isValidURL =/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
+	var isValidImage =/^(.)*\.(png|gif|bmp|jpg|jpeg)$/i;
+	var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>");
+	if ((isValidURL.test(userURL)) && (isValidImage.test(userURL))) {
+		printCover(userURL);
+		saveCover(userURL, nowPlaying("path"));
+	}
+}
 
 $('#includeOlAdlbums').click(function () {
   if ($(this).is(':checked')) {
