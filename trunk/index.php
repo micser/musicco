@@ -850,7 +850,7 @@ function fetchCover() {
        			 type: "GET",
         		 url: "?fetch&url="+coverUrl,
        			 complete: function(data){
-						if (data.responseText.indexOf(releaseId) < 0) {
+						if (data.responseText.indexOf(releaseId) > 0) {
 							printCover(coverUrl);
 							saveCover(coverUrl, nowPlaying("path"));
 							setCoverInfoStatus("<?php print $this->getString("fetchedAlbumArt"); ?>");
