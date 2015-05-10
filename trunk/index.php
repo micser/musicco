@@ -1524,6 +1524,7 @@ $(document).on("click", ".remove-album", function() {
 });
 
 $(document).on("click", ".move", function() {
+	var isPlaying = $('#big-jp-pause').is(':visible');
 	var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3;
 	var from = parseInt($(this).attr('from'));
 	var to = parseInt($(this).attr('to'));
@@ -1541,7 +1542,7 @@ $(document).on("click", ".move", function() {
 	musiccoPlaylist.setPlaylist(temp);
 	var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current);
 	musiccoPlaylist.select(newCurrentIndex);
-	musiccoPlaylist.option("autoPlay", true);
+	musiccoPlaylist.option("autoPlay", isPlaying);
 	setTimeout(function() {
 		formatPlaylist();
    }, 1000);
