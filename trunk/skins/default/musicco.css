@@ -545,3 +545,9 @@ div.shown {
 	margin-bottom: 5px;
 	margin-top: 5px;
 }
+
+.move-up,
+.move-down,
+.share{
+	font-size: 16px;
+}

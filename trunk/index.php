@@ -1117,37 +1117,82 @@ $(document).on("click", ".queue", function() {
   hideLoadingIcon(); }, "json");
 });
 
+function isFirstAlbumTrack(index) {
+	if (index == 0) {
+		return true;
+	} else if (musiccoPlaylist.playlist[index].album != musiccoPlaylist.playlist[(index - 1)].album) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 function formatPlaylist() {
 	$('.itemHeader').remove();
 	$('.jp-playlist-item-free').html("[&#8681;]");
 	$('.jp-playlist-item-free').attr("target", "_blank");
 	$('.jp-playlist-item-free').removeClass('jp-playlist-item-free').addClass('download');
 	$('#playlistPanel > ul > li >div').each(function(){
-		var index = $(this).parent('li').index();
-		var previousAlbum = "";
-		if (index > 0) {
-			previousAlbum = musiccoPlaylist.playlist[(index -1)].album;
-		} 
-		var thisAlbum = musiccoPlaylist.playlist[index].album;
-		if (thisAlbum != previousAlbum) {
+		var index = $(this).parent('li').index();	
+		if (isFirstAlbumTrack(index)) {
+			var thisAlbum = musiccoPlaylist.playlist[index].album;
+			var albumLength = (musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(thisAlbum) + 1) - index;
+			var firstAlbum=musiccoPlaylist.playlist[0].album;
+			var lastAlbum=musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album;
+			
+			var moveUp = "";
+			if (thisAlbum != firstAlbum) {
+				var previousAlbumIndex = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum) - 1
+				var previousAlbum = musiccoPlaylist.playlist[previousAlbumIndex].album;
+				var to = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(previousAlbum);
+				moveUp = "<a href=\"javascript:;\" class=\"move\""
+							+ "from=\"" + index + "\""
+							+ "to=\"" + to + "\""
+							+ "length=\"" + albumLength + "\""
+							+ ">&nbsp;&#8679;</a>";
+			}
+
+			var moveDown="";
+			if (thisAlbum != lastAlbum) {
+				var nextAlbumIndex = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(thisAlbum) + 1;
+				var nextAlbum = musiccoPlaylist.playlist[nextAlbumIndex].album;
+				var to = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(nextAlbum) +1;
+				moveDown = "<a href=\"javascript:;\" class=\"move\""
+							+ "from=\"" + index + "\""
+							+ "to=\"" + to + "\""
+							+ "length=\"" + albumLength + "\""
+							+ ">&nbsp;&#8681;</a>";		
+			}
 			var year = musiccoPlaylist.playlist[index].year
 			if (year != "") {
 				year = ", " + year;
 			}
 			var artist = musiccoPlaylist.playlist[index].artist;
 			var cover = musiccoPlaylist.playlist[index].poster;
-			var itemHearder = "<span class=\"itemHeader\">"
-							+ "<table class=\"itemHeaderDetails\">"
-							+ "<td><img width=\"100\" height=\"100\" src=\"" + cover + "\"/></td>"
-							+ "<td class=\"itemHeaderDetails\">"
+			var path = musiccoPlaylist.playlist[index].path;
+			var itemHeader = 
+			"<span class=\"itemHeader\">"
+				+ "<table class=\"itemHeaderDetails\">"
+					+ "<tr>"
+						+ "<td rowspan=\"2\"><img width=\"100\" height=\"100\" src=\"" + cover + "\"/></td>"
+						+ "<td class=\"itemHeaderRemove\">"
+							+ "<a href=\"javascript:;\" class=\"remove-album\" album=\"" + thisAlbum + "\">&#10008;</a>"
+							+ "<br/>"
+							+ moveUp
+							+ moveDown
+							//+ "<a href=\"javascript:;\" class=\"share\" path=\"" + path + "\">&nbsp;&#9732;</a>"
+						+ "</td>"
+					+ "</tr>"
+					+ "<tr>"
+						+ "<td class=\"itemHeaderDetails\">"
 							+ "<span class=\"itemHeaderAlbum\">" + thisAlbum + "</span><br/>"
 							+ "<span class=\"itemHeaderArtist\">" + artist + "</span>"
 							+ "<span class=\"itemHeaderYear\">" +  year + "</span>"
-							+ "<td class=\"itemHeaderRemove\">"
-							+ "<a href=\"javascript:;\" class=\"remove-album\" album=\"" + thisAlbum + "\">×</a>"
-							+ "</td></table>"
-							+ "</span>";
-			$(this).before(itemHearder);
+						+ "</td>"
+					+ "</tr>"
+				+ "</table>"
+			+ "</span>";
+			$(this).before(itemHeader);
 		}
 	});
 }
@@ -1478,6 +1523,35 @@ $(document).on("click", ".remove-album", function() {
                    }, 10);
 });
 
+$(document).on("click", ".move", function() {
+	var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3;
+	var from = parseInt($(this).attr('from'));
+	var to = parseInt($(this).attr('to'));
+	var length = parseInt($(this).attr('length'));
+	var temp = musiccoPlaylist.playlist.slice(0);
+	for (var i=0; i < length; i++) {
+		temp.splice((to + i), 0, musiccoPlaylist.playlist[(from + i)]);
+	}
+	if (to > from) {
+		temp.splice(from, length);
+	} else {
+		temp.splice(from + length, length); 
+	}
+	temp.join();
+	musiccoPlaylist.setPlaylist(temp);
+	var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current);
+	musiccoPlaylist.select(newCurrentIndex);
+	musiccoPlaylist.option("autoPlay", true);
+	setTimeout(function() {
+		formatPlaylist();
+   }, 1000);
+});
+
+$(document).on("click", ".share", function() {
+	alert("share " + $(this).attr('path'));
+});
+
+
 $('#big-jp-play').click(function() {
   $('.jp-play').trigger('click');
   promptNotification();
@@ -1609,7 +1683,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		<span id="filterForm">
 		<input id="includeOlAdlbums" type="checkbox" checked="true"/><?php print $this->getString("show_all"); ?>
 		<input type="text" id="filterText" class="nokeyboard" name="filterText" size="15" />
-		<sup id="filterButton">x</sup>
+		<sup id="filterButton">&#10006;</sup>
 		</span>
   </div>
   <br/>
@@ -2003,7 +2077,7 @@ function builddb() {
    // Finally, the contents of the help and about panels
    function getHelp() {
    	$helpString="<div id='helpBox'>";
-   	$helpString.="<span class='close help'>x</span>";
+   	$helpString.="<span class='close help'>&#10006;</span>";
    	$helpString.="<span class='help bold big'>Keyboard Shortcuts</span>";
    	$helpString.="<span class='help'><br/></span>";
    	$helpString.="<span class='help yellow bold'>Playback</span>";
@@ -2048,7 +2122,7 @@ function builddb() {
     
     function getAbout() {
    	$aboutString="<div id='aboutBox'>";
-   	$aboutString.="<span class='close help'>x</span>";
+   	$aboutString.="<span class='close help'>&#10006;</span>";
    	$aboutString.="<span class='about bold'><a target='_blank' href='//sf.net/projects/musicco/'><img src='apple-touch-icon.png'/></a></span>";
    	$aboutString.="<span class='about bold'><a target='_blank' href='//sf.net/projects/musicco/'>musicco</a></span>";
    	$aboutString.="<span class='about bold'>A web based player for your music collection</span>";
