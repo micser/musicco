@@ -546,8 +546,10 @@ div.shown {
 	margin-top: 5px;
 }
 
-.move-up,
-.move-down,
-.share{
-	font-size: 16px;
+.move {
+	font-size: 24px;
+}
+
+.share {
+	font-size: 22px;
 }
