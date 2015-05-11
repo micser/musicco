@@ -763,8 +763,16 @@ function updateSelection(toggle, panel) {
 
 
 function scrollToCurrentSong() {
-$('.my-playlist').scrollTop(
-    $('.jp-playlist-current').prev().offset().top - $('.my-playlist').offset().top - 100 + $('.my-playlist').scrollTop());
+	if (musiccoPlaylist.playlist.length != 0) {
+		$('.my-playlist').scrollTop($('.jp-playlist-current').prev().offset().top - $('.my-playlist').offset().top - 100 + $('.my-playlist').scrollTop());
+	}
+}
+
+function scrollToTrack(track) {
+	var item = $('.my-playlist').find('li').eq(track);
+	if (item.length){
+    	$('.my-playlist').scrollTop(item.offset().top - 50);
+	}
 }
 
 function  displayCover() {
@@ -1149,7 +1157,7 @@ function formatPlaylist() {
 							+ "from=\"" + index + "\""
 							+ "to=\"" + to + "\""
 							+ "length=\"" + albumLength + "\""
-							+ ">&nbsp;&#8679;</a>";
+							+ ">&nbsp;&blacktriangle;</a>";
 			}
 
 			var moveDown="";
@@ -1161,7 +1169,7 @@ function formatPlaylist() {
 							+ "from=\"" + index + "\""
 							+ "to=\"" + to + "\""
 							+ "length=\"" + albumLength + "\""
-							+ ">&nbsp;&#8681;</a>";		
+							+ ">&nbsp;&blacktriangledown;</a>";		
 			}
 			var year = musiccoPlaylist.playlist[index].year
 			if (year != "") {
@@ -1180,7 +1188,7 @@ function formatPlaylist() {
 							+ "<br/>"
 							+ moveUp
 							+ moveDown
-							//+ "<a href=\"javascript:;\" class=\"share\" path=\"" + path + "\">&nbsp;&#9732;</a>"
+							//+ "<a href=\"javascript:;\" class=\"share\" path=\"" + path + "\">&nbsp;&#9993;</a>"
 						+ "</td>"
 					+ "</tr>"
 					+ "<tr>"
@@ -1533,10 +1541,13 @@ $(document).on("click", ".move", function() {
 	for (var i=0; i < length; i++) {
 		temp.splice((to + i), 0, musiccoPlaylist.playlist[(from + i)]);
 	}
+	var offset = 0;
 	if (to > from) {
 		temp.splice(from, length);
+		offset = to - length;
 	} else {
 		temp.splice(from + length, length); 
+		offset = to;
 	}
 	temp.join();
 	musiccoPlaylist.setPlaylist(temp);
@@ -1545,6 +1556,7 @@ $(document).on("click", ".move", function() {
 	musiccoPlaylist.option("autoPlay", isPlaying);
 	setTimeout(function() {
 		formatPlaylist();
+		scrollToTrack(offset);
    }, 1000);
 });
 
@@ -2169,7 +2181,7 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>Release History</span>";
-   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player.</span>";
+   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist.</span>";
    	$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
