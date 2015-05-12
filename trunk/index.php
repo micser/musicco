@@ -2095,15 +2095,13 @@ function builddb() {
     $insert_cover = $db->prepare($sql_insert_cover, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 
 	//create the database
-    $db->exec("DELETE FROM item_tmp;");    
     $db->exec("DELETE FROM cover_tmp;");    
+    $db->exec("DELETE FROM item_tmp;");    
     $db->exec("DELETE FROM type;");    
-    $db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
-    $db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
-	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");    
     $db->exec("CREATE TABLE cover (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");    
     $db->exec("CREATE TABLE cover_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");    
-	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS cover_idx ON cover (parent);");    
+    $db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
+    $db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
     $db->exec("CREATE TABLE type (id INTEGER PRIMARY KEY, type TEXT);");    
     $db->exec("INSERT INTO type (id, type) VALUES (1, 'folder');");    
     $db->exec("INSERT INTO type (id, type) VALUES (2, 'song');");    
@@ -2130,13 +2128,18 @@ function builddb() {
 		}
 	}
 	// Update non-temp tables and reindex the DB
-	$db->exec("DELETE FROM item;");    
-    $db->exec("INSERT INTO item (name, type, parent) SELECT name, type, parent FROM item_tmp;");    
-    $db->exec("DELETE FROM cover;");    
-    $db->exec("INSERT INTO cover (file, parent) SELECT file, parent FROM cover_tmp;");    
-	$db->exec("REINDEX item_idx;");    
+    $db->exec("DELETE FROM cover;");
+    $db->exec("DELETE FROM item;");
+	$db->exec("DROP INDEX cover_idx;");    
+	$db->exec("DROP INDEX item_idx;");    
+    $db->exec("INSERT INTO cover (file, parent) SELECT file, parent FROM cover_tmp;");
+    $db->exec("INSERT INTO item (name, type, parent) SELECT name, type, parent FROM item_tmp;");
+	$db->exec("CREATE INDEX IF NOT EXISTS cover_idx ON cover (parent);");    
+	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");    
 	$db->exec("REINDEX cover_idx;"); 
-	   
+	$db->exec("REINDEX item_idx;");    
+
+
     // close the database connection
     $db = NULL;
     printf("%.1s s",(microtime() - $_START_INSERT));
