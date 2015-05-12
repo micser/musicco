@@ -312,15 +312,19 @@ display:inline;
 	overflow: hidden;
 }
 
-#updateCoverArt {
+#updateCoverArt,
+.dummy {
  display:block;
- background-color: #272727;
  color: #FFB90F;
  font-size: xx-small;
  opacity: 0.1;
  position: relative;
  float: right;
  top: -310px;
+}
+
+#updateCoverArt {
+ background-color: #272727;
 }
 
 #big-controls img {
@@ -489,7 +493,7 @@ div.shown {
 	color: #272727;
 }
 
-#android-banner {
+.banner {
 	display: none;
 	position: absolute;
 	bottom: 0px;

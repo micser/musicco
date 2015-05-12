@@ -167,7 +167,8 @@ $_TRANSLATIONS["en"] = array(
 	"noAlbumArt" => "no album art found", 
 	"clickToUploadYourOwn" => ", click up upload your own", 
 	"promptCoverURL" => "Album cover URL", 
-	"defaultCoverURL" => "http://"
+	"defaultCoverURL" => "http://",
+	"guestPlayLink" => "Playlist URL: "
 );
 
 
@@ -208,7 +209,8 @@ $_TRANSLATIONS["fr"] = array(
 	"noAlbumArt" => "Pas de couverture trouvée",
 	"clickToUploadYourOwn" => ", cliquez pour ajouter la votre", 
 	"promptCoverURL" => "Adresse de la couverture", 
-	"defaultCoverURL" => "http://"
+	"defaultCoverURL" => "http://",
+	"guestPlayLink" => "Adresse de la playlist : "
 );
 
 
@@ -257,29 +259,45 @@ class AuthManager
 		{
 			$_SESSION['musicco_user_name'] = null;
 			$_SESSION['musicco_user_pass'] = null;
-		}
-			
-		if(isset($_POST['user_pass']) && strlen($_POST['user_pass']) > 0)
-		{
-			if(AuthManager::isUser((isset($_POST['user_name'])?$_POST['user_name']:""), $_POST['user_pass']))
+		} elseif ((isset($_GET['guestPlay'])) && (isset($_GET['u']))) {
+			$_SESSION['musicco_user_name'] = $_GET['u'];
+			$_SESSION['musicco_guest_play'] = true;
+			logMessage("Guest Play requested for user ".AuthManager::getUserName());
+		} else {
+			$_SESSION['musicco_guest_play'] = null;
+			if(isset($_POST['user_pass']) && strlen($_POST['user_pass']) > 0)
 			{
-				$_SESSION['musicco_user_name'] = isset($_POST['user_name'])?$_POST['user_name']:"";
-				$_SESSION['musicco_user_pass'] = $_POST['user_pass'];
+				if(AuthManager::isUser((isset($_POST['user_name'])?$_POST['user_name']:""), $_POST['user_pass']))
+				{
+					$_SESSION['musicco_user_name'] = isset($_POST['user_name'])?$_POST['user_name']:"";
+					$_SESSION['musicco_user_pass'] = $_POST['user_pass'];
+				}
+				else
+					$musicco->setErrorString("wrong_pass");
 			}
-			else
-				$musicco->setErrorString("wrong_pass");
 		}
+	}
+	
+	public static function isGuestPlay() {
+		if (isset($_SESSION['musicco_guest_play'])) {
+			return $_SESSION['musicco_guest_play'];
+		}
+		return false;
 	}
 	
 	public static function isUser($userName, $userPass)
 	{
-		foreach(Musicco::getConfig("users") as $user)
-		{
-			if($user[1] == $userPass)
+		if (AuthManager::isGuestPlay()) {
+			return true;
+		} else {
+			foreach(Musicco::getConfig("users") as $user)
 			{
-				if(strlen($userName) == 0 || $userName == $user[0])
+				if($user[1] == $userPass)
 				{
-					return true;
+					if(strlen($userName) == 0 || $userName == $user[0])
+					{
+						return true;
+					}
 				}
 			}
 		}
@@ -288,7 +306,7 @@ class AuthManager
 	
 	public static function isLoginRequired()
 	{
-		if(Musicco::getConfig("require_login") == "false"){
+		if((Musicco::getConfig("require_login") == "false") || (AuthManager::isGuestPlay())){
 			return false;
 		}
 		return true;
@@ -336,7 +354,7 @@ class AuthManager
 	
 	public static function getUserName()
 	{
-		if(AuthManager::isUserLoggedIn() == true && isset($_SESSION['musicco_user_name']) && strlen($_SESSION['musicco_user_name']) > 0)
+		if ((AuthManager::isGuestPlay()) || (AuthManager::isUserLoggedIn() == true && isset($_SESSION['musicco_user_name']) && strlen($_SESSION['musicco_user_name']) > 0))
 			return $_SESSION['musicco_user_name'];
 		if(isset($_SERVER["REMOTE_USER"]) && strlen($_SERVER["REMOTE_USER"]) > 0)
 			return $_SERVER["REMOTE_USER"];
@@ -455,7 +473,7 @@ class Musicco
 	public function printAndroidPrompt()
 	{
 		?>
-		<div id="android-banner">
+		<div id="android-banner" class="banner">
 			<div>
 				<img class="boxed" src="apple-touch-icon.png" width="32px" height="32px" />
 				<?php print $this->getString("android_banner_text"); ?>
@@ -885,16 +903,17 @@ function setCoverInfoStatus(statusText) {
 	}).fadeTo("fast", 0.8).fadeTo("slow", 0.1);
 }
 
-$('#big-cover').hover(
-    function() { 
-      $('#updateCoverArt').text(fetchStatus); 
-      $('#updateCoverArt').fadeTo( "fast", 0.8 );
-      },
-    function() { 
-      $('#updateCoverArt').text("<?php print $this->getString("..."); ?>"); 
-      $('#updateCoverArt').fadeTo( "fast", 0.1 );
-      }
-);
+$('#big-cover').hover(function() {
+	if (!isGuestPlay()) { 
+		$('#updateCoverArt').text(fetchStatus); 
+		$('#updateCoverArt').fadeTo( "fast", 0.8 );
+	}
+},function() { 
+	if (!isGuestPlay()) {
+		$('#updateCoverArt').text("<?php print $this->getString("..."); ?>"); 
+		$('#updateCoverArt').fadeTo( "fast", 0.1 );
+	}
+});
 
 
 $('#updateCoverArt').click(function () {
@@ -1001,7 +1020,7 @@ $(document).on("click", ".open", function() {
 });
 
 $(document).on("click", ".close-banner", function() {
-	$("#android-banner").toggle();
+	$(this).parents(".banner").toggle();
 });
 
 $(document).on("click", "#reset_db", function() {
@@ -1184,11 +1203,11 @@ function formatPlaylist() {
 					+ "<tr>"
 						+ "<td rowspan=\"2\"><img width=\"100\" height=\"100\" src=\"" + cover + "\"/></td>"
 						+ "<td class=\"itemHeaderRemove\">"
-							+ "<a href=\"javascript:;\" class=\"remove-album\" album=\"" + thisAlbum + "\">&#10008;</a>"
+							+ "<a href=\"javascript:;\" class=\"guestPlay remove-album\" album=\"" + thisAlbum + "\">&#10008;</a>"
 							+ "<br/>"
 							+ moveUp
 							+ moveDown
-							//+ "<a href=\"javascript:;\" class=\"share\" path=\"" + path + "\">&nbsp;&#9993;</a>"
+							+ "<a href=\"javascript:;\" class=\"guestPlay share\" path=\"" + path + "\">&nbsp;&#x261b;</a>"
 						+ "</td>"
 					+ "</tr>"
 					+ "<tr>"
@@ -1203,6 +1222,10 @@ function formatPlaylist() {
 			$(this).before(itemHeader);
 		}
 	});
+	if (isGuestPlay()) { 
+		$('.guestPlay').hide();
+		$('.jp-playlist-item-remove').hide();
+	}
 }
 
 function wikiLink(page) {
@@ -1293,20 +1316,58 @@ function loadPlaylist() {
  	var user = "<?php echo AuthManager::getUserName(); ?>";
  	if (user!="") {
         $.post('?', {loadPlaylist: '', u: user}, function(response) {
-      musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
-      musiccoPlaylist.select(parseInt(response.current));
-      musiccoPlaylist.loop = response.loop;
-      musiccoPlaylist.shuffled = response.shuffled;
-  	  if (musiccoPlaylist.loop == "true") {
-  		$(toggleAndUpdate($('#big-repeat'), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
-  	  }
-      if (musiccoPlaylist.shuffled == "true") {
-  		$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
-      }
+ 		var needsBuilding = response.build;
+		  if (needsBuilding) {
+			  var root = response.path;
+			  $.post('?', {querydb: '', root: root, type: 'add1'}, function (results) {
+					  var files=results;
+					  $.each(files, function (i, elem) {
+						musiccoPlaylist.add({
+						  title: files[i].title,
+						  artist: files[i].artist,
+						  year: files[i].year,
+						  album: files[i].album,
+						  free: false,
+						  path: files[i].parent.replace(/\"/g,""),
+						  mp3:  encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
+						  extension: files[i].extension,
+						  poster: files[i].cover,
+						  number: files[i].number
+						});
+						musiccoPlaylist.play();
+					  });
+			}, "json");
+		  } else {
+			  musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
+			  musiccoPlaylist.select(parseInt(response.current));
+			  musiccoPlaylist.loop = response.loop;
+			  musiccoPlaylist.shuffled = response.shuffled;
+			  if (musiccoPlaylist.loop == "true") {
+				$(toggleAndUpdate($('#big-repeat'), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
+			  }
+			  if (musiccoPlaylist.shuffled == "true") {
+				$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
+			  }
+		  }
+		  hideLoadingIcon();
+		  if (isGuestPlay()) {
+			setTimeout(function() {
+		  		$('#playlist-toggle').trigger('click');
+   			}, 3000);
+		  }
     }, "json");	
   }
 }
 
+
+function saveGuestPlaylist(path) {
+	var user = event.timeStamp;
+	$.post('?', {saveGuestPlaylist: '', u: user, p: path}, function (response) {
+		var link = "<?php print Musicco::getConfig('domain'); ?>/<?php print Musicco::getConfig('appName'); ?>/?guestPlay&u=" + user;
+		$("#shared-link").html("<?php print Musicco::getString('guestPlayLink'); ?><a href=\"" + link + "\">" + link + "</a>");
+		$("#sharing-banner").show();
+ 	});	
+}
 
 $("#musiccoplayer").on($.jPlayer.event.play, function(event) { 
     $("#big-info").html(nowPlaying('big-info'));
@@ -1467,7 +1528,7 @@ function hotkey(keyCode) {
      //right arrow
      event.preventDefault();
      $('#big-jp-next').trigger('click');
-  } else if (keyCode==83){
+  } else if ((keyCode==83) && (!isGuestPlay())){
      //s
      $('#search-toggle').trigger('click');
      $('#searchText').select();
@@ -1484,33 +1545,37 @@ function hotkey(keyCode) {
      //l
      event.preventDefault();
      $('#track-lyrics').trigger('click');
-  } else if (keyCode==66){
+  } else if ((keyCode==66) && (!isGuestPlay())){
      //b
      toggleBrowser();
      event.preventDefault();
-  } else if (keyCode==191){
+  } else if ((keyCode==191) && (!isGuestPlay())){
      // /
      updateSelection('','');
      toggleBrowser();
      $('#filterText').select();
      $('#filterText').focus();
      event.preventDefault();
-  } else if (keyCode==74){
+  } else if ((keyCode==74) && (!isGuestPlay())){
     //j
     moveDown();
-  } else if (keyCode==75){
+  } else if ((keyCode==75) && (!isGuestPlay())){
     //k
     moveUp();
-  } else if (keyCode==79){
+  } else if ((keyCode==79) && (!isGuestPlay())){
     //o
     $(".current").click();
-  } else if (keyCode==65){
+  } else if ((keyCode==65) && (!isGuestPlay())){
     //a
     $(".current").parent("span").find(".queue").click();
   } else if (keyCode==27){
     //Esc
     updateSelection('','');
   }
+}
+
+function isGuestPlay() {
+	return ("<?php print AuthManager::isGuestPlay(); ?>");
 }
 
 $('#big-jp-previous').click(function() {
@@ -1561,7 +1626,7 @@ $(document).on("click", ".move", function() {
 });
 
 $(document).on("click", ".share", function() {
-	alert("share " + $(this).attr('path'));
+	saveGuestPlaylist($(this).attr('path'));
 });
 
 
@@ -1620,8 +1685,12 @@ $('#big-volume-up').click(function() {
 if (navigator.userAgent.match(/(android|sailfish)/i)) {
 	$("#android-banner").toggle();
 }
-initBrowser();
 
+if (isGuestPlay()) { 
+	$('.guestPlay').hide();
+} else {
+	initBrowser();
+}
 });
 //]]>                
 </script>
@@ -1654,7 +1723,7 @@ else
 	//print "<span id=\"untest\"><a href=\"javascript:;\">".$this->getString("mobile_version")."</a> | </span>";
   print "<span><img id=\"loadingIcon\" src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
   if (AuthManager::isAdmin()) {
-    print "<span id=\"reset_db\"><a href=\"javascript;\">".$this->getString("reset_db")."</a> | </span>";
+    print "<span id=\"reset_db\" class=\"guestPlay\"><a href=\"javascript;\">".$this->getString("reset_db")."</a> | </span>";
 	}
 if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 	print "<span id=\"logout\"><a href=\"?logout\">".$this->getString("log_out")."</a> | </span>";
@@ -1667,8 +1736,8 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 
 <!-- START: big toggles -->
 <div id="big-toggles" class="moveable">
-  <div id="browser-toggle" class="toggles hideable">&nbsp;</div>
-  <div id="search-toggle" class="toggles hideable">&nbsp;</div>
+  <div id="browser-toggle" class="guestPlay toggles hideable">&nbsp;</div>
+  <div id="search-toggle" class="guestPlay toggles hideable">&nbsp;</div>
   <div id="playlist-toggle" class="toggles hideable">&nbsp;</div>
   <div id="track-wiki" class="toggles hideable">&nbsp;</div>
   <div id="track-lyrics" class="toggles hideable">&nbsp;</div>
@@ -1679,7 +1748,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 <div id="panels">
   <div id="infoPanel" class="panel moveable"></div>
   <div id="lyricsPanel" class="panel moveable"></div>
-  <div id="searchPanel" class="panel moveable">
+  <div id="searchPanel" class="guestPlay panel moveable">
 		<form action="?" id="searchForm">
 		 <input id="searchText" type="text" class="nokeyboard" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
 		 <input id="findIt" type="submit" value="<?php print $this->getString("search_button"); ?>" />
@@ -1690,7 +1759,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
   <div id="helpPanel" class="panel moveable"><?php print getHelp(); ?></div>
   <div id="aboutPanel" class="panel moveable"><?php print getAbout(); ?></div>
     <!-- START: browser -->
-  <div id="browser" class="panel moveable">
+  <div id="browser" class="guestPlay panel moveable">
   <div class="table">
   <div id="filter">
 		<span id="filterForm">
@@ -1708,7 +1777,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 </div>
 <!-- END: panels -->
   <div id="big-cover" class="moveable"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/cover.png" class="cover" />
-  	<div id="updateCoverArt" ><?php print $this->getString("..."); ?></div>
+  	<div id="updateCoverArt" class="guestPlay"><?php print $this->getString("..."); ?></div><div class="dummy">&nbsp;</div>
   	<div id="big-volume-bar"><div id="volume-value"></div></div>
   </div>
   <div id="big-timer" class="moveable"></div>
@@ -1716,8 +1785,8 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
   <div id="big-info" class="moveable">&nbsp;</div>
 	<div id="playlist-controls">
   	<div id="big-mute" class="toggles jp-mute">&nbsp;</div>
-		<div id="clear-playlist" class="toggles">&nbsp;</div>
-		<div id="uncover" class="toggles">&nbsp;</div>
+		<div id="clear-playlist" class="guestPlay toggles">&nbsp;</div>
+		<div id="uncover" class="guestPlay toggles">&nbsp;</div>
 		<div id="big-shuffle" class="toggles touch-jp-shuffle">&nbsp;</div>
 		<div id="big-repeat" class="toggles touch-jp-repeat">&nbsp;</div>
 		<div id="big-volume-down" class="toggles">&nbsp;</div>
@@ -1787,6 +1856,23 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		</div>
 <!-- END: Player -->
 
+<!-- START: Sharing Banner -->
+
+		<div id="sharing-banner" class="banner">
+			<div>
+				<img class="boxed" src="apple-touch-icon.png" width="32px" height="32px" />
+				<span class="banner-close close-banner"></span>
+			</div>
+			<div>
+				<span id="shared-link">&nbsp;</span>
+			</div>
+			<div>
+				<span>&nbsp;</span>
+			</div>
+		</div>
+
+<!-- END: Sharing Banner -->
+
 <?php 
 	if(!AuthManager::isLoginRequired())
 	{
@@ -1820,6 +1906,13 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		$shuffled = $_POST['s'];
 		$save = "{\"current\": \"".$current."\" , \"loop\": \"".$loop."\" , \"shuffled\": \"".$shuffled."\" , \"playlist\": \"".$playlist."\"}";
 		logMessage("Saved playlist for ".$user);
+		return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
+		exit;
+	} elseif (isset($_POST['saveGuestPlaylist'])) {
+		$user = $_POST['u'];
+		$path = str_replace("\"", "\\\"", $_POST['p']);
+		$save = "{\"build\": true , \"path\": \"".$path."\"}";
+		logMessage("Saved guest playlist ".$user." for ".$path);
 		return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
 		exit;
 	} elseif (isset($_POST['getConfig'])) {
@@ -2102,18 +2195,18 @@ function builddb() {
    	$helpString.="<span class='help'>You can also use media keys on <br/>most multimedia keyboards</span>";
    	$helpString.="<span class='help'><br/></span>";
    	$helpString.="<span class='help yellow bold'>Main</span>";
-   	$helpString.="<span class='help'>b: show/hide browser</span>";
-   	$helpString.="<span class='help'>/: go to filter box in browser</span>";
-   	$helpString.="<span class='help'>s: show/hide search</span>";
+   	$helpString.="<span class='guestPlay help'>b: show/hide browser</span>";
+   	$helpString.="<span class='guestPlay help'>/: go to filter box in browser</span>";
+   	$helpString.="<span class='guestPlay help'>s: show/hide search</span>";
    	$helpString.="<span class='help'>p: show/hide playlist</span>";
    	$helpString.="<span class='help'>i: show/hide artist information</span>";
    	$helpString.="<span class='help'>l: show/hide lyrics</span>";
    	$helpString.="<span class='help'>Esc: hide all panels</span>";
    	$helpString.="<span class='help'><br/></span>";
-   	$helpString.="<span class='help yellow bold'>Browser</span>";
-   	$helpString.="<span class='help'>j/k: highlight previous/next item</span>";
-   	$helpString.="<span class='help'>o: open current selection</span>";
-   	$helpString.="<span class='help'>a: queue current selection</span>";
+   	$helpString.="<span class='guestPlay help yellow bold'>Browser</span>";
+   	$helpString.="<span class='guestPlay help'>j/k: highlight previous/next item</span>";
+   	$helpString.="<span class='guestPlay help'>o: open current selection</span>";
+   	$helpString.="<span class='guestPlay help'>a: queue current selection</span>";
    	$helpString.="<span class='help'><br/></span>";
    	
    	
@@ -2181,7 +2274,7 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>Release History</span>";
-   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist.</span>";
+   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users.</span>";
    	$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
