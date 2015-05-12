@@ -378,7 +378,7 @@ div.jp-type-playlist div.jp-playlist li:last-child {
 }
 div.jp-type-playlist div.jp-playlist li.jp-playlist-current {
 	color:#FFB90F;
-	list-style-type:square;
+	list-style-type:disc;
 	list-style-position:inside;
 	padding-left:7px;
 }
