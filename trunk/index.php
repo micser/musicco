@@ -168,7 +168,7 @@ $_TRANSLATIONS["en"] = array(
 	"clickToUploadYourOwn" => ", click up upload your own", 
 	"promptCoverURL" => "Album cover URL", 
 	"defaultCoverURL" => "http://",
-	"guestPlayLink" => "Playlist URL: "
+	"guestPlayLink" => "Link to playlist: "
 );
 
 
@@ -210,7 +210,7 @@ $_TRANSLATIONS["fr"] = array(
 	"clickToUploadYourOwn" => ", cliquez pour ajouter la votre", 
 	"promptCoverURL" => "Adresse de la couverture", 
 	"defaultCoverURL" => "http://",
-	"guestPlayLink" => "Adresse de la playlist : "
+	"guestPlayLink" => "Lien vers la playlist : "
 );
 
 
@@ -1197,6 +1197,7 @@ function formatPlaylist() {
 			var artist = musiccoPlaylist.playlist[index].artist;
 			var cover = musiccoPlaylist.playlist[index].poster;
 			var path = musiccoPlaylist.playlist[index].path;
+			var share = <?php print (AuthManager::isAdmin()?"\"<a href='javascript:;' class='guestPlay share' path=' + path + '>&nbsp;&#x261b;</a>\"":"\"\""); ?>;
 			var itemHeader = 
 			"<span class=\"itemHeader\">"
 				+ "<table class=\"itemHeaderDetails\">"
@@ -1207,7 +1208,7 @@ function formatPlaylist() {
 							+ "<br/>"
 							+ moveUp
 							+ moveDown
-							+ "<a href=\"javascript:;\" class=\"guestPlay share\" path=\"" + path + "\">&nbsp;&#x261b;</a>"
+							+ share
 						+ "</td>"
 					+ "</tr>"
 					+ "<tr>"
@@ -1364,8 +1365,8 @@ function saveGuestPlaylist(path) {
 	var user = event.timeStamp;
 	$.post('?', {saveGuestPlaylist: '', u: user, p: path}, function (response) {
 		var link = "<?php print Musicco::getConfig('domain'); ?>/<?php print Musicco::getConfig('appName'); ?>/?guestPlay&u=" + user;
-		$("#shared-link").html("<?php print Musicco::getString('guestPlayLink'); ?><a href=\"" + link + "\">" + link + "</a>");
 		$("#sharing-banner").show();
+		$("#shared-link").val(link).select().attr('size', link.length);
  	});	
 }
 
@@ -1860,11 +1861,10 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 
 		<div id="sharing-banner" class="banner">
 			<div>
-				<img class="boxed" src="apple-touch-icon.png" width="32px" height="32px" />
 				<span class="banner-close close-banner"></span>
-			</div>
-			<div>
-				<span id="shared-link">&nbsp;</span>
+				<img class="boxed" src="apple-touch-icon.png" width="32px" height="32px" />
+				<span class="shared-link"><?php print $this->getString("guestPlayLink"); ?></span>
+				<input type="text" value="" class="shared-link" id="shared-link" />
 			</div>
 			<div>
 				<span>&nbsp;</span>

@@ -557,3 +557,11 @@ div.shown {
 .share {
 	font-size: 22px;
 }
+
+.shared-link {
+	border: 0px;
+	font-family: Verdana;
+  	font-size: smaller;
+	background: rgb(245, 206, 84);
+	color: #000000;
+}
