@@ -2002,11 +2002,11 @@ function querydb($query_root, $query_type) {
 	}
 
 	$db = new PDO('sqlite:library.db');
-	$_START_QUERY = microtime();
+	$_START_QUERY = microtime(true);
 	logMessage($query);
 	$result = $db->query($query);
-	logMessage("Queried DB in ".number_format((microtime() - $_START_QUERY), 3));
-	$_START_DISPLAY = microtime();
+	logMessage("Queried DB in ".number_format((microtime(true) - $_START_QUERY), 3)." seconds");
+	$_START_DISPLAY = microtime(true);
 	foreach($result as $row) {
 		$number = '';
 		$title = '';
@@ -2063,7 +2063,7 @@ function querydb($query_root, $query_type) {
 
 		$list[]=array("name"=>$name,"parent"=>$parent,"type"=>$type, "cover"=>$cover, "album"=> $album, "artist"=> $artist, "title" => $title, "year"=> $year, "number" => $number, "extension" => $extension);
 	}
-	logMessage("Displayed Data in ".number_format((microtime() - $_START_DISPLAY), 3));
+	logMessage("Displayed Data in ".number_format((microtime(true) - $_START_DISPLAY), 3)." seconds");
 	if ($query_type=="browse") {
 		$list=(array_reverse($list)); 
 	}
@@ -2107,11 +2107,11 @@ function builddb() {
     $db->exec("INSERT INTO type (id, type) VALUES (2, 'song');");    
     $db->exec("INSERT INTO type (id, type) VALUES (120, 'version');");    
     
-    $_START_SCAN = microtime();
+    $_START_SCAN = microtime(true);
     $library = build_library($folder, ".mp3");
-	logMessage("Scanned drive in ".number_format((microtime() - $_START_SCAN), 3));
+	logMessage("Scanned drive in ".number_format((microtime(true) - $_START_SCAN), 3)." seconds");
 	
-	$_START_INSERT = microtime();
+	$_START_INSERT = microtime(true);
 	$covers=0;
 	$items=0;
 	foreach ($library as $item) {
@@ -2142,8 +2142,8 @@ function builddb() {
 
     // close the database connection
     $db = NULL;
-    printf("%.1s s",(microtime() - $_START_INSERT));
-	logMessage("Built library in ".number_format((microtime() - $_START_INSERT), 3));
+    printf("%.1s s",(microtime(true) - $_START_INSERT));
+	logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
   }
 	catch(PDOException $e)
 	{
