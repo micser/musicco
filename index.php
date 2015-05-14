@@ -1197,7 +1197,7 @@ function formatPlaylist() {
 			var artist = musiccoPlaylist.playlist[index].artist;
 			var cover = musiccoPlaylist.playlist[index].poster;
 			var path = musiccoPlaylist.playlist[index].path;
-			var share = <?php print (AuthManager::isAdmin()?"\"<a href='javascript:;' class='guestPlay share' path=' + path + '>&nbsp;&#x261b;</a>\"":"\"\""); ?>;
+			var share = <?php print (AuthManager::isAdmin()?"\"<a href='javascript:;' class='guestPlay share' path='replaceme'>&nbsp;&#x261b;</a>\"":""); ?>;
 			var itemHeader = 
 			"<span class=\"itemHeader\">"
 				+ "<table class=\"itemHeaderDetails\">"
@@ -1208,7 +1208,7 @@ function formatPlaylist() {
 							+ "<br/>"
 							+ moveUp
 							+ moveDown
-							+ share
+							+ share.replace(/replaceme/, path)
 						+ "</td>"
 					+ "</tr>"
 					+ "<tr>"
