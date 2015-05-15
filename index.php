@@ -836,7 +836,7 @@ function printCover(coverurl) {
 }
 
 function getBaseURL() {
-	return window.location.href.substr(0, window.location.href.indexOf("?"));
+	return window.location.href.substr(0, window.location.href.lastIndexOf("/") + 1);
 }
 
 function showLoadingIcon() {
