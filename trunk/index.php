@@ -2138,7 +2138,8 @@ function builddb() {
 	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");    
 	$db->exec("REINDEX cover_idx;"); 
 	$db->exec("REINDEX item_idx;");    
-
+    $db->exec("DELETE FROM cover_tmp;");    
+    $db->exec("DELETE FROM item_tmp;");
 
     // close the database connection
     $db = NULL;
