@@ -2,7 +2,6 @@
 // Initialising variables. Don't change these.
 $_CONFIG = array();
 $_ERROR = "";
-$_CONFIG['domain'] = getDomain();
 date_default_timezone_set('CET');
 /* 
  * GENERAL SETTINGS
@@ -212,20 +211,6 @@ $_TRANSLATIONS["fr"] = array(
 	"defaultCoverURL" => "http://",
 	"guestPlayLink" => "Lien vers la playlist : "
 );
-
-
-
-function getDomain() {
- $domain = 'http';
- if (isset($_SERVER["HTTPS"])) {$domain .= "s";}
- $domain .= "://";
- if ($_SERVER["SERVER_PORT"] != "80") {
-  $domain .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"];
- } else {
-  $domain .= $_SERVER["SERVER_NAME"];
- }
- return htmlspecialchars($domain);
-}
 
 function css() {
 ?>
@@ -497,7 +482,6 @@ class Musicco
 	function outputHtml()
 	{
 		global $_ERROR;
-	 $baseUrl = Musicco::getConfig('domain')."/".Musicco::getConfig('appName')."/";
 ?>
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $this->getConfig('lang'); ?>" lang="<?php print $this->getConfig('lang'); ?>">
@@ -851,6 +835,10 @@ function printCover(coverurl) {
 	});
 }
 
+function getBaseURL() {
+	return window.location.href.substr(0, window.location.href.indexOf("?"));
+}
+
 function showLoadingIcon() {
 	$("#loadingIcon").show();
 }
@@ -874,9 +862,9 @@ function fetchCover() {
 				setCoverInfoStatus("<?php print $this->getString("fetchingAlbumArt"); ?>");
 				$.ajax({
        			 type: "GET",
-        		 url: "?fetch&url="+coverUrl,
+        		 url: "?head&url="+coverUrl,
        			 complete: function(data){
-						if (data.responseText.indexOf(releaseId) > 0) {
+						if (data.responseText < 400) {
 							printCover(coverUrl);
 							saveCover(coverUrl, nowPlaying("path"));
 							setCoverInfoStatus("<?php print $this->getString("fetchedAlbumArt"); ?>");
@@ -1254,37 +1242,44 @@ function updateInfoPanel(url) {
 function updateLyricsPanel(artist, song) {
 	artist=nowPlaying("artist");
 	song=nowPlaying("title");
-	var LRCurl="?fetch&url="+ nowPlaying('mp3').replace(/.mp3/, ".lrc");
-	var APIurl="?fetch&url="+ encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
+	var LRCurl= getBaseURL() + nowPlaying('mp3').replace(/.mp3/, ".lrc");
+	var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
 
 	$.ajax({
 		type: "GET",
-		url: LRCurl,
+		url: "?head&url="+ LRCurl,
 		dataType: "text",
-		success: function(text) {
-			var lyrics=text.replace(/\[.*\]/g, "<br/>");
-			$('#lyricsPanel').html(lyrics);
-			if (lyrics.length == 0) {
+		complete: function(text) {
+			if (text.responseText < 400) {
+				$.ajax({
+					type: "GET",
+					url: "?fetch&url=" + LRCurl,
+					dataType: "text",
+					success: function(lyrics) {
+						$('#lyricsPanel').html(lyrics.replace(/\[.*\]/g, "<br/>"));
+					}
+				});
+			} else {
 				$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
 				$.ajax({
 					type: "GET",
-					url: APIurl,
+					url: "?fetch&url=" + APIurl,
 					dataType: "xml",
 					success: function(xml) {
-						$(xml).find('GetLyricResult').each(function(){
-				  var lyricArtist=$(this).find('LyricArtist').text();
-				  var lyricSong=$(this).find('LyricSong').text();
-				  var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
-				  var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
-				  var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>";
-						//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.      
-				  var lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
-				  if (lyrics=="") {
-					$('#lyricsPanel').html("<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist);
-				  } else {
-					$('#lyricsPanel').html(lyricInfo+lyrics);
-				  }
-						});
+					  var lyrics="";
+					  $(xml).find('GetLyricResult').each(function(){
+						  var lyricArtist=$(this).find('LyricArtist').text();
+						  var lyricSong=$(this).find('LyricSong').text();
+						  var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
+						  var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
+						  var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>";
+								//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.      
+						  lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
+						  $('#lyricsPanel').html(lyricInfo+lyrics);
+					  });
+					  if (lyrics=="") {
+						$('#lyricsPanel').html("<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist);
+					  }
 					}
 				});
 			}
@@ -1364,7 +1359,7 @@ function loadPlaylist() {
 function saveGuestPlaylist(path) {
 	var user = event.timeStamp;
 	$.post('?', {saveGuestPlaylist: '', u: user, p: path}, function (response) {
-		var link = "<?php print Musicco::getConfig('domain'); ?>/<?php print Musicco::getConfig('appName'); ?>/?guestPlay&u=" + user;
+		var link = getBaseURL() + "?guestPlay&u=" + user;
 		$("#sharing-banner").show();
 		$("#shared-link").val(link).select().attr('size', link.length);
  	});	
@@ -1724,7 +1719,7 @@ else
 	//print "<span id=\"untest\"><a href=\"javascript:;\">".$this->getString("mobile_version")."</a> | </span>";
   print "<span><img id=\"loadingIcon\" src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
   if (AuthManager::isAdmin()) {
-    print "<span id=\"reset_db\" class=\"guestPlay\"><a href=\"javascript;\">".$this->getString("reset_db")."</a> | </span>";
+    print "<span id=\"reset_db\" class=\"guestPlay\"><a href=\"javascript:;\">".$this->getString("reset_db")."</a> | </span>";
 	}
 if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 	print "<span id=\"logout\"><a href=\"?logout\">".$this->getString("log_out")."</a> | </span>";
@@ -1932,6 +1927,15 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		logMessage("Saving cover from ".$url." to ".$path);
 		return 	file_put_contents($path."cover.png", file_get_contents($url));
 		exit;
+	} elseif (isset($_GET['head'])) {
+		$url =$_GET['url']; 
+		header('Content-type: application/xml');
+		header('Charset: UTF-8');
+		logMessage("Heading url: ".$url);
+		stream_context_set_default(array('http' => array('method' => 'HEAD')));
+		$headers = get_headers($url, 1);
+		return print_r(substr($headers[0], 9, 3));
+		exit;
 	} elseif (isset($_GET['fetch'])) {
 		$url =$_GET['url']; 
 		header('Content-type: application/xml');
@@ -1961,12 +1965,8 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 }
 
 function file_get_contents_utf8($fn) {
-     $content = "";
-     if (file_exists($fn)) {
-     	$content = file_get_contents($fn);
-     }
-      return mb_convert_encoding($content, 'UTF-8',
-          mb_detect_encoding($content, 'UTF-8, GB2312, ISO-8859-1', true));
+     $content = file_get_contents($fn);
+      return mb_convert_encoding($content, 'UTF-8', mb_detect_encoding($content, 'UTF-8, GB2312, ISO-8859-1', true));
 }
 
 //
