@@ -31,7 +31,7 @@ div.jp-video {
 	font-family:Verdana, Arial, sans-serif;
 	line-height:1.6;
 	color: #666;
-	border-top:3px solid #E3E5BB;
+	border-top:3px solid #FFB90F;
 	background-color: #666;
 	position:relative;
 }
@@ -223,14 +223,14 @@ div.jp-video div.jp-progress {
 div.jp-seek-bar {
 	/*background: url("jplayer.musicco.png") 0 -276px repeat-x;*/
 	/*background: #7dbb46;*/
-	/*background: #272727;*/
+	/*background: #000000;*/
 	width:0px;
 	cursor: pointer;
 	border-radius: 10px;
 }
 div.jp-play-bar {
 	/*background: url("jplayer.musicco.png") 0 -291px repeat-x ;*/
-	background: #E3E5BB;
+	background: #fbb114;
 	width:0px;
 	border-radius: 10px;
 }
@@ -319,7 +319,7 @@ div.jp-current-time,
 div.jp-duration {
 	display:inline-block;
 	font-style:oblique;
-	color: #E3E5BB;
+	color: #FFB90F;
 	font-size: small;
 	width: 155px;
 }
@@ -377,20 +377,20 @@ div.jp-type-playlist div.jp-playlist li:last-child {
 	border-bottom:none;
 }
 div.jp-type-playlist div.jp-playlist li.jp-playlist-current {
-	color:#E3E5BB;
+	color:#FFB90F;
 	list-style-type:disc;
 	list-style-position:inside;
 	padding-left:7px;
 }
 div.jp-type-playlist div.jp-playlist a {
-	color: #A7A97F;
+	color: #999;
 	text-decoration: none;
 }
 div.jp-type-playlist div.jp-playlist a:hover {
-	color:#E3E5BB;
+	color:#FFB90F;
 }
 div.jp-type-playlist div.jp-playlist a.jp-playlist-current {
-	color:#E3E5BB;
+	color:#FFB90F;
 }
 
 div.jp-type-playlist div.jp-playlist a.jp-playlist-item-remove {
@@ -399,10 +399,10 @@ div.jp-type-playlist div.jp-playlist a.jp-playlist-item-remove {
 	text-align:right;
 	margin-right:10px;
 	font-weight:bold;
-	color:#E3E5BB;
+	color:#FFB90F;
 }
 div.jp-type-playlist div.jp-playlist a.jp-playlist-item-remove:hover {
-	color:#E3E5BB;
+	color:#FFB90F;
 }
 div.jp-type-playlist div.jp-playlist span.jp-free-media {
 	float:right;
@@ -411,15 +411,15 @@ div.jp-type-playlist div.jp-playlist span.jp-free-media {
 	margin-right:10px;
 }
 div.jp-type-playlist div.jp-playlist span.jp-free-media a{
-	color:#E3E5BB;
+	color:#FFB90F;
 }
 div.jp-type-playlist div.jp-playlist span.jp-free-media a:hover{
-	color:#E3E5BB;
+	color:#FFB90F;
 }
 
 span.jp-artist {
 	font-size:.8em;
-	color:#E3E5BB;
+	color:#FFB90F;
 }
 
 table.itemHeaderDetails {
@@ -438,7 +438,7 @@ td.itemHeaderRemove {
 
 span.itemHeaderAlbum {
 	font-size: larger;
-	color:#E3E5BB;
+	color:#FFB90F;
 }
 
 span.itemHeaderArtist, span.itemHeaderYear {
@@ -498,7 +498,7 @@ div.jp-jplayer {
 }
 
 div.jp-jplayer {
-	background-color: #272727;
+	background-color: #000000;
 }
 
 
@@ -610,7 +610,7 @@ a.jp-shuffle-off:hover {
 	padding:5px;
 	font-size:.8em;
 	background-color:#666;
-	border:2px solid #E3E5BB;
+	border:2px solid #FFB90F;
 	color:#000;
 	display:none;
 }
