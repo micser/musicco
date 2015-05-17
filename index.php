@@ -1705,10 +1705,10 @@ if(isset($_ERROR) && strlen($_ERROR) > 0)
 if(!AuthManager::isAccessAllowed())
 {
 	$this->printLoginBox();
-	$this->printAndroidPrompt();
 }
 else 
 {
+	$this->printAndroidPrompt();
 ?>
 <!-- START: big player -->
 <div id="big-player">
