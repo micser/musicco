@@ -492,7 +492,7 @@ class Musicco
 <!-- <meta charset="<?php print $this->getConfig('charset'); ?>" /> -->
 <link rel="icon" type="image/ico" href="favicon.ico">
 <link rel="apple-touch-icon" type="image/png" href="apple-touch-icon.png" />
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script type="text/javascript" src="lib/jquery.jplayer.min.js"></script>
 <script type="text/javascript" src="lib/jplayer.playlist.min.js"></script>
 <script type="text/javascript">
