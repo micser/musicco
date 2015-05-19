@@ -1,3 +1,8 @@
+/* 
+regular test: #A7A97F
+highlight text: #E3E5BB
+*/
+
 /* General styles */
 
 .close,
@@ -6,6 +11,7 @@ sup,
 .node,
 .toggles,
 #rootfolder, 
+#includeOlAdlbums,
 #includeOlAdlbums,
 #updateCoverArt, 
 #clear,
@@ -18,11 +24,11 @@ sup,
 }
 .current {
 	font-weight:bold;
-	color: #FFB90F;
+	color: #E3E5BB;
 }
 
 .infoPanelLink {
-	color:#F39366;
+	color: #A7A97F;
 }
 
 .hits {
@@ -30,7 +36,7 @@ sup,
 }
 
 .searchResult, .new {
-	color: #FFB90F;
+	color: #E3E5BB;
 }
 
 .searchResultParent {
@@ -55,11 +61,11 @@ sup,
 /* Handle */
 ::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background: rgba(255, 185, 15,0.9); 
+    background: #E3E5BB; 
     -webkit-box-shadow: inset 0 0 6px rgba(39, 39, 39,0.5); 
 }
 ::-webkit-scrollbar-thumb:window-inactive {
-	background: rgba(255, 185, 15,0.6); 
+	background: #A7A97F; 
 }
 
 body {
@@ -70,8 +76,9 @@ body {
 	overflow:hidden;
 }
 
+
 A {
-	color: #999999;
+	color: #A7A97F;
 	text-decoration: none;
 }
 
@@ -82,12 +89,12 @@ A:hover {
 input {
   border: 0px;
   background-color: #666;
-  color: #FFB90F;
+  color: #E3E5BB;
 }
 
 
 label {
-  color: #999999;
+  color: #A7A97F;
 }
 
 
@@ -96,11 +103,11 @@ label {
 }
 
 #filterForm, #loadtime, #logout {
-	color: #999999;
+	color: #A7A97F;
 }
 
 #filterButton {
-color: #FFB90F;
+color: #E3E5BB;
 }
 
 #filterForm {
@@ -130,7 +137,7 @@ color: #FFB90F;
 
 #helpBox {
   opacity: .8;
-  background: #000000;
+  background: #272727;
 }
 
 #aboutBox {
@@ -150,13 +157,13 @@ color: #FFB90F;
 }
 
 .close {
-  color: #FFB90F;
+  color: #E3E5BB;
   font-size: xx-small;
   text-align: right;
 }
 .about {
   background-color:#272727;
-  color: #999999;
+  color: #A7A97F;
   text-align:center;
   font-size: larger;
   display:block;
@@ -164,7 +171,7 @@ color: #FFB90F;
 
 #aboutBox span input, #aboutBox span a {
   background-color:#272727;
-  color: #FFB90F;
+  color: #E3E5BB;
   font-size: large;
 }
 
@@ -250,11 +257,11 @@ display:inline;
   min-width: 298px;
   width: 85%;
   height: 310px;
-  border:0px solid #FFB90F;
+  border:0px solid #E3E5BB;
   overflow-x:hidden;
   overflow-y:scroll;
   background: #272727;
-  color: #949494;
+  color: #A7A97F;
   margin: auto;
   padding-left:5px;
   padding-right:5px;
@@ -281,7 +288,7 @@ display:inline;
 #playlistPanel {
   height: 310px;
   position: relative;
-  top: 1184px;
+  top: 1186px;
   left: 500px;
   z-index: 1;
   margin: auto;
@@ -292,8 +299,8 @@ display:inline;
   width: 100%;
   height: 100%;
   overflow:auto;
-  background: #000000;
-  color: #999999;
+  background: #272727;
+  color: #A7A97F;
   text-align: center;
 }
 
@@ -315,7 +322,7 @@ display:inline;
 #updateCoverArt,
 .dummy {
  display:block;
- color: #FFB90F;
+ color: #E3E5BB;
  font-size: xx-small;
  opacity: 0.1;
  position: relative;
@@ -350,7 +357,7 @@ div.toggles {
   display:inline-block;
   width: 32px;
   height: 32px;
-  color: #FFB90F;
+  color: #E3E5BB;
 	font-size: x-small;
 }
 
@@ -405,8 +412,7 @@ div.shown {
   height: 310px;
   margin: 0px auto;
   vertical-align: middle;
-  border: 1px solid;
-  border-color: #272727;
+  border: 0px solid #E3E5BB;
   box-shadow: 0px 0px 164px #888;
 }
 
@@ -436,21 +442,24 @@ div.shown {
 #big-volume-bar {
   height: 150px;
   width: 10px;
-  border:1px solid;
-  background: #FFB90F;
+  background: #E3E5BB;
   position: relative;
   top: -160px;
   left: 290px;
   z-index: 2;
   border-radius: 10px;
   box-shadow: 2px 2px 1px #888;
+  border: 1px solid white;
+  border-top: none;  
 }
 
 #volume-value {
   width: 10px;
-  background:black;
+  background:#A7A97F;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  border: 1px solid white;
+  border-bottom: none;
 }
 
 #big-controls {
@@ -460,7 +469,7 @@ div.shown {
 #big-toggles {
   width: 310px;
   margin: 0px auto;
-	color:#FFB90F;
+	color:#E3E5BB;
 	font-size:medium; 
 }
 
@@ -485,7 +494,7 @@ div.shown {
 }
 
 .download {
-	color: #FFB90F;
+	color: #E3E5BB;
 	font-size:smaller;
 }
 
@@ -539,7 +548,7 @@ div.shown {
 }
 
 .boxed {
-	border: 1px solid black;
+	border: 1px solid #272727;
 	border-radius: 5px;
 	background-color: whitesmoke;
 	padding:2px;
@@ -563,5 +572,5 @@ div.shown {
 	font-family: Verdana;
   	font-size: smaller;
 	background: rgb(245, 206, 84);
-	color: #000000;
+	color: #272727;
 }
