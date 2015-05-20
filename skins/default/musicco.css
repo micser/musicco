@@ -254,10 +254,10 @@ display:inline;
 #searchPanel, #infoPanel, #lyricsPanel, #helpPanel, #aboutPanel, #playlistPanel, #browser {
   display:none;
   opacity: .95;
-  min-width: 298px;
+  min-width: 300px;
   width: 85%;
   height: 310px;
-  border:0px solid #E3E5BB;
+  border:0px solid #272727;
   overflow-x:hidden;
   overflow-y:scroll;
   background: #272727;
@@ -286,9 +286,9 @@ display:inline;
 }
 
 #playlistPanel {
-  height: 310px;
+  height: 310.5px;
   position: relative;
-  top: 1186px;
+  top: 1185.5px;
   left: 500px;
   z-index: 1;
   margin: auto;
@@ -358,50 +358,51 @@ div.toggles {
   width: 32px;
   height: 32px;
   color: #E3E5BB;
-	font-size: x-small;
+  font-size: x-small;
+  background-size: 32px;
 }
 
 div.toggles:hover,
 div.selected,
 div.shown {
-  background-position-y: -32px;  
+  background-position-y: -32px;
 }
 
 #clear-playlist {
-  background-image: url("clear32.png");
+  background-image: url("clear.png");
 }
 #uncover {
-  background-image: url("uncover32.png");
+  background-image: url("uncover.png");
 }
 #playlist-toggle {
-  background-image: url("playlist32.png");
+  background-image: url("playlist.png");
 }
 #browser-toggle {
-  background-image: url("browser32.png");
+  background-image: url("browser.png");
 }
 #search-toggle {
-  background-image: url("search32.png");
+  background-image: url("search.png");
 }
 #track-wiki {
-  background-image: url("info32.png");
+  background-image: url("info.png");
 }
 #track-lyrics {
-  background-image: url("lyrics32.png");
+  background-image: url("lyrics.png");
 }
 #big-shuffle {
-  background-image: url("shuffle32.png");
+  background-image: url("shuffle.png");
 }
 #big-repeat {
-  background-image: url("repeat32.png");
+  background-image: url("repeat.png");
 }
 #big-mute {
-  background-image: url("mute32.png");
+  background-image: url("mute.png");
 }
 #big-volume-down {
-  background-image: url("volume-down32.png");
+  background-image: url("volume-down.png");
 }
 #big-volume-up {
-  background-image: url("volume-up32.png");
+  background-image: url("volume-up.png");
 }
 
 #big-cover {
@@ -458,7 +459,6 @@ div.shown {
   background:#A7A97F;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  border: 1px solid white;
   border-bottom: none;
 }
 
