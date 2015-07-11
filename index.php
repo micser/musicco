@@ -1695,7 +1695,7 @@ $('#big-volume-up').click(function() {
 });
 
 if ((navigator.userAgent.match(/(android|sailfish)/i)) 
-   && !(navigator.userAgent.match(/(WPDesktop|IEMobile)/i))) {
+   && !(navigator.userAgent.match(/(WPDesktop|IEMobile|Edge|Windows Phone)/i))) {
 	$("#android-banner").toggle();
 }
 
