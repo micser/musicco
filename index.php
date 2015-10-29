@@ -50,6 +50,43 @@ $_CONFIG['musicRoot'] = "music";
 // Default: $_CONFIG['coverFileName'] = "folder";
 $_CONFIG['coverFileName'] = "folder";
 
+// Folders in your library that should not 
+// be interpreted as artist names.
+// The artist name will be searched for one level below
+// Useful if you organise your music by genre > artist > album
+// or want want to ignore an "audiobooks" folder (audiobooks > artist > album)
+// This is a regular expression, so keep the opening ^ and closing $/i
+// so it remains case insensitive and looks for entire folder names.
+// Separate folder names with a pipe (|)
+// Default: $_CONFIG['artistPattern'] = "/^radio shows|podcasts|audiobooks$/i";
+$_CONFIG['artistPattern'] = "/^radio shows|podcasts|audiobooks$/i";
+
+// Folders in your library that should not 
+// be interpreted as album names.
+// The album name will be searched for one level above
+// Useful if you have albums that span over 
+// serveral discs 
+// (Dark Night Of The Soul > cd1, Dark Night Of The Soul > cd2)
+// or sides
+// (Dark Side of the Moon > disc 1 > Side A, Dark Side of the Moon > disc 1 > Side B)
+// This is a regular expression, so keep the opening ^ and closing $/i
+// so it remains case insensitive and looks for entire folder names.
+// Separate folder names with a pipe (|)
+// Default: $_CONFIG['albumPattern'] = "/^disc\s|cd\s?\d*$/i";
+$_CONFIG['albumPattern'] = "/^disc\s|cd\s?\d*$/i";
+
+// How I will interpret the files I find to
+// deduct the track number (1), title (3) and extension (4)
+// depends on this regular expresssion:
+// Default: $_CONFIG['filenamePattern'] = "/^(\d+)(_|\s-\s)(.*)\.(mp3)$/i";
+$_CONFIG['filenamePattern'] = "/^(\d+)(_|\s-\s)(.*)\.(mp3)$/i";
+
+// If the album name contains the album year in some way,
+// you can tell me using this regular expression
+// depends on this regular expresssion.
+// The default finds 1999 for "Muse > [1999] Showbiz"
+// Default: $_CONFIG['yearPattern'] = "/^.*\/\[(\d\d\d\d)\]\s.*\/$/";
+$_CONFIG['yearPattern'] = "/^.*\/\[(\d\d\d\d)\]\s.*\/$/";
 
 // The number of random albums to add to your playlist
 // when clicking the "uncover!" button in the UI
@@ -1934,6 +1971,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
     			array_push($userList,'{\"login\": \"'.$accountDetails[0].'\"}');
 		}
   		$response = '{"require_login": "'.Musicco::getConfig('require_login').'", "musicRoot": "'.Musicco::getConfig('musicRoot').'", "skin": "'.Musicco::getConfig('skin').'", "new_marker": "'.Musicco::getConfig('new_marker').'", "users": "['.join(",",$userList).']"}';
+  		// TODO: send all my patterns here too?
   		logMessage("Android client requested config:");
   		logMessage($response);
   		return  print_r($response);
@@ -2046,13 +2084,13 @@ function querydb($query_root, $query_type) {
 		// compute artist, album, title and year
 		if (($query_type=="add1") || ($query_type=="add2")) {
 
-			$year_pattern = "/^.*\/\[(\d\d\d\d)\]\s.*\/$/";
+			$year_pattern = Musicco::getConfig('yearPattern');
 			if (preg_match($year_pattern, $parent, $year_matches)) {
 				$year = $year_matches[1];
 			}
 			
 			$exploded_parent = explode("/", $parent);
-			$album_pattern = "/^disc\s|cd\s?\d*$/i";
+			$album_pattern = Musicco::getConfig('albumPattern');
 			$album = $exploded_parent[sizeOf($exploded_parent) -2];
 			if (preg_match($album_pattern, $album)) {
     			$album = $exploded_parent[sizeOf($exploded_parent) -3];
@@ -2061,14 +2099,14 @@ function querydb($query_root, $query_type) {
 			
 			$i=1;
 			$artist = $exploded_parent[$i];
-			$artist_pattern = "/^!divers|soundtracks|Audiobooks|christmas|compilations|génériques|humour|inclassables|ringtones$/i";
+			$artist_pattern = Musicco::getConfig('artistPattern');
 			while(($i < sizeOf($exploded_parent)) && (preg_match($artist_pattern, $artist))) {
 				$i+=1;
 				$artist = $exploded_parent[$i];
 			}
 			$artist = str_replace(Musicco::getConfig('new_marker'), "", $artist);
 			
-			$filename_pattern = "/^(\d+)(_|\s-\s)(.*)\.(mp3)$/i";
+			$filename_pattern = Musicco::getConfig('filenamePattern');
 			if (preg_match($filename_pattern, $name, $filename_matches)) {
 				$number = $filename_matches[1];
 				$title = $filename_matches[3];
@@ -2297,7 +2335,7 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>Release History</span>";
-   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users. New default theme, use the classic skin to go back to the old style.</span>";
+   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users. New default theme, use the classic skin to go back to the old style. More pattern configuration options for more custom library tree structures.</span>";
    	$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
