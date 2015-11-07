@@ -1205,14 +1205,12 @@ function formatPlaylist() {
 		if (isFirstAlbumTrack(index)) {
 			var thisAlbum = musiccoPlaylist.playlist[index].album;
 			var albumLength = (musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(thisAlbum) + 1) - index;
-			var firstAlbum=musiccoPlaylist.playlist[0].album;
-			var lastAlbum=musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album;
-			
+			var firstAlbum = musiccoPlaylist.playlist[0].album;
+			var lastAlbum = musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album;
+
 			var moveUp = "";
 			if (thisAlbum != firstAlbum) {
-				var previousAlbumIndex = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum) - 1
-				var previousAlbum = musiccoPlaylist.playlist[previousAlbumIndex].album;
-				var to = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(previousAlbum);
+				var to = getPreviousAlbumIndex(thisAlbum);
 				moveUp = "<a href=\"javascript:;\" class=\"move\""
 							+ "from=\"" + index + "\""
 							+ "to=\"" + to + "\""
@@ -1222,9 +1220,7 @@ function formatPlaylist() {
 
 			var moveDown="";
 			if (thisAlbum != lastAlbum) {
-				var nextAlbumIndex = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(thisAlbum) + 1;
-				var nextAlbum = musiccoPlaylist.playlist[nextAlbumIndex].album;
-				var to = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(nextAlbum) +1;
+				var to = getNextAlbumLastIndex(thisAlbum);
 				moveDown = "<a href=\"javascript:;\" class=\"move\""
 							+ "from=\"" + index + "\""
 							+ "to=\"" + to + "\""
@@ -1553,73 +1549,150 @@ function scrollBrowserPanel() {
 	$("#browser").scrollTop($(".current").position().top - $("#filter").height());
 }
 
-function hotkey(keyCode) {
-  if(keyCode==223 || keyCode==179 || keyCode==178 || keyCode==32){
-    //grave
-    if($("#jquery_jplayer_2").data("jPlayer").status.paused) { 
-        $('#big-jp-play').trigger('click');
-      } else {
-        $('#big-jp-pause').trigger('click');
+function triggerPlayPause() {
+  if($("#jquery_jplayer_2").data("jPlayer").status.paused) { 
+    $('#big-jp-play').trigger('click');
+  } else {
+    $('#big-jp-pause').trigger('click');
+  }
+}
+
+function hotkey(e) {
+  //console.log(e.keyCode, e.shiftKey, e.ctrlKey);
+  switch (e.keyCode) {
+
+    case 32:
+    case 179:
+    case 178:
+      //space, media keys
+      triggerPlayPause();
+    break;
+    
+    case 223:
+      //grave
+      if (e.ctrlKey) {
+        triggerPlayPause();
       }
-  } else if (keyCode==38 || keyCode==175){
-     //up arrow
-     event.preventDefault();
-     ChangeVolume("+");
-  } else if (keyCode==40 || keyCode==174){
-		 //down arrow
-     event.preventDefault();
-     ChangeVolume("-");
-  } else if (keyCode==37 || keyCode==177){
-     //left arrow
-     event.preventDefault();
-     $('#big-jp-previous').trigger('click');
-  } else if (keyCode==39 || keyCode==176){
+    break;
+    
+    case 38:
+    case 175:
+      //up arrow
+       event.preventDefault();
+       ChangeVolume("+");
+    break;
+    
+    case 40:
+    case 174:
+      //down arrow
+      event.preventDefault();
+      ChangeVolume("-");
+    break;
+  
+    case 37:
+    case 177:
+      //left arrow
+      event.preventDefault();
+      if (e.shiftKey) {
+      	$('#big-jp-previous-album').trigger('click');
+      } else {
+      	$('#big-jp-previous').trigger('click');
+      }
+    break;
+  
+    case 39:
+    case 176:
      //right arrow
      event.preventDefault();
-     $('#big-jp-next').trigger('click');
-  } else if ((keyCode==83) && (!isGuestPlay())){
-     //s
-     $('#search-toggle').trigger('click');
-     $('#searchText').select();
-     $('#searchText').focus();
-  } else if (keyCode==80){
-     //p
-     event.preventDefault();
-     $('#playlist-toggle').trigger('click');
-  } else if (keyCode==73){
+     if (e.shiftKey) {
+     	$('#big-jp-next-album').trigger('click');
+     } else {
+     	$('#big-jp-next').trigger('click');
+     }
+    break;
+     
+    case 83:
+       //s
+      if (!isGuestPlay()){
+         $('#search-toggle').trigger('click');
+         $('#searchText').select();
+         $('#searchText').focus();
+      } 
+    break;
+      
+    case 80:
+       //p
+       event.preventDefault();
+       $('#playlist-toggle').trigger('click');
+    break;
+      
+    case 73:
      //i
      event.preventDefault();
-     $('#track-wiki').trigger('click');
-  } else if (keyCode==76){
+     if (e.ctrlKey && e.altKey) {
+     	console.log(musiccoPlaylist.playlist);
+     } else {
+     	$('#track-wiki').trigger('click');
+     }
+    break;
+    
+    case 76:
      //l
      event.preventDefault();
      $('#track-lyrics').trigger('click');
-  } else if ((keyCode==66) && (!isGuestPlay())){
-     //b
-     toggleBrowser();
-     event.preventDefault();
-  } else if ((keyCode==191) && (!isGuestPlay())){
-     // /
-     updateSelection('','');
-     toggleBrowser();
-     $('#filterText').select();
-     $('#filterText').focus();
-     event.preventDefault();
-  } else if ((keyCode==74) && (!isGuestPlay())){
-    //j
-    moveDown();
-  } else if ((keyCode==75) && (!isGuestPlay())){
-    //k
-    moveUp();
-  } else if ((keyCode==79) && (!isGuestPlay())){
-    //o
-    $(".current").click();
-  } else if ((keyCode==65) && (!isGuestPlay())){
-    //a
-    $(".current").parent("span").find(".queue").click();
-  } else if (keyCode==27){
-    //Esc
-    updateSelection('','');
+    break;
+    
+    case 66:
+      //b
+      if (!isGuestPlay()){  
+         toggleBrowser();
+         event.preventDefault();
+      }
+    break;
+    
+    case  191:
+      // /
+      if (!isGuestPlay()) {
+         updateSelection('','');
+         toggleBrowser();
+         $('#filterText').select();
+         $('#filterText').focus();
+         event.preventDefault();
+      } 
+    break;
+      
+    case  74:
+      if (!isGuestPlay()) {
+        //j
+        moveDown();
+      }
+    break;
+    
+    case  75:
+      //k
+      if (!isGuestPlay()) {
+        moveUp();
+      } 
+    break;
+    
+    case  79:
+      //o
+      if (!isGuestPlay()) {
+        $(".current").click();
+      }
+    break;
+    
+    case 65:
+      //a
+      if (!isGuestPlay()) {
+        $(".current").parent("span").find(".queue").click();
+      }
+    break;
+    
+    case 27:
+      //Esc
+      updateSelection('','');
+    break;
   }
 }
 
@@ -1627,9 +1700,54 @@ function isGuestPlay() {
 	return ("<?php print AuthManager::isGuestPlay(); ?>");
 }
 
-$('#big-jp-previous').click(function() {
-  $('.jp-previous').trigger('click');
+$('#big-jp-previous').click(function(e) {
+  if (e.shiftKey) {
+    $('#big-jp-previous-album').trigger('click');
+  } else {
+    $('.jp-previous').trigger('click');
+  }
 });
+
+$('#big-jp-previous-album').click(function() {
+  skip("backward");
+});
+
+function getPreviousAlbumIndex(thisAlbum) {
+	var previousAlbumIndex = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum) - 1;
+	return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(getAlbumNameAtPosition(previousAlbumIndex));
+}
+
+function getNextAlbumIndex(thisAlbum) {
+	return nextAlbumIndex = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(thisAlbum) + 1;
+}
+
+function getNextAlbumLastIndex(thisAlbum) {
+	return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(getAlbumNameAtPosition(getNextAlbumIndex(thisAlbum))) +1;
+}
+
+function getAlbumNameAtPosition(position) {
+	return musiccoPlaylist.playlist[position].album;
+}
+
+function getAlbumFirstTrack(thisAlbum) {
+  return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum);
+}
+
+function skip(direction) {
+	if (direction == "forward") {
+    if (musiccoPlaylist.playlist[musiccoPlaylist.current].album != musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album) {
+      musiccoPlaylist.play(getNextAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album));
+    } else {
+      musiccoPlaylist.play(0);
+    }
+  } else {
+    if (musiccoPlaylist.playlist[musiccoPlaylist.current].album != musiccoPlaylist.playlist[0].album) {
+      musiccoPlaylist.play(getPreviousAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album));
+    } else {
+      musiccoPlaylist.play(getAlbumFirstTrack(musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album));
+    }
+  }
+}
 
 $(document).on("click", ".remove-album", function() {
  	album = $(this).attr('album');
@@ -1688,12 +1806,20 @@ $('#big-jp-pause').click(function() {
   $('.jp-pause').trigger('click');
 });
 
-$('#big-jp-next').click(function() {
-  $('.jp-next').trigger('click');
+$('#big-jp-next').click(function(e) {
+    if (e.shiftKey) {
+    $('#big-jp-next-album').trigger('click');
+  } else {
+    $('.jp-next').trigger('click');
+  }
+});
+
+$('#big-jp-next-album').click(function() {
+  skip("forward");
 });
 
 $('body').on("keyup", function(e) {
-  hotkey(e.keyCode);
+  hotkey(e);
 });
 
 if ($("#user_name").is('*')) {
@@ -1845,9 +1971,11 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
   <!-- START: big controls -->
   <div id="big-controls" class="moveable">
     <a href="javascript:;" id="big-jp-previous"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-previous.png" /></a>
+    <a href="javascript:;" id="big-jp-previous-album"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-previous.png" /></a>
     <a href="javascript:;" id="big-jp-play"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-play.png" /></a>
     <a href="javascript:;" id="big-jp-pause" style=" display: none;"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-pause.png" /></a>
     <a href="javascript:;" id="big-jp-next"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
+    <a href="javascript:;" id="big-jp-next-album"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
   </div>
   <!-- END: big controls -->
 
@@ -2335,7 +2463,7 @@ function builddb() {
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'><br/></span>";
    	$aboutString.="<span class='about'>Release History</span>";
-   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users. New default theme, use the classic skin to go back to the old style. More pattern configuration options for more custom library tree structures.</span>";
+   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users. New default theme, use the classic skin to go back to the old style. More pattern configuration options for more custom library tree structures. Shift-click previous/next buttons (or shift-use arrow keys) to skip to the next album in the playlist.</span>";
    	$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
    	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
    	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";

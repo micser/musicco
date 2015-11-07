@@ -565,3 +565,7 @@ div.shown {
 	background: rgb(245, 206, 84);
 	color: #000000;
 }
+
+#big-jp-previous-album, #big-jp-next-album {
+	display: none;
+}
