@@ -18,8 +18,8 @@ $_CONFIG['appVersion'] = "1.2-SNAPSHOT";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appInfo'] = "(//sourceforge.net/p/musicco)";
-$_CONFIG['appInfo'] = "(//sourceforge.net/p/musicco)";
+// Default: $_CONFIG['appInfo'] = "(//musicco.org)";
+$_CONFIG['appInfo'] = "(//musicco.org)";
 
 
 // Choose a language. See bel ow in the language section for options.
@@ -2418,8 +2418,8 @@ function builddb() {
     function getAbout() {
    	$aboutString="<div id='aboutBox'>";
    	$aboutString.="<span class='close help'>&#10006;</span>";
-   	$aboutString.="<span class='about bold'><a target='_blank' href='//sf.net/projects/musicco/'><img width='310px' height='310px' src='skins/".Musicco::getConfig('skin')."/about.png'/></a></span>";
-   	$aboutString.="<span class='about bold'><a target='_blank' href='//sf.net/projects/musicco/'>musicco</a></span>";
+   	$aboutString.="<span class='about bold'><a target='_blank' href='//musicco.org'><img width='310px' height='310px' src='skins/".Musicco::getConfig('skin')."/about.png'/></a></span>";
+   	$aboutString.="<span class='about bold'><a target='_blank' href='//musicco.org'>musicco</a></span>";
    	$aboutString.="<span class='about bold'>A web based player for your music collection</span>";
    	$aboutString.="<span class='about bold'>and its android companion.</span>";
    	$aboutString.="<span class='about'><br/></span>";
