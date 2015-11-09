@@ -499,6 +499,7 @@ div.shown {
 	bottom: 0px;
 	width: 100%;
 	background: rgb(245, 206, 84);
+	z-index: 1;
 }
 
 .install-button {
