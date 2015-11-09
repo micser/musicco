@@ -571,7 +571,7 @@ $('.nokeyboard').focus(function() {
 
 $('.nokeyboard').blur(function() {
   $('body').on("keyup", function(e) {
-    hotkey(e.keyCode);
+    hotkey(e);
   });
 });
 
@@ -2376,6 +2376,8 @@ function builddb() {
    	$helpString.="<span class='help yellow bold'>Playback</span>";
    	$helpString.="<span class='help'>&larr;: previous track</span>";
    	$helpString.="<span class='help'>&rarr;: next track</span>";
+   	$helpString.="<span class='help'>Shift + &larr;: previous album</span>";
+   	$helpString.="<span class='help'>Shift + &rarr;: next album</span>";
    	$helpString.="<span class='help'>&uarr;: volume up</span>";
    	$helpString.="<span class='help'>&darr;: volume down</span>";
    	$helpString.="<span class='help'>&lt;space&gt;: play/pause</span>";
