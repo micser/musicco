@@ -1341,7 +1341,7 @@ function saveCover(coverURL, path) {
  	});	
  	for (var i=0; i<musiccoPlaylist.playlist.length; i++) {
   		if (musiccoPlaylist.playlist[i].path == path) {
-    		musiccoPlaylist.playlist[i].poster = path + '<?php print $this->getConfig('coverFileName'); ?>.png';
+    		musiccoPlaylist.playlist[i].poster = path + '<?php print $this->getConfig('coverFileName'); ?>.png?forcerefresh';
   		}
 	}
 	savePlaylist();
