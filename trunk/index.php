@@ -179,6 +179,7 @@ $_TRANSLATIONS["en"] = array(
 	"reset_db" => "update library",
 	"rebuildingLibrary" => "refreshing library...",
 	"libraryRebuiltIn" => "library updated in ",
+	"libraryLocked" => "another library refresh is already in progress",
 	"log_in" => "Log in",
 	"log_out" => "log out",
 	"show_all" => "show old",
@@ -221,6 +222,7 @@ $_TRANSLATIONS["fr"] = array(
 	"reset_db" => "rafraichir la discothèque",
 	"rebuildingLibrary" => "scan en cours...",
 	"libraryRebuiltIn" => "discothèque rafraichie en  ",
+	"libraryLocked" => "un scan de la discothèque est déjà en cours",
 	"log_in" => "Connexion",
 	"log_out" => "déconnexion",
 	"show_all" => "inclure anciens",
@@ -1065,20 +1067,25 @@ $(document).on("click", ".close-banner", function() {
 });
 
 $(document).on("click", "#reset_db", function() {
-	var oldHTML=$("#reset_db").html();
+	var oldHTML = $("#reset_db").html();
 	$(this).html("<?php print $this->getString("rebuildingLibrary"); ?> | ");
+	var tempHTML = "";
 	event.preventDefault();
 	$.ajax({
 		type: "GET",
 		url: "?builddb",
 		success: function(response) {
-		var tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response+" | ";
-		initBrowser();
-		$("#reset_db").html(tempHTML).delay(5000).queue(function(n) {
-			$("#reset_db").html(oldHTML);
-			n();	
-		}).fadeIn(500);
-		}
+      if (parseInt(response) > -1) {
+        tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response+" | ";
+        initBrowser();
+      } else {
+        tempHTML="<?php print $this->getString("libraryLocked"); ?>  | ";
+      }
+      $("#reset_db").html(tempHTML).delay(5000).queue(function(n) {
+        $("#reset_db").html(oldHTML);
+        n();	
+      }).fadeIn(500);
+    }
 	});
 });
 
@@ -2267,71 +2274,79 @@ function logMessage($log_message) {
 	}
 }
 function builddb() {
-  try
-    {
-    $folder = Musicco::getConfig('musicRoot');
-    //open the database
-    $db = new PDO('sqlite:library.db');
-    $sql_insert_item='INSERT INTO item_tmp (name, type, parent) VALUES (:name , :type, :parent);';
-    $insert_item = $db->prepare($sql_insert_item, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-    $sql_insert_cover='INSERT INTO cover_tmp (file, parent) VALUES (:file, :parent);';
-    $insert_cover = $db->prepare($sql_insert_cover, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+  if (file_exists("library.lock")) {
+      printf("-1");
+      logMessage("Aborting, another library refresh is already in progress.");
+  } else {
+    $lock_file = fopen("library.lock", "w") or die("Unable to create lock file.");
+    fclose($lock_file);
+    try {
+      $folder = Musicco::getConfig('musicRoot');
+      // write lock file
+      //open the database
+      $db = new PDO('sqlite:library.db');
+      $sql_insert_item='INSERT INTO item_tmp (name, type, parent) VALUES (:name , :type, :parent);';
+      $insert_item = $db->prepare($sql_insert_item, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+      $sql_insert_cover='INSERT INTO cover_tmp (file, parent) VALUES (:file, :parent);';
+      $insert_cover = $db->prepare($sql_insert_cover, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 
-	//create the database
-    $db->exec("DELETE FROM cover_tmp;");    
-    $db->exec("DELETE FROM item_tmp;");    
-    $db->exec("DELETE FROM type;");    
-    $db->exec("CREATE TABLE cover (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");    
-    $db->exec("CREATE TABLE cover_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");    
-    $db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
-    $db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
-    $db->exec("CREATE TABLE type (id INTEGER PRIMARY KEY, type TEXT);");    
-    $db->exec("INSERT INTO type (id, type) VALUES (1, 'folder');");    
-    $db->exec("INSERT INTO type (id, type) VALUES (2, 'song');");    
-    $db->exec("INSERT INTO type (id, type) VALUES (120, 'version');");    
+      //create the database
+      $db->exec("DELETE FROM cover_tmp;");    
+      $db->exec("DELETE FROM item_tmp;");    
+      $db->exec("DELETE FROM type;");    
+      $db->exec("CREATE TABLE cover (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");    
+      $db->exec("CREATE TABLE cover_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");    
+      $db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
+      $db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
+      $db->exec("CREATE TABLE type (id INTEGER PRIMARY KEY, type TEXT);");    
+      $db->exec("INSERT INTO type (id, type) VALUES (1, 'folder');");    
+      $db->exec("INSERT INTO type (id, type) VALUES (2, 'song');");    
+      $db->exec("INSERT INTO type (id, type) VALUES (120, 'version');");    
+      
+      $_START_SCAN = microtime(true);
+      $library = build_library($folder, ".mp3");
+      logMessage("Scanned drive in ".number_format((microtime(true) - $_START_SCAN), 3)." seconds");
     
-    $_START_SCAN = microtime(true);
-    $library = build_library($folder, ".mp3");
-	logMessage("Scanned drive in ".number_format((microtime(true) - $_START_SCAN), 3)." seconds");
-	
-	$_START_INSERT = microtime(true);
-	$covers=0;
-	$items=0;
-	foreach ($library as $item) {
-		$name= $item[0];
-		$type= $item[1];
-		$parent= $item[2];
-	if ($type == "3") {
-		$insert_cover->execute(array(':file' => $name, ':parent' => $parent));
-		$covers+=1;
-	} else 
-	{
-			$insert_item->execute(array(':name' => $name, ':type' => $type, ':parent' => $parent));
-			$items+=1;
-		}
-	}
-	// Update non-temp tables and reindex the DB
-    $db->exec("DELETE FROM cover;");
-    $db->exec("DELETE FROM item;");
-	$db->exec("DROP INDEX cover_idx;");    
-	$db->exec("DROP INDEX item_idx;");    
-    $db->exec("INSERT INTO cover (file, parent) SELECT file, parent FROM cover_tmp;");
-    $db->exec("INSERT INTO item (name, type, parent) SELECT name, type, parent FROM item_tmp;");
-	$db->exec("CREATE INDEX IF NOT EXISTS cover_idx ON cover (parent);");    
-	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");    
-	$db->exec("REINDEX cover_idx;"); 
-	$db->exec("REINDEX item_idx;");    
-    $db->exec("DELETE FROM cover_tmp;");    
-    $db->exec("DELETE FROM item_tmp;");
+      $_START_INSERT = microtime(true);
+      $covers=0;
+      $items=0;
+      foreach ($library as $item) {
+        $name= $item[0];
+        $type= $item[1];
+        $parent= $item[2];
+      if ($type == "3") {
+        $insert_cover->execute(array(':file' => $name, ':parent' => $parent));
+        $covers+=1;
+      } else 
+      {
+          $insert_item->execute(array(':name' => $name, ':type' => $type, ':parent' => $parent));
+          $items+=1;
+        }
+      }
+      // Update non-temp tables and reindex the DB
+      $db->exec("DELETE FROM cover;");
+      $db->exec("DELETE FROM item;");
+      $db->exec("DROP INDEX cover_idx;");    
+      $db->exec("DROP INDEX item_idx;");    
+      $db->exec("INSERT INTO cover (file, parent) SELECT file, parent FROM cover_tmp;");
+      $db->exec("INSERT INTO item (name, type, parent) SELECT name, type, parent FROM item_tmp;");
+      $db->exec("CREATE INDEX IF NOT EXISTS cover_idx ON cover (parent);");    
+      $db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");    
+      $db->exec("REINDEX cover_idx;"); 
+      $db->exec("REINDEX item_idx;");    
+      $db->exec("DELETE FROM cover_tmp;");    
+      $db->exec("DELETE FROM item_tmp;");
 
-    // close the database connection
-    $db = NULL;
-    printf("%.1s s",(microtime(true) - $_START_INSERT));
-	logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
-  }
-	catch(PDOException $e)
-	{
-		print 'Exception : '.$e->getMessage();
+      // close the database connection
+      $db = NULL;
+      printf("%.1s s",(microtime(true) - $_START_INSERT));
+      logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
+      unlink("library.lock");
+    }
+    catch(PDOException $e) {
+      print 'Exception : '.$e->getMessage();
+      unlink("library.lock");
+    }
 	}
 }
   function build_library($dir, $extension) {
