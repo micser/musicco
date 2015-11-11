@@ -131,11 +131,11 @@ $_CONFIG['require_login'] = "false";
 // Administrtors can download tracks from the browser and playlist panels and refresh the library from the UI.
 // For example: $_CONFIG['users'] = array(array("username1", "password1", "true"), array("username2", "password2", "false"));
 // Default: $_CONFIG['users'] = array(array("admin", "admin", "true"),
-// 	  								  array("guest", "guest", "false")
-//			                          );
+//											array("guest", "guest", "false")
+//																);
 $_CONFIG['users'] = array(array("admin", "admin", "true"),
-                          array("guest", "guest", "false")
-                          );
+													array("guest", "guest", "false")
+													);
 
 /*
  * SYSTEM
@@ -157,11 +157,11 @@ $_CONFIG['show_donate_button'] = true;
 // file which is about to get loaded. This should simplify upgrades by avoiding 
 // losing your personalised settings
 if(file_exists('config.php'))
-    include 'config.php';
+		include 'config.php';
 
 
 /***************************************************************************/
-/*   TRANSLATIONS.                                                         */
+/*	 TRANSLATIONS.																												 */
 /***************************************************************************/
 
 $_TRANSLATIONS = array();
@@ -221,7 +221,7 @@ $_TRANSLATIONS["fr"] = array(
 	"android_banner_text" => "musicco est disponible sur Android",
 	"reset_db" => "rafraichir la discothèque",
 	"rebuildingLibrary" => "scan en cours...",
-	"libraryRebuiltIn" => "discothèque rafraichie en  ",
+	"libraryRebuiltIn" => "discothèque rafraichie en	",
 	"libraryLocked" => "un scan de la discothèque est déjà en cours",
 	"log_in" => "Connexion",
 	"log_out" => "déconnexion",
@@ -252,24 +252,22 @@ $_TRANSLATIONS["fr"] = array(
 );
 
 function css() {
-?>
-<link href="skins/<?php print Musicco::getConfig('skin'); ?>/jplayer.musicco.css" rel="stylesheet" type="text/css" />
-<link href="skins/<?php print Musicco::getConfig('skin'); ?>/musicco.css" rel="stylesheet" type="text/css" />
-<?php
+	?>
+	<link href="skins/<?php print Musicco::getConfig('skin'); ?>/jplayer.musicco.css" rel="stylesheet" type="text/css" />
+	<link href="skins/<?php print Musicco::getConfig('skin'); ?>/musicco.css" rel="stylesheet" type="text/css" />
+	<?php
 }
 
 /***************************************************************************/
-/*   HERE COMES THE CODE.                                                  */
-/*   DON'T CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING ;)                    */
+/*	 HERE COMES THE CODE.																									 */
+/*	 DON'T CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING ;)										 */
 /***************************************************************************/
 
 //
 // The class controls logging in and authentication
 //
-class AuthManager
-{
-	public static function init()
-	{
+class AuthManager {
+	public static function init() {
 		global $musicco;
 		if(strlen(Musicco::getConfig("session_name")) > 0)
 				session_name(Musicco::getConfig("session_name"));
@@ -279,8 +277,7 @@ class AuthManager
 		else
 			return;
 			
-		if(isset($_GET['logout']))
-		{
+		if(isset($_GET['logout'])) {
 			$_SESSION['musicco_user_name'] = null;
 			$_SESSION['musicco_user_pass'] = null;
 		} elseif ((isset($_GET['guestPlay'])) && (isset($_GET['u']))) {
@@ -289,10 +286,8 @@ class AuthManager
 			logMessage("Guest Play requested for user ".AuthManager::getUserName());
 		} else {
 			$_SESSION['musicco_guest_play'] = null;
-			if(isset($_POST['user_pass']) && strlen($_POST['user_pass']) > 0)
-			{
-				if(AuthManager::isUser((isset($_POST['user_name'])?$_POST['user_name']:""), $_POST['user_pass']))
-				{
+			if(isset($_POST['user_pass']) && strlen($_POST['user_pass']) > 0) {
+				if(AuthManager::isUser((isset($_POST['user_name'])?$_POST['user_name']:""), $_POST['user_pass'])) {
 					$_SESSION['musicco_user_name'] = isset($_POST['user_name'])?$_POST['user_name']:"";
 					$_SESSION['musicco_user_pass'] = $_POST['user_pass'];
 				}
@@ -309,17 +304,13 @@ class AuthManager
 		return false;
 	}
 	
-	public static function isUser($userName, $userPass)
-	{
+	public static function isUser($userName, $userPass) {
 		if (AuthManager::isGuestPlay()) {
 			return true;
 		} else {
-			foreach(Musicco::getConfig("users") as $user)
-			{
-				if($user[1] == $userPass)
-				{
-					if(strlen($userName) == 0 || $userName == $user[0])
-					{
+			foreach(Musicco::getConfig("users") as $user) {
+				if($user[1] == $userPass) {
+					if(strlen($userName) == 0 || $userName == $user[0]) {
 						return true;
 					}
 				}
@@ -328,56 +319,45 @@ class AuthManager
 		return false;
 	}
 	
-	public static function isLoginRequired()
-	{
-		if((Musicco::getConfig("require_login") == "false") || (AuthManager::isGuestPlay())){
+	public static function isLoginRequired() {
+		if((Musicco::getConfig("require_login") == "false") || (AuthManager::isGuestPlay())) {
 			return false;
 		}
 		return true;
 	}
 	
-	public static function isUserLoggedIn()
-	{
-		if(isset($_SESSION['musicco_user_name']) && isset($_SESSION['musicco_user_pass']))
-		{
+	public static function isUserLoggedIn() {
+		if(isset($_SESSION['musicco_user_name']) && isset($_SESSION['musicco_user_pass'])) {
 			if(AuthManager::isUser($_SESSION['musicco_user_name'], $_SESSION['musicco_user_pass']))
 				return true;
 		}
 		return false;
 	}
 	
-	public static function isAccessAllowed()
-	{
+	public static function isAccessAllowed() {
 		if(!AuthManager::isLoginRequired() || AuthManager::isUserLoggedIn())
 			return true;
 		return false;
 	}
 	
-	public static function isAdmin()
-	{
-		if(!AuthManager::isLoginRequired())
-		{
+	public static function isAdmin() {
+		if(!AuthManager::isLoginRequired()) {
 			return true;
 		}
-		if(isset($_SESSION['musicco_user_name']) && isset($_SESSION['musicco_user_pass']))
-		{
-		foreach(Musicco::getConfig("users") as $user)
-		{
-			if($user[0] == $_SESSION['musicco_user_name'])
-			{
-				if($user[2] == "true")
-				{
+		if(isset($_SESSION['musicco_user_name']) && isset($_SESSION['musicco_user_pass'])) {
+			foreach(Musicco::getConfig("users") as $user) {
+				if($user[0] == $_SESSION['musicco_user_name']) {
+					if($user[2] == "true") {
 					return true;
+					}
 				}
 			}
-		}
 		}
 		return false;
 	}
 
 	
-	public static function getUserName()
-	{
+	public static function getUserName() {
 		if ((AuthManager::isGuestPlay()) || (AuthManager::isUserLoggedIn() == true && isset($_SESSION['musicco_user_name']) && strlen($_SESSION['musicco_user_name']) > 0))
 			return $_SESSION['musicco_user_name'];
 		if(isset($_SERVER["REMOTE_USER"]) && strlen($_SERVER["REMOTE_USER"]) > 0)
@@ -387,19 +367,17 @@ class AuthManager
 		return "guest";
 	}
 	
-	public static function showLoginBox(){
+	public static function showLoginBox() {
 		if(!AuthManager::isUserLoggedIn() && count(Musicco::getConfig("users")) > 0)
 			return true;
 		return false;
 	}
 }
 
-class Musicco
-{
+class Musicco {
 	var $lang;
 
-	function init()
-	{		
+	function init() {		
 		global $_TRANSLATIONS;
 		if(isset($_GET['lang']) && isset($_TRANSLATIONS[$_GET['lang']]))
 			$this->lang = $_GET['lang'];
@@ -412,8 +390,7 @@ class Musicco
 	// The function for getting a translated string.
 	// Falls back to english if the correct language is missing something.
 	//
-	public static function getLangString($stringName, $lang)
-	{
+	public static function getLangString($stringName, $lang) {
 		global $_TRANSLATIONS;
 		if(isset($_TRANSLATIONS[$lang]) && is_array($_TRANSLATIONS[$lang]) 
 			&& isset($_TRANSLATIONS[$lang][$stringName]))
@@ -424,24 +401,21 @@ class Musicco
 			return "Translation error";
 	}
 	
-	function getString($stringName)
-	{
+	function getString($stringName) {
 		return Musicco::getLangString($stringName, $this->lang);
 	}
 	
 	//
 	// The function for getting configuration values
 	//
-	public static function getConfig($name)
-	{
+	public static function getConfig($name) {
 		global $_CONFIG;
 		if(isset($_CONFIG) && isset($_CONFIG[$name]))
 			return $_CONFIG[$name];
 		return null;
 	}
 	
-	public static function setError($message)
-	{
+	public static function setError($message) {
 		global $_ERROR;
 		if(isset($_ERROR) && strlen($_ERROR) > 0)
 			;// keep the first error and discard the rest
@@ -449,53 +423,47 @@ class Musicco
 			$_ERROR = $message;
 	}
 	
-	function setErrorString($stringName)
-	{
+	function setErrorString($stringName) {
 		Musicco::setError($this->getString($stringName));
 	}
 
 	//
 	// Main function, activating tasks
 	// 
-	function run()
-	{
+	function run() {
 		$this->outputHtml();
 	}
 	
-	public function printLoginBox()
-	{
+	public function printLoginBox() {
 		?>
 		<div id="login">
 		<form enctype="multipart/form-data" action="?" method="post">
 		<?php 
-		if(AuthManager::isLoginRequired())
-		{
+		if(AuthManager::isLoginRequired()) {
 			$require_username = false;
-			foreach(Musicco::getConfig("users") as $user){
-				if($user[0] != null && strlen($user[0]) > 0){
+			foreach(Musicco::getConfig("users") as $user) {
+				if($user[0] != null && strlen($user[0]) > 0) {
 					$require_username = true;
 					break;
 				}
 			}
-			if($require_username)
-			{
-			?>
-			<div><label for="user_name"><?php print $this->getString("username"); ?>:</label>
-			<input type="text" name="user_name" value="" id="user_name" /></div>
-			<?php 
+			if($require_username) {
+				?>
+				<div><label for="user_name"><?php print $this->getString("username"); ?>:</label>
+				<input type="text" name="user_name" value="" id="user_name" /></div>
+				<?php 
 			}
 			?>
 			<div><label for="user_pass"><?php print $this->getString("password"); ?>:</label>
 			<input type="password" name="user_pass" id="user_pass" /></div>
 			<div><input type="submit" value="<?php print $this->getString("log_in"); ?>" class="button" /></div>
-		</form>
-		</div>
-	<?php 
+			</form>
+			</div>
+			<?php 
 		}
 	}
 
-	public function printAndroidPrompt()
-	{
+	public function printAndroidPrompt() {
 		?>
 		<div id="android-banner" class="banner">
 			<div>
@@ -518,8 +486,7 @@ class Musicco
 	//
 	// Printing the actual page
 	// 
-	function outputHtml()
-	{
+	function outputHtml() {
 		global $_ERROR;
 ?>
 <!DOCTYPE HTML>
@@ -555,211 +522,211 @@ $(document).ready(function() {
 var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
 var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
 var options = { playlistOptions: {
-  autoPlay: false,
-  loopOnPrevious: true,
-  shuffleOnLoop: false,
-  enableRemoveControls: true,
-  displayTime: 'slow',
-  addTime: 'fast',
-  removeTime: 'fast',
-  shuffleTime: 'slow'
+	autoPlay: false,
+	loopOnPrevious: true,
+	shuffleOnLoop: false,
+	enableRemoveControls: true,
+	displayTime: 'slow',
+	addTime: 'fast',
+	removeTime: 'fast',
+	shuffleTime: 'slow'
 }, solution:"html,flash" , swfPath: "lib", supplied: "mp3" };
 
 	var musiccoPlaylist = new jPlayerPlaylist(cssSelector, "", options);
 
 $('.nokeyboard').focus(function() {
-  $('body').off('keyup');
+	$('body').off('keyup');
 });
 
 $('.nokeyboard').blur(function() {
-  $('body').on("keyup", function(e) {
-    hotkey(e);
-  });
+	$('body').on("keyup", function(e) {
+		hotkey(e);
+	});
 });
 
 $("#filterText").keyup(function() {
-  $('#includeOlAdlbums').prop('checked', true);
-  var query = $(this).val().toLowerCase();
-  if (query == "") {
-    $(".node[item]").show();
-    } else {
-      $(".node[item]").hide();
+	$('#includeOlAdlbums').prop('checked', true);
+	var query = $(this).val().toLowerCase();
+	if (query == "") {
+		$(".node[item]").show();
+		} else {
+			$(".node[item]").hide();
 	$('.node[item*="'+query+'"]').show();
-    }
+		}
 });
-  
+	
 $("#filterButton").click(function() {
-  clearFilterBox();
+	clearFilterBox();
 });
 
 function clearFilterBox() {
-    $("#filterText").val('');
-    $("span[item]").show();
+		$("#filterText").val('');
+		$("span[item]").show();
 }
 
 $("#track-wiki").click(function() {
-  toggleInfo();
+	toggleInfo();
 });
 
 $("#track-lyrics").click(function() {
-  toggleLyrics();
+	toggleLyrics();
 });
 
 $("#help").click(function() {
-  toggleHelp();
+	toggleHelp();
 });
 
 $("#about").click(function() {
-  toggleAbout();
+	toggleAbout();
 });
 
 $("#browser-toggle").click(function() {
-  toggleBrowser();
+	toggleBrowser();
 });
 
 $("#search-toggle").click(function() {
-  toggleSearch();
+	toggleSearch();
 });
 
 $("#test").click(function() {
-  $(".moveable").hide();
-  $(".hideable").hide();
-  $(".moveable").css({position: 'fixed'});
-  
-  $("#big-cover").css({
-                    top: '316px',
-                    left: '0px',
-                    width: '360px',
-                    height: '360px'
-  });
-  $("#browser").css({
-                    top: '12px',
-                    left: '0px',
-                    height: '300px',
-                    width: '360px'
-  });  
-   $("#big-jp-progress").css({
-                       top: '604px',
-                       left: '18px',
-                       height:'6px'
-                      });
-   $("#big-toggles").css({
-                       top: '630px',
-                       left: '560px',
-                       'z-index': '2'
-                       });
-   $("#playlist-controls").css({
-                       top: '-45px',
-                       left: '-400px',
-                       'z-index': '2'
-                       });
-   $("#big-timer").css({
-                        top: '606px',
-                        left: '245px',
-                        'background-color': '#666',
-                        'opacity': '0.6'
-                       });
-  $("#big-controls").css({
-                    top: '618px',
-                    left: '24px',
-                    'z-index': '2'
-  });   
-  $("#playlistPanel").css({
-                    top: '12px',
-                    left: '362px',
-                    height:'668px',
-                    width: '500px'
-  });    
-  $("#infoPanel").css({
-                    top: '12px',
-                    left: '864px',
-                    height: '550px',
-                    width: '398px'
-  });    
-  $("#lyricsPanel").css({
-                    top: '564px',
-                    left: '864px',
-                    height: '116px',
-                    width: '398px'
-  });    
-  $(".moveable").fadeIn(1000);
-  $("#test").toggle();
-  $("#untest").toggle();
-  window.resizeTo(1280, 720);
+	$(".moveable").hide();
+	$(".hideable").hide();
+	$(".moveable").css({position: 'fixed'});
+	
+	$("#big-cover").css({
+										top: '316px',
+										left: '0px',
+										width: '360px',
+										height: '360px'
+	});
+	$("#browser").css({
+										top: '12px',
+										left: '0px',
+										height: '300px',
+										width: '360px'
+	});	 
+	 $("#big-jp-progress").css({
+											 top: '604px',
+											 left: '18px',
+											 height:'6px'
+											});
+	 $("#big-toggles").css({
+											 top: '630px',
+											 left: '560px',
+											 'z-index': '2'
+											 });
+	 $("#playlist-controls").css({
+											 top: '-45px',
+											 left: '-400px',
+											 'z-index': '2'
+											 });
+	 $("#big-timer").css({
+												top: '606px',
+												left: '245px',
+												'background-color': '#666',
+												'opacity': '0.6'
+											 });
+	$("#big-controls").css({
+										top: '618px',
+										left: '24px',
+										'z-index': '2'
+	});		
+	$("#playlistPanel").css({
+										top: '12px',
+										left: '362px',
+										height:'668px',
+										width: '500px'
+	});		 
+	$("#infoPanel").css({
+										top: '12px',
+										left: '864px',
+										height: '550px',
+										width: '398px'
+	});		 
+	$("#lyricsPanel").css({
+										top: '564px',
+										left: '864px',
+										height: '116px',
+										width: '398px'
+	});		 
+	$(".moveable").fadeIn(1000);
+	$("#test").toggle();
+	$("#untest").toggle();
+	window.resizeTo(1280, 720);
 });
 
 $("#untest").click(function() {
-  $(".moveable").hide();
-  $(".moveable").css({position: ''});
-  
-  $("#big-cover").css({
-                    top: '',
-                    left: '',
-                    width: '',
-                    height: ''
-  });
-  
-  $("#browser").css({
-                    top: '',
-                    left: '',
-                    height: '',
-                    width: ''
-  });  
-  $("#big-controls").css({
-                    top: '',
-                    left: '',
-                    'z-index': ''
-  });  
-    $("#playlistPanel").css({
-                        top: '',
-                        left: '',
-                        height: '',
-                        width:''
-                    });
-               
-  $("#big-jp-progress").css({
-                        top: '',
-                        left: '',
-                        height: '',
-                        width:''
-                      });
-   $("#big-toggles").css({
-                      top: '',
-                      left: '',
-                      'z-index': ''
-                      });
-   $("#playlist-controls").css({
-                       top: '',
-                       left: '',
-                       'z-index': ''
-                       });                      
-  $("#big-timer").css({
-                    top: '',
-                    left: '',
-                    height: '',
-                    width:'',
-                    'background-color': '',
-                    'opacity': ''
-  });    
-  $("#infoPanel").css({
-                    top: '',
-                    left: '',
-                    height: '',
-                    width: ''
-  });    
-  $("#lyricsPanel").css({
-                    top: '',
-                    left: '',
-                    height: '',
-                    width: ''
-  });  
-  
-  $(".moveable").fadeIn(1000);
-  $(".hideable").fadeIn(1000);
-  updateSelection('','');
-  $("#test").toggle();
-  $("#untest").toggle();
-  window.resizeTo(340, 580);
+	$(".moveable").hide();
+	$(".moveable").css({position: ''});
+	
+	$("#big-cover").css({
+										top: '',
+										left: '',
+										width: '',
+										height: ''
+	});
+	
+	$("#browser").css({
+										top: '',
+										left: '',
+										height: '',
+										width: ''
+	});	 
+	$("#big-controls").css({
+										top: '',
+										left: '',
+										'z-index': ''
+	});	 
+		$("#playlistPanel").css({
+												top: '',
+												left: '',
+												height: '',
+												width:''
+										});
+							 
+	$("#big-jp-progress").css({
+												top: '',
+												left: '',
+												height: '',
+												width:''
+											});
+	 $("#big-toggles").css({
+											top: '',
+											left: '',
+											'z-index': ''
+											});
+	 $("#playlist-controls").css({
+											 top: '',
+											 left: '',
+											 'z-index': ''
+											 });											
+	$("#big-timer").css({
+										top: '',
+										left: '',
+										height: '',
+										width:'',
+										'background-color': '',
+										'opacity': ''
+	});		 
+	$("#infoPanel").css({
+										top: '',
+										left: '',
+										height: '',
+										width: ''
+	});		 
+	$("#lyricsPanel").css({
+										top: '',
+										left: '',
+										height: '',
+										width: ''
+	});	 
+	
+	$(".moveable").fadeIn(1000);
+	$(".hideable").fadeIn(1000);
+	updateSelection('','');
+	$("#test").toggle();
+	$("#untest").toggle();
+	window.resizeTo(340, 580);
 });
 $("#clear-playlist").click(function() {
 	musiccoPlaylist.remove();
@@ -767,55 +734,55 @@ $("#clear-playlist").click(function() {
 });
 	
 $('#playlist-toggle').click(function () {
-  togglePlaylist();
+	togglePlaylist();
 });
 
 function toggleInfo() {
-  updateSelection('#track-wiki', '#infoPanel');
+	updateSelection('#track-wiki', '#infoPanel');
 }
 
 function toggleLyrics() {
-  updateSelection('#track-lyrics', '#lyricsPanel');
+	updateSelection('#track-lyrics', '#lyricsPanel');
 }
 
 function toggleBrowser() {
-  updateSelection('#browser-toggle', '#browser');
+	updateSelection('#browser-toggle', '#browser');
 }
 
 function toggleSearch() {
-  updateSelection('#search-toggle', '#searchPanel');
-     $('#searchText').select();
-     $('#searchText').focus();
+	updateSelection('#search-toggle', '#searchPanel');
+		 $('#searchText').select();
+		 $('#searchText').focus();
 }
 
 function toggleHelp() {
-  updateSelection('', '#helpPanel');
+	updateSelection('', '#helpPanel');
 }
 
 function toggleAbout() {
-  updateSelection('about', '#aboutPanel');
+	updateSelection('about', '#aboutPanel');
 }
 
 function togglePlaylist() {
-  formatPlaylist();
-  updateSelection('#playlist-toggle', '#playlistPanel');
-  scrollToCurrentSong();
+	formatPlaylist();
+	updateSelection('#playlist-toggle', '#playlistPanel');
+	scrollToCurrentSong();
 }
 
 function updateSelection(toggle, panel) {
-  $('.toggles').not(toggle).removeClass('shown');
-  $('.panel').not(panel).removeClass('shown');
-  $('.panel').not(panel).hide();
-  $(toggle).toggleClass('shown');
-  $(panel).toggleClass('shown');
-  $(panel).toggle();
-  var panelsZindex='';
-  if ($('.shown').size() == 0) {
-  	panelsZindex = 0;
-  } else {
-  	panelsZindex = 1;
-  }
-  $('#panels').css('z-index', panelsZindex);
+	$('.toggles').not(toggle).removeClass('shown');
+	$('.panel').not(panel).removeClass('shown');
+	$('.panel').not(panel).hide();
+	$(toggle).toggleClass('shown');
+	$(panel).toggleClass('shown');
+	$(panel).toggle();
+	var panelsZindex='';
+	if ($('.shown').size() == 0) {
+		panelsZindex = 0;
+	} else {
+		panelsZindex = 1;
+	}
+	$('#panels').css('z-index', panelsZindex);
 }
 
 
@@ -828,11 +795,11 @@ function scrollToCurrentSong() {
 function scrollToTrack(track) {
 	var item = $('.my-playlist').find('li').eq(track);
 	if (item.length){
-    	$('.my-playlist').scrollTop(item.offset().top - 50);
+			$('.my-playlist').scrollTop(item.offset().top - 50);
 	}
 }
 
-function  displayCover() {
+function	displayCover() {
 	var coverurl = nowPlaying("poster");
 	resetFetchingStatus();
 	if (coverurl == "skins/<?php print Musicco::getConfig('skin'); ?>/cover.png") {
@@ -884,8 +851,8 @@ function printCover(coverurl) {
 	$('.cover').load(function() {
 		var height = $('.cover').height();
 		var marginValue = (310-height)/2;
-		$('.cover').css('margin-top',  marginValue +'px'); 
-		$('.cover').css('margin-bottom',  marginValue +'px'); 
+		$('.cover').css('margin-top',	 marginValue +'px'); 
+		$('.cover').css('margin-bottom',	marginValue +'px'); 
 		$('.cover').fadeIn(2000);
 	});
 }
@@ -916,9 +883,9 @@ function fetchCover() {
 				var coverUrl = "https://coverartarchive.org/release/"+releaseId+"/front";
 				setCoverInfoStatus("<?php print $this->getString("fetchingAlbumArt"); ?>");
 				$.ajax({
-       			 type: "GET",
-        		 url: "?head&url="+coverUrl,
-       			 complete: function(data){
+						 type: "GET",
+						 url: "?head&url="+coverUrl,
+						 complete: function(data){
 						if (data.responseText < 400) {
 							printCover(coverUrl);
 							saveCover(coverUrl, nowPlaying("path"));
@@ -928,10 +895,9 @@ function fetchCover() {
 							printCover(nowPlaying("cover"));
 						}
 					}
-    			});
+					});
 			} else {
 				setCoverInfoStatus("<?php print $this->getString("noAlbum"); ?>");
-				
 			}
 		}
 	});
@@ -941,9 +907,9 @@ function setCoverInfoStatus(statusText) {
 	$('#updateCoverArt').addClass('canUpload');
 	fetchStatus = statusText + "<?php print $this->getString("clickToUploadYourOwn"); ?>";
 	$("#updateCoverArt").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
-	$("#updateCoverArt").mouseleave();
-	n();	
-	}).fadeTo("fast", 0.8).fadeTo("slow", 0.1);
+		$("#updateCoverArt").mouseleave();
+		n();	
+		}).fadeTo("fast", 0.8).fadeTo("slow", 0.1);
 }
 
 $('#big-cover').hover(function() {
@@ -960,11 +926,11 @@ $('#big-cover').hover(function() {
 
 
 $('#updateCoverArt').click(function () {
-  if ($(this).hasClass('canFetch')) {
-  	fetchCover();
-  } else if ($(this).hasClass('canUpload')) {
-  	uploadCover();
-  } 
+	if ($(this).hasClass('canFetch')) {
+		fetchCover();
+	} else if ($(this).hasClass('canUpload')) {
+		uploadCover();
+	} 
 });
 
 function uploadCover() {
@@ -978,24 +944,23 @@ function uploadCover() {
 }
 
 $('#includeOlAdlbums').click(function () {
-  if ($(this).is(':checked')) {
-        $('.node:not([item$="<?php print $this->getConfig('new_marker'); ?>"])').fadeIn();
-    } else {
-        $('.node:not([item$="<?php print $this->getConfig('new_marker'); ?>"])').fadeOut();
-    }
-  
+	if ($(this).is(':checked')) {
+				$('.node:not([item$="<?php print $this->getConfig('new_marker'); ?>"])').fadeIn();
+		} else {
+				$('.node:not([item$="<?php print $this->getConfig('new_marker'); ?>"])').fadeOut();
+		}
 });
 
 $("#searchForm").submit(function(event) {
-  event.preventDefault();
-  var $form = $( this ),
-      term = $form.find( 'input[name="s"]' ).val();
-  if (term.length > 0) {
-	  showLoadingIcon();
-	  var resultString="&nbsp;";
-	  $("#searchResults").html("<?php print $this->getString("searchingLibrary"); ?>");
-	  $(".hits").remove();
-	  $.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
+	event.preventDefault();
+	var $form = $( this ),
+			term = $form.find( 'input[name="s"]' ).val();
+	if (term.length > 0) {
+		showLoadingIcon();
+		var resultString="&nbsp;";
+		$("#searchResults").html("<?php print $this->getString("searchingLibrary"); ?>");
+		$(".hits").remove();
+		$.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
 		var hits= data;
 		if (hits==null) {
 			resultString="<?php print $this->getString("noResultsForThisSearch"); ?>";
@@ -1003,60 +968,60 @@ $("#searchForm").submit(function(event) {
 		}
 		$("#searchResults").html(resultString);
 		$.each(hits, function (i, elem) {
-		  var parent = hits[i].parent;
-		  var name = hits[i].name;
-		  var type = hits[i].type;
-		  var slash="/";
-		  var optionalSlash="";
-		  if (type == 1) {
-		  	optionalSlash = slash;
-		  }
-		  var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
-		  var parentItem = parent.substr(levelUp.length);
-		  var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
-		  var hitLink="<div class=\"hits\">";
-		  if (parentItemName=="") {
-			parentItemName="home";
-		  }
+			var parent = hits[i].parent;
+			var name = hits[i].name;
+			var type = hits[i].type;
+			var slash="/";
+			var optionalSlash="";
+			if (type == 1) {
+				optionalSlash = slash;
+			}
+			var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
+			var parentItem = parent.substr(levelUp.length);
+			var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
+			var hitLink="<div class=\"hits\">";
+			if (parentItemName=="") {
+				parentItemName="home";
+			}
 			hitLink+="<a href=\"javascript:;\" class=\"queue searchResultParent\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a> &gt; ";
-		  hitLink+="<a href=\"javascript:;\" class=\"queue searchResult\" parent=\""+parent+"\" item=\""+name+optionalSlash+"\" type=\""+type+"\">"+ name +"</a></div>";
-		  $("#searchResults").before(hitLink);
+			hitLink+="<a href=\"javascript:;\" class=\"queue searchResult\" parent=\""+parent+"\" item=\""+name+optionalSlash+"\" type=\""+type+"\">"+ name +"</a></div>";
+			$("#searchResults").before(hitLink);
 		});
-	  hideLoadingIcon();}, "json");
+		hideLoadingIcon();}, "json");
 	}
 });
 
 $('#clear').click(function () {
-$('.hits').remove();
-$('#searchText').val('');
+	$('.hits').remove();
+	$('#searchText').val('');
 });
-  
+	
 $(document).on("click", ".closed", function() {
-  showLoadingIcon();
-  $(this).toggleClass('closed open');
-  var item=$(this).attr("item");
-  var level=$(this).attr("level");
-  var parent = $(this).attr("parent");
-  var root =parent+item;
-  $.post('?', {querydb: '', root: decodeURIComponent(root), type: 'browse'}, function (response) {
-      var files=response;
-      $.each(files, function (i, elem) {
-        fileUrl =  encodeURIComponent(files[i].name.replace(/\"/g,""));
-        type =  encodeURIComponent(files[i].type);
-        $(".item[item=\""+item+"\"][parent=\""+parent+"\"]").after(treelink(root, fileUrl, level, type));
-      });
-  	hideLoadingIcon(); }, "json");
+	showLoadingIcon();
+	$(this).toggleClass('closed open');
+	var item=$(this).attr("item");
+	var level=$(this).attr("level");
+	var parent = $(this).attr("parent");
+	var root =parent+item;
+	$.post('?', {querydb: '', root: decodeURIComponent(root), type: 'browse'}, function (response) {
+			var files=response;
+			$.each(files, function (i, elem) {
+				fileUrl =	 encodeURIComponent(files[i].name.replace(/\"/g,""));
+				type =	encodeURIComponent(files[i].type);
+				$(".item[item=\""+item+"\"][parent=\""+parent+"\"]").after(treelink(root, fileUrl, level, type));
+			});
+		hideLoadingIcon(); }, "json");
 	});
 		
 	$(document).on("click", ".close", function() {
-    updateSelection('','');
+		updateSelection('','');
 	});
 		
 	$(document).on("click", ".infolink", function() {
-    var artist=$(this).attr("artist");
-    updateInfoPanel(wikiLink(artist));
-    toggleInfo();
-		});
+		var artist=$(this).attr("artist");
+		updateInfoPanel(wikiLink(artist));
+		toggleInfo();
+	});
 
 $(document).on("click", ".open", function() {
 	$(this).parent(".node").children('.node').toggle();
@@ -1075,44 +1040,44 @@ $(document).on("click", "#reset_db", function() {
 		type: "GET",
 		url: "?builddb",
 		success: function(response) {
-      if (parseInt(response) > -1) {
-        tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response+" | ";
-        initBrowser();
-      } else {
-        tempHTML="<?php print $this->getString("libraryLocked"); ?>  | ";
-      }
-      $("#reset_db").html(tempHTML).delay(5000).queue(function(n) {
-        $("#reset_db").html(oldHTML);
-        n();	
-      }).fadeIn(500);
-    }
+			if (parseInt(response) > -1) {
+				tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response+" | ";
+				initBrowser();
+			} else {
+				tempHTML="<?php print $this->getString("libraryLocked"); ?>	 | ";
+			}
+			$("#reset_db").html(tempHTML).delay(5000).queue(function(n) {
+				$("#reset_db").html(oldHTML);
+				n();	
+			}).fadeIn(500);
+		}
 	});
 });
 
 $(document).on("click", "#uncover", function() {
-  event.preventDefault();
-  showLoadingIcon();
-  $.post('?', {querydb: '', root: '', type: 'uncover'}, function (response) {
-      var hits=response;
-      $.each(hits, function (i, elem) {
-      	var slash="/";
-      	var parent = hits[i].parent;
-      	var name = hits[i].name;
-      	var type = hits[i].type;
-      	var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
-      	var parentItem = parent.substr(levelUp.length);
-      	var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
-      	var hitLink="<div class=\"hits\">";
-		  if (parentItemName=="") {
-			parentItemName="home";
-		  }
-      	hitLink+="<a href=\"javascript:;\" class=\"queue searchResultParent uncoverLink\" id=\"" + i +"\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a>";
-		  $("#searchResults").before(hitLink);
-		  var thisHit = "#"+i;
-		  $(thisHit).trigger('click');
-      });
-	  $(".uncoverLink").remove(); 
-   	  hideLoadingIcon(); }, "json");
+	event.preventDefault();
+	showLoadingIcon();
+	$.post('?', {querydb: '', root: '', type: 'uncover'}, function (response) {
+			var hits=response;
+			$.each(hits, function (i, elem) {
+				var slash="/";
+				var parent = hits[i].parent;
+				var name = hits[i].name;
+				var type = hits[i].type;
+				var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
+				var parentItem = parent.substr(levelUp.length);
+				var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
+				var hitLink="<div class=\"hits\">";
+			if (parentItemName=="") {
+				parentItemName="home";
+			}
+				hitLink+="<a href=\"javascript:;\" class=\"queue searchResultParent uncoverLink\" id=\"" + i +"\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a>";
+			$("#searchResults").before(hitLink);
+			var thisHit = "#"+i;
+			$(thisHit).trigger('click');
+			});
+		$(".uncoverLink").remove(); 
+			hideLoadingIcon(); }, "json");
 });
 
 $('#infoPanel').scroll(function() {
@@ -1120,46 +1085,43 @@ $('#infoPanel').scroll(function() {
 	$('body').scrollTop(0);
 });
 
-
 function treelink(root, fileUrl, level, type) {
-  var link="";
-  var parentLevel = parseInt(level); 
-  var myLevel = parentLevel+1; 
-  var image="skins/<?php print Musicco::getConfig('skin'); ?>/folder.png";
-  var closed="closed";
-  var isNew="old";
-  var slash="/";
-  link+="<span class=\"node\" level=\""+myLevel+"\" item=\""+decodeURIComponent(root+fileUrl).toLowerCase()+"\">";
-  if (parentLevel==0) {
-  link+="<img class=\"infolink browserimg\" artist=\""+fileUrl+"\" border=0 src=\"skins/<?php print Musicco::getConfig('skin'); ?>/wiki.png\" /></a>";
-  } else {
-  	link+="<span class=\"spacer\"/>";
-  	link+="<span class=\"spacer\"/>";
-  }
-  for (var i=0;i<parentLevel;i++)
-	{ 
-  	link+="<span class=\"spacer\"/>";
+	var link="";
+	var parentLevel = parseInt(level); 
+	var myLevel = parentLevel+1; 
+	var image="skins/<?php print Musicco::getConfig('skin'); ?>/folder.png";
+	var closed="closed";
+	var isNew="old";
+	var slash="/";
+	link+="<span class=\"node\" level=\""+myLevel+"\" item=\""+decodeURIComponent(root+fileUrl).toLowerCase()+"\">";
+	if (parentLevel==0) {
+		link+="<img class=\"infolink browserimg\" artist=\""+fileUrl+"\" border=0 src=\"skins/<?php print Musicco::getConfig('skin'); ?>/wiki.png\" /></a>";
+	} else {
+		link+="<span class=\"spacer\"/>";
+		link+="<span class=\"spacer\"/>";
 	}
-	if (type==2) 
-  {
-  	link+="<span class=\"spacer\"/>";
-  	image="skins/<?php print Musicco::getConfig('skin'); ?>/headphones.png";
-  	closed="";
-  	slash="";
-   }
-   if (fileUrl.indexOf("<?php print Musicco::getConfig('new_marker'); ?>") != -1) {
-   	isNew = "new";
-   }
-  link+="<a href=\"javascript:;\" class=\"queue\" parent=\""+root+"\" item=\""+fileUrl+slash+"\" type=\""+type+"\"><img src=\"skins/<?php print Musicco::getConfig('skin'); ?>/add.png\" class=\"browserimg\" /></a>";
-  link+="<img alt=\"dir\" src=\""+image+"\" class=\"browserimg\" /> ";
-  link+="<a href=\"javascript:;\" class=\"item "+closed+" "+isNew+"\" level=\""+myLevel+"\" parent=\""+root+"\" item=\""+fileUrl+slash+"\"\>";
-  link+=decodeURIComponent(fileUrl.replace(/<?php print Musicco::getConfig('new_marker'); ?>/g, ""));
-  link+="</a> ";
-  if (("<?php print AuthManager::isAdmin(); ?>" =="1") && (type==2)) {
-  	link+="<a href=\""+root+fileUrl+"\" target=\"_blank\" class=\"download\">[&#8681;]</a>";
-  } 
-  link+="</span> ";
-  return link;
+	for (var i=0;i<parentLevel;i++) { 
+		link+="<span class=\"spacer\"/>";
+	}
+	if (type==2) {
+		link+="<span class=\"spacer\"/>";
+		image="skins/<?php print Musicco::getConfig('skin'); ?>/headphones.png";
+		closed="";
+		slash="";
+	 }
+	 if (fileUrl.indexOf("<?php print Musicco::getConfig('new_marker'); ?>") != -1) {
+		isNew = "new";
+	 }
+	link+="<a href=\"javascript:;\" class=\"queue\" parent=\""+root+"\" item=\""+fileUrl+slash+"\" type=\""+type+"\"><img src=\"skins/<?php print Musicco::getConfig('skin'); ?>/add.png\" class=\"browserimg\" /></a>";
+	link+="<img alt=\"dir\" src=\""+image+"\" class=\"browserimg\" /> ";
+	link+="<a href=\"javascript:;\" class=\"item "+closed+" "+isNew+"\" level=\""+myLevel+"\" parent=\""+root+"\" item=\""+fileUrl+slash+"\"\>";
+	link+=decodeURIComponent(fileUrl.replace(/<?php print Musicco::getConfig('new_marker'); ?>/g, ""));
+	link+="</a> ";
+	if (("<?php print AuthManager::isAdmin(); ?>" =="1") && (type==2)) {
+		link+="<a href=\""+root+fileUrl+"\" target=\"_blank\" class=\"download\">[&#8681;]</a>";
+	} 
+	link+="</span> ";
+	return link;
 }
 $(document).on("click", ".infoPanelLink", function() {
 	event.preventDefault();
@@ -1167,29 +1129,29 @@ $(document).on("click", ".infoPanelLink", function() {
 });
 
 $(document).on("click", ".queue", function() {
-  showLoadingIcon();
-  var playAfter = (musiccoPlaylist.playlist.length < 1);
-  var item = $(this).attr("item");
-  var parent = $(this).attr("parent");
-  var type = $(this).attr("type");
-  $.post('?', {querydb: '', root: decodeURIComponent(parent + item), type: 'add'+type}, function (response) {
-      var files=response;
-      $.each(files, function (i, elem) {
-        musiccoPlaylist.add({
-          title: files[i].title,
-          artist: files[i].artist,
-          year: files[i].year,
-          album: files[i].album,
-          free:<?php print (AuthManager::isAdmin()?"true":"false"); ?>,
-          path: files[i].parent.replace(/\"/g,""),
-          mp3:  encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
-          extension: files[i].extension,
-          poster: files[i].cover,
-          number: files[i].number
-        });
+	showLoadingIcon();
+	var playAfter = (musiccoPlaylist.playlist.length < 1);
+	var item = $(this).attr("item");
+	var parent = $(this).attr("parent");
+	var type = $(this).attr("type");
+	$.post('?', {querydb: '', root: decodeURIComponent(parent + item), type: 'add'+type}, function (response) {
+			var files=response;
+			$.each(files, function (i, elem) {
+				musiccoPlaylist.add({
+					title: files[i].title,
+					artist: files[i].artist,
+					year: files[i].year,
+					album: files[i].album,
+					free:<?php print (AuthManager::isAdmin()?"true":"false"); ?>,
+					path: files[i].parent.replace(/\"/g,""),
+					mp3:	encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
+					extension: files[i].extension,
+					poster: files[i].cover,
+					number: files[i].number
+				});
 	if (playAfter) musiccoPlaylist.play();
-      });
-  hideLoadingIcon(); }, "json");
+			});
+	hideLoadingIcon(); }, "json");
 });
 
 function isFirstAlbumTrack(index) {
@@ -1259,7 +1221,7 @@ function formatPlaylist() {
 						+ "<td class=\"itemHeaderDetails\">"
 							+ "<span class=\"itemHeaderAlbum\">" + thisAlbum + "</span><br/>"
 							+ "<span class=\"itemHeaderArtist\">" + artist + "</span>"
-							+ "<span class=\"itemHeaderYear\">" +  year + "</span>"
+							+ "<span class=\"itemHeaderYear\">" +	 year + "</span>"
 						+ "</td>"
 					+ "</tr>"
 				+ "</table>"
@@ -1277,13 +1239,13 @@ function wikiLink(page) {
 	return '//en.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
 }
 function updateInfoPanel(url) {
-    $('#infoPanel').html("");
-    $.ajax({
-	  tupe: "GET",
-	  dataType: "jsonP",
-	  url: url,
-	  success: function(json) {
-		  if (json.parse) {
+		$('#infoPanel').html("");
+		$.ajax({
+		tupe: "GET",
+		dataType: "jsonP",
+		url: url,
+		success: function(json) {
+			if (json.parse) {
 			$('#infoPanel').html(json.parse.text['*']);
 			$("#infoPanel").find("a:not(.toc a)").addClass("infoPanelLink"); 
 			$("#infoPanel").find("*").removeAttr("style"); 
@@ -1322,20 +1284,20 @@ function updateLyricsPanel(artist, song) {
 					url: "?fetch&url=" + APIurl,
 					dataType: "xml",
 					success: function(xml) {
-					  var lyrics="";
-					  $(xml).find('GetLyricResult').each(function(){
-						  var lyricArtist=$(this).find('LyricArtist').text();
-						  var lyricSong=$(this).find('LyricSong').text();
-						  var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
-						  var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
-						  var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>";
-								//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.      
-						  lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
-						  $('#lyricsPanel').html(lyricInfo+lyrics);
-					  });
-					  if (lyrics=="") {
-						$('#lyricsPanel').html("<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist);
-					  }
+						var lyrics="";
+						$(xml).find('GetLyricResult').each(function(){
+							var lyricArtist=$(this).find('LyricArtist').text();
+							var lyricSong=$(this).find('LyricSong').text();
+							var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
+							var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
+							var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>";
+								//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.			
+							lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
+							$('#lyricsPanel').html(lyricInfo+lyrics);
+						});
+						if (lyrics=="") {
+							$('#lyricsPanel').html("<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist);
+						}
 					}
 				});
 			}
@@ -1344,71 +1306,71 @@ function updateLyricsPanel(artist, song) {
 }
 
 function saveCover(coverURL, path) {
- 	$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
- 	});	
- 	for (var i=0; i<musiccoPlaylist.playlist.length; i++) {
-  		if (musiccoPlaylist.playlist[i].path == path) {
-    		musiccoPlaylist.playlist[i].poster = path + '<?php print $this->getConfig('coverFileName'); ?>.png?forcerefresh';
-  		}
+	$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
+	});	
+	for (var i=0; i<musiccoPlaylist.playlist.length; i++) {
+			if (musiccoPlaylist.playlist[i].path == path) {
+				musiccoPlaylist.playlist[i].poster = path + '<?php print $this->getConfig('coverFileName'); ?>.png?forcerefresh';
+			}
 	}
 	savePlaylist();
 }
 
 function savePlaylist() {
- 	var user = "<?php echo AuthManager::getUserName(); ?>";
- 	var playlist = JSON.stringify(musiccoPlaylist.original);
- 	var current = musiccoPlaylist.current;
- 	var loop = musiccoPlaylist.loop;
- 	var shuffled = musiccoPlaylist.shuffled;
- 	$.post('?', {savePlaylist: '', u: user, p: playlist, c: current, l: loop, s: shuffled}, function (response) {
- 	});	
+	var user = "<?php echo AuthManager::getUserName(); ?>";
+	var playlist = JSON.stringify(musiccoPlaylist.original);
+	var current = musiccoPlaylist.current;
+	var loop = musiccoPlaylist.loop;
+	var shuffled = musiccoPlaylist.shuffled;
+	$.post('?', {savePlaylist: '', u: user, p: playlist, c: current, l: loop, s: shuffled}, function (response) {
+	});	
 }
 
 function loadPlaylist() {
- 	var user = "<?php echo AuthManager::getUserName(); ?>";
- 	if (user!="") {
-        $.post('?', {loadPlaylist: '', u: user}, function(response) {
- 		var needsBuilding = response.build;
-		  if (needsBuilding) {
-			  var root = response.path;
-			  $.post('?', {querydb: '', root: root, type: 'add1'}, function (results) {
-					  var files=results;
-					  $.each(files, function (i, elem) {
+	var user = "<?php echo AuthManager::getUserName(); ?>";
+	if (user!="") {
+				$.post('?', {loadPlaylist: '', u: user}, function(response) {
+		var needsBuilding = response.build;
+			if (needsBuilding) {
+				var root = response.path;
+				$.post('?', {querydb: '', root: root, type: 'add1'}, function (results) {
+						var files=results;
+						$.each(files, function (i, elem) {
 						musiccoPlaylist.add({
-						  title: files[i].title,
-						  artist: files[i].artist,
-						  year: files[i].year,
-						  album: files[i].album,
-						  free: false,
-						  path: files[i].parent.replace(/\"/g,""),
-						  mp3:  encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
-						  extension: files[i].extension,
-						  poster: files[i].cover,
-						  number: files[i].number
+							title: files[i].title,
+							artist: files[i].artist,
+							year: files[i].year,
+							album: files[i].album,
+							free: false,
+							path: files[i].parent.replace(/\"/g,""),
+							mp3:	encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
+							extension: files[i].extension,
+							poster: files[i].cover,
+							number: files[i].number
 						});
 						musiccoPlaylist.play();
-					  });
+						});
 			}, "json");
-		  } else {
-			  musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
-			  musiccoPlaylist.select(parseInt(response.current));
-			  musiccoPlaylist.loop = response.loop;
-			  musiccoPlaylist.shuffled = response.shuffled;
-			  if (musiccoPlaylist.loop == "true") {
-				$(toggleAndUpdate($('#big-repeat'), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
-			  }
-			  if (musiccoPlaylist.shuffled == "true") {
-				$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
-			  }
-		  }
-		  hideLoadingIcon();
-		  if (isGuestPlay()) {
-			setTimeout(function() {
-		  		$('#playlist-toggle').trigger('click');
-   			}, 3000);
-		  }
-    }, "json");	
-  }
+			} else {
+				musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
+				musiccoPlaylist.select(parseInt(response.current));
+				musiccoPlaylist.loop = response.loop;
+				musiccoPlaylist.shuffled = response.shuffled;
+				if (musiccoPlaylist.loop == "true") {
+					$(toggleAndUpdate($('#big-repeat'), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
+				}
+				if (musiccoPlaylist.shuffled == "true") {
+					$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
+				}
+			}
+			hideLoadingIcon();
+			if (isGuestPlay()) {
+				setTimeout(function() {
+					$('#playlist-toggle').trigger('click');
+				}, 3000);
+			}
+		}, "json");	
+	}
 }
 
 
@@ -1418,20 +1380,20 @@ function saveGuestPlaylist(path) {
 		var link = getBaseURL() + "?guestPlay&u=" + user;
 		$("#sharing-banner").show();
 		$("#shared-link").val(link).select().attr('size', link.length);
- 	});	
+	});	
 }
 
 $("#musiccoplayer").on($.jPlayer.event.play, function(event) { 
-    $("#big-info").html(nowPlaying('big-info'));
-    $('#big-jp-play').hide();
-    $('#big-jp-pause').show();
-    showNotification();
-    if (!$('#track-wiki').hasClass('shown')) {
-    	updateInfoPanel(wikiLink(nowPlaying("artist")));
-    }
-    updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
-    displayCover();
-    savePlaylist();
+		$("#big-info").html(nowPlaying('big-info'));
+		$('#big-jp-play').hide();
+		$('#big-jp-pause').show();
+		showNotification();
+		if (!$('#track-wiki').hasClass('shown')) {
+			updateInfoPanel(wikiLink(nowPlaying("artist")));
+		}
+		updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
+		displayCover();
+		savePlaylist();
 	scrollToCurrentSong();
 });
 
@@ -1450,68 +1412,60 @@ function notificationAllowed() {
 }
 
 function promptNotification() {
-//console.log("notificationSupported: " + notificationSupported());
-//console.log("notificationAllowed: " + notificationAllowed());
+	//console.log("notificationSupported: " + notificationSupported());
+	//console.log("notificationAllowed: " + notificationAllowed());
 
-  if ((notificationSupported()) && (!notificationAllowed())) {
-  	window.Notification.requestPermission(showNotification);
-  }
+	if ((notificationSupported()) && (!notificationAllowed())) {
+		window.Notification.requestPermission(showNotification);
+	}
  }
 
 function showNotification() {
-  if ((notificationSupported())  && (notificationAllowed())) { 
-      notif = new Notification(
-                    nowPlaying("title") + " - " + nowPlaying("artist"),
-                    {
-                      'icon': nowPlaying("poster")+"/96x96",
-                      'body': nowPlaying("album"),
-                      'tag' : 'musicconowplayingnotification'
-                    }
-                );
-      notif.onclick = function(x) { window.focus(); this.close(); };
-      setTimeout(function(){
-      notif.close();}, 5000);
-    }
-  }
+	if ((notificationSupported())	 && (notificationAllowed())) { 
+			notif = new Notification(nowPlaying("title") + " - " + nowPlaying("artist"),
+																{'icon': nowPlaying("poster")+"/96x96",
+																 'body': nowPlaying("album"),
+																 'tag' : 'musicconowplayingnotification'});
+			notif.onclick = function(x) { window.focus(); this.close(); };
+			setTimeout(function(){
+				notif.close();}, 5000);
+		}
+	}
 
-$("#musiccoplayer").on($.jPlayer.event.pause, function(event) { 
-    $('#big-jp-play').show();
-    $('#big-jp-pause').hide();
+$("#musiccoplayer").on($.jPlayer.event.pause, function(event) {
+	$('#big-jp-play').show();
+	$('#big-jp-pause').hide();
 });
 
-$("#musiccoplayer").on($.jPlayer.event.ready, function(event) { 
-    loadPlaylist();
-    window.resizeTo(340, 580);
-    updateVolumeValue();
+$("#musiccoplayer").on($.jPlayer.event.ready, function(event) {
+	loadPlaylist();
+	window.resizeTo(340, 580);
+	updateVolumeValue();
 });
 
 $('a.fader:has(img)').hover(
-    function() { 
-      $('img', this).fadeOut(100); 
-      },
-    function() { 
-      $('img', this).fadeIn(3000); 
-      }
+		function() { $('img', this).fadeOut(100);},
+		function() { $('img', this).fadeIn(3000);}
 );
 $('.jp-current-time').appendTo('#big-timer');
 $('.jp-duration').appendTo('#big-timer');
 $('.jp-progress').appendTo('#big-jp-progress');
 
 function updateVolumeValue() {
-  var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;
-  $('#big-volume-bar').stop(true, true);
-  $('#big-volume-bar').show();
-  $('#volume-value').height((100 - (volume * 100))+"%");
-  $('#big-volume-bar').delay(800).fadeOut(1600, "linear");
+	var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;
+	$('#big-volume-bar').stop(true, true);
+	$('#big-volume-bar').show();
+	$('#volume-value').height((100 - (volume * 100))+"%");
+	$('#big-volume-bar').delay(800).fadeOut(1600, "linear");
 }
 
-  function ChangeVolume(direction) {
+	function ChangeVolume(direction) {
 	var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;				
 	var changedVol = 0;
 	
-	if (direction == "-") 	{
+	if (direction == "-")		{
 		changedVol = volume - 0.10;
-		if (changedVol <= 0) 	{
+		if (changedVol <= 0)	{
 			changedVol = 0;
 		}
 	}				
@@ -1525,9 +1479,7 @@ function updateVolumeValue() {
 	$("#jquery_jplayer_2").jPlayer({
 		volume:changedVol
 	});		
-	
 	updateVolumeValue();
-
 }
 
 function moveUp() {
@@ -1539,7 +1491,6 @@ function moveDown() {
 }
 
 function move(direction) {
-	
 	listSize=$("#rootfolder").parent("span").find(".item:visible").size();
 	oldSelection=$("#rootfolder").parent("span").find(".item:visible").index($(".current"));
 	nextIndex=oldSelection+direction;
@@ -1557,150 +1508,133 @@ function scrollBrowserPanel() {
 }
 
 function triggerPlayPause() {
-  if($("#jquery_jplayer_2").data("jPlayer").status.paused) { 
-    $('#big-jp-play').trigger('click');
-  } else {
-    $('#big-jp-pause').trigger('click');
-  }
+	if($("#jquery_jplayer_2").data("jPlayer").status.paused) { 
+		$('#big-jp-play').trigger('click');
+	} else {
+		$('#big-jp-pause').trigger('click');
+	}
 }
 
 function hotkey(e) {
-  //console.log(e.keyCode, e.shiftKey, e.ctrlKey);
-  switch (e.keyCode) {
+	//console.log(e.keyCode, e.shiftKey, e.ctrlKey);
+	switch (e.keyCode) {
 
-    case 32:
-    case 179:
-    case 178:
-      //space, media keys
-      triggerPlayPause();
-    break;
-    
-    case 223:
-      //grave
-      if (e.ctrlKey) {
-        triggerPlayPause();
-      }
-    break;
-    
-    case 38:
-    case 175:
-      //up arrow
-       event.preventDefault();
-       ChangeVolume("+");
-    break;
-    
-    case 40:
-    case 174:
-      //down arrow
-      event.preventDefault();
-      ChangeVolume("-");
-    break;
-  
-    case 37:
-    case 177:
-      //left arrow
-      event.preventDefault();
-      if (e.shiftKey) {
-      	$('#big-jp-previous-album').trigger('click');
-      } else {
-      	$('#big-jp-previous').trigger('click');
-      }
-    break;
-  
-    case 39:
-    case 176:
-     //right arrow
-     event.preventDefault();
-     if (e.shiftKey) {
-     	$('#big-jp-next-album').trigger('click');
-     } else {
-     	$('#big-jp-next').trigger('click');
-     }
-    break;
-     
-    case 83:
-       //s
-      if (!isGuestPlay()){
-         $('#search-toggle').trigger('click');
-         $('#searchText').select();
-         $('#searchText').focus();
-      } 
-    break;
-      
-    case 80:
-       //p
-       event.preventDefault();
-       $('#playlist-toggle').trigger('click');
-    break;
-      
-    case 73:
-     //i
-     event.preventDefault();
-     if (e.ctrlKey && e.altKey) {
-     	console.log(musiccoPlaylist.playlist);
-     } else {
-     	$('#track-wiki').trigger('click');
-     }
-    break;
-    
-    case 76:
-     //l
-     event.preventDefault();
-     $('#track-lyrics').trigger('click');
-    break;
-    
-    case 66:
-      //b
-      if (!isGuestPlay()){  
-         toggleBrowser();
-         event.preventDefault();
-      }
-    break;
-    
-    case  191:
-      // /
-      if (!isGuestPlay()) {
-         updateSelection('','');
-         toggleBrowser();
-         $('#filterText').select();
-         $('#filterText').focus();
-         event.preventDefault();
-      } 
-    break;
-      
-    case  74:
-      if (!isGuestPlay()) {
-        //j
-        moveDown();
-      }
-    break;
-    
-    case  75:
-      //k
-      if (!isGuestPlay()) {
-        moveUp();
-      } 
-    break;
-    
-    case  79:
-      //o
-      if (!isGuestPlay()) {
-        $(".current").click();
-      }
-    break;
-    
-    case 65:
-      //a
-      if (!isGuestPlay()) {
-        $(".current").parent("span").find(".queue").click();
-      }
-    break;
-    
-    case 27:
-      //Esc
-      updateSelection('','');
-    break;
-  }
+		case 32: //space
+		case 179: //media play
+		case 178: //media pause
+			triggerPlayPause();
+		break;
+		
+		case 223: //grave
+			if (e.ctrlKey) {
+				triggerPlayPause();
+			}
+		break;
+		
+		case 38: //up arrow
+		case 175: //media volume up
+		 event.preventDefault();
+		 ChangeVolume("+");
+		break;
+		
+		case 40: //down arrow
+		case 174: //media volume down
+			event.preventDefault();
+			ChangeVolume("-");
+		break;
+	
+		case 37: //left arrow
+		case 177: //media previous
+			event.preventDefault();
+			if (e.shiftKey) {
+				$('#big-jp-previous-album').trigger('click');
+			} else {
+				$('#big-jp-previous').trigger('click');
+			}
+		break;
+	
+		case 39: //right arrow
+		case 176: //media next
+		 event.preventDefault();
+		 if (e.shiftKey) {
+			$('#big-jp-next-album').trigger('click');
+		 } else {
+			$('#big-jp-next').trigger('click');
+		 }
+		break;
+		 
+		case 83: //s
+			if (!isGuestPlay()){
+				 $('#search-toggle').trigger('click');
+				 $('#searchText').select();
+				 $('#searchText').focus();
+			} 
+		break;
+			
+		case 80: //p
+			 event.preventDefault();
+			 $('#playlist-toggle').trigger('click');
+		break;
+			
+		case 73: //i
+		 event.preventDefault();
+		 if (e.ctrlKey && e.altKey) {
+			console.log(musiccoPlaylist.playlist);
+		 } else {
+			$('#track-wiki').trigger('click');
+		 }
+		break;
+		
+		case 76: //l
+		 event.preventDefault();
+		 $('#track-lyrics').trigger('click');
+		break;
+		
+		case 66: //b
+			if (!isGuestPlay()){	
+				 toggleBrowser();
+				 event.preventDefault();
+			}
+		break;
+		
+		case	191: // /
+			if (!isGuestPlay()) {
+				 updateSelection('','');
+				 toggleBrowser();
+				 $('#filterText').select();
+				 $('#filterText').focus();
+				 event.preventDefault();
+			} 
+		break;
+			
+		case	74: //j
+			if (!isGuestPlay()) {
+				moveDown();
+			}
+		break;
+		
+		case	75: //k
+			if (!isGuestPlay()) {
+				moveUp();
+			} 
+		break;
+		
+		case	79: //o
+			if (!isGuestPlay()) {
+				$(".current").click();
+			}
+		break;
+		
+		case 65: //a
+			if (!isGuestPlay()) {
+				$(".current").parent("span").find(".queue").click();
+			}
+		break;
+		
+		case 27: //Esc
+			updateSelection('','');
+		break;
+	}
 }
 
 function isGuestPlay() {
@@ -1708,15 +1642,15 @@ function isGuestPlay() {
 }
 
 $('#big-jp-previous').click(function(e) {
-  if (e.shiftKey) {
-    $('#big-jp-previous-album').trigger('click');
-  } else {
-    $('.jp-previous').trigger('click');
-  }
+	if (e.shiftKey) {
+		$('#big-jp-previous-album').trigger('click');
+	} else {
+		$('.jp-previous').trigger('click');
+	}
 });
 
 $('#big-jp-previous-album').click(function() {
-  skip("backward");
+	skip("backward");
 });
 
 function getPreviousAlbumIndex(thisAlbum) {
@@ -1737,37 +1671,37 @@ function getAlbumNameAtPosition(position) {
 }
 
 function getAlbumFirstTrack(thisAlbum) {
-  return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum);
+	return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum);
 }
 
 function skip(direction) {
 	if (direction == "forward") {
-    if (musiccoPlaylist.playlist[musiccoPlaylist.current].album != musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album) {
-      musiccoPlaylist.play(getNextAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album));
-    } else {
-      musiccoPlaylist.play(0);
-    }
-  } else {
-    if (musiccoPlaylist.playlist[musiccoPlaylist.current].album != musiccoPlaylist.playlist[0].album) {
-      musiccoPlaylist.play(getPreviousAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album));
-    } else {
-      musiccoPlaylist.play(getAlbumFirstTrack(musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album));
-    }
-  }
+		if (musiccoPlaylist.playlist[musiccoPlaylist.current].album != musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album) {
+			musiccoPlaylist.play(getNextAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album));
+		} else {
+			musiccoPlaylist.play(0);
+		}
+	} else {
+		if (musiccoPlaylist.playlist[musiccoPlaylist.current].album != musiccoPlaylist.playlist[0].album) {
+			musiccoPlaylist.play(getPreviousAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album));
+		} else {
+			musiccoPlaylist.play(getAlbumFirstTrack(musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album));
+		}
+	}
 }
 
 $(document).on("click", ".remove-album", function() {
- 	album = $(this).attr('album');
- 	musiccoPlaylist.removeTime = 0;
- 	var i=$(this).parents('li').index();
- 	var interval = setInterval(function() { 
-         				if (musiccoPlaylist.playlist[i].album == album) {
+	album = $(this).attr('album');
+	musiccoPlaylist.removeTime = 0;
+	var i=$(this).parents('li').index();
+	var interval = setInterval(function() { 
+								if (musiccoPlaylist.playlist[i].album == album) {
 								musiccoPlaylist.remove(i);
 								i--;
 							}
-                          	i++; 
-                          if(i >= (musiccoPlaylist.playlist.length -1)) clearInterval(interval);
-                   }, 10);
+							i++;
+							if(i >= (musiccoPlaylist.playlist.length -1)) clearInterval(interval);
+							}, 10);
 });
 
 $(document).on("click", ".move", function() {
@@ -1796,7 +1730,7 @@ $(document).on("click", ".move", function() {
 	setTimeout(function() {
 		formatPlaylist();
 		scrollToTrack(offset);
-   }, 1000);
+	 }, 1000);
 });
 
 $(document).on("click", ".share", function() {
@@ -1805,50 +1739,50 @@ $(document).on("click", ".share", function() {
 
 
 $('#big-jp-play').click(function() {
-  $('.jp-play').trigger('click');
-  promptNotification();
+	$('.jp-play').trigger('click');
+	promptNotification();
 });
 
 $('#big-jp-pause').click(function() {
-  $('.jp-pause').trigger('click');
+	$('.jp-pause').trigger('click');
 });
 
 $('#big-jp-next').click(function(e) {
-    if (e.shiftKey) {
-    $('#big-jp-next-album').trigger('click');
-  } else {
-    $('.jp-next').trigger('click');
-  }
+	if (e.shiftKey) {
+		$('#big-jp-next-album').trigger('click');
+	} else {
+		$('.jp-next').trigger('click');
+	}
 });
 
 $('#big-jp-next-album').click(function() {
-  skip("forward");
+	skip("forward");
 });
 
 $('body').on("keyup", function(e) {
-  hotkey(e);
+	hotkey(e);
 });
 
 if ($("#user_name").is('*')) {
-  $("#user_name").focus();
+	$("#user_name").focus();
 }
 
 $('#big-shuffle').click(function() {
-  $(toggleAndUpdate($(this), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
+	$(toggleAndUpdate($(this), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
 });
 
 $('#big-repeat').click(function() {
-  $(toggleAndUpdate($(this), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
+	$(toggleAndUpdate($(this), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
 });
 
 $('#big-mute').click(function() {
-  $(toggleAndUpdate($(this), 'selected jp-mute jp-unmute')).trigger('click');
+	$(toggleAndUpdate($(this), 'selected jp-mute jp-unmute')).trigger('click');
 });
 
 function toggleAndUpdate(toggle, classes) {
-  var target = "#musiccoplayer ."+ $(toggle).attr('class').replace(/selected /, "").replace(/toggles /, "").replace(/touch-/, "");
-  $(toggle).toggleClass(classes);
-  return target;
+	var target = "#musiccoplayer ."+ $(toggle).attr('class').replace(/selected /, "").replace(/toggles /, "").replace(/touch-/, "");
+	$(toggle).toggleClass(classes);
+	return target;
 }
 
 function initBrowser() {
@@ -1857,16 +1791,16 @@ function initBrowser() {
 }
 
 $('#big-volume-down').click(function() {
-  ChangeVolume("-");
+	ChangeVolume("-");
 });
 
 $('#big-volume-up').click(function() {
-  ChangeVolume("+");
+	ChangeVolume("+");
 });
 
 if ((navigator.userAgent.match(/(android|sailfish)/i)) 
-   && !(navigator.userAgent.match(/(WPDesktop|IEMobile|Edge|Windows Phone)/i))) {
-	$("#android-banner").toggle();
+	 && !(navigator.userAgent.match(/(WPDesktop|IEMobile|Edge|Windows Phone)/i))) {
+		$("#android-banner").toggle();
 }
 
 if (isGuestPlay()) { 
@@ -1875,7 +1809,7 @@ if (isGuestPlay()) {
 	initBrowser();
 }
 });
-//]]>                
+//]]>								 
 </script>
 <title><?php if(Musicco::getConfig('appName') != null) print Musicco::getConfig('appName'); ?></title>
 </head>
@@ -1884,17 +1818,13 @@ if (isGuestPlay()) {
 //
 // Print the error (if there is something to print)
 //
-if(isset($_ERROR) && strlen($_ERROR) > 0)
-{
+if(isset($_ERROR) && strlen($_ERROR) > 0) {
 	print "<div id=\"error\">".$_ERROR."</div>";
 }
 // Checking if the user is allowed to access the page, otherwise showing the login box
-if(!AuthManager::isAccessAllowed())
-{
+if(!AuthManager::isAccessAllowed()) {
 	$this->printLoginBox();
-}
-else 
-{
+} else {
 	$this->printAndroidPrompt();
 ?>
 <!-- START: big player -->
@@ -1904,9 +1834,9 @@ else
 <?php
 	//print "<span id=\"test\"><a href=\"javascript:;\">".$this->getString("standard_version")."</a> | </span>";
 	//print "<span id=\"untest\"><a href=\"javascript:;\">".$this->getString("mobile_version")."</a> | </span>";
-  print "<span><img id=\"loadingIcon\" src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
-  if (AuthManager::isAdmin()) {
-    print "<span id=\"reset_db\" class=\"guestPlay\"><a href=\"javascript:;\">".$this->getString("reset_db")."</a> | </span>";
+	print "<span><img id=\"loadingIcon\" src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
+	if (AuthManager::isAdmin()) {
+		print "<span id=\"reset_db\" class=\"guestPlay\"><a href=\"javascript:;\">".$this->getString("reset_db")."</a> | </span>";
 	}
 if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 	print "<span id=\"logout\"><a href=\"?logout\">".$this->getString("log_out")."</a> | </span>";
@@ -1919,55 +1849,55 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 
 <!-- START: big toggles -->
 <div id="big-toggles" class="moveable">
-  <div id="browser-toggle" class="guestPlay toggles hideable">&nbsp;</div>
-  <div id="search-toggle" class="guestPlay toggles hideable">&nbsp;</div>
-  <div id="playlist-toggle" class="toggles hideable">&nbsp;</div>
-  <div id="track-wiki" class="toggles hideable">&nbsp;</div>
-  <div id="track-lyrics" class="toggles hideable">&nbsp;</div>
+	<div id="browser-toggle" class="guestPlay toggles hideable">&nbsp;</div>
+	<div id="search-toggle" class="guestPlay toggles hideable">&nbsp;</div>
+	<div id="playlist-toggle" class="toggles hideable">&nbsp;</div>
+	<div id="track-wiki" class="toggles hideable">&nbsp;</div>
+	<div id="track-lyrics" class="toggles hideable">&nbsp;</div>
 </div>
 <!-- END: big toggles -->
 
 <!-- START: panels -->
 <div id="panels">
-  <div id="infoPanel" class="panel moveable"></div>
-  <div id="lyricsPanel" class="panel moveable"></div>
-  <div id="searchPanel" class="guestPlay panel moveable">
+	<div id="infoPanel" class="panel moveable"></div>
+	<div id="lyricsPanel" class="panel moveable"></div>
+	<div id="searchPanel" class="guestPlay panel moveable">
 		<form action="?" id="searchForm">
 		 <input id="searchText" type="text" class="nokeyboard" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
 		 <input id="findIt" type="submit" value="<?php print $this->getString("search_button"); ?>" />
 		 <input id="clear" type="button" value="x" />
 		</form>
 		<div id="searchResults">&nbsp;</div>
-  </div>
-  <div id="helpPanel" class="panel moveable"><?php print getHelp(); ?></div>
-  <div id="aboutPanel" class="panel moveable"><?php print getAbout(); ?></div>
-    <!-- START: browser -->
-  <div id="browser" class="guestPlay panel moveable">
-  <div class="table">
-  <div id="filter">
+	</div>
+	<div id="helpPanel" class="panel moveable"><?php print getHelp(); ?></div>
+	<div id="aboutPanel" class="panel moveable"><?php print getAbout(); ?></div>
+		<!-- START: browser -->
+	<div id="browser" class="guestPlay panel moveable">
+	<div class="table">
+	<div id="filter">
 		<span id="filterForm">
 		<input id="includeOlAdlbums" type="checkbox" checked="true"/><?php print $this->getString("show_all"); ?>
 		<input type="text" id="filterText" class="nokeyboard" name="filterText" size="15" />
 		<sup id="filterButton">&#10006;</sup>
 		</span>
-  </div>
-  <br/>
+	</div>
+	<br/>
 	<span id="topnode">
 	</span>
-  </div>
-  </div>
-  <!-- END: browser -->
+	</div>
+	</div>
+	<!-- END: browser -->
 </div>
 <!-- END: panels -->
-  <div id="big-cover" class="moveable"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/cover.png" class="cover" />
-  	<div id="updateCoverArt" class="guestPlay"><?php print $this->getString("..."); ?></div><div class="dummy">&nbsp;</div>
-  	<div id="big-volume-bar"><div id="volume-value"></div></div>
-  </div>
-  <div id="big-timer" class="moveable"></div>
-  <div id="big-jp-progress" class="moveable"></div>
-  <div id="big-info" class="moveable">&nbsp;</div>
+	<div id="big-cover" class="moveable"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/cover.png" class="cover" />
+		<div id="updateCoverArt" class="guestPlay"><?php print $this->getString("..."); ?></div><div class="dummy">&nbsp;</div>
+		<div id="big-volume-bar"><div id="volume-value"></div></div>
+	</div>
+	<div id="big-timer" class="moveable"></div>
+	<div id="big-jp-progress" class="moveable"></div>
+	<div id="big-info" class="moveable">&nbsp;</div>
 	<div id="playlist-controls">
-  	<div id="big-mute" class="toggles jp-mute">&nbsp;</div>
+		<div id="big-mute" class="toggles jp-mute">&nbsp;</div>
 		<div id="clear-playlist" class="guestPlay toggles">&nbsp;</div>
 		<div id="uncover" class="guestPlay toggles">&nbsp;</div>
 		<div id="big-shuffle" class="toggles touch-jp-shuffle">&nbsp;</div>
@@ -1975,18 +1905,18 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		<div id="big-volume-down" class="toggles">&nbsp;</div>
 		<div id="big-volume-up" class="toggles">&nbsp;</div>
 	</div>
-  <!-- START: big controls -->
-  <div id="big-controls" class="moveable">
-    <a href="javascript:;" id="big-jp-previous"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-previous.png" /></a>
-    <a href="javascript:;" id="big-jp-previous-album"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-previous.png" /></a>
-    <a href="javascript:;" id="big-jp-play"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-play.png" /></a>
-    <a href="javascript:;" id="big-jp-pause" style=" display: none;"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-pause.png" /></a>
-    <a href="javascript:;" id="big-jp-next"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
-    <a href="javascript:;" id="big-jp-next-album"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
-  </div>
-  <!-- END: big controls -->
+	<!-- START: big controls -->
+	<div id="big-controls" class="moveable">
+		<a href="javascript:;" id="big-jp-previous"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-previous.png" /></a>
+		<a href="javascript:;" id="big-jp-previous-album"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-previous.png" /></a>
+		<a href="javascript:;" id="big-jp-play"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-play.png" /></a>
+		<a href="javascript:;" id="big-jp-pause" style=" display: none;"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-pause.png" /></a>
+		<a href="javascript:;" id="big-jp-next"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
+		<a href="javascript:;" id="big-jp-next-album"><img src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
+	</div>
+	<!-- END: big controls -->
 
-  
+	
 </div>
 <!-- END: big player -->
 
@@ -1994,37 +1924,37 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 <!-- START: Player -->
 <div id="musiccoplayer" class="jp-audio">
 			<div class="jp-type-playlist">
-      	<div id="jquery_jplayer_2" class="jp-jplayer"></div>
+				<div id="jquery_jplayer_2" class="jp-jplayer"></div>
 				<!-- START: Playlist -->
-      <div id="playlistPanel" class="jp-playlist my-playlist panel moveable">
-        <ul>
-          <li></li>
-        </ul>
-      </div>  
+			<div id="playlistPanel" class="jp-playlist my-playlist panel moveable">
+				<ul>
+					<li></li>
+				</ul>
+			</div>	
 
-      <!-- END: Playlist -->
-      
+			<!-- END: Playlist -->
+			
 				<div class="jp-gui">
 					<div class="jp-interface">
 							<ul class="jp-controls">
-                <li>
-                  <div id="track-cover">
-                    <a href="javascript:;" id="jp-play" class="fader jp-play" tabindex="1"><img class="cover"/></a>
-                    <a href="javascript:;" id="jp-pause" class="fader jp-pause" tabindex="1"><img class="cover"/></a>
-                    <div class="jp-progress">
-                      <div class="jp-seek-bar">
-                        <div class="jp-play-bar"></div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
+								<li>
+									<div id="track-cover">
+										<a href="javascript:;" id="jp-play" class="fader jp-play" tabindex="1"><img class="cover"/></a>
+										<a href="javascript:;" id="jp-pause" class="fader jp-pause" tabindex="1"><img class="cover"/></a>
+										<div class="jp-progress">
+											<div class="jp-seek-bar">
+												<div class="jp-play-bar"></div>
+											</div>
+										</div>
+									</div>
+								</li>
 								<li><a href="javascript:;" class="jp-previous" tabindex="1">previous</a></li>
 								<li><a href="javascript:;" class="jp-next" tabindex="1">next</a></li>
-              </ul>
+							</ul>
 							<ul class="jp-toggles">
-                <li id="volume"><div class="jp-volume-bar"><div class="jp-volume-bar-value"></div></div></li>
-                <li><div class="jp-current-time"></div><div class="jp-duration"></div></li>
-                <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
+								<li id="volume"><div class="jp-volume-bar"><div class="jp-volume-bar-value"></div></div></li>
+								<li><div class="jp-current-time"></div><div class="jp-duration"></div></li>
+								<li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
 								<li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
 								<li><a href="javascript:;" class="jp-shuffle" tabindex="1" title="shuffle">shuffle</a></li>
 								<li><a href="javascript:;" class="jp-shuffle-off" tabindex="1" title="shuffle off">shuffle off</a></li>
@@ -2058,8 +1988,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 <!-- END: Sharing Banner -->
 
 <?php 
-	if(!AuthManager::isLoginRequired())
-	{
+	if(!AuthManager::isLoginRequired()) {
 		$this->printAndroidPrompt();
 	}
 }
@@ -2075,13 +2004,13 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 // This is where the system is activated. 
 	if(isset($_POST['loadPlaylist'])) {
 		$user = $_POST['u'];
-  		$response = file_get_contents(dirname(__FILE__)."/playlists/".$user.".playlist");
-  		if ($response == "") {
-  			$response = '{"song": "0" ,"repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
-  		}
-  		logMessage("Loaded playlist for ".$user);
-  		return  print_r($response);
-  		exit;
+			$response = file_get_contents(dirname(__FILE__)."/playlists/".$user.".playlist");
+			if ($response == "") {
+				$response = '{"song": "0" ,"repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
+			}
+			logMessage("Loaded playlist for ".$user);
+			return	print_r($response);
+			exit;
 	} elseif (isset($_POST['savePlaylist'])) {
 		$user = $_POST['u'];
 		$playlist = str_replace("\"", "\\\"", $_POST['p']);
@@ -2102,20 +2031,20 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 	} elseif (isset($_POST['getConfig'])) {
 		$userList = array();
 		$userAccounts = Musicco::getConfig('users');
-		foreach($userAccounts as $id => $accountDetails){
-    			array_push($userList,'{\"login\": \"'.$accountDetails[0].'\"}');
+		foreach($userAccounts as $id => $accountDetails) {
+					array_push($userList,'{\"login\": \"'.$accountDetails[0].'\"}');
 		}
-  		$response = '{"require_login": "'.Musicco::getConfig('require_login').'", "musicRoot": "'.Musicco::getConfig('musicRoot').'", "skin": "'.Musicco::getConfig('skin').'", "new_marker": "'.Musicco::getConfig('new_marker').'", "users": "['.join(",",$userList).']"}';
-  		// TODO: send all my patterns here too?
-  		logMessage("Android client requested config:");
-  		logMessage($response);
-  		return  print_r($response);
-  		exit;		
-  	} elseif (isset($_POST['saveCover'])) {
+			$response = '{"require_login": "'.Musicco::getConfig('require_login').'", "musicRoot": "'.Musicco::getConfig('musicRoot').'", "skin": "'.Musicco::getConfig('skin').'", "new_marker": "'.Musicco::getConfig('new_marker').'", "users": "['.join(",",$userList).']"}';
+			// TODO: send all my patterns here too?
+			logMessage("Android client requested config:");
+			logMessage($response);
+			return	print_r($response);
+			exit;		
+	} elseif (isset($_POST['saveCover'])) {
 		$url = $_POST['u'];
 		$path = $_POST['p'];
 		logMessage("Saving cover from ".$url." to ".$path);
-		return 	file_put_contents($path."cover.png", file_get_contents($url));
+		return	file_put_contents($path."cover.png", file_get_contents($url));
 		exit;
 	} elseif (isset($_GET['head'])) {
 		$url =$_GET['url']; 
@@ -2145,7 +2074,7 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 		exit;
 	} elseif (isset($_GET['about'])) {
 		logMessage("Android client requested about");
-		return  print_r(getAboutForAndroid());
+		return	print_r(getAboutForAndroid());
 		exit;
 	} else {
 		$musicco = new Musicco();
@@ -2155,8 +2084,8 @@ if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 }
 
 function file_get_contents_utf8($fn) {
-     $content = file_get_contents($fn);
-      return mb_convert_encoding($content, 'UTF-8', mb_detect_encoding($content, 'UTF-8, GB2312, ISO-8859-1', true));
+	$content = file_get_contents($fn);
+	return mb_convert_encoding($content, 'UTF-8', mb_detect_encoding($content, 'UTF-8, GB2312, ISO-8859-1', true));
 }
 
 //
@@ -2228,7 +2157,7 @@ function querydb($query_root, $query_type) {
 			$album_pattern = Musicco::getConfig('albumPattern');
 			$album = $exploded_parent[sizeOf($exploded_parent) -2];
 			if (preg_match($album_pattern, $album)) {
-    			$album = $exploded_parent[sizeOf($exploded_parent) -3];
+					$album = $exploded_parent[sizeOf($exploded_parent) -3];
 			}
 			$album = str_replace("[$year] ", "", $album);
 			
@@ -2274,219 +2203,217 @@ function logMessage($log_message) {
 	}
 }
 function builddb() {
-  if (file_exists("library.lock")) {
-      printf("-1");
-      logMessage("Aborting, another library refresh is already in progress.");
-  } else {
-    $lock_file = fopen("library.lock", "w") or die("Unable to create lock file.");
-    fclose($lock_file);
-    try {
-      $folder = Musicco::getConfig('musicRoot');
-      // write lock file
-      //open the database
-      $db = new PDO('sqlite:library.db');
-      $sql_insert_item='INSERT INTO item_tmp (name, type, parent) VALUES (:name , :type, :parent);';
-      $insert_item = $db->prepare($sql_insert_item, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-      $sql_insert_cover='INSERT INTO cover_tmp (file, parent) VALUES (:file, :parent);';
-      $insert_cover = $db->prepare($sql_insert_cover, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+	if (file_exists("library.lock")) {
+			printf("-1");
+			logMessage("Aborting, another library refresh is already in progress.");
+	} else {
+		$lock_file = fopen("library.lock", "w") or die("Unable to create lock file.");
+		fclose($lock_file);
+		try {
+			$folder = Musicco::getConfig('musicRoot');
+			// write lock file
+			//open the database
+			$db = new PDO('sqlite:library.db');
+			$sql_insert_item='INSERT INTO item_tmp (name, type, parent) VALUES (:name , :type, :parent);';
+			$insert_item = $db->prepare($sql_insert_item, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+			$sql_insert_cover='INSERT INTO cover_tmp (file, parent) VALUES (:file, :parent);';
+			$insert_cover = $db->prepare($sql_insert_cover, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
 
-      //create the database
-      $db->exec("DELETE FROM cover_tmp;");    
-      $db->exec("DELETE FROM item_tmp;");    
-      $db->exec("DELETE FROM type;");    
-      $db->exec("CREATE TABLE cover (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");    
-      $db->exec("CREATE TABLE cover_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");    
-      $db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
-      $db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");    
-      $db->exec("CREATE TABLE type (id INTEGER PRIMARY KEY, type TEXT);");    
-      $db->exec("INSERT INTO type (id, type) VALUES (1, 'folder');");    
-      $db->exec("INSERT INTO type (id, type) VALUES (2, 'song');");    
-      $db->exec("INSERT INTO type (id, type) VALUES (120, 'version');");    
-      
-      $_START_SCAN = microtime(true);
-      $library = build_library($folder, ".mp3");
-      logMessage("Scanned drive in ".number_format((microtime(true) - $_START_SCAN), 3)." seconds");
-    
-      $_START_INSERT = microtime(true);
-      $covers=0;
-      $items=0;
-      foreach ($library as $item) {
-        $name= $item[0];
-        $type= $item[1];
-        $parent= $item[2];
-      if ($type == "3") {
-        $insert_cover->execute(array(':file' => $name, ':parent' => $parent));
-        $covers+=1;
-      } else 
-      {
-          $insert_item->execute(array(':name' => $name, ':type' => $type, ':parent' => $parent));
-          $items+=1;
-        }
-      }
-      // Update non-temp tables and reindex the DB
-      $db->exec("DELETE FROM cover;");
-      $db->exec("DELETE FROM item;");
-      $db->exec("DROP INDEX cover_idx;");    
-      $db->exec("DROP INDEX item_idx;");    
-      $db->exec("INSERT INTO cover (file, parent) SELECT file, parent FROM cover_tmp;");
-      $db->exec("INSERT INTO item (name, type, parent) SELECT name, type, parent FROM item_tmp;");
-      $db->exec("CREATE INDEX IF NOT EXISTS cover_idx ON cover (parent);");    
-      $db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");    
-      $db->exec("REINDEX cover_idx;"); 
-      $db->exec("REINDEX item_idx;");    
-      $db->exec("DELETE FROM cover_tmp;");    
-      $db->exec("DELETE FROM item_tmp;");
+			//create the database
+			$db->exec("DELETE FROM cover_tmp;");		
+			$db->exec("DELETE FROM item_tmp;");		 
+			$db->exec("DELETE FROM type;");		 
+			$db->exec("CREATE TABLE cover (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");		
+			$db->exec("CREATE TABLE cover_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");		
+			$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");		
+			$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");		
+			$db->exec("CREATE TABLE type (id INTEGER PRIMARY KEY, type TEXT);");		
+			$db->exec("INSERT INTO type (id, type) VALUES (1, 'folder');");		 
+			$db->exec("INSERT INTO type (id, type) VALUES (2, 'song');");		 
+			$db->exec("INSERT INTO type (id, type) VALUES (120, 'version');");		
+			
+			$_START_SCAN = microtime(true);
+			$library = build_library($folder, ".mp3");
+			logMessage("Scanned drive in ".number_format((microtime(true) - $_START_SCAN), 3)." seconds");
+		
+			$_START_INSERT = microtime(true);
+			$covers=0;
+			$items=0;
+			foreach ($library as $item) {
+				$name= $item[0];
+				$type= $item[1];
+				$parent= $item[2];
+			if ($type == "3") {
+				$insert_cover->execute(array(':file' => $name, ':parent' => $parent));
+				$covers+=1;
+			} else {
+					$insert_item->execute(array(':name' => $name, ':type' => $type, ':parent' => $parent));
+					$items+=1;
+			}
+		}
+			// Update non-temp tables and reindex the DB
+			$db->exec("DELETE FROM cover;");
+			$db->exec("DELETE FROM item;");
+			$db->exec("DROP INDEX cover_idx;");		 
+			$db->exec("DROP INDEX item_idx;");		
+			$db->exec("INSERT INTO cover (file, parent) SELECT file, parent FROM cover_tmp;");
+			$db->exec("INSERT INTO item (name, type, parent) SELECT name, type, parent FROM item_tmp;");
+			$db->exec("CREATE INDEX IF NOT EXISTS cover_idx ON cover (parent);");		 
+			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");		
+			$db->exec("REINDEX cover_idx;"); 
+			$db->exec("REINDEX item_idx;");		 
+			$db->exec("DELETE FROM cover_tmp;");		
+			$db->exec("DELETE FROM item_tmp;");
 
-      // close the database connection
-      $db = NULL;
-      printf("%.1s s",(microtime(true) - $_START_INSERT));
-      logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
-      unlink("library.lock");
-    }
-    catch(PDOException $e) {
-      print 'Exception : '.$e->getMessage();
-      unlink("library.lock");
-    }
+			// close the database connection
+			$db = NULL;
+			printf("%.1s s",(microtime(true) - $_START_INSERT));
+			logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
+			unlink("library.lock");
+		} catch(PDOException $e) {
+			print 'Exception : '.$e->getMessage();
+			unlink("library.lock");
+		}
 	}
 }
-  function build_library($dir, $extension) {
-    if (!isset($item)) {
-      $item = array();
-    }
-    $root = scandir($dir); 
-    $filter = $extension;
-      foreach($root as $value) {
-        if($value === '.' || $value === '..') {continue;} 
-        if(is_dir("$dir/$value")) {
-            $item[]=array($value, '1', "$dir/");
-            } else {
-                if(is_song("$dir/$value")){
-                  $item[]=array($value, '2', "$dir/");
-                }
-                if(is_cover("$dir/$value")){
-                  $item[]=array($value, '3', "$dir/");
-                }
-              continue;}
-            foreach(build_library("$dir/$value", $filter) as $value) {
-              $item[]=$value; 
-          }
-        }
-      return ($item);
-   }
-   
-   function is_song($file) {
-   	return (stripos($file, "mp3") > 0);
-   }
-   
-   function is_cover($file) {
-   	return (stripos($file, Musicco::getConfig('coverFileName').".") > 0);
-   }
-   
-   // Finally, the contents of the help and about panels
-   function getHelp() {
-   	$helpString="<div id='helpBox'>";
-   	$helpString.="<span class='close help'>&#10006;</span>";
-   	$helpString.="<span class='help bold big'>Keyboard Shortcuts</span>";
-   	$helpString.="<span class='help'><br/></span>";
-   	$helpString.="<span class='help yellow bold'>Playback</span>";
-   	$helpString.="<span class='help'>&larr;: previous track</span>";
-   	$helpString.="<span class='help'>&rarr;: next track</span>";
-   	$helpString.="<span class='help'>Shift + &larr;: previous album</span>";
-   	$helpString.="<span class='help'>Shift + &rarr;: next album</span>";
-   	$helpString.="<span class='help'>&uarr;: volume up</span>";
-   	$helpString.="<span class='help'>&darr;: volume down</span>";
-   	$helpString.="<span class='help'>&lt;space&gt;: play/pause</span>";
-   	$helpString.="<span class='help'>You can also use media keys on <br/>most multimedia keyboards</span>";
-   	$helpString.="<span class='help'><br/></span>";
-   	$helpString.="<span class='help yellow bold'>Main</span>";
-   	$helpString.="<span class='guestPlay help'>b: show/hide browser</span>";
-   	$helpString.="<span class='guestPlay help'>/: go to filter box in browser</span>";
-   	$helpString.="<span class='guestPlay help'>s: show/hide search</span>";
-   	$helpString.="<span class='help'>p: show/hide playlist</span>";
-   	$helpString.="<span class='help'>i: show/hide artist information</span>";
-   	$helpString.="<span class='help'>l: show/hide lyrics</span>";
-   	$helpString.="<span class='help'>Esc: hide all panels</span>";
-   	$helpString.="<span class='help'><br/></span>";
-   	$helpString.="<span class='guestPlay help yellow bold'>Browser</span>";
-   	$helpString.="<span class='guestPlay help'>j/k: highlight previous/next item</span>";
-   	$helpString.="<span class='guestPlay help'>o: open current selection</span>";
-   	$helpString.="<span class='guestPlay help'>a: queue current selection</span>";
-   	$helpString.="<span class='help'><br/></span>";
-   	
-   	
-   	$helpString.="</div>";
-   	return $helpString;
-   }
-   
-    function getAboutForAndroid() {
-    	$aboutStringForAndroid = "<html>";
-    	$aboutStringForAndroid .= "<head>";
-    	$aboutStringForAndroid .= css();
-    	$aboutStringForAndroid .= "</head>";
-    	$aboutStringForAndroid .= "<body>";
-    	$aboutStringForAndroid .= getAbout();
-    	$aboutStringForAndroid .= "</body>";
-    	$aboutStringForAndroid .= "</html>";
-    	return $aboutStringForAndroid;
-    }
-    
-    function getAbout() {
-   	$aboutString="<div id='aboutBox'>";
-   	$aboutString.="<span class='close help'>&#10006;</span>";
-   	$aboutString.="<span class='about bold'><a target='_blank' href='//musicco.org'><img width='310px' height='310px' src='skins/".Musicco::getConfig('skin')."/about.png'/></a></span>";
-   	$aboutString.="<span class='about bold'><a target='_blank' href='//musicco.org'>musicco</a></span>";
-   	$aboutString.="<span class='about bold'>A web based player for your music collection</span>";
-   	$aboutString.="<span class='about bold'>and its android companion.</span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'>musicco is a light-weight, web-based streaming music player for your local library.</span>";
-   	$aboutString.="<span class='about'>it's also got a handy built-in android companion</span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'>It runs easily on a NAS like a dns-323.</span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'>It'll basically work wherever you can run php with sqlite and lighttpd.</span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'>Modern desktop and mobile browsers love it!.</span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'>musicco is inspired by</span>";
-   	$aboutString.="<span class='about'><a target='_blank' href='//github.com/henrik242/musicbrowser#readme'>musicbrowser</a></span>";
-   	$aboutString.="<span class='about'>&#9834;</span>";
-   	$aboutString.="<span class='about'><a target='_blank' href='//encode-explorer.siineiolekala.net/'>Encode Explorer</a></span>";
-   	$aboutString.="<span class='about'>&#9834;</span>";
-   	$aboutString.="<span class='about'><a target='_blank' href='//coverart.katastrophos.net'>katastrophos.net's <br/> cover art downloader</a></span>";
-   	$aboutString.="<span class='about'>&#9834;</span>";
-   	$aboutString.="<span class='about'><a target='_blank' href='//www.doublejdesign.co.uk'>Double-J Design's <br/> super mono icons</a></span>";
-   	$aboutString.="<span class='about'>&#9834;</span>";
-   	$aboutString.="<span class='about'><a target='_blank' href='//icons8.com'>Other icons from <br/> icons8.com</a></span>";
-   	$aboutString.="<span class='about'>&#9834;</span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'>musicco scans your music folder and builds a database of your music collection,</span>";
-   	$aboutString.="<span class='about'>retrieving missing cover art from <a target='_blank' href='//www.coverartarchive.org'>coverartarchive.org</a>,</span>";
-   	$aboutString.="<span class='about'>artist information from <a target='_blank' href='//en.wikipedia.org/'>wikipedia.org</a></span>";
-   	$aboutString.="<span class='about'>and song lyrics from <a target='_blank' href='//www.chartlyrics.com'>chartlyrics.com</a>.</span>";
-   	$aboutString.="<span class='about'>The audio player component uses <a target='_blank' href='//jplayer.org/'>jPlayer</a>.</span>";
-   	if (Musicco::getConfig('show_donate_button')) {
-      $aboutString.="<span class='about'><br/></span>";
-      $aboutString.="<span class='about'><br/></span>";
-      $aboutString.="<span class='about'>Like musicco? Wanna buy me a beer?</span>";
-      $aboutString.="<span class='about'><br/></span>";
-      $aboutString.="<span class='about'>";
-      $aboutString.="<form action='https://www.paypal.com/cgi-bin/webscr' method='post' target='_top'><input id='paypalCMD' type='hidden' name='cmd' value='_s-xclick'><input type='hidden' name='hosted_button_id' value='CWRGBQ6A65642'><input id='paypalIMG' type='image' src='https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif' border='0' name='submit' alt='PayPal - The safer, easier way to pay online!'><img alt='' border='0' src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif' width='1' height='1'></form>";
-      $aboutString.="</span>"; 
-   	}
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'><br/></span>";
-   	$aboutString.="<span class='about'>Release History</span>";
-   	$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users. New default theme, use the classic skin to go back to the old style. More pattern configuration options for more custom library tree structures. Shift-click previous/next buttons (or shift-use arrow keys) to skip to the next album in the playlist.</span>";
-   	$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
-   	$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
-   	$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
-   	$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
-   	$aboutString.="<span class='about'>v1.0: initial release</span>";
-   	$aboutString.="</div>";
-   	return $aboutString;
-   }
+	function build_library($dir, $extension) {
+		if (!isset($item)) {
+			$item = array();
+		}
+		$root = scandir($dir); 
+		$filter = $extension;
+			foreach($root as $value) {
+				if($value === '.' || $value === '..') {continue;} 
+				if(is_dir("$dir/$value")) {
+						$item[]=array($value, '1', "$dir/");
+						} else {
+								if(is_song("$dir/$value")){
+									$item[]=array($value, '2', "$dir/");
+								}
+								if(is_cover("$dir/$value")){
+									$item[]=array($value, '3', "$dir/");
+								}
+							continue;}
+						foreach(build_library("$dir/$value", $filter) as $value) {
+							$item[]=$value; 
+					}
+				}
+			return ($item);
+	 }
+	 
+	 function is_song($file) {
+		return (stripos($file, "mp3") > 0);
+	 }
+	 
+	 function is_cover($file) {
+		return (stripos($file, Musicco::getConfig('coverFileName').".") > 0);
+	 }
+	 
+	 // Finally, the contents of the help and about panels
+	 function getHelp() {
+		$helpString="<div id='helpBox'>";
+		$helpString.="<span class='close help'>&#10006;</span>";
+		$helpString.="<span class='help bold big'>Keyboard Shortcuts</span>";
+		$helpString.="<span class='help'><br/></span>";
+		$helpString.="<span class='help yellow bold'>Playback</span>";
+		$helpString.="<span class='help'>&larr;: previous track</span>";
+		$helpString.="<span class='help'>&rarr;: next track</span>";
+		$helpString.="<span class='help'>Shift + &larr;: previous album</span>";
+		$helpString.="<span class='help'>Shift + &rarr;: next album</span>";
+		$helpString.="<span class='help'>&uarr;: volume up</span>";
+		$helpString.="<span class='help'>&darr;: volume down</span>";
+		$helpString.="<span class='help'>&lt;space&gt;: play/pause</span>";
+		$helpString.="<span class='help'>You can also use media keys on <br/>most multimedia keyboards</span>";
+		$helpString.="<span class='help'><br/></span>";
+		$helpString.="<span class='help yellow bold'>Main</span>";
+		$helpString.="<span class='guestPlay help'>b: show/hide browser</span>";
+		$helpString.="<span class='guestPlay help'>/: go to filter box in browser</span>";
+		$helpString.="<span class='guestPlay help'>s: show/hide search</span>";
+		$helpString.="<span class='help'>p: show/hide playlist</span>";
+		$helpString.="<span class='help'>i: show/hide artist information</span>";
+		$helpString.="<span class='help'>l: show/hide lyrics</span>";
+		$helpString.="<span class='help'>Esc: hide all panels</span>";
+		$helpString.="<span class='help'><br/></span>";
+		$helpString.="<span class='guestPlay help yellow bold'>Browser</span>";
+		$helpString.="<span class='guestPlay help'>j/k: highlight previous/next item</span>";
+		$helpString.="<span class='guestPlay help'>o: open current selection</span>";
+		$helpString.="<span class='guestPlay help'>a: queue current selection</span>";
+		$helpString.="<span class='help'><br/></span>";
+		
+		
+		$helpString.="</div>";
+		return $helpString;
+	 }
+	 
+		function getAboutForAndroid() {
+			$aboutStringForAndroid = "<html>";
+			$aboutStringForAndroid .= "<head>";
+			$aboutStringForAndroid .= css();
+			$aboutStringForAndroid .= "</head>";
+			$aboutStringForAndroid .= "<body>";
+			$aboutStringForAndroid .= getAbout();
+			$aboutStringForAndroid .= "</body>";
+			$aboutStringForAndroid .= "</html>";
+			return $aboutStringForAndroid;
+		}
+		
+		function getAbout() {
+		$aboutString="<div id='aboutBox'>";
+		$aboutString.="<span class='close help'>&#10006;</span>";
+		$aboutString.="<span class='about bold'><a target='_blank' href='//musicco.org'><img width='310px' height='310px' src='skins/".Musicco::getConfig('skin')."/about.png'/></a></span>";
+		$aboutString.="<span class='about bold'><a target='_blank' href='//musicco.org'>musicco</a></span>";
+		$aboutString.="<span class='about bold'>A web based player for your music collection</span>";
+		$aboutString.="<span class='about bold'>and its android companion.</span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'>musicco is a light-weight, web-based streaming music player for your local library.</span>";
+		$aboutString.="<span class='about'>it's also got a handy built-in android companion</span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'>It runs easily on a NAS like a dns-323.</span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'>It'll basically work wherever you can run php with sqlite and lighttpd.</span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'>Modern desktop and mobile browsers love it!.</span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'>musicco is inspired by</span>";
+		$aboutString.="<span class='about'><a target='_blank' href='//github.com/henrik242/musicbrowser#readme'>musicbrowser</a></span>";
+		$aboutString.="<span class='about'>&#9834;</span>";
+		$aboutString.="<span class='about'><a target='_blank' href='//encode-explorer.siineiolekala.net/'>Encode Explorer</a></span>";
+		$aboutString.="<span class='about'>&#9834;</span>";
+		$aboutString.="<span class='about'><a target='_blank' href='//coverart.katastrophos.net'>katastrophos.net's <br/> cover art downloader</a></span>";
+		$aboutString.="<span class='about'>&#9834;</span>";
+		$aboutString.="<span class='about'><a target='_blank' href='//www.doublejdesign.co.uk'>Double-J Design's <br/> super mono icons</a></span>";
+		$aboutString.="<span class='about'>&#9834;</span>";
+		$aboutString.="<span class='about'><a target='_blank' href='//icons8.com'>Other icons from <br/> icons8.com</a></span>";
+		$aboutString.="<span class='about'>&#9834;</span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'>musicco scans your music folder and builds a database of your music collection,</span>";
+		$aboutString.="<span class='about'>retrieving missing cover art from <a target='_blank' href='//www.coverartarchive.org'>coverartarchive.org</a>,</span>";
+		$aboutString.="<span class='about'>artist information from <a target='_blank' href='//en.wikipedia.org/'>wikipedia.org</a></span>";
+		$aboutString.="<span class='about'>and song lyrics from <a target='_blank' href='//www.chartlyrics.com'>chartlyrics.com</a>.</span>";
+		$aboutString.="<span class='about'>The audio player component uses <a target='_blank' href='//jplayer.org/'>jPlayer</a>.</span>";
+		if (Musicco::getConfig('show_donate_button')) {
+			$aboutString.="<span class='about'><br/></span>";
+			$aboutString.="<span class='about'><br/></span>";
+			$aboutString.="<span class='about'>Like musicco? Wanna buy me a beer?</span>";
+			$aboutString.="<span class='about'><br/></span>";
+			$aboutString.="<span class='about'>";
+			$aboutString.="<form action='https://www.paypal.com/cgi-bin/webscr' method='post' target='_top'><input id='paypalCMD' type='hidden' name='cmd' value='_s-xclick'><input type='hidden' name='hosted_button_id' value='CWRGBQ6A65642'><input id='paypalIMG' type='image' src='https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif' border='0' name='submit' alt='PayPal - The safer, easier way to pay online!'><img alt='' border='0' src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif' width='1' height='1'></form>";
+			$aboutString.="</span>"; 
+		}
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'><br/></span>";
+		$aboutString.="<span class='about'>Release History</span>";
+		$aboutString.="<span class='about'>v1.2: Android client stability improvements, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users. New default theme, use the classic skin to go back to the old style. More pattern configuration options for more custom library tree structures. Shift-click previous/next buttons (or shift-use arrow keys) to skip to the next album in the playlist.</span>";
+		$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
+		$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
+		$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
+		$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
+		$aboutString.="<span class='about'>v1.0: initial release</span>";
+		$aboutString.="</div>";
+		return $aboutString;
+	 }
 ?>
