@@ -2143,7 +2143,6 @@ function builddb() {
 					logMessage($row['parent'].$row['file']);
 				}
 				$sql_find_non_standard_covers='select parent, file from cover where file <> "'.Musicco::getConfig('coverFileName').Musicco::getConfig('coverExtension').'";';
-				print $sql_find_non_standard_covers;
 				$non_standard_covers = $db->query($sql_find_non_standard_covers);
 				logMessage("Found the following non-standard covers: ");
 				foreach ($non_standard_covers as $row) {
