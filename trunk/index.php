@@ -504,6 +504,7 @@ class Musicco {
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<script type="text/javascript" src="lib/jquery.mobile.custom.min.js"></script>
 		<script type="text/javascript" src="lib/swipe.js"></script>
+		<script type="text/javascript" src="lib/normalise.js"></script>
 		<script type="text/javascript" src="lib/jquery.jplayer.min.js"></script>
 		<script type="text/javascript" src="lib/jplayer.playlist.min.js"></script>
 			<script type="text/javascript">
@@ -535,7 +536,7 @@ class Musicco {
 
 			$("#filterText").keyup(function() {
 				$('#includeOlAdlbums').prop('checked', true);
-				var query = $(this).val().toLowerCase();
+				var query = normalise($(this).val().toLowerCase());
 				if (query == "") {
 					$(".node[item]").show();
 					} else {
@@ -971,7 +972,7 @@ class Musicco {
 				var closed="closed";
 				var isNew="old";
 				var slash="/";
-				link+="<span class=\"node\" level=\""+myLevel+"\" item=\""+decodeURIComponent(root+fileUrl).toLowerCase()+"\">";
+				link+="<span class=\"node\" level=\""+myLevel+"\" item=\""+normalise((decodeURIComponent(root+fileUrl).toLowerCase()))+"\">";
 				if (parentLevel==0) {
 					link+="<img class=\"infolink browserimg\" artist=\""+fileUrl+"\" border=0 src=\"skins/<?php print Musicco::getConfig('skin'); ?>/wiki.png\" /></a>";
 				} else {
