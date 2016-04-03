@@ -841,31 +841,31 @@ class Musicco {
 					$(".hits").remove();
 					$.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
 					var hits= data;
-					if (hits==null) {
+					if (hits!=null) {
+						$.each(hits, function (i, elem) {
+							var parent = hits[i].parent;
+							var name = hits[i].name;
+							var type = hits[i].type;
+							var slash="/";
+							var optionalSlash="";
+							if (type == 1) {
+								optionalSlash = slash;
+							}
+							var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
+							var parentItem = parent.substr(levelUp.length);
+							var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
+							var hitLink="<div class=\"hits\">";
+							if (parentItemName=="") {
+								parentItemName="home";
+							}
+							hitLink+="<a class=\"queue searchResultParent\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a> &gt; ";
+							hitLink+="<a class=\"queue searchResult\" parent=\""+parent+"\" item=\""+name+optionalSlash+"\" type=\""+type+"\">"+ name +"</a></div>";
+							$("#searchResults").before(hitLink);
+						});
+					} else {
 						resultString="<?php print $this->getString("noResultsForThisSearch"); ?>";
-						hideLoadingIcon();
 					}
 					$("#searchResults").html(resultString);
-					$.each(hits, function (i, elem) {
-						var parent = hits[i].parent;
-						var name = hits[i].name;
-						var type = hits[i].type;
-						var slash="/";
-						var optionalSlash="";
-						if (type == 1) {
-							optionalSlash = slash;
-						}
-						var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
-						var parentItem = parent.substr(levelUp.length);
-						var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
-						var hitLink="<div class=\"hits\">";
-						if (parentItemName=="") {
-							parentItemName="home";
-						}
-						hitLink+="<a class=\"queue searchResultParent\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a> &gt; ";
-						hitLink+="<a class=\"queue searchResult\" parent=\""+parent+"\" item=\""+name+optionalSlash+"\" type=\""+type+"\">"+ name +"</a></div>";
-						$("#searchResults").before(hitLink);
-					});
 					hideLoadingIcon();}, "json");
 				}
 			});
@@ -933,28 +933,34 @@ class Musicco {
 				});
 			});
 
-			$(document).on("click", "#uncover", function() {
+			$(document).on("click", "#uncover", function(e) {
+				var method="uncover";
+				if (e.shiftKey) {
+					method="uncover_new";
+				}
 				event.preventDefault();
 				showLoadingIcon();
-				$.post('?', {querydb: '', root: '', type: 'uncover'}, function (response) {
+				$.post('?', {querydb: '', root: '', type: method}, function (response) {
 						var hits=response;
-						$.each(hits, function (i, elem) {
-							var slash="/";
-							var parent = hits[i].parent;
-							var name = hits[i].name;
-							var type = hits[i].type;
-							var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
-							var parentItem = parent.substr(levelUp.length);
-							var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
-							var hitLink="<div class=\"hits\">";
-						if (parentItemName=="") {
-							parentItemName="home";
+						if (hits!=null) {
+							$.each(hits, function (i, elem) {
+								var slash="/";
+								var parent = hits[i].parent;
+								var name = hits[i].name;
+								var type = hits[i].type;
+								var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
+								var parentItem = parent.substr(levelUp.length);
+								var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
+								var hitLink="<div class=\"hits\">";
+							if (parentItemName=="") {
+								parentItemName="home";
+							}
+								hitLink+="<a class=\"queue searchResultParent uncoverLink\" id=\"" + i +"\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a>";
+							$("#searchResults").before(hitLink);
+							var thisHit = "#"+i;
+							$(thisHit).trigger('click');
+							});
 						}
-							hitLink+="<a class=\"queue searchResultParent uncoverLink\" id=\"" + i +"\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a>";
-						$("#searchResults").before(hitLink);
-						var thisHit = "#"+i;
-						$(thisHit).trigger('click');
-						});
 					$(".uncoverLink").remove(); 
 						hideLoadingIcon(); }, "json");
 			});
@@ -1975,6 +1981,9 @@ function querydb($query_root, $query_type) {
 		case "uncover":
 		$query = "SELECT id, name, type, parent FROM item WHERE type in (2) ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
+		case "uncover_new":
+		$query = "SELECT id, name, type, parent FROM item WHERE parent LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND type in (2) ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		break;
 		case "add1":
 		$query = "SELECT item.id, item.name, item.type, item.parent, (SELECT file FROM cover WHERE parent = item.parent LIMIT 1)AS file FROM item WHERE item.parent LIKE \"$query_root%\" AND type IN (2) ORDER BY item.parent, item.name COLLATE NOCASE";
 		break;
@@ -2280,7 +2289,7 @@ function builddb() {
 		$aboutString.="<span class='about'>Release History</span>";
 		$aboutString.="<span class='about'>v1.2: Removed Android client, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users. New default theme, use the classic skin to go back to the old style. More pattern configuration options for more custom library tree structures. Shift-click previous/next buttons (or shift-use arrow keys) to skip to the next album in the playlist.</span>";
 		$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
-		$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 10 random albums to your playlist.</span>";
+		$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 5 random albums to your playlist.</span>";
 		$aboutString.="<span class='about'>v1.0.2: Fixed minor display bugs introduced by 1.0.1 with z-index management.</span>";
 		$aboutString.="<span class='about'>v1.0.1: Improved cover management when downloading from cover art provider, added a button to manually fetch a cover, improved artist information panel and added an icon to indicate that some information is still being loaded from the server.</span>";
 		$aboutString.="<span class='about'>v1.0: initial release</span>";
