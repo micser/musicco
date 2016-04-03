@@ -744,6 +744,11 @@
 		background-color: #1C1C1F;
 	}
 
+	a.searchResult,
+	a.searchResultParent {
+		background-color:transparent;
+	}
+
 	#browser,
 	#playlistPanel {
 		display:block;
