@@ -208,7 +208,10 @@ $_TRANSLATIONS["en"] = array(
 	"clickToUploadYourOwn" => ", click to upload your own cover", 
 	"promptCoverURL" => "Album cover URL", 
 	"defaultCoverURL" => "http://",
-	"guestPlayLink" => "Link to playlist: "
+	"guestPlayLink" => "Link to playlist: ",
+	"searchingFor" => "Searching for ",
+	"opening" => "Opening ",
+	"queueing" => "Queueing "
 );
 
 
@@ -248,7 +251,10 @@ $_TRANSLATIONS["fr"] = array(
 	"clickToUploadYourOwn" => ", cliquez pour ajouter votre couverture", 
 	"promptCoverURL" => "Adresse de la couverture", 
 	"defaultCoverURL" => "http://",
-	"guestPlayLink" => "Lien vers la playlist : "
+	"guestPlayLink" => "Lien vers la playlist : ",
+	"searchingFor" => "Recherche de ",
+	"opening" => "Overture de ",
+	"queueing" => "Ajout de "
 );
 
 function css() {
@@ -723,12 +729,13 @@ class Musicco {
 				return window.location.href.substr(0, window.location.href.lastIndexOf("/") + 1);
 			}
 
-			function showLoadingIcon() {
-				$("#loadingIcon").show();
+			function showLoadingInfo(info) {
+				$("#toast_text").text(info);
+				$('#loadingInfo').fadeTo(100, 1);
 			}
 
-			function hideLoadingIcon() {
-				$('#loadingIcon').hide();
+			function hideLoadingInfo() {
+				$('#loadingInfo').fadeTo(1500, 0, function() { $("#toast_text").text(""); });
 			}
 
 			function fetchCover() {
@@ -835,7 +842,7 @@ class Musicco {
 				var $form = $( this ),
 						term = $form.find( 'input[name="s"]' ).val();
 				if (term.length > 0) {
-					showLoadingIcon();
+					showLoadingInfo("<?php print $this->getString("searchingFor"); ?>" + term);
 					var resultString="&nbsp;";
 					$("#searchResults").html("<?php print $this->getString("searchingLibrary"); ?>");
 					$(".hits").remove();
@@ -866,7 +873,7 @@ class Musicco {
 						resultString="<?php print $this->getString("noResultsForThisSearch"); ?>";
 					}
 					$("#searchResults").html(resultString);
-					hideLoadingIcon();}, "json");
+					hideLoadingInfo();}, "json");
 				}
 			});
 
@@ -876,12 +883,12 @@ class Musicco {
 			});
 				
 			$(document).on("click", ".closed", function() {
-				showLoadingIcon();
 				$(this).toggleClass('closed open');
 				var item=$(this).attr("item");
 				var level=$(this).attr("level");
 				var parent = $(this).attr("parent");
 				var root =parent+item;
+				showLoadingInfo("<?php print $this->getString("opening"); ?>" + decodeURIComponent(item).replace("/",""));
 				$.post('?', {querydb: '', root: decodeURIComponent(root), type: 'browse'}, function (response) {
 						var files=response;
 						if (files !=null) {
@@ -891,7 +898,7 @@ class Musicco {
 								$(".item[item=\""+item+"\"][parent=\""+parent+"\"]").after(treelink(root, fileUrl, level, type));
 							});
 						}
-					hideLoadingIcon(); }, "json");
+					hideLoadingInfo(); }, "json");
 				});
 
 				$(document).on("click", ".close, #big-player", function() {
@@ -941,7 +948,7 @@ class Musicco {
 					method="uncover_new";
 				}
 				event.preventDefault();
-				showLoadingIcon();
+				showLoadingInfo("<?php print $this->getString("uncovering"); ?>");
 				$.post('?', {querydb: '', root: '', type: method}, function (response) {
 						var hits=response;
 						if (hits!=null) {
@@ -964,7 +971,7 @@ class Musicco {
 							});
 						}
 					$(".uncoverLink").remove(); 
-						hideLoadingIcon(); }, "json");
+						hideLoadingInfo(); }, "json");
 			});
 
 			$('#infoPanel').scroll(function() {
@@ -1021,11 +1028,11 @@ class Musicco {
 			});
 
 			$(document).on("click", ".queue", function() {
-				showLoadingIcon();
 				var playAfter = (musiccoPlaylist.playlist.length < 1);
 				var item = $(this).attr("item");
 				var parent = $(this).attr("parent");
 				var type = $(this).attr("type");
+				showLoadingInfo("<?php print $this->getString("queueing"); ?>" + decodeURIComponent(item).replace("/",""));
 				$.post('?', {querydb: '', root: decodeURIComponent(parent + item), type: 'add'+type}, function (response) {
 						var files=response;
 						if (files!=null) {
@@ -1045,7 +1052,7 @@ class Musicco {
 							if (playAfter) musiccoPlaylist.play();
 							});
 						}
-				hideLoadingIcon();
+				hideLoadingInfo();
 				formatPlaylist();
 				}, "json");
 			});
@@ -1262,7 +1269,7 @@ class Musicco {
 								$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
 							}
 						}
-						hideLoadingIcon();
+						hideLoadingInfo();
 						formatPlaylist();
 						if (isGuestPlay()) {
 							setTimeout(function() {
@@ -1749,7 +1756,7 @@ if(!AuthManager::isAccessAllowed()) {
 		<!-- START: header -->
 		<div id="header">
 		<?php
-			print "<span><img id=\"loadingIcon\" src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
+			print "<span id=\"loadingInfo\"><span id=\"toast_text\"></span><span>&nbsp;</span><img src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
 			if (AuthManager::isAdmin()) {
 				print "<span id=\"reset_db\" class=\"guestPlay\"><a>".$this->getString("reset_db")."</a> | </span>";
 			}
