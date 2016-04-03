@@ -169,10 +169,6 @@
 		min-width: 1em;
 		max-width: 1.5em;
 	}
-
-	#loadingIcon {
-		vertical-align: bottom;
-	}
 	
 	.current {
 		font-weight:bold;
@@ -675,6 +671,10 @@
 
 	#playerPanel {
 		margin: 0 auto;
+	}
+	
+	#loadingInfo {
+		opacity: 0;
 	}
 }
 
