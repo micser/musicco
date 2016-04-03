@@ -884,11 +884,13 @@ class Musicco {
 				var root =parent+item;
 				$.post('?', {querydb: '', root: decodeURIComponent(root), type: 'browse'}, function (response) {
 						var files=response;
-						$.each(files, function (i, elem) {
-							fileUrl =	 encodeURIComponent(files[i].name.replace(/\"/g,""));
-							type =	encodeURIComponent(files[i].type);
-							$(".item[item=\""+item+"\"][parent=\""+parent+"\"]").after(treelink(root, fileUrl, level, type));
-						});
+						if (files !=null) {
+							$.each(files, function (i, elem) {
+								fileUrl =	 encodeURIComponent(files[i].name.replace(/\"/g,""));
+								type =	encodeURIComponent(files[i].type);
+								$(".item[item=\""+item+"\"][parent=\""+parent+"\"]").after(treelink(root, fileUrl, level, type));
+							});
+						}
 					hideLoadingIcon(); }, "json");
 				});
 
@@ -1026,21 +1028,23 @@ class Musicco {
 				var type = $(this).attr("type");
 				$.post('?', {querydb: '', root: decodeURIComponent(parent + item), type: 'add'+type}, function (response) {
 						var files=response;
-						$.each(files, function (i, elem) {
-							musiccoPlaylist.add({
-								title: files[i].title,
-								artist: files[i].artist,
-								year: files[i].year,
-								album: files[i].album,
-								free:<?php print (AuthManager::isAdmin()?"true":"false"); ?>,
-								path: files[i].parent.replace(/\"/g,""),
-								mp3:	encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
-								extension: files[i].extension,
-								poster: files[i].cover,
-								number: files[i].number
+						if (files!=null) {
+							$.each(files, function (i, elem) {
+								musiccoPlaylist.add({
+									title: files[i].title,
+									artist: files[i].artist,
+									year: files[i].year,
+									album: files[i].album,
+									free:<?php print (AuthManager::isAdmin()?"true":"false"); ?>,
+									path: files[i].parent.replace(/\"/g,""),
+									mp3:	encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
+									extension: files[i].extension,
+									poster: files[i].cover,
+									number: files[i].number
+								});
+							if (playAfter) musiccoPlaylist.play();
 							});
-				if (playAfter) musiccoPlaylist.play();
-						});
+						}
 				hideLoadingIcon();
 				formatPlaylist();
 				}, "json");
@@ -1228,21 +1232,23 @@ class Musicco {
 							var root = response.path;
 							$.post('?', {querydb: '', root: root, type: 'add1'}, function (results) {
 									var files=results;
+									if (files!=null) {
 									$.each(files, function (i, elem) {
-									musiccoPlaylist.add({
-										title: files[i].title,
-										artist: files[i].artist,
-										year: files[i].year,
-										album: files[i].album,
-										free: false,
-										path: files[i].parent.replace(/\"/g,""),
-										mp3:	encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
-										extension: files[i].extension,
-										poster: files[i].cover,
-										number: files[i].number
-									});
-									musiccoPlaylist.play();
-									});
+										musiccoPlaylist.add({
+											title: files[i].title,
+											artist: files[i].artist,
+											year: files[i].year,
+											album: files[i].album,
+											free: false,
+											path: files[i].parent.replace(/\"/g,""),
+											mp3:	encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
+											extension: files[i].extension,
+											poster: files[i].cover,
+											number: files[i].number
+										});
+										musiccoPlaylist.play();
+										});
+									}
 						}, "json");
 						} else {
 							musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
