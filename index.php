@@ -1206,6 +1206,7 @@ class Musicco {
 						}
 				}
 				savePlaylist();
+				setTimeout(function() { formatPlaylist(); }, 2000);
 			}
 
 			function savePlaylist() {
