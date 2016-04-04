@@ -55,6 +55,11 @@ $_CONFIG['coverFileName'] = "folder";
 // Default: $_CONFIG['coverExtension'] = "png";
 $_CONFIG['coverExtension'] = ".png";
 
+// The search engine to use to search for covers
+// when none could be found automatically
+// Default: $_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&q=";
+// You could also try: $_CONFIG['searchEngine'] = "https://duckduckgo.com/?ia=images&q=";
+$_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&q=";
 
 // Folders in your library that should not 
 // be interpreted as artist names.
@@ -100,7 +105,6 @@ $_CONFIG['yearPattern'] = "/^.*\/\[(\d\d\d\d)\]\s.*\/$/";
 // 5 is safe, 10 is a bit on the heavy side.
 // Default: $_CONFIG['uncover_limit'] = "5";
 $_CONFIG['uncover_limit'] = 5;
-
 
 // A character combination you use to mark your folders as unlistened in your library.
 // I use the suffix "__" at the end of folders I have not listened to yet.
@@ -205,7 +209,8 @@ $_TRANSLATIONS["en"] = array(
 	"fetchingAlbumArt" => "fetching album art...",
 	"fetchedAlbumArt" => "cover art fetched",
 	"noAlbumArt" => "no album art found", 
-	"clickToUploadYourOwn" => ", click to upload your own cover", 
+	"searchOne" => " &bull; search &bull; ", 
+	"clickToUploadYourOwn" => "upload", 
 	"promptCoverURL" => "Album cover URL", 
 	"defaultCoverURL" => "http://",
 	"guestPlayLink" => "Link to playlist: ",
@@ -224,7 +229,7 @@ $_TRANSLATIONS["fr"] = array(
 	"standard_version" => "version desktop",
 	"reset_db" => "rafraichir la discothèque",
 	"rebuildingLibrary" => "scan en cours...",
-	"libraryRebuiltIn" => "discothèque rafraichie en	",
+	"libraryRebuiltIn" => "discothèque rafraichie en ",
 	"libraryLocked" => "un scan de la discothèque est déjà en cours",
 	"log_in" => "Connexion",
 	"log_out" => "déconnexion",
@@ -248,7 +253,8 @@ $_TRANSLATIONS["fr"] = array(
 	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
 	"fetchedAlbumArt" => "couverture mise à jour",
 	"noAlbumArt" => "Pas de couverture trouvée",
-	"clickToUploadYourOwn" => ", cliquez pour ajouter votre couverture", 
+	"searchOne" => " &bull; rechercher &bull; ", 
+	"clickToUploadYourOwn" => "charger", 
 	"promptCoverURL" => "Adresse de la couverture", 
 	"defaultCoverURL" => "http://",
 	"guestPlayLink" => "Lien vers la playlist : ",
@@ -697,7 +703,9 @@ class Musicco {
 			function resetFetchingStatus() {
 				fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
 				$('#updateCoverArt').show();
-				$('#updateCoverArt').addClass('canFetch');
+				$('.hasFetched').addClass('coveractions');
+				$('.hasFetched').removeClass('hasFetched');
+				$('#statusText').addClass('canFetch');
 
 			}
 
@@ -743,7 +751,7 @@ class Musicco {
 				var currentArtist = nowPlaying("artist");
 				var currentPath = nowPlaying("path");
 				var currentCover = nowPlaying("poster");
-				$('#updateCoverArt').removeClass('canFetch');
+				$('#statusText').removeClass('canFetch');
 				var releaseUrl = "https://musicbrainz.org/ws/2/release/?query=release:\""+currentAlbum+"\"%20AND%20artist:\""+currentArtist+"\"&limit=1"
 				$.ajax({
 					type: "GET",
@@ -780,9 +788,12 @@ class Musicco {
 			}
 
 			function setCoverInfoStatus(statusText) {
-				$('#updateCoverArt').addClass('canUpload');
-				fetchStatus = statusText + "<?php print $this->getString("clickToUploadYourOwn"); ?>";
-				$("#updateCoverArt").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
+				$('#uploadIt').addClass('canUpload');
+				$('.coveractions').addClass('hasFetched');
+				$('.hasFetched').addClass('coveractions');
+				fetchStatus = statusText;
+				$('.hasFetched').show();
+				$("#statusText").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
 					$("#updateCoverArt").mouseleave();
 					n();	
 					}).fadeTo("fast", 0.8, function() {
@@ -790,17 +801,25 @@ class Musicco {
 							});
 			}
 
+			$('#uploadIt').click(function () {
+					if ($(this).hasClass('canUpload')) {
+						uploadCover();
+					}
+				});
+
 			$('#updateCoverArt').hover(function() {
 				$('#updateCoverArt').finish();
 				if (!isGuestPlay()) { 
 					$('#updateCoverArt').css('width', '100%'); 
-					$('#updateCoverArt').text(fetchStatus); 
+					$('#statusText').text(fetchStatus); 
 					$('#updateCoverArt').fadeTo("fast", 0.8);
+					$('.hasFetched').show();
 				}
 			} ,function() { 
 				if (!isGuestPlay()) {
 					$('#updateCoverArt').fadeTo(2000, 0, function() {
-						$('#updateCoverArt').text("<?php print $this->getString("..."); ?>"); 
+						$('.hasFetched').hide();
+						$('#statusText').text("<?php print $this->getString("..."); ?>"); 
 						$('#updateCoverArt').css('width', ''); 
 					});
 					$('#updateCoverArt').fadeTo("fast", 0.1);
@@ -812,13 +831,10 @@ class Musicco {
 			}
 			);
 
-
-			$('#updateCoverArt').click(function () {
+			$('#statusText').click(function () {
 				if ($(this).hasClass('canFetch')) {
 					fetchCover();
-				} else if ($(this).hasClass('canUpload')) {
-					uploadCover();
-				} 
+				}
 			});
 
 			function uploadCover() {
@@ -1299,6 +1315,7 @@ class Musicco {
 					$("#nowPlayingTitle").text(nowPlaying('title'));
 					$("#nowPlayingArtist").text(nowPlaying('artist'));
 					$("#nowPlayingAlbum").text(nowPlaying('album'));
+					$('#searchLink').attr("href", "<?php print $this->getConfig("searchEngine"); ?>" + nowPlaying('artist') + " " + nowPlaying('album'));
 					showNotification();
 					if (!$('#track-wiki').hasClass('shown')) {
 						updateInfoPanel(wikiLink(nowPlaying("artist")));
@@ -1820,7 +1837,11 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="big-volume-bar">
 						<div id="volume-value"></div>
 					</div>
-					<div id="updateCoverArt" class="guestPlay"><?php print $this->getString("..."); ?></div>
+					<div id="updateCoverArt" class="guestPlay">
+						<span id="statusText"><?php print $this->getString("..."); ?></span>
+						<span id="searchOne" class="coveractions"><a id="searchLink" target="_blank" href="<?php print $this->getConfig("searchEngine"); ?>musicco"><?php print $this->getString("searchOne"); ?></a></span>
+						<span id="uploadIt" class="coveractions"><?php print $this->getString("clickToUploadYourOwn"); ?></a></span>
+						</div>
 					<div class="dummy">&nbsp;</div>
 					<div id="big-jp-progress"></div>
 				</div>
