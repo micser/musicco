@@ -772,6 +772,9 @@ class Musicco {
 						} else {
 							setCoverInfoStatus("<?php print $this->getString("noAlbum"); ?>");
 						}
+					}, 
+					error: function() {
+						setCoverInfoStatus("<?php print $this->getString("noAlbum"); ?>");
 					}
 				});
 			}
