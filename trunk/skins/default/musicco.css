@@ -74,7 +74,8 @@
 	a.jp-playlist-item-remove:hover,
 	.download:hover,
 	.jp-playlist a:hover,
-	.jp-playlist-current:before {
+	.jp-playlist-current:before,
+	#searchLink {
 		color: #E3E5BB;
 	}
 
@@ -144,6 +145,10 @@
 		text-decoration: underline;
 	}
 
+	#searchLink:hover {
+		text-decoration: none;
+	}
+
 	.jp-playlist a:hover {
 		text-decoration: none;
 	}
@@ -171,11 +176,12 @@
 	}
 	
 	.current {
-		font-weight:bold;
+		font-weight :bold;
 	}
 
-	.editsection {
-		display:none;
+	.editsection,
+	.coveractions {
+		display: none;
 	}
 
 	#error {
@@ -397,7 +403,6 @@
 		display:block;
 		opacity: 0.1;
 	}
-
 
 	#big-cover {
 		margin: 0 auto;
