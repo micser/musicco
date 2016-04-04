@@ -57,9 +57,9 @@ $_CONFIG['coverExtension'] = ".png";
 
 // The search engine to use to search for covers
 // when none could be found automatically
-// Default: $_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&q=";
+// Default: $_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&tbs=imgo:1&q=";
 // You could also try: $_CONFIG['searchEngine'] = "https://duckduckgo.com/?ia=images&q=";
-$_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&q=";
+$_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&tbs=imgo:1&q=";
 
 // Folders in your library that should not 
 // be interpreted as artist names.
