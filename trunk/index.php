@@ -216,6 +216,7 @@ $_TRANSLATIONS["en"] = array(
 	"guestPlayLink" => "Link to playlist: ",
 	"searchingFor" => "Searching for ",
 	"opening" => "Opening ",
+	"uncovering" => "Uncovering gems ",
 	"queueing" => "Queueing "
 );
 
@@ -260,6 +261,7 @@ $_TRANSLATIONS["fr"] = array(
 	"guestPlayLink" => "Lien vers la playlist : ",
 	"searchingFor" => "Recherche de ",
 	"opening" => "Overture de ",
+	"uncovering" => "Découverte en cours ",
 	"queueing" => "Ajout de "
 );
 
