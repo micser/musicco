@@ -1631,7 +1631,7 @@ class Musicco {
 										}
 										i++;
 										if(i >= (musiccoPlaylist.playlist.length -1)) clearInterval(interval);
-										}, 10);
+										}, 1);
 			});
 
 			$(document).on("click", ".move", function() {
