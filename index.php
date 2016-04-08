@@ -303,6 +303,8 @@ class AuthManager {
 			logMessage("Guest Play requested for user ".AuthManager::getUserName());
 		} elseif (isset($_GET['creds'])) {
 			$auth_token = $_GET['creds'];
+			$_SESSION['musicco_user_name'] = null;
+			$_SESSION['musicco_user_pass'] = null;
 			foreach(Musicco::getConfig("users") as $user) {
 				if(hash("md5", $user[0].$user[1].$user[2]) == $auth_token) {
 					logMessage("user $user[0] logged in using an auth token");
