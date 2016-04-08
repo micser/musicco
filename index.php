@@ -815,6 +815,7 @@ class Musicco {
 					n();	
 					}).fadeTo("fast", 0.8, function() {
 								$("#updateCoverArt").fadeTo(2000, 0.1);
+								$('#updateCoverArt').removeClass('bigger'); 
 							});
 			}
 
@@ -824,9 +825,10 @@ class Musicco {
 					}
 				});
 
-			$('#updateCoverArt').hover(function() {
+			$('#big-cover').hover(function() {
 				$('#updateCoverArt').finish();
 				if (!isGuestPlay()) { 
+					$('#updateCoverArt').addClass('bigger'); 
 					$('#updateCoverArt').css('width', '100%'); 
 					$('#statusText').text(fetchStatus); 
 					$('#updateCoverArt').fadeTo("fast", 0.8);
@@ -838,6 +840,7 @@ class Musicco {
 						$('.hasFetched').hide();
 						$('#statusText').text("<?php print $this->getString("..."); ?>"); 
 						$('#updateCoverArt').css('width', ''); 
+						$('#updateCoverArt').removeClass('bigger'); 
 					});
 					$('#updateCoverArt').fadeTo("fast", 0.1);
 					$('#updateCoverArt').fadeTo("fast", 0);
