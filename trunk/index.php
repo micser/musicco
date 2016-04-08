@@ -140,6 +140,10 @@ $_CONFIG['require_login'] = "false";
 // The format is: array(username, password, administrator)
 // Administrtors can download tracks from the browser and playlist panels and refresh the library from the UI.
 // For example: $_CONFIG['users'] = array(array("username1", "password1", "true"), array("username2", "password2", "false"));
+// If you set up users, you can then login with a "creds=" URL parameter whose value is the md5 
+// of your username+password+role
+// guestguestfalse ==> 46f186b77fa1179eaedbf1a97f319912
+// adminadmintrue ==> 68e72c93255129c8f066bf43d4ed65e3
 // Default: $_CONFIG['users'] = array(array("admin", "admin", "true"),
 //											array("guest", "guest", "false")
 //																);
@@ -286,7 +290,7 @@ class AuthManager {
 				session_name(Musicco::getConfig("session_name"));
 				
 		if(count(Musicco::getConfig("users")) > 0)
-			session_start();			
+			session_start();
 		else
 			return;
 			
@@ -297,6 +301,15 @@ class AuthManager {
 			$_SESSION['musicco_user_name'] = $_GET['u'];
 			$_SESSION['musicco_guest_play'] = true;
 			logMessage("Guest Play requested for user ".AuthManager::getUserName());
+		} elseif (isset($_GET['creds'])) {
+			$auth_token = $_GET['creds'];
+			foreach(Musicco::getConfig("users") as $user) {
+				if(hash("md5", $user[0].$user[1].$user[2]) == $auth_token) {
+					logMessage("user $user[0] logged in using an auth token");
+					$_SESSION['musicco_user_name'] = $user[0];
+					$_SESSION['musicco_user_pass'] = $user[1];
+				}
+			}
 		} else {
 			$_SESSION['musicco_guest_play'] = null;
 			if(isset($_POST['user_pass']) && strlen($_POST['user_pass']) > 0) {
