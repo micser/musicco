@@ -825,7 +825,7 @@ class Musicco {
 					}
 				});
 
-			$('#big-cover').hover(function() {
+			$('#updateCoverArt, .dummy').hover(function() {
 				$('#updateCoverArt').finish();
 				if (!isGuestPlay()) { 
 					$('#updateCoverArt').addClass('bigger'); 
