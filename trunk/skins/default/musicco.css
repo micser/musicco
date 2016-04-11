@@ -404,8 +404,10 @@
 		position: absolute;
 		top: 0;
 		z-index: 1;
-		display:block;
 		opacity: 0.1;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	#big-cover {
