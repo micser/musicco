@@ -940,8 +940,11 @@ class Musicco {
 					hideLoadingInfo(); }, "json");
 				});
 
-				$(document).on("click", ".close, #big-player", function() {
-					updateSelection('','');
+				$(document).on("mouseup", function(e) {
+					var popup = $(".panel, .toggle");
+					if (!$('.shown').is(e.target) && !popup.is(e.target) && popup.has(e.target).length == 0) {
+						updateSelection('','');
+					}
 				});
 
 				$(document).on("click", ".infolink", function() {
