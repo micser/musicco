@@ -238,7 +238,7 @@ $_TRANSLATIONS["fr"] = array(
 	"libraryLocked" => "un scan de la discothèque est déjà en cours",
 	"log_in" => "Connexion",
 	"log_out" => "déconnexion",
-	"show_all" => "inclure anciens",
+	"show_all" => "anciens",
 	"help" => "aide",
 	"about" => "info",
 	"by" => " par ",
@@ -948,8 +948,8 @@ class Musicco {
 				});
 
 				$(document).on("click", ".infolink", function() {
-					var artist=$(this).attr("artist");
-					updateInfoPanel(wikiLink(artist));
+					var artist=decodeURIComponent($(this).attr("artist"));
+					updateInfoPanel(wikiLink(artist), artist);
 					toggleInfo();
 				});
 
@@ -1059,7 +1059,7 @@ class Musicco {
 			}
 			$(document).on("click", ".infoPanelLink", function() {
 				event.preventDefault();
-				updateInfoPanel(wikiLink($(this).attr('href').replace(/\/wiki\//g, "")));
+				updateInfoPanel(wikiLink($(this).attr('href').replace(/\/wiki\//g, "")), "this");
 			});
 
 			$(document).on('mouseenter', ".node", function() {
@@ -1181,9 +1181,9 @@ class Musicco {
 			}
 
 			function wikiLink(page) {
-				return '//en.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
+				return '//<?php print Musicco::getConfig('lang') ?>.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
 			}
-			function updateInfoPanel(url) {
+			function updateInfoPanel(url, artist) {
 					$('#infoPanel').html("");
 					$.ajax({
 					tupe: "GET",
@@ -1192,11 +1192,15 @@ class Musicco {
 					success: function(json) {
 						if (json.parse) {
 						$('#infoPanel').html(json.parse.text['*']);
-						$("#infoPanel").find("a").addClass("infoPanelLink").removeClass("new"); 
 						$("#infoPanel").find("*").removeAttr("style"); 
 						$("#infoPanel").find(".mw-editsection").hide(); 
+						$("#infoPanel").find('.image').removeAttr("href", ""); 
+						$("#infoPanel").find('.new').removeAttr("href", ""); 
+						$("#infoPanel").find('.external').attr("target", "_blank"); 
+						$("#infoPanel").find('a').removeClass("new"); 
+						$("#infoPanel").find('a[href^="/wiki/"]').addClass("infoPanelLink");
 					} else {
-						$('#infoPanel').html("<?php print $this->getString("noInfoFoundFor"); ?>" + nowPlaying("artist"));
+						$('#infoPanel').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist);
 					}
 				}
 				});
@@ -1341,7 +1345,7 @@ class Musicco {
 					$('#searchLink').attr("href", "<?php print $this->getConfig("searchEngine"); ?>" + nowPlaying('artist') + " " + nowPlaying('album'));
 					showNotification();
 					if (!$('#track-wiki').hasClass('shown')) {
-						updateInfoPanel(wikiLink(nowPlaying("artist")));
+						updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"));
 					}
 					updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
 					displayCover();
