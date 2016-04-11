@@ -124,7 +124,8 @@
 		font-size: .8em;
 	}
 
-	.infoPanelLink {
+	.infoPanelLink,
+	#infoPanel a {
 	background: none;
 	}
 
