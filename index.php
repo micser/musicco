@@ -55,6 +55,23 @@ $_CONFIG['coverFileName'] = "folder";
 // Default: $_CONFIG['coverExtension'] = "png";
 $_CONFIG['coverExtension'] = ".png";
 
+// Whether to load .lrc lyrics files from disk.
+// If a .lrc file with the same name as the audio 
+// file exists in the same folder, its contents 
+// will be loaded into the lyrics panel before 
+// searching online for it.
+// Default: $_CONFIG['loadLyricsFromFile'] = true;
+$_CONFIG['loadLyricsFromFile'] = true;
+
+// Whether to automatically download
+// missing covers online. New covers
+// will be saved to disk in the folder containing
+// the song currently playing.
+// Even when turning this off, you can still 
+// trigger cover art search manually
+// Default: $_CONFIG['downLoadMissingCovers'] = true;
+$_CONFIG['downLoadMissingCovers'] = true;
+
 // The search engine to use to search for covers
 // when none could be found automatically
 // Default: $_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&tbs=imgo:1&q=";
@@ -708,12 +725,11 @@ class Musicco {
 
 			function displayCover() {
 				var coverurl = nowPlaying("poster");
+				var searchAutomatically = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
 				resetFetchingStatus();
-				if (coverurl == "skins/<?php print Musicco::getConfig('skin'); ?>/cover.png") {
-					printCover(getBaseURL() + coverurl);
+				printCover(getBaseURL() + coverurl);
+				if ((coverurl == "skins/<?php print $this->getConfig('skin'); ?>/cover.png") && (searchAutomatically)) {
 					fetchCover();
-				} else {
-					printCover(getBaseURL() + coverurl);
 				}
 			}
 
@@ -1115,7 +1131,7 @@ class Musicco {
 				$('.jp-playlist-item-free').attr("target", "_blank");
 				$('.jp-playlist-item-free').removeClass('jp-playlist-item-free').addClass('download');
 				$('#playlistPanel > ul > li >div').each(function(){
-					var index = $(this).parent('li').index();	
+					var index = $(this).parent('li').index();
 					if (isFirstAlbumTrack(index)) {
 						var thisAlbum = musiccoPlaylist.playlist[index].album;
 						var albumLength = (musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(thisAlbum) + 1) - index;
@@ -1181,8 +1197,9 @@ class Musicco {
 			}
 
 			function wikiLink(page) {
-				return '//<?php print Musicco::getConfig('lang') ?>.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
+				return '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
 			}
+
 			function updateInfoPanel(url, artist) {
 					$('#infoPanel').html("");
 					$.ajax({
@@ -1209,49 +1226,63 @@ class Musicco {
 			function updateLyricsPanel(artist, song) {
 				artist=nowPlaying("artist");
 				song=nowPlaying("title");
-				var LRCurl= getBaseURL() + nowPlaying('mp3').replace(/.mp3/, ".lrc");
+				var LRCurl= nowPlaying('mp3').replace(/.mp3/, ".lrc");
 				var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
+				var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
+				var searchOnline = true;
 
-				$.ajax({
-					type: "GET",
-					url: "?head&url="+ LRCurl,
-					dataType: "text",
-					complete: function(text) {
-						if (text.responseText < 400) {
-							$.ajax({
-								type: "GET",
-								url: "?fetch&url=" + LRCurl,
-								dataType: "text",
-								success: function(lyrics) {
-									$('#lyricsPanel').html(lyrics.replace(/\[.*\]/g, "<br/>"));
-								}
-							});
-						} else {
-							$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
-							$.ajax({
-								type: "GET",
-								url: "?fetch&url=" + APIurl,
-								dataType: "xml",
-								success: function(xml) {
-									var lyrics="";
-									$(xml).find('GetLyricResult').each(function(){
-										var lyricArtist=$(this).find('LyricArtist').text();
-										var lyricSong=$(this).find('LyricSong').text();
-										var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
-										var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
-										var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>";
-											//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.			
-										lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
-										$('#lyricsPanel').html(lyricInfo+lyrics);
-									});
-									if (lyrics=="") {
-										$('#lyricsPanel').html("<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist);
+				if (loadLrc) {
+					$.ajax({
+						type: "GET",
+						url: "?head&url="+ LRCurl,
+						dataType: "text",
+						complete: function(text) {
+							if (text.responseText < 400) {
+								searchOnline = false;
+								$.ajax({
+									type: "GET",
+									url: "?fetch&url=" + LRCurl,
+									dataType: "text",
+									success: function(lyrics) {
+										$('#lyricsPanel').html(lyrics.replace(/\[.*\]/g, "<br/>"));
 									}
-								}
-							});
+								});
+							}
 						}
-					}
-				});
+					});
+				}
+
+				if (searchOnline) {
+					$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
+					$.ajax({
+						type: "GET",
+						url: "?fetch&url=" + APIurl,
+						dataType: "xml",
+						success: function(xml) {
+							var lyrics="";
+							$(xml).find('GetLyricResult').each(function(){
+								var lyricArtist=$(this).find('LyricArtist').text();
+								var lyricSong=$(this).find('LyricSong').text();
+								var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
+								var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
+								var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>";
+								//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.
+								lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
+								$('#lyricsPanel').html(lyricInfo+lyrics);
+							});
+							if (lyrics=="") {
+								noLyricsFound(song, artist);
+							}
+						},
+						error: function() {
+								noLyricsFound(song, artist);
+						}
+					});
+				}
+			}
+
+			function noLyricsFound(song, artist) {
+				$('#lyricsPanel').html("<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist);
 			}
 
 			function saveCover(coverURL, path) {
