@@ -1213,7 +1213,7 @@ class Musicco {
 						$("#infoPanel").find(".mw-editsection").hide(); 
 						$("#infoPanel").find('.image').removeAttr("href", ""); 
 						$("#infoPanel").find('.new').removeAttr("href", ""); 
-						$("#infoPanel").find('.external').attr("target", "_blank"); 
+						$("#infoPanel").find('.external, .extiw').attr("target", "_blank"); 
 						$("#infoPanel").find('a').removeClass("new"); 
 						$("#infoPanel").find('a[href^="/wiki/"]').addClass("infoPanelLink");
 					} else {
