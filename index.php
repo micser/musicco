@@ -1722,9 +1722,16 @@ class Musicco {
 			}
 
 			$(document).on("click", ".remove-album", function() {
-				album = $(this).attr('album');
-				musiccoPlaylist.removeTime = 0;
+				var album = $(this).attr('album');
 				var i=$(this).parents('li').index();
+				$(this).queue(function() {
+					removeAlbum(album, i);
+					$(this).dequeue; 
+				});
+			});
+
+			function removeAlbum(album, i) {
+				musiccoPlaylist.removeTime = 0;
 				var interval = setInterval(function() {
 					if (musiccoPlaylist.playlist[i].album == album) {
 						musiccoPlaylist.remove(i);
@@ -1736,7 +1743,7 @@ class Musicco {
 						formatPlaylist();
 					}
 				}, 1);
-			});
+			}
 
 			$(document).on("click", ".move", function() {
 				var isPlaying = $('#big-jp-pause').is(':visible');
