@@ -1703,14 +1703,17 @@ class Musicco {
 				album = $(this).attr('album');
 				musiccoPlaylist.removeTime = 0;
 				var i=$(this).parents('li').index();
-				var interval = setInterval(function() { 
-											if (musiccoPlaylist.playlist[i].album == album) {
-											musiccoPlaylist.remove(i);
-											i--;
-										}
-										i++;
-										if(i >= (musiccoPlaylist.playlist.length -1)) clearInterval(interval);
-										}, 1);
+				var interval = setInterval(function() {
+					if (musiccoPlaylist.playlist[i].album == album) {
+						musiccoPlaylist.remove(i);
+						i--;
+					}
+					i++;
+					if (i >= (musiccoPlaylist.playlist.length -1)) {
+						clearInterval(interval);
+						formatPlaylist();
+					}
+				}, 1);
 			});
 
 			$(document).on("click", ".move", function() {
