@@ -742,6 +742,7 @@ class Musicco {
 				$('.hasFetched').addClass('coveractions');
 				$('.hasFetched').removeClass('hasFetched');
 				$('#statusText').addClass('canFetch');
+				$('.coveractions').hide();
 
 			}
 
@@ -804,12 +805,16 @@ class Musicco {
 									 url: "?head&url="+coverUrl,
 									 complete: function(data){
 									if (data.responseText < 400) {
-										printCover(coverUrl);
+										if (!isTooLate()) {
+											printCover(coverUrl);
+										}
 										saveCover(coverUrl, currentPath);
 										setCoverInfoStatus("<?php print $this->getString("fetchedAlbumArt"); ?>");
 									} else {
 										setCoverInfoStatus("<?php print $this->getString("noAlbumArt"); ?>"); 
-										printCover(currentCover);
+										if (!isTooLate()) {
+											printCover(currentCover);
+										}
 									}
 								}
 								});
@@ -823,19 +828,23 @@ class Musicco {
 				});
 			}
 
+			function isTooLate() {
+				return $('#statusText').hasClass('canFetch');
+			}
+
 			function setCoverInfoStatus(statusText) {
-				$('#uploadIt').addClass('canUpload');
-				$('.coveractions').addClass('hasFetched');
-				$('.hasFetched').addClass('coveractions');
-				fetchStatus = statusText;
-				$('.hasFetched').show();
-				$("#statusText").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
-					$("#updateCoverArt").mouseleave();
-					n();	
-					}).fadeTo("fast", 0.8, function() {
-								$("#updateCoverArt").fadeTo(2000, 0.1);
-								$('#updateCoverArt').removeClass('bigger'); 
-							});
+				if (!isTooLate()) {
+					$('#uploadIt').addClass('canUpload');
+					$('.coveractions').addClass('hasFetched');
+					fetchStatus = statusText;
+					$('.hasFetched').show();
+					$("#statusText").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
+						$("#updateCoverArt").mouseleave();
+						n();	
+						}).fadeTo("fast", 0.8, function() {
+									$("#updateCoverArt").fadeTo(2000, 0.1);
+								});
+				}
 			}
 
 			$('#uploadIt').click(function () {
