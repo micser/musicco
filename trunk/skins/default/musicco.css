@@ -46,7 +46,7 @@
 	.panel,
 	#volume-value,
 	#updateCoverArt,
-	#bottomPanel {
+	#bigPlayer {
 		-webkit-user-select: none;
 		-ms-user-select: none;
 		-moz-user-select: none;
@@ -573,9 +573,6 @@
 		margin: 0 .2em 0 .2em;
 	}
 
-	#nowPlayingTitle,
-	#nowPlayingArtist,
-	#nowPlayingAlbum,
 	.node {
 		-webkit-user-select: text;
 		-ms-user-select: text;

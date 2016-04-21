@@ -959,6 +959,19 @@ class Musicco {
 					hideLoadingInfo(); }, "json");
 				});
 
+				$(document).on("dblclick", ".itemHeaderArtist, #nowPlayingArtist", function() {
+					$('#filterText').val($(this).text());
+					var e = jQuery.Event("keyup");
+					e.which = 80; // p
+					$("#filterText").trigger(e);
+					toggleBrowser();
+				});
+
+				$(document).on("dblclick", ".itemHeaderAlbum, #nowPlayingAlbum, #nowPlayingTitle", function() {
+					$('#searchText').val($(this).text());
+					toggleSearch();
+				});
+
 				$(document).on("mouseup", function(e) {
 					var popup = $(".panel, .toggle");
 					if (!$('.shown').is(e.target) && !popup.is(e.target) && popup.has(e.target).length == 0) {
