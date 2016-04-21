@@ -544,6 +544,9 @@ class Musicco {
 		<link rel="icon" type="image/png" href="android-chrome-192x192.png" sizes="192x192">
 		<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
 		<link rel="manifest" href="manifest.json">
+		<link rel="mask-icon" href="safari-pinned-tab.svg" color="#a7a97f">
+		<meta name="apple-mobile-web-app-title" content="<?php print Musicco::getConfig('appName'); ?>">
+		<meta name="application-name" content="<?php print Musicco::getConfig('appName'); ?>">
 		<meta name="msapplication-TileColor" content="#a7a97f">
 		<meta name="msapplication-TileImage" content="mstile-144x144.png">
 		<meta name="theme-color" content="#a7a97f">
