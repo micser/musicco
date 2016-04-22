@@ -618,11 +618,11 @@ class Musicco {
 				toggleLyrics();
 			});
 
-			$("#help").click(function() {
+			$("#help, .close-help").click(function() {
 				toggleHelp();
 			});
 
-			$("#about").click(function() {
+			$("#about, .close-about").click(function() {
 				toggleAbout();
 			});
 
@@ -2375,7 +2375,7 @@ function builddb() {
 	 // Finally, the contents of the help and about panels
 	 function getHelp() {
 		$helpString="<div id='helpBox'>";
-		$helpString.="<span class='close help'>&#10006;</span>";
+		$helpString.="<span class='close close-help help'>&#10006;</span>";
 		$helpString.="<span class='help bold big'>Keyboard Shortcuts</span>";
 		$helpString.="<span class='help'><br/></span>";
 		$helpString.="<span class='help yellow bold'>Playback</span>";
@@ -2410,7 +2410,7 @@ function builddb() {
 	 
 		function getAbout() {
 		$aboutString="<div id='aboutBox'>";
-		$aboutString.="<span class='close help'>&#10006;</span>";
+		$aboutString.="<span class='close close-about help'>&#10006;</span>";
 		$aboutString.="<span class='about bold'><a target='_blank' href='//musicco.org'><img width='310px' height='310px' src='skins/".Musicco::getConfig('skin')."/about.png'/></a></span>";
 		$aboutString.="<span class='about bold big'><a target='_blank' href='//musicco.org'>musicco</a></span>";
 		$aboutString.="<span class='about bold'>A web based player for your music collection</span>";
