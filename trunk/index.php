@@ -608,7 +608,6 @@ class Musicco {
 
 			$("#track-wiki").click(function() {
 				if (wikiHistory[wikiHistoryPos].href != wikiLink(nowPlaying("artist"))) {
-					console.log("they are different");
 					updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"));
 				}
 				toggleInfo();
@@ -1035,35 +1034,42 @@ class Musicco {
 			});
 
 			$(document).on("click", "#uncover", function(e) {
-				var method="uncover";
-				if (e.shiftKey) {
-					method="uncover_new";
-				}
-				event.preventDefault();
-				showLoadingInfo("<?php print $this->getString("uncovering"); ?>");
-				$.post('?', {querydb: '', root: '', type: method}, function (response) {
-						var hits=response;
-						if (hits!=null) {
-							$.each(hits, function (i, elem) {
-								var slash="/";
-								var parent = hits[i].parent;
-								var name = hits[i].name;
-								var type = hits[i].type;
-								var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
-								var parentItem = parent.substr(levelUp.length);
-								var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
-								var hitLink="<div class=\"hits\">";
-							if (parentItemName=="") {
-								parentItemName="home";
+				if (e.altKey) {
+					var randomTrack = Math.floor(Math.random() * musiccoPlaylist.playlist.length);
+					var thisAlbum = musiccoPlaylist.playlist[randomTrack].album;
+					var albumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum);
+					musiccoPlaylist.play(albumStart);
+				} else {
+					var method="uncover";
+					if (e.shiftKey) {
+						method="uncover_new";
+					}
+					event.preventDefault();
+					showLoadingInfo("<?php print $this->getString("uncovering"); ?>");
+					$.post('?', {querydb: '', root: '', type: method}, function (response) {
+							var hits=response;
+							if (hits!=null) {
+								$.each(hits, function (i, elem) {
+									var slash="/";
+									var parent = hits[i].parent;
+									var name = hits[i].name;
+									var type = hits[i].type;
+									var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
+									var parentItem = parent.substr(levelUp.length);
+									var parentItemName = parent.substr("music/".length, parent.substr("music/".length).length -1);
+									var hitLink="<div class=\"hits\">";
+								if (parentItemName=="") {
+									parentItemName="home";
+								}
+									hitLink+="<a class=\"queue searchResultParent uncoverLink\" id=\"" + i +"\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a>";
+								$("#searchResults").before(hitLink);
+								var thisHit = "#"+i;
+								$(thisHit).trigger('click');
+								});
 							}
-								hitLink+="<a class=\"queue searchResultParent uncoverLink\" id=\"" + i +"\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a>";
-							$("#searchResults").before(hitLink);
-							var thisHit = "#"+i;
-							$(thisHit).trigger('click');
-							});
-						}
-					$(".uncoverLink").remove(); 
-						hideLoadingInfo(); }, "json");
+						$(".uncoverLink").remove(); 
+							hideLoadingInfo(); }, "json");
+				}
 			});
 
 			$('#infoPanel').scroll(function() {
@@ -2398,6 +2404,10 @@ function builddb() {
 		$helpString.="<span class='help'>i: show/hide artist information</span>";
 		$helpString.="<span class='help'>l: show/hide lyrics</span>";
 		$helpString.="<span class='help'>Esc: hide all panels</span>";
+		$helpString.="<span class='help'><br/></span>";
+		$helpString.="<span class='help yellow bold'>Ninja</span>";
+		$helpString.="<span class='help'>Shift + Uncover: add new albums to playlist</span>";
+		$helpString.="<span class='help'>Alt + Uncover: play a random album from the playlist</span>";
 		$helpString.="<span class='help'><br/></span>";
 		$helpString.="<span class='guestPlay help yellow bold'>Browser</span>";
 		$helpString.="<span class='guestPlay help'>j/k: highlight previous/next item</span>";
