@@ -607,6 +607,10 @@ class Musicco {
 			}
 
 			$("#track-wiki").click(function() {
+				if (wikiHistory[wikiHistoryPos].href != wikiLink(nowPlaying("artist"))) {
+					console.log("they are different");
+					updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"));
+				}
 				toggleInfo();
 			});
 
@@ -1245,7 +1249,15 @@ class Musicco {
 			function updateInfoPanel(url, artist) {
 					$('#wikiPrev').html("");
 					wikiHistoryPos += 1;
-					wikiHistory.push({seq: wikiHistoryPos, title: artist, href: url})
+					var prevUrl = "";
+					if (wikiHistoryPos > 0) {
+						prevUrl = wikiHistory[wikiHistoryPos -1].href;
+					}
+					if (url != prevUrl) {
+						wikiHistory.push({seq: wikiHistoryPos, title: artist, href: url})
+					} else {
+						wikiHistoryPos -= 1;
+					}
 					if (wikiHistory.length > 1) {
 						var prevHref = wikiHistory[wikiHistoryPos - 1 ].href;
 						var prevTitle = wikiHistory[wikiHistoryPos - 1].title;
