@@ -46,8 +46,7 @@
 	.panel,
 	#volume-value,
 	#updateCoverArt,
-	#bigPlayer,
-	#loadingInfo {
+	#bigPlayer {
 		-webkit-user-select: none;
 		-ms-user-select: none;
 		-moz-user-select: none;
