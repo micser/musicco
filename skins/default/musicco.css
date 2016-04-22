@@ -46,7 +46,8 @@
 	.panel,
 	#volume-value,
 	#updateCoverArt,
-	#bigPlayer {
+	#bigPlayer,
+	#loadingInfo {
 		-webkit-user-select: none;
 		-ms-user-select: none;
 		-moz-user-select: none;
@@ -577,6 +578,13 @@
 		-webkit-user-select: text;
 		-ms-user-select: text;
 		-moz-user-select: text;
+	}
+
+	.node,
+	#nowPlayingAlbum,
+	#nowPlayingArtist,
+	#nowPlayingTitle,
+	#header {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
