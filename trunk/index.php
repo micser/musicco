@@ -659,8 +659,9 @@ class Musicco {
 
 			function toggleSearch() {
 				updateSelection('#search-toggle', '#searchPanel');
-					 $('#searchText').select();
-					 $('#searchText').focus();
+					$('.hits').remove();
+					$('#searchText').select();
+					$('#searchText').focus();
 			}
 
 			function toggleHelp() {
@@ -954,6 +955,7 @@ class Musicco {
 			$('#clear').click(function () {
 				$('.hits').remove();
 				$('#searchText').val('');
+				toggleSearch();
 			});
 				
 			$(document).on("click", ".closed", function() {
