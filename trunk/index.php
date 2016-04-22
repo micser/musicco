@@ -2377,7 +2377,7 @@ function builddb() {
 	 }
 	 
 	 function is_cover($file) {
-		return (stripos($file, Musicco::getConfig('coverFileName').".") > 0);
+		return (stripos($file, Musicco::getConfig('coverFileName').".") == 1);
 	 }
 	 
 	 // Finally, the contents of the help and about panels
