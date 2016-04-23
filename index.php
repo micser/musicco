@@ -2194,17 +2194,11 @@ function querydb($query_root, $query_type) {
 		$type = $row['type'];
 		$parent = $row['parent'];
 		$extension = '';
-		
-		// Return the default cover or a specific cover
-		if ($query_type=="browse") {
-			$cover="";
-		} else {
-			$cover = ($row['file']=="")? "skins/".Musicco::getConfig('skin')."/cover.png":$row['parent'].$row['file'];
-		}
-		
-		// compute artist, album, title and year
-		if (($query_type=="add1") || ($query_type=="add2")) {
+		$cover = '';
 
+		// compute cover, artist, album, title and year
+		if (preg_match("/^add\d$/", $query_type)) {
+			$cover = ($row['file']=="")? "skins/".Musicco::getConfig('skin')."/cover.png":$row['parent'].$row['file'];
 			$year_pattern = Musicco::getConfig('yearPattern');
 			if (preg_match($year_pattern, $parent, $year_matches)) {
 				$year = $year_matches[1];
@@ -2373,11 +2367,13 @@ function builddb() {
 	 }
 	 
 	 function is_song($file) {
-		return (stripos($file, "mp3") > 0);
+		$song_pattern = "/.*.mp3/i";
+		return (preg_match($song_pattern, $file));
 	 }
 	 
 	 function is_cover($file) {
-		return (stripos($file, Musicco::getConfig('coverFileName').".") == 1);
+		$cover_pattern = "/".Musicco::getConfig('coverFileName')."\.(png|jpg|gif|jpeg)$/i";
+		return (preg_match($cover_pattern, $file));
 	 }
 	 
 	 // Finally, the contents of the help and about panels
