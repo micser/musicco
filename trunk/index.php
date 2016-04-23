@@ -576,16 +576,6 @@ class Musicco {
 				var wikiHistory = [];
 				var wikiHistoryPos = -1;
 
-			$('.nokeyboard').focus(function() {
-				$('body').off('keyup');
-			});
-
-			$('.nokeyboard').blur(function() {
-				$('body').on("keyup", function(e) {
-					hotkey(e);
-				});
-			});
-
 			$("#filterText").keyup(function() {
 				$('#includeOlAdlbums').prop('checked', true);
 				var query = normalise($(this).val().toLowerCase());
@@ -1572,122 +1562,128 @@ class Musicco {
 
 			function hotkey(e) {
 				//console.log(e.keyCode, e.shiftKey, e.ctrlKey);
-				switch (e.keyCode) {
-
-					case 32: //space
-					case 179: //media play
-					case 178: //media pause
-						triggerPlayPause();
-					break;
-					
-					case 223: //grave
-						if (e.ctrlKey) {
-							triggerPlayPause();
-						}
-					break;
-					
-					case 38: //up arrow
-					case 175: //media volume up
-					 event.preventDefault();
-					 ChangeVolume("+");
-					break;
-					
-					case 40: //down arrow
-					case 174: //media volume down
-						event.preventDefault();
-						ChangeVolume("-");
-					break;
-				
-					case 37: //left arrow
-					case 177: //media previous
-						event.preventDefault();
-						if (e.shiftKey) {
-							$('#big-jp-previous-album').trigger('click');
-						} else {
-							$('#big-jp-previous').trigger('click');
-						}
-					break;
-				
-					case 39: //right arrow
-					case 176: //media next
-					 event.preventDefault();
-					 if (e.shiftKey) {
-						$('#big-jp-next-album').trigger('click');
-					 } else {
-						$('#big-jp-next').trigger('click');
-					 }
-					break;
-					 
-					case 83: //s
-						if (!isGuestPlay()){
-							 $('#search-toggle').trigger('click');
-							 $('#searchText').select();
-							 $('#searchText').focus();
-						} 
-					break;
-						
-					case 80: //p
-						 event.preventDefault();
-						 $('#playlist-toggle').trigger('click');
-					break;
-						
-					case 73: //i
-					 event.preventDefault();
-					 if (e.ctrlKey && e.altKey) {
-					 } else {
-						$('#track-wiki').trigger('click');
-					 }
-					break;
-					
-					case 76: //l
-					 event.preventDefault();
-					 $('#track-lyrics').trigger('click');
-					break;
-					
-					case 66: //b
-						if (!isGuestPlay()){	
-							 toggleBrowser();
-							 event.preventDefault();
-						}
-					break;
-					
-					case	191: // /
-						if (!isGuestPlay()) {
-							 updateSelection('','');
-							 toggleBrowser();
-							 $('#filterText').select();
-							 $('#filterText').focus();
-							 event.preventDefault();
-						} 
-					break;
-						
-					case	74: //j
-						if (!isGuestPlay()) {
-							moveDown();
-						}
-					break;
-					
-					case	75: //k
-						if (!isGuestPlay()) {
-							moveUp();
-						} 
-					break;
-					
-					case	79: //o
-						if (!isGuestPlay()) {
-							$(".current").click();
-						}
-					break;
-					
-					case 65: //a
-						if (!isGuestPlay()) {
-							$(".current").parent("span").find(".queue").click();
-						}
-					break;
-					
-					case 27: //Esc
+				if ($(".nokeyboard").is("input:focus")) {
+					if (e.keyCode == 27) {
 						updateSelection('','');
-					break;
+					}
+				} else {
+					switch (e.keyCode) {
+
+						case 32: //space
+						case 179: //media play
+						case 178: //media pause
+							triggerPlayPause();
+						break;
+						
+						case 223: //grave
+							if (e.ctrlKey) {
+								triggerPlayPause();
+							}
+						break;
+						
+						case 38: //up arrow
+						case 175: //media volume up
+						 event.preventDefault();
+						 ChangeVolume("+");
+						break;
+						
+						case 40: //down arrow
+						case 174: //media volume down
+							event.preventDefault();
+							ChangeVolume("-");
+						break;
+					
+						case 37: //left arrow
+						case 177: //media previous
+							event.preventDefault();
+							if (e.shiftKey) {
+								$('#big-jp-previous-album').trigger('click');
+							} else {
+								$('#big-jp-previous').trigger('click');
+							}
+						break;
+					
+						case 39: //right arrow
+						case 176: //media next
+						 event.preventDefault();
+						 if (e.shiftKey) {
+							$('#big-jp-next-album').trigger('click');
+						 } else {
+							$('#big-jp-next').trigger('click');
+						 }
+						break;
+						 
+						case 83: //s
+							if (!isGuestPlay()){
+								 $('#search-toggle').trigger('click');
+								 $('#searchText').select();
+								 $('#searchText').focus();
+							} 
+						break;
+							
+						case 80: //p
+							 event.preventDefault();
+							 $('#playlist-toggle').trigger('click');
+						break;
+							
+						case 73: //i
+						 event.preventDefault();
+						 if (e.ctrlKey && e.altKey) {
+						 } else {
+							$('#track-wiki').trigger('click');
+						 }
+						break;
+						
+						case 76: //l
+						 event.preventDefault();
+						 $('#track-lyrics').trigger('click');
+						break;
+						
+						case 66: //b
+							if (!isGuestPlay()){	
+								 toggleBrowser();
+								 event.preventDefault();
+							}
+						break;
+						
+						case	191: // /
+							if (!isGuestPlay()) {
+								 updateSelection('','');
+								 toggleBrowser();
+								 $('#filterText').select();
+								 $('#filterText').focus();
+								 event.preventDefault();
+							} 
+						break;
+							
+						case	74: //j
+							if (!isGuestPlay()) {
+								moveDown();
+							}
+						break;
+						
+						case	75: //k
+							if (!isGuestPlay()) {
+								moveUp();
+							} 
+						break;
+						
+						case	79: //o
+							if (!isGuestPlay()) {
+								$(".current").click();
+							}
+						break;
+						
+						case 65: //a
+							if (!isGuestPlay()) {
+								$(".current").parent("span").find(".queue").click();
+							}
+						break;
+						
+						case 27: //Esc
+							updateSelection('','');
+						break;
+					}
 				}
 			}
 
