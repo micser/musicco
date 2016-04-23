@@ -641,7 +641,8 @@ class Musicco {
 			}
 
 			function toggleBrowser() {
-				if (getViewerType() === '"small"') {
+				var viewerType = getViewerType();
+				if ((viewerType === '"small"') || (viewerType === '"short"')) {
 					updateSelection('#browser-toggle', '#browser');
 				}
 			}
