@@ -1395,7 +1395,7 @@ class Musicco {
 						var link = getBaseURL() + "?guestPlay&u=" + user;
 						$("#sharing-banner").show();
 						$("#shared-link").val(link).select().attr('size', link.length);
-					});	
+					});
 				}
 
 				$("#musiccoplayer").on($.jPlayer.event.play, function(event) { 
@@ -1416,16 +1416,16 @@ class Musicco {
 				});
 
 				function notificationSupported() {
-					if ('Notification' in window) {
+					if (!(/Android/i.test(navigator.userAgent)) && ('Notification' in window)) {
 						return true;
 					}
 					return false;
-				}
+						}
 
 				function notificationAllowed() {
 					if (notificationSupported() && Notification.permission === 'granted') {
 						return true;
-					}
+				}
 					return false;
 				}
 
