@@ -557,7 +557,9 @@ class Musicco {
 		<script type="text/javascript" src="lib/jquery.jplayer.min.js"></script>
 		<script type="text/javascript" src="lib/jplayer.playlist.min.js"></script>
 			<script type="text/javascript">
+			var viewerType = '';
 			$(document).ready(function() {
+				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
 				var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
 				var options = { playlistOptions: {
@@ -641,7 +643,6 @@ class Musicco {
 				}
 
 				function toggleBrowser() {
-					var viewerType = getViewerType();
 					if ((viewerType === '"small"') || (viewerType === '"short"')) {
 						updateSelection('#browser-toggle', '#browser');
 					}
@@ -664,7 +665,7 @@ class Musicco {
 
 				function togglePlaylist() {
 					formatPlaylist();
-					if (getViewerType() === '"small"') {
+					if (viewerType === '"small"') {
 						updateSelection('#playlist-toggle', '#playlistPanel');
 					}
 					scrollToCurrentSong();
@@ -1847,7 +1848,6 @@ class Musicco {
 				}
 
 				function updateSelection(toggle, panel) {
-					var viewerType = getViewerType();
 					if (viewerType === '"small"') {
 					$('#playlistPanel, #browser').addClass('panel');
 					} else {
@@ -1879,23 +1879,26 @@ class Musicco {
 						$('#panels').children("*").css('z-index', panelsZindex);
 					}
 				}
-
-				function getViewerType() {
-					return window.getComputedStyle(document.body,':after').getPropertyValue('content');
-				}
+				
+				
 			});
 
+
 			$(window).resize(function() {
-				$("#big-player, #playlistPanel, #browser, #panels, .panel").removeAttr("style");
-				$("#panels").children("*").removeAttr("style");
-				$(".panel").removeClass("shown");
-				$(".toggles").removeClass("shown");
+				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
+				if (newViewerType != viewerType) {
+					viewerType = newViewerType;
+					$("#big-player, #playlistPanel, #browser, #panels, .panel").removeAttr("style");
+					$("#panels").children("*").removeAttr("style");
+					$(".panel").removeClass("shown");
+					$(".toggles").removeClass("shown");
+				}
 			});
 			//]]>
 		</script>
 		<title><?php if(Musicco::getConfig('appName') != null) print Musicco::getConfig('appName'); ?></title>
 	</head>
-	<body>
+	<body id="viewer">
 <?php 
 //
 // Print the error (if there is something to print)

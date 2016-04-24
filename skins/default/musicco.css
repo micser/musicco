@@ -704,7 +704,7 @@
 }
 
 @media (max-aspect-ratio: 3/4) {
-	body:after {
+	#viewer:after {
 		content: 'small';
 		display: none;
 	}
@@ -746,7 +746,7 @@
 
 @media (min-aspect-ratio: 3/4) {
 
-	body:after {
+	#viewer:after {
 		content: 'medium';
 		display: none;
 	}
@@ -879,7 +879,7 @@
 
 @media all and (min-aspect-ratio: 3/4) and (max-width: 800px) {
 
-	body:after {
+	#viewer:after {
 		content: 'short';
 		display: none;
 	}
@@ -924,7 +924,7 @@
 
 @media all and (min-aspect-ratio: 3/4) and (max-height: 400px) {
 
-	body:after {
+	#viewer:after {
 		content: 'short';
 		display: none;
 	}
