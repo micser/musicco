@@ -942,7 +942,7 @@ class Musicco {
 						toggleSearch();
 					});
 
-					$(document).on("click", function(e) {
+					$(document).on("mouseup", function(e) {
 						var popup = $(".panel, .toggle");
 						if (!$('.shown').is(e.target) && !popup.is(e.target) && popup.has(e.target).length == 0) {
 							updateSelection('','');
