@@ -988,10 +988,17 @@ class Musicco {
 
 				$(document).on("click", "#uncover", function(e) {
 					if (e.altKey) {
-						var randomTrack = Math.floor(Math.random() * musiccoPlaylist.playlist.length);
-						var thisAlbum = musiccoPlaylist.playlist[randomTrack].album;
-						var albumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum);
-						musiccoPlaylist.play(albumStart);
+						if ($('.move').length) {
+							var currentAlbum = musiccoPlaylist.playlist[musiccoPlaylist.current].album;
+							var currentAlbumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(currentAlbum);
+							var randomAlbumStart = currentAlbumStart;
+							while (randomAlbumStart == currentAlbumStart) {
+								var randomTrack = Math.floor(Math.random() * musiccoPlaylist.playlist.length);
+								var randomAlbum = musiccoPlaylist.playlist[randomTrack].album;
+								randomAlbumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(randomAlbum);
+							}
+							musiccoPlaylist.play(randomAlbumStart);
+						}
 					} else {
 						var method="uncover";
 						if (e.shiftKey) {
