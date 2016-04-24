@@ -877,6 +877,41 @@
 
 }
 
+@media (min-aspect-ratio: 3/4) and (min-width: 1000px){
+
+	#viewer:after {
+		content: 'widescreen';
+		display: none;
+	}
+
+	#filter,
+	#browser {
+		max-width: 600x;
+	}
+
+	#filter {
+		width: 30%;
+	}
+
+
+	#browser {
+		width: 30%;
+		max-width: 600px;
+	}
+
+	#playlistPanel {
+		left: 31%;
+		width: 35%;
+		max-width: 750px;
+	}
+
+	#big-player {
+		left: 67%;
+	}
+
+
+}
+
 @media all and (min-aspect-ratio: 3/4) and (max-width: 800px) {
 
 	#viewer:after {
