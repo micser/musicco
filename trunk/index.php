@@ -558,8 +558,10 @@ class Musicco {
 		<script type="text/javascript" src="lib/jplayer.playlist.min.js"></script>
 			<script type="text/javascript">
 			var viewerType = '';
+			var windowWidth = '';
 			$(document).ready(function() {
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
+				windowWidth = $(window).width();
 				var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
 				var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
 				var options = { playlistOptions: {
@@ -940,7 +942,7 @@ class Musicco {
 						toggleSearch();
 					});
 
-					$(document).on("mouseup", function(e) {
+					$(document).on("click", function(e) {
 						var popup = $(".panel, .toggle");
 						if (!$('.shown').is(e.target) && !popup.is(e.target) && popup.has(e.target).length == 0) {
 							updateSelection('','');
@@ -1493,7 +1495,7 @@ class Musicco {
 				}
 
 				function moveDown() {
-					move(1);	
+					move(1);
 				}
 
 				function move(direction) {
@@ -1886,8 +1888,10 @@ class Musicco {
 
 			$(window).resize(function() {
 				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
-				if (newViewerType != viewerType) {
+				var newWindowWidth = $(window).width();
+				if ((newViewerType != viewerType) && (newWindowWidth != windowWidth)) {
 					viewerType = newViewerType;
+					windowWidth = newWindowWidth;
 					$("#big-player, #playlistPanel, #browser, #panels, .panel").removeAttr("style");
 					$("#panels").children("*").removeAttr("style");
 					$(".panel").removeClass("shown");
