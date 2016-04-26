@@ -29,7 +29,7 @@ $_CONFIG['lang'] = "en";
 // The skin you want to use for the player. Only one is provided (default).
 // If you want to create your own, copy the default folder and edit at will.
 // Default: $_CONFIG['skin'] = "default";
-$_CONFIG['skin'] = "default";
+$_CONFIG['skin'] = "beige";
 
 // Charset. Use the one that suits for you. 
 // Default: $_CONFIG['charset'] = "UTF-8";
@@ -288,7 +288,8 @@ $_TRANSLATIONS["fr"] = array(
 
 function css() {
 	?>
-	<link href="skins/<?php print Musicco::getConfig('skin'); ?>/musicco.css" rel="stylesheet" type="text/css" />
+	<link href="skins/<?php print Musicco::getConfig('skin'); ?>/skin.css" rel="stylesheet" type="text/css" />
+	<link href="skins/common/musicco.css" rel="stylesheet" type="text/css" />
 	<?php
 }
 
@@ -483,7 +484,7 @@ class Musicco {
 		?>
 		<div id="login">
 			<div class="login-header">
-				<img src="skins/<?php print(Musicco::getConfig("skin")); ?>/about.png"/><?php print(Musicco::getConfig("appName")); ?>
+				<img src="skins/common/about.png"/><?php print(Musicco::getConfig("appName")); ?>
 			</div>
 			<form enctype="multipart/form-data" action="?" method="post">
 			<?php 
@@ -2434,7 +2435,7 @@ function builddb() {
 		function getAbout() {
 		$aboutString="<div id='aboutBox'>";
 		$aboutString.="<span class='close close-about help'>&#10006;</span>";
-		$aboutString.="<span class='about bold'><a target='_blank' href='//musicco.org'><img width='310px' height='310px' src='skins/".Musicco::getConfig('skin')."/about.png'/></a></span>";
+		$aboutString.="<span class='about bold'><a target='_blank' href='//musicco.org'><img width='310px' height='310px' src='skins/common/about.png'/></a></span>";
 		$aboutString.="<span class='about bold big'><a target='_blank' href='//musicco.org'>musicco</a></span>";
 		$aboutString.="<span class='about bold'>A web based player for your music collection</span>";
 		$aboutString.="<span class='about'><br/></span>";
