@@ -1455,7 +1455,6 @@ class Musicco {
 
 				$("#musiccoplayer").on($.jPlayer.event.ready, function(event) {
 					loadPlaylist();
-					window.resizeTo(470, 780);
 					updateVolumeValue();
 				});
 
