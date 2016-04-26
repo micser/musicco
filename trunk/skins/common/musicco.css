@@ -5,14 +5,11 @@
 	}
 
 	::-webkit-scrollbar-track {
-		background-color: #121314; 
 		border-radius: .5em;
 	}
 
 	::-webkit-scrollbar-thumb {
 		border-radius: .5em;
-		background: #272727; 
-		/*background: #1C1C1F;  essayé mais on voit vraiment rien... */
 	}
 
 	.close, 
@@ -41,6 +38,9 @@
 		background-color: transparent;
 	}
 
+	#big-mute {
+		display: inline-block !important;
+	}
 
 	body,
 	#updateCoverArt,
@@ -63,7 +63,6 @@
 		-ms-user-select: none;
 		-moz-user-select: none;
 		background-color: #121314;
-		color: #A7A97F;
 	}
 
 	.bigger {
@@ -74,29 +73,8 @@
 		color: #121314;
 	}
 
-	.current,
-	.searchResult,
-	.new,
-	input,
-	#filterButton,
-	#clear,
-	#findIt,
-	.close,
-	#updateCoverArt,
-	#aboutBox span input,
-	#aboutBox span a,
-	.jp-playlist-current,
-	.itemHeaderAlbum,
-	a.jp-playlist-item-remove:hover,
-	.download:hover,
-	.jp-playlist a:hover,
-	.jp-playlist-current:before,
-	#searchLink {
-		color: #E3E5BB;
-	}
-
 	.big {
-		font-size: 3em!important;
+		font-size: 3em !important;
 	}
 	
 	.move,
@@ -169,10 +147,9 @@
 	.jp-playlist a:hover {
 		text-decoration: none;
 	}
-	
+
 	input {
 		border: 0;
-		background-color: #666;
 	}
 
 	#big-player,
@@ -280,7 +257,6 @@
 		overflow-x: hidden;
 	}
 
-	
 	div.toggles {
 		display:inline-block;
 		width: 1.6em;
@@ -296,54 +272,6 @@
 	div.selected,
 	div.shown {
 		background-position-y: -2em;
-	}
-
-	#clear-playlist {
-		background-image: url("clear.png");
-	}
-
-	#uncover {
-		background-image: url("uncover.png");
-	}
-
-	#playlist-toggle {
-		background-image: url("playlist.png");
-	}
-
-	#browser-toggle {
-		background-image: url("browser.png");
-	}
-
-	#search-toggle {
-		background-image: url("search.png");
-	}
-
-	#track-wiki {
-		background-image: url("info.png");
-	}
-
-	#track-lyrics {
-		background-image: url("lyrics.png");
-	}
-
-	#big-shuffle {
-		background-image: url("shuffle.png");
-	}
-
-	#big-repeat {
-		background-image: url("repeat.png");
-	}
-
-	#big-mute {
-		background-image: url("mute.png");
-	}
-
-	#big-volume-down {
-		background-image: url("volume-down.png");
-	}
-
-	#big-volume-up {
-		background-image: url("volume-up.png");
 	}
 
 	#big-jp-progress,
@@ -444,7 +372,7 @@
 		background-position: center;
 		transition: background-image .5s ease;
 	}
-	
+
 	#big-cover img {
 		width: 100%;
 		vertical-align: middle;
@@ -469,7 +397,6 @@
 	}
 
 	div.jp-play-bar {
-		background-color: #E3E5BB;
 		width:0;
 		border-radius: 1.5em;
 	}
@@ -518,7 +445,6 @@
 
 	a.jp-playlist-current:before {
 		content: "";
-		border-color: transparent #E3E5BB;
 		border-style: solid;
 		border-width: 0.35em 0 0.35em 0.45em;
 		display: inline-block;
@@ -556,7 +482,6 @@
 
 	#big-volume-bar {
 		height: 90%;
-		background-color: #E3E5BB;
 		position: absolute;
 		bottom: 5%;
 		left: 97%;
@@ -682,11 +607,6 @@
 		box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.2);
 	}
 
-	#searchText,
-	#filterText {
-		border: 1px solid #E3E5BB;
-	}
-
 	#findIt {
 		border: 1px solid #121314;
 	}
@@ -748,12 +668,6 @@
 		position: relative;
 	}
 
-/* Pas fan finalement...
-	#big-cover {
-		box-shadow: 0px 0px 164px #A7A97F;
-	}
-*/
-
 }
 
 @media (min-aspect-ratio: 3/4) {
@@ -767,7 +681,6 @@
 	#infoPanel,
 	#lyricsPanel a {
 		background-color: #121314;
-		color: #A7A97F;
 	}
 
 	#browser,
@@ -873,7 +786,6 @@
 		overflow-x: hidden;
 		padding: 10px;
 		border-radius: 10px;
-		border: 0px solid #E3E5BB;
 		box-shadow: 0px 0px 164px #888;
 		z-index: 3;
 	}
