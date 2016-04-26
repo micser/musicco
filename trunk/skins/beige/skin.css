@@ -118,7 +118,12 @@
 		background-image: url("volume-up.png");
 	}
 
-
+	#lyricsPanel,
+	#infoPanel,
+	#lyricsPanel a {
+		background: #FFFFFF;
+		color: #000000;
+	}
 }
 
 @media (min-aspect-ratio: 3/4) {
