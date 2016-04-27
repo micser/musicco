@@ -582,6 +582,7 @@ class Musicco {
 					var wikiHistoryPos = -1;
 
 				$("#filterText").keyup(function() {
+					resetBrowserTree();
 					$('#includeOlAdlbums').prop('checked', true);
 					var query = normalise($(this).val().toLowerCase());
 					if (query == "") {
@@ -594,11 +595,17 @@ class Musicco {
 					
 				$("#filterButton").click(function() {
 					clearFilterBox();
+					resetBrowserTree();
 				});
 
 				function clearFilterBox() {
 						$("#filterText").val('');
 						$("span[item]").show();
+				}
+
+				function resetBrowserTree() {
+					$('.current').removeClass("current");
+					$('#rootfolder').addClass("current");
 				}
 
 				$("#track-wiki").click(function() {
