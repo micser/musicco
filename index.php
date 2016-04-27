@@ -1865,7 +1865,9 @@ class Musicco {
 
 				function updateSelection(toggle, panel) {
 					if (viewerType === '"small"') {
-					$('#playlistPanel, #browser').addClass('panel');
+						$('#playlistPanel, #browser').addClass('panel');
+					} else if (viewerType === '"short"') {
+						$('#playlistPanel').removeClass('panel');
 					} else {
 						$('#playlistPanel, #browser').removeClass('panel');
 					}
@@ -1975,10 +1977,10 @@ if(!AuthManager::isAccessAllowed()) {
 			<div id="browser" class="guestPlay panel">
 				<div class="table">
 					<div id="filter">
-						<sup id="filterButton" class="right">&#10006;</sup>
-						<input id="includeOlAdlbums" class="left" type="checkbox" checked="true"/>
+						<sup id="filterButton" tabindex="2" class="right">&#10006;</sup>
+						<input id="includeOlAdlbums" class="left" tabindex="0" type="checkbox" checked="true"/>
 						<span class="left"><?php print $this->getString("show_all"); ?></span>
-						<span class="inputContainer"><input type="text" id="filterText" class="fill nokeyboard" name="filterText" /></span>
+						<span class="inputContainer"><input type="text" id="filterText" tabindex="1" class="fill nokeyboard" name="filterText" /></span>
 					</div>
 					<br/>
 					<span id="topnode"></span>
