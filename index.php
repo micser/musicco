@@ -1646,7 +1646,7 @@ class Musicco {
 							
 							case 65: //a
 								if (!isGuestPlay()) {
-									$(".current").parent("span").find(".queue").click();
+									$(".current").parent("span").find(".queue").first().click();
 								}
 							break;
 							
