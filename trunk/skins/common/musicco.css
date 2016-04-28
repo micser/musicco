@@ -887,3 +887,47 @@
 	}
 
 }
+
+@media all and (min-width: 12em) and (max-width: 18em) {
+
+	#playlist-controls div.toggles {
+		display:inline-block;
+		width: 1.2em;
+		height: 1.5em;
+		background-size: 1.5em;
+		background-repeat: no-repeat;
+		background-position-x: 0;
+		background-position-y: 0;
+		padding: 0 .2em 0 .1em;
+	}
+
+	#playlist-controls div.toggles:hover {
+		background-position-y: -1.5em;
+	}
+
+}
+
+@media all and (max-width: 12em) {
+
+	#big-mute,
+	#big-volume-up,
+	#big-volume-down {
+		display: none;
+	}
+
+	div.toggles {
+		display:inline-block;
+		width: 1.2em;
+		height: 1.5em;
+		background-size: 1.5em;
+		background-repeat: no-repeat;
+		background-position-x: 0;
+		background-position-y: 0;
+		padding: 0 .2em 0 .1em;
+	}
+
+	div.toggles:hover {
+		background-position-y: -1.5em;
+	}
+
+}
