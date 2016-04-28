@@ -28,7 +28,7 @@ $_CONFIG['lang'] = "en";
 
 // The skin you want to use for the player. Only one is provided (default).
 // If you want to create your own, copy the default folder and edit at will.
-// Default: $_CONFIG['skin'] = "default";
+// Default: $_CONFIG['skin'] = "beige";
 $_CONFIG['skin'] = "beige";
 
 // Charset. Use the one that suits for you. 
@@ -900,8 +900,8 @@ class Musicco {
 								if (parentItemName=="") {
 									parentItemName="home";
 								}
-								hitLink+="<a class=\"queue searchResultParent\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a> &gt; ";
-								hitLink+="<a class=\"queue searchResult\" parent=\""+parent+"\" item=\""+name+optionalSlash+"\" type=\""+type+"\">"+ name +"</a></div>";
+								hitLink+="<a class=\"queue searchResultParent\" data-parent=\""+levelUp+"\" data-item=\""+parentItem+"\" data-type=\"1\">"+ parentItemName +"</a> &gt; ";
+								hitLink+="<a class=\"queue searchResult\" data-parent=\""+parent+"\" data-item=\""+name+optionalSlash+"\" data-type=\""+type+"\">"+ name +"</a></div>";
 								$("#searchResults").before(hitLink);
 							});
 						} else {
@@ -920,9 +920,9 @@ class Musicco {
 					
 				$(document).on("click", ".closed", function() {
 					$(this).toggleClass('closed open');
-					var item=$(this).attr("item");
-					var level=$(this).attr("level");
-					var parent = $(this).attr("parent");
+					var item=$(this).data("item");
+					var level=$(this).data("level");
+					var parent = $(this).data("parent");
 					var root =parent+item;
 					showLoadingInfo("<?php print $this->getString("opening"); ?>" + decodeURIComponent(item).replace("/",""));
 					$.post('?', {querydb: '', root: decodeURIComponent(root), type: 'browse'}, function (response) {
@@ -931,7 +931,7 @@ class Musicco {
 								$.each(files, function (i, elem) {
 									fileUrl =	 encodeURIComponent(files[i].name.replace(/\"/g,""));
 									type =	encodeURIComponent(files[i].type);
-									$(".item[item=\""+item+"\"][parent=\""+parent+"\"]").after(treelink(root, fileUrl, level, type));
+									$(".item[data-item=\""+item+"\"][data-parent=\""+parent+"\"]").after(treelink(root, fileUrl, level, type));
 								});
 							}
 						hideLoadingInfo(); }, "json");
@@ -958,7 +958,7 @@ class Musicco {
 					});
 
 					$(document).on("click", ".infolink", function() {
-						var artist=decodeURIComponent($(this).attr("artist"));
+						var artist=decodeURIComponent($(this).data("artist"));
 						updateInfoPanel(wikiLink(artist), artist);
 						toggleInfo();
 					});
@@ -1029,7 +1029,7 @@ class Musicco {
 									if (parentItemName=="") {
 										parentItemName="home";
 									}
-										hitLink+="<a class=\"queue searchResultParent uncoverLink\" id=\"" + i +"\" parent=\""+levelUp+"\" item=\""+parentItem+"\" type=\"1\">"+ parentItemName +"</a>";
+										hitLink+="<a class=\"queue searchResultParent uncoverLink\" id=\"" + i +"\" data-parent=\""+levelUp+"\" data-item=\""+parentItem+"\" data-type=\"1\">"+ parentItemName +"</a>";
 									$("#searchResults").before(hitLink);
 									var thisHit = "#"+i;
 									$(thisHit).trigger('click');
@@ -1053,9 +1053,9 @@ class Musicco {
 					var closed="closed";
 					var isNew="old";
 					var slash="/";
-					link+="<span class=\"node nowrap\" level=\""+myLevel+"\" item=\""+normalise((decodeURIComponent(root+fileUrl).toLowerCase()))+"\">";
+					link+="<span class=\"node nowrap\" data-level=\""+myLevel+"\" data-item=\""+normalise((decodeURIComponent(root+fileUrl).toLowerCase()))+"\">";
 					if (parentLevel==0) {
-						link+="<img class=\"infolink browserimg\" artist=\""+fileUrl+"\" border=0 src=\"skins/<?php print Musicco::getConfig('skin'); ?>/wiki.png\" /></a>";
+						link+="<img class=\"infolink browserimg\" data-artist=\""+fileUrl+"\" border=0 src=\"skins/<?php print Musicco::getConfig('skin'); ?>/wiki.png\" /></a>";
 					} else {
 						link+="<span class=\"spacer\"/>";
 					}
@@ -1070,9 +1070,9 @@ class Musicco {
 					 if (fileUrl.indexOf("<?php print Musicco::getConfig('new_marker'); ?>") != -1) {
 						isNew = "new";
 					 }
-					link+="<a class=\"queue\" parent=\""+root+"\" item=\""+fileUrl+slash+"\" type=\""+type+"\"><img src=\"skins/<?php print Musicco::getConfig('skin'); ?>/add.png\" class=\"browserimg\" /></a>";
-					link+="<img alt=\"dir\" src=\""+image+"\" class=\"browserimg\" /> ";
-					link+="<a class=\"item "+closed+" "+isNew+"\" level=\""+myLevel+"\" parent=\""+root+"\" item=\""+fileUrl+slash+"\"\>";
+					link+="<a class=\"queue\" data-parent=\""+root+"\" data-item=\""+fileUrl+slash+"\" data-type=\""+type+"\"><img src=\"skins/<?php print Musicco::getConfig('skin'); ?>/add.png\" class=\"browserimg\" /></a>";
+					link+="<img src=\""+image+"\" class=\"browserimg\" /> ";
+					link+="<a class=\"item "+closed+" "+isNew+"\" data-level=\""+myLevel+"\" data-parent=\""+root+"\" data-item=\""+fileUrl+slash+"\"\>";
 					link+=decodeURIComponent(fileUrl.replace(/<?php print Musicco::getConfig('new_marker'); ?>/g, ""));
 					link+="</a> ";
 					if (("<?php print AuthManager::isAdmin(); ?>" =="1") && (type==2)) {
@@ -1098,9 +1098,9 @@ class Musicco {
 
 				$(document).on("click", ".queue", function() {
 					var playAfter = (musiccoPlaylist.playlist.length < 1);
-					var item = $(this).attr("item");
-					var parent = $(this).attr("parent");
-					var type = $(this).attr("type");
+					var item = $(this).data("item");
+					var parent = $(this).data("parent");
+					var type = $(this).data("type");
 					showLoadingInfo("<?php print $this->getString("queueing"); ?>" + decodeURIComponent(item).replace("/",""));
 					$.post('?', {querydb: '', root: decodeURIComponent(parent + item), type: 'add'+type}, function (response) {
 							var files=response;
@@ -1165,9 +1165,9 @@ class Musicco {
 							if (thisAlbum != firstAlbum) {
 								var to = getPreviousAlbumIndex(thisAlbum);
 								moveUp = "<a class=\"move\""
-											+ "from=\"" + index + "\""
-											+ "to=\"" + to + "\""
-											+ "length=\"" + albumLength + "\""
+											+ "data-from=\"" + index + "\""
+											+ "data-to=\"" + to + "\""
+											+ "data-length=\"" + albumLength + "\""
 											+ ">&nbsp;&#9650;</a>";
 							}
 
@@ -1175,9 +1175,9 @@ class Musicco {
 							if (thisAlbum != lastAlbum) {
 								var to = getNextAlbumLastIndex(thisAlbum);
 								moveDown = "<a class=\"move\""
-											+ "from=\"" + index + "\""
-											+ "to=\"" + to + "\""
-											+ "length=\"" + albumLength + "\""
+											+ "data-from=\"" + index + "\""
+											+ "data-to=\"" + to + "\""
+											+ "data-length=\"" + albumLength + "\""
 											+ ">&nbsp;&#9660;</a>";		
 							}
 							var year = musiccoPlaylist.playlist[index].year
@@ -1187,14 +1187,14 @@ class Musicco {
 							var artist = musiccoPlaylist.playlist[index].artist;
 							var cover = musiccoPlaylist.playlist[index].poster;
 							var path = musiccoPlaylist.playlist[index].path;
-							var share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' path='replaceme'>&nbsp;&#x1f517;</a>\"":"\"\""); ?>;
+							var share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' data-path='replaceme'>&nbsp;&#x1f517;</a>\"":"\"\""); ?>;
 							var itemHeader = 
 							"<span class=\"itemHeader\">"
 								+ "<table class=\"itemHeaderDetails\">"
 									+ "<tr>"
 										+ "<td rowspan=\"2\"><img width=\"100\" height=\"100\" src=\"" + cover + "\"/></td>"
 										+ "<td class=\"itemHeaderRemove\">"
-											+ "<a class=\"guestPlay remove-album\" album=\"" + thisAlbum + "\">&#10008;</a>"
+											+ "<a class=\"guestPlay remove-album\" data-album=\"" + thisAlbum + "\">&#10008;</a>"
 											+ "<br/>"
 											+ moveUp
 											+ moveDown
@@ -1719,7 +1719,7 @@ class Musicco {
 				}
 
 				$(document).on("click", ".remove-album", function() {
-					var album = $(this).attr('album');
+					var album = $(this).data('album');
 					var i=$(this).parents('li').index();
 					$(this).queue(function() {
 						removeAlbum(album, i);
@@ -1745,9 +1745,9 @@ class Musicco {
 				$(document).on("click", ".move", function() {
 					var isPlaying = $('#big-jp-pause').is(':visible');
 					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3;
-					var from = parseInt($(this).attr('from'));
-					var to = parseInt($(this).attr('to'));
-					var length = parseInt($(this).attr('length'));
+					var from = parseInt($(this).data('from'));
+					var to = parseInt($(this).data('to'));
+					var length = parseInt($(this).data('length'));
 					var temp = musiccoPlaylist.playlist.slice(0);
 					for (var i=0; i < length; i++) {
 						temp.splice((to + i), 0, musiccoPlaylist.playlist[(from + i)]);
@@ -1772,7 +1772,7 @@ class Musicco {
 				});
 
 				$(document).on("click", ".share", function() {
-					saveGuestPlaylist($(this).attr('path'));
+					saveGuestPlaylist($(this).data('path'));
 				});
 
 				$('#big-cover').click(function(e) {
@@ -1846,7 +1846,7 @@ class Musicco {
 				}
 
 				function initBrowser() {
-					$('#topnode').html("<a id=\"rootfolder\" class=\"item closed current\" level=\"0\" parent=\"\" item=\"<?php print $this->getConfig('musicRoot'); ?>/\">&nbsp;</a>");
+					$('#topnode').html("<a id=\"rootfolder\" class=\"item closed current\" data-level=\"0\" data-parent=\"\" data-item=\"<?php print $this->getConfig('musicRoot'); ?>/\">&nbsp;</a>");
 					$('#rootfolder').click();
 				}
 
@@ -2068,12 +2068,12 @@ if(!AuthManager::isAccessAllowed()) {
 					<ul class="jp-toggles">
 						<li id="volume"><div class="jp-volume-bar"><div class="jp-volume-bar-value"></div></div></li>
 						<li><div class="jp-current-time"></div><div class="jp-duration"></div></li>
-						<li><a class="jp-mute" tabindex="1" title="mute">mute</a></li>
-						<li><a class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
-						<li><a class="jp-shuffle" tabindex="1" title="shuffle">shuffle</a></li>
-						<li><a class="jp-shuffle-off" tabindex="1" title="shuffle off">shuffle off</a></li>
-						<li><a class="jp-repeat" tabindex="1" title="repeat">repeat</a></li>
-						<li><a class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li>
+						<li><a class="jp-mute" tabindex="1">mute</a></li>
+						<li><a class="jp-unmute" tabindex="1">unmute</a></li>
+						<li><a class="jp-shuffle" tabindex="1">shuffle</a></li>
+						<li><a class="jp-shuffle-off" tabindex="1">shuffle off</a></li>
+						<li><a class="jp-repeat" tabindex="1">repeat</a></li>
+						<li><a class="jp-repeat-off" tabindex="1">repeat off</a></li>
 					</ul>
 				</div>
 			</div>
@@ -2483,7 +2483,7 @@ function builddb() {
 			$aboutString.="<span class='about'>Like musicco? Wanna buy me a beer?</span>";
 			$aboutString.="<span class='about'><br/></span>";
 			$aboutString.="<span class='about'>";
-			$aboutString.="<form action='https://www.paypal.com/cgi-bin/webscr' method='post' target='_top'><input id='paypalCMD' type='hidden' name='cmd' value='_s-xclick'><input type='hidden' name='hosted_button_id' value='CWRGBQ6A65642'><input id='paypalIMG' type='image' src='https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif' border='0' name='submit' alt='PayPal - The safer, easier way to pay online!'><img alt='' border='0' src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif' width='1' height='1'></form>";
+			$aboutString.="<form action='https://www.paypal.com/cgi-bin/webscr' method='post' target='_top'><input id='paypalCMD' type='hidden' name='cmd' value='_s-xclick'><input type='hidden' name='hosted_button_id' value='CWRGBQ6A65642'><input id='paypalIMG' type='image' src='https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif' border='0' name='submit'><img border='0' src='https://www.paypalobjects.com/en_US/i/scr/pixel.gif' width='1' height='1'></form>";
 			$aboutString.="</span>"; 
 		}
 		$aboutString.="<span class='about'><br/></span>";
