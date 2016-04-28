@@ -251,7 +251,7 @@
 
 	#big-info {
 		text-align: right;
-		overflow-y: scroll;
+		overflow-y: hidden;
 		overflow-x: hidden;
 	}
 
@@ -504,7 +504,8 @@
 	}
  
 	#header,
-	#big-timer {
+	#big-timer,
+	#big-info {
 		margin: 0 .2em 0 .2em;
 	}
 
@@ -514,11 +515,7 @@
 		-moz-user-select: text;
 	}
 
-	.node,
-	#nowPlayingAlbum,
-	#nowPlayingArtist,
-	#nowPlayingTitle,
-	#header {
+	.nowrap {
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;

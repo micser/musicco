@@ -1053,7 +1053,7 @@ class Musicco {
 					var closed="closed";
 					var isNew="old";
 					var slash="/";
-					link+="<span class=\"node\" level=\""+myLevel+"\" item=\""+normalise((decodeURIComponent(root+fileUrl).toLowerCase()))+"\">";
+					link+="<span class=\"node nowrap\" level=\""+myLevel+"\" item=\""+normalise((decodeURIComponent(root+fileUrl).toLowerCase()))+"\">";
 					if (parentLevel==0) {
 						link+="<img class=\"infolink browserimg\" artist=\""+fileUrl+"\" border=0 src=\"skins/<?php print Musicco::getConfig('skin'); ?>/wiki.png\" /></a>";
 					} else {
@@ -1088,7 +1088,8 @@ class Musicco {
 					updateInfoPanel(wikiLink(href.replace(/\/wiki\//g, "")), title);
 				});
 
-				$(document).on('mouseenter', ".node", function() {
+				$(document).on('mouseenter', ".nowrap", function() {
+					//show tooltips for truncated text
 					var $this = $(this);
 					if(this.offsetWidth < this.scrollWidth) {
 						$this.attr('title', $this.text());
@@ -1934,7 +1935,7 @@ if(!AuthManager::isAccessAllowed()) {
 	<!-- START: JPlayer -->
 	<div id="musiccoplayer" class="jp-audio">
 		<!-- START: header -->
-		<div id="header">
+		<div id="header" class="nowrap">
 		<?php
 			print "<span id=\"loadingInfo\"><span id=\"toast_text\"></span><span>&nbsp;</span><img src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
 			if (AuthManager::isAdmin()) {
@@ -2010,9 +2011,9 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="big-timer"></div>
 				<div id="big-info">
-					<div id="nowPlayingTitle">&nbsp;</div>
-					<div id="nowPlayingArtist">&nbsp;</div>
-					<div id="nowPlayingAlbum">&nbsp;</div>
+					<div id="nowPlayingTitle" class="nowrap">&nbsp;</div>
+					<div id="nowPlayingArtist" class="nowrap">&nbsp;</div>
+					<div id="nowPlayingAlbum" class="nowrap">&nbsp;</div>
 				</div>
 				<div id="playlist-controls">
 					<div id="big-mute" class="toggles jp-mute">&nbsp;</div>
