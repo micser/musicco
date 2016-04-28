@@ -586,10 +586,10 @@ class Musicco {
 					$('#includeOlAdlbums').prop('checked', true);
 					var query = normalise($(this).val().toLowerCase());
 					if (query == "") {
-						$(".node[item]").show();
+						$(".node[data-item]").show();
 						} else {
-							$(".node[item]").hide();
-					$('.node[item*="'+query+'"]').show();
+							$(".node[data-item]").hide();
+					$('.node[data-item*="'+query+'"]').show();
 						}
 				});
 					
@@ -600,7 +600,7 @@ class Musicco {
 
 				function clearFilterBox() {
 						$("#filterText").val('');
-						$("span[item]").show();
+						$("span[data-item]").show();
 				}
 
 				function resetBrowserTree() {
@@ -866,9 +866,9 @@ class Musicco {
 
 				$('#includeOlAdlbums').click(function () {
 					if ($(this).is(':checked')) {
-								$('.node:not([item$="<?php print $this->getConfig('new_marker'); ?>"])').fadeIn();
+								$('.node:not([data-item$="<?php print $this->getConfig('new_marker'); ?>"])').fadeIn();
 						} else {
-								$('.node:not([item$="<?php print $this->getConfig('new_marker'); ?>"])').fadeOut();
+								$('.node:not([data-item$="<?php print $this->getConfig('new_marker'); ?>"])').fadeOut();
 						}
 				});
 
