@@ -14,7 +14,7 @@ $_CONFIG['appName'] = "musicco";
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
 // Default: $_CONFIG['appVersion'] = "1.2-SNAPSHOT";
-$_CONFIG['appVersion'] = "1.2-SNAPSHOT";
+$_CONFIG['appVersion'] = "1.2";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
@@ -2435,6 +2435,8 @@ function builddb() {
 		$helpString.="<span class='guestPlay help'>o: open current selection</span>";
 		$helpString.="<span class='guestPlay help'>a: queue current selection</span>";
 		$helpString.="<span class='help'><br/></span>";
+		$helpString.="<span class='help yellow bold'>Find Out More at ";
+		$helpString.="<a class='yellow' target='_blank' href='https://www.musicco.org/#features'>musicco.org</a></span>";
 		
 		
 		$helpString.="</div>";
@@ -2475,7 +2477,7 @@ function builddb() {
 		$aboutString.="<span class='about'>musicco scans your music folder and builds a database of your music collection,</span>";
 		$aboutString.="<span class='about'>retrieving missing cover art from <a target='_blank' href='//www.coverartarchive.org'>coverartarchive.org</a>,</span>";
 		$aboutString.="<span class='about'>artist information from <a target='_blank' href='//".Musicco::getConfig('lang').".wikipedia.org/'>wikipedia.org</a></span>";
-		$aboutString.="<span class='about'>and song lyrics from <a target='_blank' href='//www.chartlyrics.com'>chartlyrics.com</a>.</span>";
+		$aboutString.="<span class='about'>and song lyrics from <a target='_blank' href='http://www.chartlyrics.com'>chartlyrics.com</a>.</span>";
 		$aboutString.="<span class='about'>The audio player component uses <a target='_blank' href='//jplayer.org/'>jPlayer</a>.</span>";
 		if (Musicco::getConfig('show_donate_button')) {
 			$aboutString.="<span class='about'><br/></span>";
