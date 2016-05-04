@@ -1266,7 +1266,7 @@ class Musicco {
 				function updateLyricsPanel(artist, song) {
 					artist=nowPlaying("artist");
 					song=nowPlaying("title");
-					var LRCurl= nowPlaying('mp3').replace(/.mp3/, ".lrc");
+					var LRCurl= encodeURI(nowPlaying('mp3').replace(/.mp3/, ".lrc"));
 					var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
 					var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
 					var searchOnline = true;
@@ -1447,7 +1447,7 @@ class Musicco {
 				function showNotification() {
 					if ((notificationSupported())	 && (notificationAllowed())) { 
 							notif = new Notification(nowPlaying("title") + " - " + nowPlaying("artist"),
-																				{'icon': nowPlaying("poster")+"/96x96",
+																				{'icon': nowPlaying("poster"),
 																				 'body': nowPlaying("album"),
 																				 'tag' : 'musicconowplayingnotification'});
 							notif.onclick = function(x) { window.focus(); this.close(); };
