@@ -2289,11 +2289,9 @@ function builddb() {
 			$folder = Musicco::getConfig('musicRoot');
 			// write lock file
 			//open the database
-			$db = new PDO('sqlite:library.db');
-			$sql_insert_item='INSERT INTO item_tmp (name, type, parent) VALUES (:name , :type, :parent);';
-			$insert_item = $db->prepare($sql_insert_item, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-			$sql_insert_cover='INSERT INTO cover_tmp (file, parent) VALUES (:file, :parent);';
-			$insert_cover = $db->prepare($sql_insert_cover, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+			$db = new PDO('sqlite:library.db');;
+			$insert_item = $db->prepare('INSERT INTO item_tmp (name, type, parent) VALUES (? , ?, ?);');
+			$insert_cover = $db->prepare('INSERT INTO cover_tmp (file, parent) VALUES (?, ?);');
 
 			//create the database
 			$db->exec("DELETE FROM cover_tmp;");
@@ -2320,10 +2318,10 @@ function builddb() {
 				$type= $item[1];
 				$parent= $item[2];
 			if ($type == "3") {
-				$insert_cover->execute(array(':file' => $name, ':parent' => $parent));
+				$insert_cover->execute(array($name, $parent));
 				$covers+=1;
 			} else {
-					$insert_item->execute(array(':name' => $name, ':type' => $type, ':parent' => $parent));
+					$insert_item->execute(array($name, $type, $parent));
 					$items+=1;
 			}
 		}
