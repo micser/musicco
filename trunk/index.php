@@ -924,13 +924,13 @@ class Musicco {
 					var level=$(this).data("level");
 					var parent = $(this).data("parent");
 					var root =parent+item;
-					showLoadingInfo("<?php print $this->getString("opening"); ?>" + decodeURIComponent(item).replace("/",""));
-					$.post('?', {querydb: '', root: decodeURIComponent(root), type: 'browse'}, function (response) {
+					showLoadingInfo("<?php print $this->getString("opening"); ?>" + decodeURI(item).replace("/",""));
+					$.post('?', {querydb: '', root: decodeURI(root), type: 'browse'}, function (response) {
 							var files=response;
 							if (files !=null) {
 								$.each(files, function (i, elem) {
-									fileUrl =	 encodeURIComponent(files[i].name.replace(/\"/g,""));
-									type =	encodeURIComponent(files[i].type);
+									fileUrl = encodeURI(files[i].name.replace(/\"/g,""));
+									type = files[i].type;
 									$(".item[data-item=\""+item+"\"][data-parent=\""+parent+"\"]").after(treelink(root, fileUrl, level, type));
 								});
 							}
@@ -958,7 +958,7 @@ class Musicco {
 					});
 
 					$(document).on("click", ".infolink", function() {
-						var artist=decodeURIComponent($(this).data("artist"));
+						var artist=decodeURI($(this).data("artist"));
 						updateInfoPanel(wikiLink(artist), artist);
 						toggleInfo();
 					});
@@ -1053,7 +1053,7 @@ class Musicco {
 					var closed="closed";
 					var isNew="old";
 					var slash="/";
-					link+="<span class=\"node nowrap\" data-level=\""+myLevel+"\" data-item=\""+normalise((decodeURIComponent(root+fileUrl).toLowerCase()))+"\">";
+					link+="<span class=\"node nowrap\" data-level=\""+myLevel+"\" data-item=\""+normalise((decodeURI(root+fileUrl).toLowerCase()))+"\">";
 					if (parentLevel==0) {
 						link+="<img class=\"infolink browserimg\" data-artist=\""+fileUrl+"\" border=0 src=\"skins/<?php print Musicco::getConfig('skin'); ?>/wiki.png\" /></a>";
 					} else {
@@ -1073,7 +1073,7 @@ class Musicco {
 					link+="<a class=\"queue\" data-parent=\""+root+"\" data-item=\""+fileUrl+slash+"\" data-type=\""+type+"\"><img src=\"skins/<?php print Musicco::getConfig('skin'); ?>/add.png\" class=\"browserimg\" /></a>";
 					link+="<img src=\""+image+"\" class=\"browserimg\" /> ";
 					link+="<a class=\"item "+closed+" "+isNew+"\" data-level=\""+myLevel+"\" data-parent=\""+root+"\" data-item=\""+fileUrl+slash+"\"\>";
-					link+=decodeURIComponent(fileUrl.replace(/<?php print Musicco::getConfig('new_marker'); ?>/g, ""));
+					link+=decodeURI(fileUrl.replace(/<?php print Musicco::getConfig('new_marker'); ?>/g, ""));
 					link+="</a> ";
 					if (("<?php print AuthManager::isAdmin(); ?>" =="1") && (type==2)) {
 						link+="<a href=\""+root+fileUrl+"\" target=\"_blank\" class=\"download\">&#8681;</a>";
@@ -1101,8 +1101,8 @@ class Musicco {
 					var item = $(this).data("item");
 					var parent = $(this).data("parent");
 					var type = $(this).data("type");
-					showLoadingInfo("<?php print $this->getString("queueing"); ?>" + decodeURIComponent(item).replace("/",""));
-					$.post('?', {querydb: '', root: decodeURIComponent(parent + item), type: 'add'+type}, function (response) {
+					showLoadingInfo("<?php print $this->getString("queueing"); ?>" + decodeURI(item).replace("/",""));
+					$.post('?', {querydb: '', root: decodeURI(parent + item), type: 'add'+type}, function (response) {
 							var files=response;
 							if (files!=null) {
 								$.each(files, function (i, elem) {
@@ -1113,7 +1113,7 @@ class Musicco {
 										album: files[i].album,
 										free:<?php print (AuthManager::isAdmin()?"true":"false"); ?>,
 										path: files[i].parent.replace(/\"/g,""),
-										mp3:	encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
+										mp3: encodeURI((files[i].parent+files[i].name).replace(/\"/g,"")),
 										extension: files[i].extension,
 										poster: files[i].cover,
 										number: files[i].number
@@ -1266,7 +1266,7 @@ class Musicco {
 				function updateLyricsPanel(artist, song) {
 					artist=nowPlaying("artist");
 					song=nowPlaying("title");
-					var LRCurl= nowPlaying('mp3').replace(/.mp3/, ".lrc");
+					var LRCurl= encodeURI(nowPlaying('mp3').replace(/.mp3/, ".lrc"));
 					var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
 					var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
 					var searchOnline = true;
@@ -1365,7 +1365,7 @@ class Musicco {
 												album: files[i].album,
 												free: false,
 												path: files[i].parent.replace(/\"/g,""),
-												mp3:	encodeURIComponent((files[i].parent+files[i].name).replace(/\"/g,"")),
+												mp3: encodeURI((files[i].parent+files[i].name).replace(/\"/g,"")),
 												extension: files[i].extension,
 												poster: files[i].cover,
 												number: files[i].number
@@ -1447,7 +1447,7 @@ class Musicco {
 				function showNotification() {
 					if ((notificationSupported())	 && (notificationAllowed())) { 
 							notif = new Notification(nowPlaying("title") + " - " + nowPlaying("artist"),
-																				{'icon': nowPlaying("poster")+"/96x96",
+																				{'icon': nowPlaying("poster"),
 																				 'body': nowPlaying("album"),
 																				 'tag' : 'musicconowplayingnotification'});
 							notif.onclick = function(x) { window.focus(); this.close(); };
@@ -2289,11 +2289,9 @@ function builddb() {
 			$folder = Musicco::getConfig('musicRoot');
 			// write lock file
 			//open the database
-			$db = new PDO('sqlite:library.db');
-			$sql_insert_item='INSERT INTO item_tmp (name, type, parent) VALUES (:name , :type, :parent);';
-			$insert_item = $db->prepare($sql_insert_item, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-			$sql_insert_cover='INSERT INTO cover_tmp (file, parent) VALUES (:file, :parent);';
-			$insert_cover = $db->prepare($sql_insert_cover, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+			$db = new PDO('sqlite:library.db');;
+			$insert_item = $db->prepare('INSERT INTO item_tmp (name, type, parent) VALUES (? , ?, ?);');
+			$insert_cover = $db->prepare('INSERT INTO cover_tmp (file, parent) VALUES (?, ?);');
 
 			//create the database
 			$db->exec("DELETE FROM cover_tmp;");
@@ -2320,10 +2318,10 @@ function builddb() {
 				$type= $item[1];
 				$parent= $item[2];
 			if ($type == "3") {
-				$insert_cover->execute(array(':file' => $name, ':parent' => $parent));
+				$insert_cover->execute(array($name, $parent));
 				$covers+=1;
 			} else {
-					$insert_item->execute(array(':name' => $name, ':type' => $type, ':parent' => $parent));
+					$insert_item->execute(array($name, $type, $parent));
 					$items+=1;
 			}
 		}

@@ -6,6 +6,9 @@ This is especially great on low-spec NAS that don't have enough power to host Sq
 Check out https://www.musicco.org for more information or try the demo at https://www.musicco.org/demo.
 
 Changelog
+
+v1.2.1: Compatibility fixes for different versions of Apache / php / sqlite
+
 v1.2: Removed Android client, work on making the player responsive instead, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users. New default theme. Improved artist info from Wikipedia. Use auth tokens for logging in instead of credentials. More pattern configuration options for more custom library tree structures. Shift-click previous/next buttons (or shift-use arrow keys) to skip to the next album in the playlist.
 
 v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.
