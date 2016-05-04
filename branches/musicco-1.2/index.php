@@ -13,7 +13,7 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "1.2.1-SNAPSHOT";
+// Default: $_CONFIG['appVersion'] = "1.2.2-SNAPSHOT";
 $_CONFIG['appVersion'] = "1.2.2-SNAPSHOT";
 
 // Additional application information. This is used for sending as part of the user-agent string
@@ -2289,27 +2289,28 @@ function builddb() {
 			$folder = Musicco::getConfig('musicRoot');
 			// write lock file
 			//open the database
-			$db = new PDO('sqlite:library.db');;
-			$insert_item = $db->prepare('INSERT INTO item_tmp (name, type, parent) VALUES (? , ?, ?);');
-			$insert_cover = $db->prepare('INSERT INTO cover_tmp (file, parent) VALUES (?, ?);');
+			$db = new PDO('sqlite:library.db');
 
 			//create the database
 			$db->exec("DELETE FROM cover_tmp;");
 			$db->exec("DELETE FROM item_tmp;");
-			$db->exec("DELETE FROM type;");
+			$db->exec("DELETE FROM data;");
 			$db->exec("CREATE TABLE cover (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");
 			$db->exec("CREATE TABLE cover_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, file TEXT, parent TEXT);");
 			$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");		
 			$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT);");		
-			$db->exec("CREATE TABLE type (id INTEGER PRIMARY KEY, type TEXT);");
-			$db->exec("INSERT INTO type (id, type) VALUES (1, 'folder');");
-			$db->exec("INSERT INTO type (id, type) VALUES (2, 'song');");
-			$db->exec("INSERT INTO type (id, type) VALUES (120, 'version');");
+			$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
+			$db->exec("INSERT INTO data (key, value) VALUES ('type_folder', '1');");
+			$db->exec("INSERT INTO data (key, value) VALUES ('type_song', '2');");
+			$db->exec("INSERT INTO data (key, value) VALUES ('version', '".Musicco::getConfig('appVersion')."');");
+
+			$insert_item = $db->prepare('INSERT INTO item_tmp (name, type, parent) VALUES (? , ?, ?);');
+			$insert_cover = $db->prepare('INSERT INTO cover_tmp (file, parent) VALUES (?, ?);');
 			
 			$_START_SCAN = microtime(true);
 			$library = build_library($folder, ".mp3");
 			logMessage("Scanned drive in ".number_format((microtime(true) - $_START_SCAN), 3)." seconds");
-		
+
 			$_START_INSERT = microtime(true);
 			$covers=0;
 			$items=0;
