@@ -222,9 +222,10 @@ $_TRANSLATIONS["en"] = array(
 	"searchingLyricsFor" => "Searching lyrics for ",
 	"noLyricsFoundFor" => "No lyrics found for ",
 	"search" => "Search ",
-	"genius" => "Genius ",
+	"genius" => "genius ",
 	"or" => "or ",
-	"google" => "Google ",
+	"lastfm" => "last.fm ",
+	"google" => "google",
 	"noInfoFoundFor" => "No information found about ",
 	"updateRequiredTitle" => "Upgrade Required",
 	"updateRequiredText" => "To play the media you will need to either update your browser to a recent version or update your ",
@@ -271,9 +272,10 @@ $_TRANSLATIONS["fr"] = array(
 	"searchingLyricsFor" => "Recherche de paroles en cours pour ",
 	"noLyricsFoundFor" => "Aucune paroles trouvées pour ",
 	"search" => "Chercher sur ",
-	"genius" => "Genius ",
+	"genius" => "genius ",
 	"or" => "ou ",
-	"google" => "Google ",
+	"lastfm" => "last.fm ",
+	"google" => "google",
 	"noInfoFoundFor" => "Pas d'information sur ",
 	"updateRequiredTitle" => "Upgrade nécessaire",
 	"updateRequiredText" => "Pour lire ce contenu, il est nécessaire de faire un upgrade de ",
@@ -1232,6 +1234,10 @@ class Musicco {
 				}
 
 				function updateInfoPanel(url, artist) {
+						var searchArtistExt = "<?php print $this->getString("search"); ?>";
+						searchArtistExt +=  "<a target=\"blank\" href=\"http://last.fm/search?q=" + "+" + artist +"\">" + "<?php print $this->getString("lastfm"); ?>" + "</a>" ;
+						searchArtistExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
+						searchArtistExt +=  "<a target=\"blank\" href=\"https://google.com/search?q=" + artist + "+band\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
 						$('#wikiPrev').html("");
 						wikiHistoryPos += 1;
 						var prevUrl = "";
@@ -1256,7 +1262,7 @@ class Musicco {
 						url: url,
 						success: function(json) {
 							if (json.parse) {
-							$('#infoPanelText').html(json.parse.text['*']);
+							$('#infoPanelText').html(searchArtistExt + "<br/>" + json.parse.text['*']);
 							$("#infoPanelText").find("*").removeAttr("style"); 
 							$("#infoPanelText").find(".mw-editsection").hide(); 
 							$("#infoPanelText").find('.image').removeAttr("href", ""); 
@@ -1265,16 +1271,16 @@ class Musicco {
 							$("#infoPanelText").find('a').removeClass("new"); 
 							$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
 						} else {
-							$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist);
+							$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist + " - " + searchArtistExt);
 						}
 					}
 					});
 					}
 
 				function updateLyricsPanel(artist, song) {
-					artist=nowPlaying("artist");
-					song=nowPlaying("title");
-					searchLyricsExt = "<?php print $this->getString("search"); ?>";
+					var artist=nowPlaying("artist");
+					var song=nowPlaying("title");
+					var searchLyricsExt = "<?php print $this->getString("search"); ?>";
 					searchLyricsExt +=  "<a target=\"blank\" href=\"http://genius.com/search?q=" + song + "+" + artist +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
 					searchLyricsExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
 					searchLyricsExt +=  "<a target=\"blank\" href=\"https://google.com/search?q=" + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
