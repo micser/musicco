@@ -221,6 +221,10 @@ $_TRANSLATIONS["en"] = array(
 	"noResultsForThisSearch" => "No results for this search",
 	"searchingLyricsFor" => "Searching lyrics for ",
 	"noLyricsFoundFor" => "No lyrics found for ",
+	"search" => "Search ",
+	"genius" => "Genius ",
+	"or" => "or ",
+	"google" => "Google ",
 	"noInfoFoundFor" => "No information found about ",
 	"updateRequiredTitle" => "Upgrade Required",
 	"updateRequiredText" => "To play the media you will need to either update your browser to a recent version or update your ",
@@ -266,6 +270,10 @@ $_TRANSLATIONS["fr"] = array(
 	"noResultsForThisSearch" => "Pas de résultats pour cette recherche",
 	"searchingLyricsFor" => "Recherche de paroles en cours pour ",
 	"noLyricsFoundFor" => "Aucune paroles trouvées pour ",
+	"search" => "Chercher sur ",
+	"genius" => "Genius ",
+	"or" => "ou ",
+	"google" => "Google ",
 	"noInfoFoundFor" => "Pas d'information sur ",
 	"updateRequiredTitle" => "Upgrade nécessaire",
 	"updateRequiredText" => "Pour lire ce contenu, il est nécessaire de faire un upgrade de ",
@@ -1266,6 +1274,10 @@ class Musicco {
 				function updateLyricsPanel(artist, song) {
 					artist=nowPlaying("artist");
 					song=nowPlaying("title");
+					searchLyricsExt = "<?php print $this->getString("search"); ?>";
+					searchLyricsExt +=  "<a target=\"blank\" href=\"http://genius.com/search?q=" + song + "+" + artist +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
+					searchLyricsExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
+					searchLyricsExt +=  "<a target=\"blank\" href=\"https://google.com/search?q=" + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
 					var LRCurl= encodeURI(nowPlaying('mp3').replace(/.mp3/, ".lrc"));
 					var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
 					var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
@@ -1284,7 +1296,7 @@ class Musicco {
 										url: "?fetch&url=" + LRCurl,
 										dataType: "text",
 										success: function(lyrics) {
-											$('#lyricsPanel').html(lyrics.replace(/\[.*\]/g, "<br/>"));
+											$('#lyricsPanel').html(searchLyricsExt + "<br/>" + lyrics.replace(/\[.*\]/g, "<br/>"));
 										}
 									});
 								}
@@ -1305,7 +1317,7 @@ class Musicco {
 									var lyricSong=$(this).find('LyricSong').text();
 									var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
 									var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
-									var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>";
+									var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a> - " + searchLyricsExt + "<br/>";
 									//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.
 									lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
 									$('#lyricsPanel').html(lyricInfo+lyrics);
@@ -1322,7 +1334,10 @@ class Musicco {
 				}
 
 				function noLyricsFound(song, artist) {
-					$('#lyricsPanel').html("<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist);
+					var noLyricsText = "<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist;
+					noLyricsText += "<br/>";
+					noLyricsText += searchLyricsExt;
+					$('#lyricsPanel').html(noLyricsText);
 				}
 
 				function saveCover(coverURL, path) {
