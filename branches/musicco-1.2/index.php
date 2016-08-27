@@ -1173,7 +1173,7 @@ class Musicco {
 
 							var moveUp = "";
 							if (thisAlbum != firstAlbum) {
-								var to = getPreviousAlbumIndex(thisAlbum);
+								var to = getPreviousAlbumIndex(thisAlbum, index);
 								moveUp = "<a class=\"move\""
 											+ "data-from=\"" + index + "\""
 											+ "data-to=\"" + to + "\""
@@ -1183,7 +1183,7 @@ class Musicco {
 
 							var moveDown="";
 							if (thisAlbum != lastAlbum) {
-								var to = getNextAlbumLastIndex(thisAlbum);
+								var to = getNextAlbumLastIndex(thisAlbum, index);
 								moveDown = "<a class=\"move\""
 											+ "data-from=\"" + index + "\""
 											+ "data-to=\"" + to + "\""
@@ -1702,40 +1702,53 @@ class Musicco {
 					skip("backward");
 				});
 
-				function getPreviousAlbumIndex(thisAlbum) {
-					var previousAlbumIndex = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum) - 1;
-					return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(getAlbumNameAtPosition(previousAlbumIndex));
+				function getPreviousAlbumIndex(thisAlbum, pos) {
+					var albums = musiccoPlaylist.playlist.map(function(d) { return d['album']; });
+					var isPrevious = false;
+					while ((pos >= 0) && !(isPrevious)) {
+						if (albums[pos] != thisAlbum) {
+							isPrevious = true;
+							thisAlbum = albums[pos];
+							while (!isFirstAlbumTrack(pos)) {
+								pos -=1;
+							}
+						} else {
+							pos -=1;
+						}
+					}
+					return pos;
 				}
 
-				function getNextAlbumIndex(thisAlbum) {
-					return nextAlbumIndex = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(thisAlbum) + 1;
+				function getNextAlbumIndex(thisAlbum, pos) {
+					var albums = musiccoPlaylist.playlist.map(function(d) { return d['album']; });
+					var isNext = false;
+					while ((pos < musiccoPlaylist.playlist.length) && !(isNext)) {
+						if (albums[pos] != thisAlbum) {
+							isNext = true;
+						} else {
+							pos +=1;
+						}
+					}
+					if (pos == musiccoPlaylist.playlist.length) {
+						return 0;
+					} else {
+						return pos;
+					}
 				}
 
 				function getNextAlbumLastIndex(thisAlbum) {
-					return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(getAlbumNameAtPosition(getNextAlbumIndex(thisAlbum))) +1;
+					return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(getAlbumNameAtPosition(getNextAlbumIndex(thisAlbum, musiccoPlaylist.current))) +1;
 				}
 
 				function getAlbumNameAtPosition(position) {
 					return musiccoPlaylist.playlist[position].album;
 				}
 
-				function getAlbumFirstTrack(thisAlbum) {
-					return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(thisAlbum);
-				}
-
 				function skip(direction) {
 					if (direction == "forward") {
-						if (musiccoPlaylist.playlist[musiccoPlaylist.current].album != musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album) {
-							musiccoPlaylist.play(getNextAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album));
-						} else {
-							musiccoPlaylist.play(0);
-						}
+							musiccoPlaylist.play(getNextAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album, musiccoPlaylist.current));
 					} else {
-						if (musiccoPlaylist.playlist[musiccoPlaylist.current].album != musiccoPlaylist.playlist[0].album) {
-							musiccoPlaylist.play(getPreviousAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album));
-						} else {
-							musiccoPlaylist.play(getAlbumFirstTrack(musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album));
-						}
+							musiccoPlaylist.play(getPreviousAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album, musiccoPlaylist.current));
 					}
 				}
 
