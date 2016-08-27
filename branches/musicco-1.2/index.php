@@ -13,8 +13,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "1.2.3-SNAPSHOT";
-$_CONFIG['appVersion'] = "1.2.3-SNAPSHOT";
+// Default: $_CONFIG['appVersion'] = "1.3-SNAPSHOT";
+$_CONFIG['appVersion'] = "1.3-SNAPSHOT";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
@@ -1329,17 +1329,17 @@ class Musicco {
 									$('#lyricsPanel').html(lyricInfo+lyrics);
 								});
 								if (lyrics=="") {
-									noLyricsFound(song, artist);
+									noLyricsFound(song, artist, searchLyricsExt);
 								}
 							},
 							error: function() {
-									noLyricsFound(song, artist);
+									noLyricsFound(song, artist, searchLyricsExt);
 							}
 						});
 					}
 				}
 
-				function noLyricsFound(song, artist) {
+				function noLyricsFound(song, artist, searchLyricsExt) {
 					var noLyricsText = "<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist;
 					noLyricsText += "<br/>";
 					noLyricsText += searchLyricsExt;
