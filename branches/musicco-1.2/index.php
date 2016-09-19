@@ -1429,8 +1429,8 @@ class Musicco {
 				}
 
 				$("#musiccoplayer").on($.jPlayer.event.play, function(event) { 
-						$('#big-jp-play').hide();
-						$('#big-jp-pause').show();
+						$('.big-jp-play').hide();
+						$('.big-jp-pause').show();
 						$("#nowPlayingTitle").text(nowPlaying('title'));
 						$("#nowPlayingArtist").text(nowPlaying('artist'));
 						$("#nowPlayingAlbum").text(nowPlaying('album'));
@@ -1478,8 +1478,8 @@ class Musicco {
 					}
 
 				$("#musiccoplayer").on($.jPlayer.event.pause, function(event) {
-					$('#big-jp-play').show();
-					$('#big-jp-pause').hide();
+					$('.big-jp-play').show();
+					$('.big-jp-pause').hide();
 				});
 
 				$("#musiccoplayer").on($.jPlayer.event.ready, function(event) {
@@ -1553,9 +1553,9 @@ class Musicco {
 
 				function triggerPlayPause() {
 					if($("#jquery_jplayer_2").data("jPlayer").status.paused) { 
-						$('#big-jp-play').trigger('click');
+						$('.big-jp-play').trigger('click');
 					} else {
-						$('#big-jp-pause').trigger('click');
+						$('.big-jp-pause').trigger('click');
 					}
 				}
 
@@ -1596,9 +1596,9 @@ class Musicco {
 							case 177: //media previous
 								event.preventDefault();
 								if (e.shiftKey) {
-									$('#big-jp-previous-album').trigger('click');
+									$('.big-jp-previous-album').trigger('click');
 								} else {
-									$('#big-jp-previous').trigger('click');
+									$('.big-jp-previous').trigger('click');
 								}
 							break;
 						
@@ -1606,9 +1606,9 @@ class Musicco {
 							case 176: //media next
 							 event.preventDefault();
 							 if (e.shiftKey) {
-								$('#big-jp-next-album').trigger('click');
+								$('.big-jp-next-album').trigger('click');
 							 } else {
-								$('#big-jp-next').trigger('click');
+								$('.big-jp-next').trigger('click');
 							 }
 							break;
 							 
@@ -1690,15 +1690,15 @@ class Musicco {
 					return ("<?php print AuthManager::isGuestPlay(); ?>");
 				}
 
-				$('#big-jp-previous').click(function(e) {
+				$('.big-jp-previous').click(function(e) {
 					if (e.shiftKey) {
-						$('#big-jp-previous-album').trigger('click');
+						$('.big-jp-previous-album').trigger('click');
 					} else {
 						$('.jp-previous').trigger('click');
 					}
 				});
 
-				$('#big-jp-previous-album').click(function() {
+				$('.big-jp-previous-album').click(function() {
 					skip("backward");
 				});
 
@@ -1777,7 +1777,7 @@ class Musicco {
 				}
 
 				$(document).on("click", ".move", function() {
-					var isPlaying = $('#big-jp-pause').is(':visible');
+					var isPlaying = $('.big-jp-pause').is(':visible');
 					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3;
 					var from = parseInt($(this).data('from'));
 					var to = parseInt($(this).data('to'));
@@ -1825,31 +1825,31 @@ class Musicco {
 				});
 
 				$('#big-cover').on( "swipeleft", function() {
-					$('#big-jp-next').trigger('click');
+					$('.big-jp-next').trigger('click');
 				});
 
 				$('#big-cover').on( "swiperight", function() {
-					$('#big-jp-previous').trigger('click');
+					$('.big-jp-previous').trigger('click');
 				});
 
-				$('#big-jp-play').click(function() {
+				$('.big-jp-play').click(function() {
 					$('.jp-play').trigger('click');
 					promptNotification();
 				});
 
-				$('#big-jp-pause').click(function() {
+				$('.big-jp-pause').click(function() {
 					$('.jp-pause').trigger('click');
 				});
 
-				$('#big-jp-next').click(function(e) {
+				$('.big-jp-next').click(function(e) {
 					if (e.shiftKey) {
-						$('#big-jp-next-album').trigger('click');
+						$('.big-jp-next-album').trigger('click');
 					} else {
 						$('.jp-next').trigger('click');
 					}
 				});
 
-				$('#big-jp-next-album').click(function() {
+				$('.big-jp-next-album').click(function() {
 					skip("forward");
 				});
 
@@ -1970,6 +1970,14 @@ if(!AuthManager::isAccessAllowed()) {
 	<div id="musiccoplayer" class="jp-audio">
 		<!-- START: header -->
 		<div id="header" class="nowrap">
+				<div id="mini-controls" class="big-controls left">
+					<a class="big-jp-previous-album"></a>
+					<a class="big-jp-next-album"></a>
+					<a class="big-jp-previous"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-previous.png" /></a>
+					<a class="big-jp-play"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-play.png" /></a>
+					<a class="big-jp-pause" style=" display: none;"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-pause.png" /></a>
+					<a class="big-jp-next"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
+				</div>
 		<?php
 			print "<span id=\"loadingInfo\"><span id=\"toast_text\"></span><span>&nbsp;</span><img src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
 			if (AuthManager::isAdmin()) {
@@ -2058,13 +2066,13 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="big-volume-down" class="toggles">&nbsp;</div>
 					<div id="big-volume-up" class="toggles">&nbsp;</div>
 				</div>
-				<div id="big-controls">
-					<a id="big-jp-previous-album"></a>
-					<a id="big-jp-next-album"></a>
-					<a class="left" id="big-jp-previous"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-previous.png" /></a>
-					<a id="big-jp-play"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-play.png" /></a>
-					<a id="big-jp-pause" style=" display: none;"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-pause.png" /></a>
-					<a class="right" id="big-jp-next"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
+				<div id="controls" class="big-controls">
+					<a class="big-jp-previous-album"></a>
+					<a class="big-jp-next-album"></a>
+					<a class="left big-jp-previous"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-previous.png" /></a>
+					<a class="big-jp-play"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-play.png" /></a>
+					<a class="big-jp-pause" style=" display: none;"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-pause.png" /></a>
+					<a class="right big-jp-next"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
 				</div>
 			</div>
 		</div>
