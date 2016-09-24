@@ -21,8 +21,8 @@
 	@media (max-width: 12em) {
 
 		#big-mute,
-		#big-volume-up,
-		#big-volume-down {
+		.big-volume-up,
+		.big-volume-down {
 			display: none;
 		}
 
@@ -729,6 +729,18 @@
 		#mini-controls {
 			display: inline;
 			height: 0.8em;
+		}
+
+		div.toggles {
+			padding: 0;
+			background-size: 0.8em;
+			width: 0.9em;
+			vertical-align: text-top;
+			background-position-y: -0.1em;
+		}
+
+		div.toggles:hover {
+			background-position-y: -0.9em;
 		}
 
 		.button {

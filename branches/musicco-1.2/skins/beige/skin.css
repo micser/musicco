@@ -110,11 +110,11 @@
 		background-image: url("mute.png");
 	}
 
-	#big-volume-down {
+	.big-volume-down {
 		background-image: url("volume-down.png");
 	}
 
-	#big-volume-up {
+	.big-volume-up {
 		background-image: url("volume-up.png");
 	}
 
