@@ -1,0 +1,145 @@
+@media all {
+
+	::-webkit-scrollbar-track {
+		background-color: #121314;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: #272727;
+	}
+
+	body,
+	#updateCoverArt,
+	#aboutBox,
+	#helpBox,
+	.about,
+	#aboutBox span input,
+	#aboutBox span a,
+	#filter,
+	#findIt,
+	#header,
+	#big-player,
+	a,
+	.about,
+	.panel,
+	#volume-value,
+	#updateCoverArt,
+	#bigPlayer {
+		color: #A7A97F;
+	}
+
+	.current,
+	.searchResult,
+	.new,
+	input,
+	#filterButton,
+	#clear,
+	#findIt,
+	.close,
+	#updateCoverArt,
+	#aboutBox span input,
+	#aboutBox span a,
+	.jp-playlist-current,
+	.itemHeaderAlbum,
+	a.jp-playlist-item-remove:hover,
+	.download:hover,
+	.jp-playlist a:hover,
+	.jp-playlist-current:before,
+	#searchLink {
+		color: #E3E5BB;
+	}
+
+	input {
+		background-color: #666;
+	}
+
+	#searchText,
+	#filterText {
+		border: 1px solid #E3E5BB;
+	}
+
+	div.jp-play-bar {
+		background-color: #E3E5BB;
+	}
+
+	a.jp-playlist-current:before {
+		border-color: transparent #E3E5BB;
+	}
+
+	#big-volume-bar {
+		background-color: #E3E5BB;
+	}
+
+	#clear-playlist {
+		background-image: url("clear.png");
+	}
+
+	#uncover {
+		background-image: url("uncover.png");
+	}
+
+	#playlist-toggle {
+		background-image: url("playlist.png");
+	}
+
+	#browser-toggle {
+		background-image: url("browser.png");
+	}
+
+	#search-toggle {
+		background-image: url("search.png");
+	}
+
+	#track-wiki {
+		background-image: url("info.png");
+	}
+
+	#track-lyrics {
+		background-image: url("lyrics.png");
+	}
+
+	#big-shuffle {
+		background-image: url("shuffle.png");
+	}
+
+	#big-repeat {
+		background-image: url("repeat.png");
+	}
+
+	#big-mute {
+		background-image: url("mute.png");
+	}
+
+	.big-volume-down {
+		background-image: url("volume-down.png");
+	}
+
+	.big-volume-up {
+		background-image: url("volume-up.png");
+	}
+
+	#lyricsPanel,
+	#infoPanel,
+	#lyricsPanel a {
+		background: #FFFFFF;
+		color: #000000;
+	}
+}
+
+@media (min-aspect-ratio: 11/10) {
+
+	#lyricsPanel,
+	#infoPanel,
+	#lyricsPanel a {
+		color: #A7A97F;
+	}
+
+	#lyricsPanel,
+	#searchPanel,
+	#aboutPanel,
+	#helpPanel, 
+	#infoPanel {
+		border: 0px solid #E3E5BB;
+	}
+
+}
