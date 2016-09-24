@@ -587,10 +587,10 @@ class Musicco {
 					shuffleTime: 'slow'
 				}, solution:"html,flash" , swfPath: "lib", supplied: "mp3" };
 
-					var musiccoPlaylist = new jPlayerPlaylist(cssSelector, "", options);
+				var musiccoPlaylist = new jPlayerPlaylist(cssSelector, "", options);
 				var jp = $(musiccoPlaylist.cssSelector.jPlayer), jpData = jp.data('jPlayer');
-					var wikiHistory = [];
-					var wikiHistoryPos = -1;
+				var wikiHistory = [];
+				var wikiHistoryPos = -1;
 
 				$("#filterText").keyup(function() {
 					resetBrowserTree();
@@ -1516,7 +1516,7 @@ class Musicco {
 					$('#big-volume-bar').delay(800).fadeOut(1600, "linear");
 				}
 
-					function ChangeVolume(direction) {
+				function ChangeVolume(direction) {
 					var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;				
 					var changedVol = 0;
 					
@@ -1716,9 +1716,9 @@ class Musicco {
 					var targetAlbum = 0;
 					if (direction == "forward") {
 						targetAlbum = currentAlbumIndex + 1;
-						} else {
+					} else {
 						targetAlbum = currentAlbumIndex - 1;
-						}
+					}
 					if (targetAlbum < 0) {
 						targetAlbum = musiccoPlaylist.albums.length - 1;
 					} else if (targetAlbum > musiccoPlaylist.albums.length - 1) {
@@ -1752,7 +1752,7 @@ class Musicco {
 						}
 					}
 					return albumIndex;
-					}
+				}
 
 				function removeAlbum(albumIndex) {
 					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
@@ -1764,13 +1764,13 @@ class Musicco {
 				}
 
 				Array.prototype.move = function (old_index, new_index) {
-						if (new_index >= this.length) {
-								var k = new_index - this.length;
-								while ((k--) + 1) {
-										this.push(undefined);
-				}
+					if (new_index >= this.length) {
+						var k = new_index - this.length;
+						while ((k--) + 1) {
+							this.push(undefined);
 						}
-						this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+					}
+					this.splice(new_index, 0, this.splice(old_index, 1)[0]);
 				};
 
 				function getAlbumArray() {
@@ -1789,10 +1789,10 @@ class Musicco {
 					musiccoPlaylist.select(newCurrentIndex);
 					musiccoPlaylist.option("autoPlay", wasPlaying);
 					setTimeout(function() {
-							formatPlaylist();
+						formatPlaylist();
 						scrollToTrack(newCurrentIndex);
 					 }, 1000);
-						}
+				}
 
 				$(document).on("click", ".move", function(e) {
 					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
@@ -1804,9 +1804,9 @@ class Musicco {
 						if (direction == "up") {
 							to = 0;
 					} else {
-							to = musiccoPlaylist.albums.length -1;
+						to = musiccoPlaylist.albums.length -1;
 					}
-					}
+				}
 					var albumArray = getAlbumArray();
 					albumArray.move(from, to);
 					var newPlaylist = [].concat.apply([], albumArray);

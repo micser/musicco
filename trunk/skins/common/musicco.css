@@ -731,37 +731,42 @@
 			height: 0.8em;
 		}
 
-		div.toggles {
+		#mini-controls div.toggles {
 			padding: 0;
 			background-size: 0.8em;
 			width: 0.9em;
-			vertical-align: text-top;
-			background-position-y: -0.1em;
+			margin-top: -0.2em;
 		}
 
-		div.toggles:hover {
-			background-position-y: -0.9em;
+		#mini-controls div.toggles:hover {
+			background-position-y: -0.8em;
 		}
 
 		.button {
 			height: 1.3em;
 		}
-	
+
 		#big-info {
 			position: absolute;
-			bottom: 5px;
+			background: rgba(0, 0, 0, 0.8);
+			bottom: 3px;
+			left: -2px;
 			width: 100%;
 			transition: opacity 2s;
 			text-align: left;
 			color: white;
-			mix-blend-mode: difference;
 			opacity: 0;
 		}
 
 		#big-info:hover {
 			transition: opacity 0.2s;
-			mix-blend-mode: difference;
 			opacity: 1;
+		}
+		
+		#nowPlayingAlbum,
+		#nowPlayingArtist,
+		#nowPlayingTitle {
+			padding-left: 2px;
 		}
 	}
 }
