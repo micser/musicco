@@ -1617,7 +1617,7 @@ class Musicco {
 								if (e.shiftKey) {
 									skip("backward");
 								} else {
-									$('.big-jp-previous').trigger('click');
+									previousTrack();
 								}
 							break;
 						
@@ -1627,7 +1627,7 @@ class Musicco {
 							 if (e.shiftKey) {
 								skip("forward");
 							 } else {
-								$('.big-jp-next').trigger('click');
+								nextTrack();
 							 }
 							break;
 							 
@@ -1735,9 +1735,17 @@ class Musicco {
 					if (e.shiftKey) {
 						skip("backward");
 					} else {
-						$('.jp-previous').trigger('click');
+						previousTrack();
 					}
 				});
+
+				function previousTrack() {
+					$('.jp-previous').trigger('click');
+				}
+
+				function nextTrack() {
+					$('.jp-next').trigger('click');
+				}
 
 				function skip(direction) {
 					currentAlbumIndex = getCurrentAlbumIndex();
@@ -1882,7 +1890,7 @@ class Musicco {
 					if (e.shiftKey) {
 						skip("forward");
 					} else {
-						$('.jp-next').trigger('click');
+						nextTrack();
 					}
 				});
 
