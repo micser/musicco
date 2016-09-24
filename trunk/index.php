@@ -1826,11 +1826,11 @@ class Musicco {
 				});
 
 				$('#big-cover').on( "swipeup", function() {
-					$('#big-volume-up').trigger('click');
+					$('.big-volume-up').trigger('click');
 				});
 
 				$('#big-cover').on( "swipedown", function() {
-					$('#big-volume-down').trigger('click');
+					$('.big-volume-down').trigger('click');
 				});
 
 				$('#big-cover').on( "swipeleft", function() {
@@ -1889,11 +1889,11 @@ class Musicco {
 					$('#rootfolder').click();
 				}
 
-				$('#big-volume-down').click(function() {
+				$('.big-volume-down').click(function() {
 					ChangeVolume("-");
 				});
 
-				$('#big-volume-up').click(function() {
+				$('.big-volume-up').click(function() {
 					ChangeVolume("+");
 				});
 
@@ -1982,6 +1982,10 @@ if(!AuthManager::isAccessAllowed()) {
 					<a class="big-jp-play"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-play.png" /></a>
 					<a class="big-jp-pause" style=" display: none;"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-pause.png" /></a>
 					<a class="big-jp-next"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
+					<div class="toggles">&nbsp;</div>
+					<div class="toggles">&nbsp;</div>
+					<div class="toggles big-volume-down">&nbsp;</div>
+					<div class="toggles big-volume-up">&nbsp;</div>					
 				</div>
 		<?php
 			print "<span id=\"loadingInfo\"><span id=\"toast_text\"></span><span>&nbsp;</span><img src=\"skins/".Musicco::getConfig('skin')."/loading.gif\" /></span>";
@@ -2068,8 +2072,8 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="uncover" class="guestPlay toggles">&nbsp;</div>
 					<div id="big-shuffle" class="toggles touch-jp-shuffle">&nbsp;</div>
 					<div id="big-repeat" class="toggles touch-jp-repeat">&nbsp;</div>
-					<div id="big-volume-down" class="toggles">&nbsp;</div>
-					<div id="big-volume-up" class="toggles">&nbsp;</div>
+					<div class="big-volume-down toggles">&nbsp;</div>
+					<div class="big-volume-up toggles">&nbsp;</div>
 				</div>
 				<div id="controls" class="big-controls">
 					<a class="big-jp-previous-album"></a>
