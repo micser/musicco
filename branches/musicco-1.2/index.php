@@ -909,14 +909,15 @@ class Musicco {
 								if (parentItemName=="") {
 									parentItemName="home";
 								}
-								hitLink+="<a class=\"queue searchResultParent\" data-parent=\""+levelUp+"\" data-item=\""+parentItem+"\" data-type=\"1\">"+ parentItemName +"</a> &gt; ";
-								hitLink+="<a class=\"queue searchResult\" data-parent=\""+parent+"\" data-item=\""+name+optionalSlash+"\" data-type=\""+type+"\">"+ name +"</a></div>";
+								hitLink+="<a class=\"queue searchResultParent\" tabindex=\"1\" data-parent=\""+levelUp+"\" data-item=\""+parentItem+"\" data-type=\"1\">"+ parentItemName +"</a> &gt; ";
+								hitLink+="<a class=\"queue searchResult\" tabindex=\"1\" data-parent=\""+parent+"\" data-item=\""+name+optionalSlash+"\" data-type=\""+type+"\">"+ name +"</a></div>";
 								$("#searchResults").before(hitLink);
 							});
 						} else {
 							resultString="<?php print $this->getString("noResultsForThisSearch"); ?>";
 						}
 						$("#searchResults").html(resultString);
+						$('.searchResult').first().focus();
 						hideLoadingInfo();}, "json");
 					}
 				});
@@ -1572,14 +1573,20 @@ class Musicco {
 				}
 
 				function hotkey(e) {
+					// Uncomment the following line to debug the received keycode
 					//console.log(e.keyCode, e.shiftKey, e.ctrlKey);
+					// Allow Esc to close panel when keyboard shortcuts are normally disabled
 					if ($(".nokeyboard").is("input:focus")) {
 						if (e.keyCode == 27) {
 							updateSelection('','');
 						}
 					} else {
 						switch (e.keyCode) {
-
+							case 13: //enter
+								if ($(".hits a").is(':focus')) {
+									$(".hits a:focus").trigger('click');
+								}
+							break;
 							case 32: //space
 							case 179: //media play
 							case 178: //media pause
@@ -1626,7 +1633,9 @@ class Musicco {
 							 
 							case 83: //s
 								if (!isGuestPlay()){
-									 $('#search-toggle').trigger('click');
+									 if ($('#searchPanel').is(':hidden')) {
+										$('#search-toggle').trigger('click');
+									 }
 									 $('#searchText').select();
 									 $('#searchText').focus();
 								} 
