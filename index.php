@@ -37,7 +37,7 @@ $_CONFIG['charset'] = "UTF-8";
 
 
 // The name of the folder containing your music.
-// Create a 'music' symbolic lync to your music root folder
+// Create a 'music' symbolic link to your music root folder
 // to be on the safe side
 // Default: $_CONFIG['musicRoot'] = "music";
 $_CONFIG['musicRoot'] = "music";
@@ -1700,11 +1700,31 @@ class Musicco {
 								}
 							break;
 							
+							case 48: //0
+							case 49: //1
+							case 50: //2
+							case 51: //3
+							case 52: //4
+							case 53: //5
+							case 54: //6
+							case 55: //7
+							case 56: //8
+							case 57: //9
+								jump((e.keyCode - 48)/10);
+							break;
+
 							case 27: //Esc
 								updateSelection('','');
 							break;
 						}
 					}
+				}
+
+				function jump(percent) {
+					var duration = Math.floor(jpData.status.duration);
+					restoreCurrentTime = Math.floor(percent * duration);
+					musiccoPlaylist.pause();
+					musiccoPlaylist.play();
 				}
 
 				function isGuestPlay() {
