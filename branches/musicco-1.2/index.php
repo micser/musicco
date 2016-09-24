@@ -570,6 +570,7 @@ class Musicco {
 			<script type="text/javascript">
 			var viewerType = '';
 			var windowWidth = '';
+			var restoreCurrentTime = '';
 			$(document).ready(function() {
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
@@ -586,10 +587,10 @@ class Musicco {
 					shuffleTime: 'slow'
 				}, solution:"html,flash" , swfPath: "lib", supplied: "mp3" };
 
-					var musiccoPlaylist = new jPlayerPlaylist(cssSelector, "", options);
-
-					var wikiHistory = [];
-					var wikiHistoryPos = -1;
+				var musiccoPlaylist = new jPlayerPlaylist(cssSelector, "", options);
+				var jp = $(musiccoPlaylist.cssSelector.jPlayer), jpData = jp.data('jPlayer');
+				var wikiHistory = [];
+				var wikiHistoryPos = -1;
 
 				$("#filterText").keyup(function() {
 					resetBrowserTree();
@@ -1163,31 +1164,32 @@ class Musicco {
 					$('.jp-playlist-item-free').html("&#8681;");
 					$('.jp-playlist-item-free').attr("target", "_blank");
 					$('.jp-playlist-item-free').removeClass('jp-playlist-item-free').addClass('download');
+					var firstAlbum = musiccoPlaylist.playlist[0].album;
+					var lastAlbum = musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album;
+					var albums = [];
+					var albumIndex = 0;
+					var tracks = 0;
 					$('#playlistPanel > ul > li >div').each(function(){
 						var index = $(this).parent('li').index();
 						if (isFirstAlbumTrack(index)) {
+							tracks = 1;
 							var thisAlbum = musiccoPlaylist.playlist[index].album;
-							var albumLength = (musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(thisAlbum) + 1) - index;
-							var firstAlbum = musiccoPlaylist.playlist[0].album;
-							var lastAlbum = musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album;
-
+							albums.push({thisAlbum, albumIndex, index, tracks});
 							var moveUp = "";
 							if (thisAlbum != firstAlbum) {
-								var to = getPreviousAlbumIndex(thisAlbum, index);
 								moveUp = "<a class=\"move\""
-											+ "data-from=\"" + index + "\""
-											+ "data-to=\"" + to + "\""
-											+ "data-length=\"" + albumLength + "\""
+											+ "data-from=\"" + albumIndex + "\""
+											+ "data-to=\"" + (albumIndex - 1) + "\""
+											+ "data-direction=\"up\""
 											+ ">&nbsp;&#9650;</a>";
 							}
 
 							var moveDown="";
 							if (thisAlbum != lastAlbum) {
-								var to = getNextAlbumLastIndex(thisAlbum, index);
 								moveDown = "<a class=\"move\""
-											+ "data-from=\"" + index + "\""
-											+ "data-to=\"" + to + "\""
-											+ "data-length=\"" + albumLength + "\""
+											+ "data-from=\"" + albumIndex + "\""
+											+ "data-to=\"" + (albumIndex + 1) + "\""
+											+ "data-direction=\"down\""
 											+ ">&nbsp;&#9660;</a>";		
 							}
 							var year = musiccoPlaylist.playlist[index].year
@@ -1221,12 +1223,17 @@ class Musicco {
 								+ "</table>"
 							+ "</span>";
 							$(this).before(itemHeader);
+							albumIndex += 1;
+						} else {
+							tracks +=1;
+							albums[albumIndex -1].tracks = tracks;
 						}
 					});
 					if (isGuestPlay()) { 
 						$('.guestPlay').hide();
 						$('.jp-playlist-item-remove').hide();
 					}
+				musiccoPlaylist.albums = albums;
 				}
 
 				function wikiLink(page) {
@@ -1429,6 +1436,12 @@ class Musicco {
 				}
 
 				$("#musiccoplayer").on($.jPlayer.event.play, function(event) { 
+					 if (restoreCurrentTime != '') {
+						 setTimeout(function(){ 
+								 jp.jPlayer( "play", restoreCurrentTime); 
+								 restoreCurrentTime = '';
+						 }, 100);
+						}
 						$('.big-jp-play').hide();
 						$('.big-jp-pause').show();
 						$("#nowPlayingTitle").text(nowPlaying('title'));
@@ -1504,7 +1517,7 @@ class Musicco {
 				}
 
 					function ChangeVolume(direction) {
-					var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;				
+					var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;
 					var changedVol = 0;
 					
 					if (direction == "-")		{
@@ -1520,7 +1533,7 @@ class Musicco {
 						}
 					}				
 
-					$("#jquery_jplayer_2").jPlayer({
+					jp.jPlayer({
 						volume:changedVol
 					});		
 					updateVolumeValue();
@@ -1596,7 +1609,7 @@ class Musicco {
 							case 177: //media previous
 								event.preventDefault();
 								if (e.shiftKey) {
-									$('.big-jp-previous-album').trigger('click');
+									skip("backward");
 								} else {
 									$('.big-jp-previous').trigger('click');
 								}
@@ -1606,7 +1619,7 @@ class Musicco {
 							case 176: //media next
 							 event.preventDefault();
 							 if (e.shiftKey) {
-								$('.big-jp-next-album').trigger('click');
+								skip("forward");
 							 } else {
 								$('.big-jp-next').trigger('click');
 							 }
@@ -1692,117 +1705,113 @@ class Musicco {
 
 				$('.big-jp-previous').click(function(e) {
 					if (e.shiftKey) {
-						$('.big-jp-previous-album').trigger('click');
+						skip("backward");
 					} else {
 						$('.jp-previous').trigger('click');
 					}
 				});
 
-				$('.big-jp-previous-album').click(function() {
-					skip("backward");
-				});
-
-				function getPreviousAlbumIndex(thisAlbum, pos) {
-					var albums = musiccoPlaylist.playlist.map(function(d) { return d['album']; });
-					var isPrevious = false;
-					while ((pos >= 0) && !(isPrevious)) {
-						if (albums[pos] != thisAlbum) {
-							isPrevious = true;
-							thisAlbum = albums[pos];
-							while (!isFirstAlbumTrack(pos)) {
-								pos -=1;
-							}
-						} else {
-							pos -=1;
-						}
-					}
-					return pos;
-				}
-
-				function getNextAlbumIndex(thisAlbum, pos) {
-					var albums = musiccoPlaylist.playlist.map(function(d) { return d['album']; });
-					var isNext = false;
-					while ((pos < musiccoPlaylist.playlist.length) && !(isNext)) {
-						if (albums[pos] != thisAlbum) {
-							isNext = true;
-						} else {
-							pos +=1;
-						}
-					}
-					if (pos == musiccoPlaylist.playlist.length) {
-						return 0;
-					} else {
-						return pos;
-					}
-				}
-
-				function getNextAlbumLastIndex(thisAlbum) {
-					return musiccoPlaylist.playlist.map(function(d) { return d['album']; }).lastIndexOf(getAlbumNameAtPosition(getNextAlbumIndex(thisAlbum, musiccoPlaylist.current))) +1;
-				}
-
-				function getAlbumNameAtPosition(position) {
-					return musiccoPlaylist.playlist[position].album;
-				}
-
 				function skip(direction) {
+					currentAlbumIndex = getCurrentAlbumIndex();
+					var targetAlbum = 0;
 					if (direction == "forward") {
-							musiccoPlaylist.play(getNextAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album, musiccoPlaylist.current));
+						targetAlbum = currentAlbumIndex + 1;
 					} else {
-							musiccoPlaylist.play(getPreviousAlbumIndex(musiccoPlaylist.playlist[musiccoPlaylist.current].album, musiccoPlaylist.current));
+						targetAlbum = currentAlbumIndex - 1;
 					}
+					if (targetAlbum < 0) {
+						targetAlbum = musiccoPlaylist.albums.length - 1;
+					} else if (targetAlbum > musiccoPlaylist.albums.length - 1) {
+						targetAlbum = 0;
+					}
+					musiccoPlaylist.play(musiccoPlaylist.albums[targetAlbum].index);
 				}
 
 				$(document).on("click", ".remove-album", function() {
-					var album = $(this).data('album');
-					var i=$(this).parents('li').index();
+					var albumIndex = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
+					var start = musiccoPlaylist.albums[albumIndex].index;
+					var tracks = musiccoPlaylist.albums[albumIndex].tracks;
 					$(this).queue(function() {
-						removeAlbum(album, i);
+						removeAlbum(albumIndex);
 						$(this).dequeue; 
 					});
 				});
 
-				function removeAlbum(album, i) {
-					musiccoPlaylist.removeTime = 0;
-					var interval = setInterval(function() {
-						if (musiccoPlaylist.playlist[i].album == album) {
-							musiccoPlaylist.remove(i);
+				function getCurrentAlbumIndex() {
+					var current = musiccoPlaylist.current;
+					var albumStartPos = musiccoPlaylist.albums.map(function(d) { return d['index']; });
+					var albumIndex = 0;
+					var i = musiccoPlaylist.albums.length - 1;
+					var found = false;
+					while ((i >= 0) && (!found)) {
+						if (albumStartPos[i] > current) {
 							i--;
+						} else {
+							albumIndex = i;
+							found = true;
 						}
-						i++;
-						if (i >= (musiccoPlaylist.playlist.length -1)) {
-							clearInterval(interval);
-							formatPlaylist();
-						}
-					}, 1);
+					}
+					return albumIndex;
 				}
 
-				$(document).on("click", ".move", function() {
-					var isPlaying = $('.big-jp-pause').is(':visible');
-					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3;
-					var from = parseInt($(this).data('from'));
-					var to = parseInt($(this).data('to'));
-					var length = parseInt($(this).data('length'));
-					var temp = musiccoPlaylist.playlist.slice(0);
-					for (var i=0; i < length; i++) {
-						temp.splice((to + i), 0, musiccoPlaylist.playlist[(from + i)]);
+				function removeAlbum(albumIndex) {
+					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
+					var albumArray = getAlbumArray();
+					albumArray.splice(albumIndex, 1)
+					var newPlaylist = [].concat.apply([], albumArray);
+					musiccoPlaylist.setPlaylist(newPlaylist);
+					refreshPlaylist(current);
+				}
+
+				Array.prototype.move = function (old_index, new_index) {
+						if (new_index >= this.length) {
+								var k = new_index - this.length;
+								while ((k--) + 1) {
+										this.push(undefined);
+								}
+						}
+						this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+				};
+
+				function getAlbumArray() {
+					var albumArray = [];
+					for (var i=0; i < musiccoPlaylist.albums.length; i++) {
+						var thisAlbum = musiccoPlaylist.albums[i];
+						albumArray[i] = musiccoPlaylist.playlist.slice(thisAlbum.index, (thisAlbum.index + thisAlbum.tracks));
 					}
-					var offset = 0;
-					if (to > from) {
-						temp.splice(from, length);
-						offset = to - length;
-					} else {
-						temp.splice(from + length, length); 
-						offset = to;
-					}
-					temp.join();
-					musiccoPlaylist.setPlaylist(temp);
+					return albumArray;
+				}
+
+				function refreshPlaylist(current) {
+					var wasPlaying = $('.big-jp-pause').is(':visible');
+					restoreCurrentTime = Math.floor(jpData.status.currentTime);
 					var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current);
 					musiccoPlaylist.select(newCurrentIndex);
-					musiccoPlaylist.option("autoPlay", isPlaying);
+					musiccoPlaylist.option("autoPlay", wasPlaying);
 					setTimeout(function() {
 						formatPlaylist();
-						scrollToTrack(offset);
+						scrollToTrack(newCurrentIndex);
 					 }, 1000);
+				}
+
+				$(document).on("click", ".move", function(e) {
+					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
+					var direction = "";
+					var from = parseInt($(this).data('from'));
+					var to = parseInt($(this).data('to'));
+					if (e.shiftKey) {
+						direction = $(this).data('direction');
+						if (direction == "up") {
+							to = 0;
+						} else {
+							to = musiccoPlaylist.albums.length -1;
+						}
+					}
+					var albumArray = getAlbumArray();
+					albumArray.move(from, to);
+					var newPlaylist = [].concat.apply([], albumArray);
+					musiccoPlaylist.setPlaylist(newPlaylist);
+					refreshPlaylist(current);
 				});
 
 				$(document).on("click", ".share", function() {
@@ -1832,7 +1841,7 @@ class Musicco {
 					$('.big-jp-previous').trigger('click');
 				});
 
-				$('.big-jp-play').click(function() {
+				$('.big-jp-play').click(function() {				
 					$('.jp-play').trigger('click');
 					promptNotification();
 				});
@@ -1843,14 +1852,10 @@ class Musicco {
 
 				$('.big-jp-next').click(function(e) {
 					if (e.shiftKey) {
-						$('.big-jp-next-album').trigger('click');
+						skip("forward");
 					} else {
 						$('.jp-next').trigger('click');
 					}
-				});
-
-				$('.big-jp-next-album').click(function() {
-					skip("forward");
 				});
 
 				$('body').on("keyup", function(e) {
