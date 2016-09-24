@@ -239,7 +239,6 @@ $_TRANSLATIONS["en"] = array(
 	"clickToUploadYourOwn" => "upload", 
 	"promptCoverURL" => "Album cover URL", 
 	"defaultCoverURL" => "http://",
-	"guestPlayLink" => "Link to playlist: ",
 	"searchingFor" => "Searching for ",
 	"opening" => "Opening ",
 	"uncovering" => "Uncovering gems ",
@@ -289,7 +288,6 @@ $_TRANSLATIONS["fr"] = array(
 	"clickToUploadYourOwn" => "charger", 
 	"promptCoverURL" => "Adresse de la couverture", 
 	"defaultCoverURL" => "http://",
-	"guestPlayLink" => "Lien vers la playlist : ",
 	"searchingFor" => "Recherche de ",
 	"opening" => "Overture de ",
 	"uncovering" => "Découverte en cours ",
@@ -1199,7 +1197,7 @@ class Musicco {
 							var artist = musiccoPlaylist.playlist[index].artist;
 							var cover = musiccoPlaylist.playlist[index].poster;
 							var path = musiccoPlaylist.playlist[index].path;
-							var share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' data-path='replaceme'>&nbsp;&#x1f517;</a>\"":"\"\""); ?>;
+							var share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' data-path='replacemePath' data-info='replacemeInfo'>&nbsp;&#x1f517;</a>\"":"\"\""); ?>;
 							var itemHeader = 
 							"<span class=\"itemHeader\">"
 								+ "<table class=\"itemHeaderDetails\">"
@@ -1210,7 +1208,7 @@ class Musicco {
 											+ "<br/>"
 											+ moveUp
 											+ moveDown
-											+ share.replace(/replaceme/, path)
+											+ share.replace(/replacemePath/, path).replace(/replacemeInfo/, artist + " - " + thisAlbum)
 										+ "</td>"
 									+ "</tr>"
 									+ "<tr>"
@@ -1426,8 +1424,9 @@ class Musicco {
 				}
 
 
-				function saveGuestPlaylist(path) {
+				function saveGuestPlaylist(path, info) {
 					var user = event.timeStamp;
+					$("#shared-album").text(info + ":");
 					$.post('?', {saveGuestPlaylist: '', u: user, p: path}, function (response) {
 						var link = getBaseURL() + "?guestPlay&u=" + user;
 						$("#sharing-banner").show();
@@ -1815,7 +1814,7 @@ class Musicco {
 				});
 
 				$(document).on("click", ".share", function() {
-					saveGuestPlaylist($(this).data('path'));
+					saveGuestPlaylist($(this).data('path'), $(this).data('info'));
 				});
 
 				$('#big-cover').click(function(e) {
@@ -2091,7 +2090,7 @@ if(!AuthManager::isAccessAllowed()) {
 			<div>
 				<span class="banner-close close-banner"></span>
 				<img class="boxed" src="apple-touch-icon.png" />
-				<span class="shared-link"><?php print $this->getString("guestPlayLink"); ?></span>
+				<span id="shared-album" class="shared-link"></span>
 				<input type="text" value="" class="shared-link" id="shared-link" />
 			</div>
 		</div>
