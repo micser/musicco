@@ -1516,8 +1516,8 @@ class Musicco {
 					$('#big-volume-bar').delay(800).fadeOut(1600, "linear");
 				}
 
-					function ChangeVolume(direction) {
-					var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;
+				function ChangeVolume(direction) {
+					var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;				
 					var changedVol = 0;
 					
 					if (direction == "-")		{
@@ -1764,13 +1764,13 @@ class Musicco {
 				}
 
 				Array.prototype.move = function (old_index, new_index) {
-						if (new_index >= this.length) {
-								var k = new_index - this.length;
-								while ((k--) + 1) {
-										this.push(undefined);
-								}
+					if (new_index >= this.length) {
+						var k = new_index - this.length;
+						while ((k--) + 1) {
+							this.push(undefined);
 						}
-						this.splice(new_index, 0, this.splice(old_index, 1)[0]);
+					}
+					this.splice(new_index, 0, this.splice(old_index, 1)[0]);
 				};
 
 				function getAlbumArray() {
@@ -1803,10 +1803,10 @@ class Musicco {
 						direction = $(this).data('direction');
 						if (direction == "up") {
 							to = 0;
-						} else {
-							to = musiccoPlaylist.albums.length -1;
-						}
+					} else {
+						to = musiccoPlaylist.albums.length -1;
 					}
+				}
 					var albumArray = getAlbumArray();
 					albumArray.move(from, to);
 					var newPlaylist = [].concat.apply([], albumArray);
@@ -1841,7 +1841,7 @@ class Musicco {
 					$('.big-jp-previous').trigger('click');
 				});
 
-				$('.big-jp-play').click(function() {				
+				$('.big-jp-play').click(function() {
 					$('.jp-play').trigger('click');
 					promptNotification();
 				});
