@@ -13,8 +13,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "1.3.1-SNAPSHOT";
-$_CONFIG['appVersion'] = "1.3.1-SNAPSHOT";
+// Default: $_CONFIG['appVersion'] = "1.3.2-SNAPSHOT";
+$_CONFIG['appVersion'] = "1.3.2-SNAPSHOT";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
@@ -1573,8 +1573,6 @@ class Musicco {
 				}
 
 				function hotkey(e) {
-					// Uncomment the following line to debug the received keycode
-					//console.log(e.keyCode, e.shiftKey, e.ctrlKey);
 					// Allow Esc to close panel when keyboard shortcuts are normally disabled
 					if ($(".nokeyboard").is("input:focus")) {
 						if (e.keyCode == 27) {
@@ -1710,7 +1708,26 @@ class Musicco {
 							case 55: //7
 							case 56: //8
 							case 57: //9
-								jump((e.keyCode - 48)/10);
+								if (e.shiftKey || e.ctrlKey) {
+								} else {
+									jump((e.keyCode - 48)/10);
+								}
+							break;
+							
+							case 96: //0
+							case 97: //1
+							case 98: //2
+							case 99: //3
+							case 100: //4
+							case 101: //5
+							case 102: //6
+							case 103: //7
+							case 104: //8
+							case 105: //9
+								if (e.shiftKey || e.ctrlKey) {
+								} else {
+									jump((e.keyCode - 96)/10);
+								}
 							break;
 
 							case 27: //Esc
@@ -1895,7 +1912,11 @@ class Musicco {
 				});
 
 				$('body').on("keyup", function(e) {
-					hotkey(e);
+					// Uncomment the following line to debug the received keycode
+					// console.log("key: " + e.keyCode + " shift: " + e.shiftKey + " ctrl: " + e.ctrlKey + " super: " + e.metaKey);
+					if (!e.metaKey) {
+						hotkey(e);
+					}
 				});
 
 				if ($("#user_name").is('*')) {
