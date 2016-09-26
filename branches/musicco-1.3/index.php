@@ -687,19 +687,11 @@ class Musicco {
 					if (viewerType === '"small"') {
 						updateSelection('#playlist-toggle', '#playlistPanel');
 					}
-					scrollToCurrentSong();
 				}
 
 				function scrollToCurrentSong() {
 					if (musiccoPlaylist.playlist.length != 0) {
 						$('.my-playlist').scrollTop($('.jp-playlist-current').prev().offset().top - $('.my-playlist').offset().top - 100 + $('.my-playlist').scrollTop());
-					}
-				}
-
-				function scrollToTrack(track) {
-					var item = $('.my-playlist').find('li').eq(track);
-					if (item.length){
-							$('.my-playlist').scrollTop(item.offset().top - 50);
 					}
 				}
 
@@ -1233,6 +1225,7 @@ class Musicco {
 						$('.jp-playlist-item-remove').hide();
 					}
 				musiccoPlaylist.albums = albums;
+				scrollToCurrentSong();
 				}
 
 				function wikiLink(page) {
@@ -1843,8 +1836,7 @@ class Musicco {
 					musiccoPlaylist.option("autoPlay", wasPlaying);
 					setTimeout(function() {
 						formatPlaylist();
-						scrollToTrack(newCurrentIndex);
-					 }, 1000);
+					 }, 1500);
 				}
 
 				$(document).on("click", ".move", function(e) {
