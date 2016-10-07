@@ -947,8 +947,8 @@ class Musicco {
 						toggleBrowser();
 					});
 
-					$(document).on("dblclick", ".itemHeaderAlbum, #nowPlayingAlbum, #nowPlayingTitle", function() {
-						$('#searchText').val($(this).text());
+					$(document).on("dblclick", ".itemHeaderAlbum, #nowPlayingAlbum, #nowPlayingAlbumYear, #nowPlayingTitle", function() {
+						$('#searchText').val($(this).text().replace("(", "").replace(")", ""));
 						toggleSearch();
 					});
 
@@ -1440,6 +1440,11 @@ class Musicco {
 						$("#nowPlayingTitle").text(nowPlaying('title'));
 						$("#nowPlayingArtist").text(nowPlaying('artist'));
 						$("#nowPlayingAlbum").text(nowPlaying('album'));
+						var albumYear = "";
+						if (nowPlaying('year') != "") {
+							albumYear = "(" + nowPlaying('year') + ")";
+						}
+						$("#nowPlayingAlbumYear").text(albumYear);
 						setTimeout(function(){ 
 							$("#big-info").css('opacity', '');
 						 }, 3000);
@@ -2117,7 +2122,10 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="big-info">
 					<div id="nowPlayingTitle" class="nowrap">&nbsp;</div>
 					<div id="nowPlayingArtist" class="nowrap">&nbsp;</div>
-					<div id="nowPlayingAlbum" class="nowrap">&nbsp;</div>
+					<div>
+						<span id="nowPlayingAlbum" class="nowrap">&nbsp;</span>
+						<span id="nowPlayingAlbumYear" class="nowrap">&nbsp;</span>
+					</div>
 				</div>
 				<div id="playlist-controls">
 					<div id="big-mute" class="toggles jp-mute">&nbsp;</div>
