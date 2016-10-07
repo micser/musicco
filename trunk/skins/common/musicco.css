@@ -154,6 +154,7 @@
 	span.itemHeaderYear,
 	.download,
 	#nowPlayingAlbum,
+	#nowPlayingAlbumYear,
 	#header,
 	div.jp-duration,
 	#shared-link {
@@ -763,6 +764,7 @@
 		}
 		
 		#nowPlayingAlbum,
+		#nowPlayingAlbumYear,
 		#nowPlayingArtist,
 		#nowPlayingTitle {
 			padding-left: 2px;
