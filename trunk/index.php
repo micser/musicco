@@ -1440,6 +1440,10 @@ class Musicco {
 						$("#nowPlayingTitle").text(nowPlaying('title'));
 						$("#nowPlayingArtist").text(nowPlaying('artist'));
 						$("#nowPlayingAlbum").text(nowPlaying('album'));
+						setTimeout(function(){ 
+							$("#big-info").css('opacity', '');
+						 }, 3000);
+						$("#big-info").css('opacity', '1');
 						$('#searchLink').attr("href", "<?php print $this->getConfig("searchEngine"); ?>" + nowPlaying('artist') + " " + nowPlaying('album'));
 						showNotification();
 						if (!$('#track-wiki').hasClass('shown')) {
