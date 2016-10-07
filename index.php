@@ -1871,19 +1871,19 @@ class Musicco {
 				});
 
 				$('#big-cover').on( "swipeup", function() {
-					$('.big-volume-up').trigger('click');
+					ChangeVolume("+");
 				});
 
 				$('#big-cover').on( "swipedown", function() {
-					$('.big-volume-down').trigger('click');
+					ChangeVolume("-");
 				});
 
 				$('#big-cover').on( "swipeleft", function() {
-					$('.big-jp-next').trigger('click');
+					nextTrack();
 				});
 
 				$('#big-cover').on( "swiperight", function() {
-					$('.big-jp-previous').trigger('click');
+					previousTrack();
 				});
 
 				$('.big-jp-play').click(function() {
