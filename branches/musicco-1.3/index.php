@@ -1484,9 +1484,13 @@ class Musicco {
 
 				function showNotification() {
 					if ((notificationSupported())	 && (notificationAllowed())) { 
+							var albumYear = "";
+							if (nowPlaying("year") != "") {
+								albumYear = " (" + nowPlaying("year") + ")";
+							}
 							notif = new Notification(nowPlaying("title") + " - " + nowPlaying("artist"),
 																				{'icon': nowPlaying("poster"),
-																				 'body': nowPlaying("album"),
+																				 'body': nowPlaying("album") + albumYear,
 																				 'tag' : 'musicconowplayingnotification'});
 							notif.onclick = function(x) { window.focus(); this.close(); };
 							setTimeout(function(){
