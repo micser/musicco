@@ -1361,9 +1361,10 @@ class Musicco {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					var playlist = JSON.stringify(musiccoPlaylist.original);
 					var current = musiccoPlaylist.current;
+					var time = Math.floor(jpData.status.currentTime);
 					var loop = musiccoPlaylist.loop;
 					var shuffled = musiccoPlaylist.shuffled;
-					$.post('?', {savePlaylist: '', u: user, p: playlist, c: current, l: loop, s: shuffled}, function (response) {
+					$.post('?', {savePlaylist: '', u: user, p: playlist, c: current, t: time, l: loop, s: shuffled}, function (response) {
 					});	
 				}
 
@@ -1397,6 +1398,7 @@ class Musicco {
 							} else {
 								musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
 								musiccoPlaylist.select(parseInt(response.current));
+								restoreCurrentTime = parseInt(response.time)
 								musiccoPlaylist.loop = response.loop;
 								musiccoPlaylist.shuffled = response.shuffled;
 								if (musiccoPlaylist.loop == "true") {
@@ -1495,6 +1497,7 @@ class Musicco {
 				$("#musiccoplayer").on($.jPlayer.event.pause, function(event) {
 					$('.big-jp-play').show();
 					$('.big-jp-pause').hide();
+					savePlaylist();
 				});
 
 				$("#musiccoplayer").on($.jPlayer.event.ready, function(event) {
@@ -2213,7 +2216,7 @@ if(!AuthManager::isAccessAllowed()) {
 		$user = $_POST['u'];
 			$response = file_get_contents(dirname(__FILE__)."/playlists/".$user.".playlist");
 			if ($response == "") {
-				$response = '{"song": "0" ,"repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
+				$response = '{"song": "0" , "time": 0, "repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
 			}
 			logMessage("Loaded playlist for ".$user);
 			return	print_r($response);
@@ -2222,9 +2225,10 @@ if(!AuthManager::isAccessAllowed()) {
 		$user = $_POST['u'];
 		$playlist = str_replace("\"", "\\\"", $_POST['p']);
 		$current = $_POST['c'];
+		$time = $_POST['t'];
 		$loop = $_POST['l'];
 		$shuffled = $_POST['s'];
-		$save = "{\"current\": \"".$current."\" , \"loop\": \"".$loop."\" , \"shuffled\": \"".$shuffled."\" , \"playlist\": \"".$playlist."\"}";
+		$save = "{\"current\": \"".$current."\" , \"time\": \"".$time."\" , \"loop\": \"".$loop."\" , \"shuffled\": \"".$shuffled."\" , \"playlist\": \"".$playlist."\"}";
 		logMessage("Saved playlist for ".$user);
 		return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
 		exit;
