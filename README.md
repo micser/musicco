@@ -8,12 +8,24 @@ Follow musicco on twitter @musiccoapp
 
 # Features
 
+Fully responsive player for all your devices
 ![musicco](/doc/img/readme/responsive.png?raw=true "Fully responsive player for all your devices")
+
+Browsing, filtering and searching the music library
 ![musicco](/doc/img/readme/browsing-searching.png?raw=true "Browsing, filtering and searching the music library")
+
+Artist information and lyrics for currently playing track
 ![musicco](/doc/img/readme/artistInfo-lyrics.png?raw=true "Artist information and lyrics for currently playing track")
+
+Keyboard support
 ![musicco](/doc/img/readme/keyboard.png?raw=true "Keyboard support")
+
+Optional authentication and multi-user support for saving everybody's playlists
 ![musicco](/doc/img/readme/auth-playlist.png?raw=true "Optional authentication and multi-user support for saving everybody's playlists")
-![musicco](/doc/img/readme/squoare.png?raw=true "Showcase that beautiful album art")
+
+Showcase that beautiful album art
+![musicco](/doc/img/readme/square.png?raw=true "Showcase that beautiful album art")
+
 
 
 # Changelog
