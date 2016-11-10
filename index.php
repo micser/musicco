@@ -13,8 +13,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "1.3.4";
-$_CONFIG['appVersion'] = "1.3.4";
+// Default: $_CONFIG['appVersion'] = "1.3.5";
+$_CONFIG['appVersion'] = "1.3.5";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
