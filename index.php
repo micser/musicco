@@ -1719,7 +1719,7 @@ class Musicco {
 							case 57: //9
 								if (e.shiftKey || e.ctrlKey) {
 								} else {
-									jump((e.keyCode - 48)/10);
+									jump(e.keyCode - 48);
 								}
 							break;
 							
@@ -1735,7 +1735,7 @@ class Musicco {
 							case 105: //9
 								if (e.shiftKey || e.ctrlKey) {
 								} else {
-									jump((e.keyCode - 96)/10);
+									jump(e.keyCode - 96);
 								}
 							break;
 
@@ -1747,10 +1747,7 @@ class Musicco {
 				}
 
 				function jump(percent) {
-					var duration = Math.floor(jpData.status.duration);
-					restoreCurrentTime = Math.floor(percent * duration);
-					musiccoPlaylist.pause();
-					musiccoPlaylist.play();
+					$("#jquery_jplayer_2").jPlayer("playHead", (percent * 10));
 				}
 
 				function isGuestPlay() {
