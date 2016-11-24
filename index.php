@@ -1225,7 +1225,7 @@ class Musicco {
 						$('.jp-playlist-item-remove').hide();
 					}
 				musiccoPlaylist.albums = albums;
-				scrollToCurrentSong();
+				setTimeout(function() { scrollToCurrentSong(); }, 500);
 				}
 
 				function wikiLink(page) {
