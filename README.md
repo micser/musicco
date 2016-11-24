@@ -38,6 +38,9 @@ Check out https://www.musicco.org for more information or try the demo at https:
 
 # Changelog
 
+## v1.3.5
+  Bug fixes centered around track seeking and resuming current play position, added Uncover button to header in square mode.
+
 ## v1.3.4
  Save current play time in the playlist, show album year in the banner
 
