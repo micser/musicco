@@ -568,7 +568,7 @@ class Musicco {
 			<script type="text/javascript">
 			var viewerType = '';
 			var windowWidth = '';
-			var restoreCurrentTime = '';
+			var restoreCurrentTime = -1;
 			$(document).ready(function() {
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
@@ -1431,10 +1431,10 @@ class Musicco {
 				}
 
 				$("#musiccoplayer").on($.jPlayer.event.play, function(event) { 
-					 if (restoreCurrentTime != '') {
+					 if (restoreCurrentTime != -1) {
 						 setTimeout(function(){ 
 								 jp.jPlayer( "play", restoreCurrentTime); 
-								 restoreCurrentTime = '';
+								 restoreCurrentTime = -1;
 						 }, 100);
 						}
 						$('.big-jp-play').hide();
