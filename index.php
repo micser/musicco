@@ -996,7 +996,7 @@ class Musicco {
 					});
 				});
 
-				$(document).on("click", "#uncover", function(e) {
+				$(document).on("click", ".uncover", function(e) {
 					if (e.altKey) {
 						if ($('.move').length) {
 							var currentAlbum = musiccoPlaylist.playlist[musiccoPlaylist.current].album;
@@ -2049,6 +2049,8 @@ if(!AuthManager::isAccessAllowed()) {
 					<a class="big-jp-next"><img class="button" src="skins/<?php print Musicco::getConfig('skin'); ?>/big-next.png"/></a>
 					<div class="toggles">&nbsp;</div>
 					<div class="toggles">&nbsp;</div>
+					<div class="uncover guestPlay toggles">&nbsp;</div>
+					<div class="toggles">&nbsp;</div>
 					<div class="toggles big-volume-down">&nbsp;</div>
 					<div class="toggles big-volume-up">&nbsp;</div>					
 				</div>
@@ -2137,7 +2139,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="playlist-controls">
 					<div id="big-mute" class="toggles jp-mute">&nbsp;</div>
 					<div id="clear-playlist" class="guestPlay toggles">&nbsp;</div>
-					<div id="uncover" class="guestPlay toggles">&nbsp;</div>
+					<div class="uncover guestPlay toggles">&nbsp;</div>
 					<div id="big-shuffle" class="toggles touch-jp-shuffle">&nbsp;</div>
 					<div id="big-repeat" class="toggles touch-jp-repeat">&nbsp;</div>
 					<div class="big-volume-down toggles">&nbsp;</div>
