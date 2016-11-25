@@ -1795,7 +1795,11 @@ class Musicco {
 					var albumIndex = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
 					var start = musiccoPlaylist.albums[albumIndex].index;
 					var tracks = musiccoPlaylist.albums[albumIndex].tracks;
+					var end = start + tracks -1;
 					restorePlaylistPosition = start;
+					if ((musiccoPlaylist.current >= start) && (musiccoPlaylist.current <= end)) {
+							musiccoPlaylist.select(start + tracks);
+					}
 					$(this).queue(function() {
 						removeAlbum(albumIndex);
 						$(this).dequeue; 
