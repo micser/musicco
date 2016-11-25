@@ -569,6 +569,7 @@ class Musicco {
 			var viewerType = '';
 			var windowWidth = '';
 			var restoreCurrentTime = -1;
+			var restorePlaylistPosition = -1;
 			$(document).ready(function() {
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
@@ -689,9 +690,11 @@ class Musicco {
 					}
 				}
 
-				function scrollToCurrentSong() {
+				function scrollPlaylist() {
 					if (musiccoPlaylist.playlist.length != 0) {
-						$('.my-playlist').scrollTop($('.jp-playlist-current').prev().offset().top - $('.my-playlist').offset().top - 100 + $('.my-playlist').scrollTop());
+						var element = restorePlaylistPosition + 1;
+						var y = $('.my-playlist ul li:nth-child(' + element + ')').offset().top - $('.my-playlist').offset().top - 100 + $('.my-playlist').scrollTop();
+						$('.my-playlist').scrollTop(y);
 					}
 				}
 
@@ -1225,7 +1228,7 @@ class Musicco {
 						$('.jp-playlist-item-remove').hide();
 					}
 				musiccoPlaylist.albums = albums;
-				setTimeout(function() { scrollToCurrentSong(); }, 500);
+				setTimeout(function() { scrollPlaylist(); }, 500);
 				}
 
 				function wikiLink(page) {
@@ -1399,6 +1402,7 @@ class Musicco {
 								musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
 								musiccoPlaylist.select(parseInt(response.current));
 								restoreCurrentTime = parseInt(response.time)
+								restorePlaylistPosition=parseInt(response.current);
 								musiccoPlaylist.loop = response.loop;
 								musiccoPlaylist.shuffled = response.shuffled;
 								if (musiccoPlaylist.loop == "true") {
@@ -1437,6 +1441,7 @@ class Musicco {
 								 restoreCurrentTime = -1;
 						 }, 100);
 						}
+						restorePlaylistPosition = musiccoPlaylist.current;
 						$('.big-jp-play').hide();
 						$('.big-jp-pause').show();
 						$("#nowPlayingTitle").text(nowPlaying('title'));
@@ -1459,7 +1464,7 @@ class Musicco {
 						updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
 						displayCover();
 						savePlaylist();
-					scrollToCurrentSong();
+						scrollPlaylist();
 				});
 
 				function notificationSupported() {
