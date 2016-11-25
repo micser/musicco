@@ -693,7 +693,7 @@ class Musicco {
 				function scrollPlaylist() {
 					if (musiccoPlaylist.playlist.length != 0) {
 						var element = restorePlaylistPosition + 1;
-						var y = $('.my-playlist ul li:nth-child(' + element + ')').offset().top - $('.my-playlist').offset().top - 100 + $('.my-playlist').scrollTop();
+						var y = $('.my-playlist ul li:nth-child(' + element + ')').offset().top - $('.my-playlist').offset().top - 200 + $('.my-playlist').scrollTop();
 						$('.my-playlist').scrollTop(y);
 					}
 				}
@@ -1795,6 +1795,7 @@ class Musicco {
 					var albumIndex = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
 					var start = musiccoPlaylist.albums[albumIndex].index;
 					var tracks = musiccoPlaylist.albums[albumIndex].tracks;
+					restorePlaylistPosition = start;
 					$(this).queue(function() {
 						removeAlbum(albumIndex);
 						$(this).dequeue; 
@@ -1846,10 +1847,10 @@ class Musicco {
 					return albumArray;
 				}
 
-				function refreshPlaylist(current) {
+				function refreshPlaylist(currentSong) {
 					var wasPlaying = $('.big-jp-pause').is(':visible');
 					restoreCurrentTime = Math.floor(jpData.status.currentTime);
-					var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current);
+					var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(currentSong);
 					musiccoPlaylist.select(newCurrentIndex);
 					musiccoPlaylist.option("autoPlay", wasPlaying);
 					setTimeout(function() {
@@ -1874,6 +1875,7 @@ class Musicco {
 					albumArray.move(from, to);
 					var newPlaylist = [].concat.apply([], albumArray);
 					musiccoPlaylist.setPlaylist(newPlaylist);
+					restorePlaylistPosition = musiccoPlaylist.albums[to].index;
 					refreshPlaylist(current);
 				});
 
