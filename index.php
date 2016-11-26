@@ -1791,6 +1791,10 @@ class Musicco {
 					musiccoPlaylist.play(musiccoPlaylist.albums[targetAlbum].index);
 				}
 
+				$(document).on("click", ".jp-playlist-item", function(event) { 
+					restoreCurrentTime = -1;
+				});
+				
 				$(document).on("click", ".remove-album", function() {
 					var albumIndex = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
 					var start = musiccoPlaylist.albums[albumIndex].index;
