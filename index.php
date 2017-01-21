@@ -693,6 +693,9 @@ class Musicco {
 				function scrollPlaylist() {
 					if (musiccoPlaylist.playlist.length != 0) {
 						var element = restorePlaylistPosition + 1;
+						if (element > musiccoPlaylist.length) {
+							element = musiccoPlaylist.length;
+						}
 						var y = $('.my-playlist ul li:nth-child(' + element + ')').offset().top - $('.my-playlist').offset().top - 200 + $('.my-playlist').scrollTop();
 						$('.my-playlist').scrollTop(y);
 					}
@@ -1353,7 +1356,7 @@ class Musicco {
 					});	
 					for (var i=0; i<musiccoPlaylist.playlist.length; i++) {
 							if (musiccoPlaylist.playlist[i].path == path) {
-								musiccoPlaylist.playlist[i].poster = path + '<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig('coverExtension'); ?>?forcerefresh';
+								musiccoPlaylist.playlist[i].poster = path + '<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig('coverExtension'); ?>?' + Math.floor(Date.now());
 							}
 					}
 					savePlaylist();
@@ -1795,19 +1798,31 @@ class Musicco {
 					restoreCurrentTime = -1;
 				});
 				
-				$(document).on("click", ".remove-album", function() {
-					var albumIndex = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
-					var start = musiccoPlaylist.albums[albumIndex].index;
-					var tracks = musiccoPlaylist.albums[albumIndex].tracks;
-					var end = start + tracks -1;
-					restorePlaylistPosition = start;
-					if ((musiccoPlaylist.current >= start) && (musiccoPlaylist.current <= end)) {
-							musiccoPlaylist.select(start + tracks);
+				$(document).on("click", ".remove-album", function(e) {
+					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
+					var removeTarget = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
+					restoreCurrentTime = Math.floor(jpData.status.currentTime);
+					var repeats = 1;
+					var albumIndex = removeTarget;
+					if (e.shiftKey) {
+						repeats = albumIndex;
+						albumIndex = 0;
+					} else if (e.ctrlKey) {
+						repeats = musiccoPlaylist.albums.length - removeTarget - 1;
+						albumIndex += 1;
 					}
 					$(this).queue(function() {
-						removeAlbum(albumIndex);
+						var albumArray = getAlbumArray();
+						for (var i=0; i < repeats; i++) {
+							albumArray.splice(albumIndex, 1)
+							var newPlaylist = [].concat.apply([], albumArray);
+							musiccoPlaylist.setPlaylist(newPlaylist);
+							musiccoPlaylist.select(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current));
+							restorePlaylistPosition = musiccoPlaylist.albums[albumIndex].index;
+						}
 						$(this).dequeue; 
 					});
+						refreshPlaylist(current);
 				});
 
 				function getCurrentAlbumIndex() {
@@ -1825,15 +1840,6 @@ class Musicco {
 						}
 					}
 					return albumIndex;
-				}
-
-				function removeAlbum(albumIndex) {
-					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
-					var albumArray = getAlbumArray();
-					albumArray.splice(albumIndex, 1)
-					var newPlaylist = [].concat.apply([], albumArray);
-					musiccoPlaylist.setPlaylist(newPlaylist);
-					refreshPlaylist(current);
 				}
 
 				Array.prototype.move = function (old_index, new_index) {
@@ -1857,8 +1863,13 @@ class Musicco {
 
 				function refreshPlaylist(currentSong) {
 					var wasPlaying = $('.big-jp-pause').is(':visible');
-					restoreCurrentTime = Math.floor(jpData.status.currentTime);
+					if (restoreCurrentTime < 0) {
+						restoreCurrentTime = Math.floor(jpData.status.currentTime);
+					}
 					var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(currentSong);
+					if (newCurrentIndex < 0) {
+						newCurrentIndex = 0;
+					}
 					musiccoPlaylist.select(newCurrentIndex);
 					musiccoPlaylist.option("autoPlay", wasPlaying);
 					setTimeout(function() {
@@ -2624,7 +2635,7 @@ function builddb() {
 		$aboutString.="<span class='about'><br/></span>";
 		$aboutString.="<span class='about'><br/></span>";
 		$aboutString.="<span class='about'>Release History</span>";
-		$aboutString.="<span class='about'>v1.3: Improved sharing banner to display more info, added a new template for square windows to highlight album art more, added seeking in current track with 1-9 keys, fixed playlist management issues when moving or deleting albums, made it possible to move albums to the beginning / end of the playlist with a shift-click, added keyboard support in search results, added search links when no artist or lyrics are found.</span>";
+		$aboutString.="<span class='about'>v1.3: Improved sharing banner to display more info, added a new template for square windows to highlight album art more, added seeking in current track with 1-9 keys, fixed playlist management issues when moving or deleting albums, made it possible to move albums to the beginning / end of the playlist with a shift-click, remove all previous albums with shift-click or all following albums with control-click, added keyboard support in search results, added search links when no artist or lyrics are found.</span>";
 		$aboutString.="<span class='about'>v1.2: Removed Android client, work on making the player responsive instead, work on database performance and loading of .lrc files as long as they have the same name of the song currently playing. Allow users to upload their own album covers for the currently playing song from the web player. Reorder albums in the current playlist. Allow sharing a link to an album to guest users. New default theme. Improved artist info from Wikipedia. Use auth tokens for logging in instead of credentials. More pattern configuration options for more custom library tree structures. Shift-click previous/next buttons (or shift-use arrow keys) to skip to the next album in the playlist. Added search links when no artist or lyrics are found.</span>";
 		$aboutString.="<span class='about'>v1.1: Android client and under-the-hood improvements to suppport it, added configuration option for cover name and log file, improved playlist panel, fixed download option for administrators in the playlist and the browser panels.</span>";
 		$aboutString.="<span class='about'>v1.0.3: More elegant management of the Fetch Cover button to provide more information about the cover fetching progress, nicer playlist screen that groups tracks by album. Also upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions. HTML notifications are working again in this version, and keyboard actions are improved as a result. New feature <i>Uncover!</i> adds 5 random albums to your playlist.</span>";
