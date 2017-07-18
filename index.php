@@ -631,7 +631,7 @@ class Musicco {
 				$("#ham").on("click", function() {
 					$('#leftPanel').toggle('slide', { direction: 'left' }, 200);
 					if (viewerType != '"widescreen"') {
-						$("#mini-controls").show();
+						$("#mini-controls").toggle();
 					}
 				});
 
@@ -1721,8 +1721,8 @@ class Musicco {
 
 				function closeLeftPanel() {
 					if ($("#leftPanel").is(":visible") && canEscape()) {
-						$("#mini-controls").hide();
 						$("#ham").trigger("click");
+						$("#mini-controls").hide();
 						$(".panel").removeClass("shown");
 					}
 				}
