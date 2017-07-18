@@ -1,7 +1,10 @@
 /config.php
-/library.db
-/music/*
-/playlists/*
-/musicco.log
+/all_music
+/all_music/*
+/all_music.db
 /music
-/manifest.json
+/music/*
+/music.db
+/playlists/*
+/temp/*
+/musicco.log

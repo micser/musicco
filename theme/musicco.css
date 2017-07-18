@@ -1,0 +1,686 @@
+@media all {
+
+	@media (max-width: 12em) {
+
+		#big-mute,
+		.big-volume-up,
+		.big-volume-down {
+			display: none;
+		}
+
+	}
+
+	::-webkit-scrollbar {
+		width: .3em;
+		height: .3em;
+	}
+
+	::-webkit-scrollbar-track {
+		border-radius: 0 .5em .5em 0;
+	}
+
+	::-webkit-scrollbar-thumb {
+		border-radius: 0 .5em .5em 0;
+	}
+
+	/* tabs */
+	.ui-widget-header { }
+
+	body,
+	input,
+	.fancytree-node {
+		font-family: Montserrat, Verdana, sans-serif;
+	}
+
+	input,
+	.fa-border,
+	.fancytree-container {
+		border: 0;
+	}
+
+	input {
+		background-color: #666;
+	}
+
+	body {
+		margin: 0;
+		overflow-x: hidden;
+		overflow-y: hidden;
+	}
+
+	a {
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+	#searchLink:hover {
+		text-decoration: none;
+	}
+
+	.jp-playlist a:hover {
+		text-decoration: none;
+	}
+
+	body,
+	#leftPanel,
+	#updateCoverArt,
+	#aboutBox,
+	#helpBox,
+	#sharing-banner,
+	#volume-value {
+		-webkit-user-select: none;
+		-ms-user-select: none;
+		-moz-user-select: none;
+		background-color: #121314;
+	}
+
+	span.fancytree-node,
+	ul.fancytree-container,
+	#paypalIMG {
+		background-color: transparent;
+		border: 0;
+	}
+
+	#leftPanel {
+		position: absolute;
+		left: 0;
+		width: 100%;
+		height: 97%;
+		overflow-y: auto;
+		z-index: 2;
+		opacity: 0.9;
+	 }
+
+	.modal {
+		margin-bottom: 3em;
+	}
+
+	#playlistPanel > ul {
+		padding: 0;
+	}
+
+	.ui-menu {
+		z-index: 3;
+	}
+
+	.album-cover {
+		width: 100px;
+		height: 100px;
+	}
+
+	#shared-album-cover,
+	#shared-qr,
+	.fill {
+		width: 90%;
+	}
+
+	#loadingInfo {
+		display: none;
+	}
+
+	.bigger {
+		height: 2em;
+	}
+
+	span.jp-free-media {
+		color: #121314;
+	}
+
+	.big {
+		font-size: 3em !important;
+	}
+
+	.move,
+	.share, 
+	ul.fancytree-container {
+		font-size: 1em;
+	}
+
+	span.itemHeaderAlbum,
+	#nowPlayingTitle {
+		font-size: 1.2em;
+	}
+
+	.hits,
+	#updateCoverArt {
+		font-size: .9em;
+	}
+
+	#lyricsPanel,
+	#infoPanel,
+	#nowPlayingArtist,
+	div.jp-current-time,
+	span.itemHeaderArtist,
+	span.itemHeaderYear,
+	.download,
+	#nowPlayingAlbum,
+	#nowPlayingAlbumYear,
+	div.jp-duration {
+		font-size: .8em;
+	}
+
+	.hits {
+		margin: 0 .3em;
+	}
+
+	#big-player,
+	#sharing-banner {
+		text-align: center;
+	}
+	
+	#shared-album-qr {
+		padding-top: 1em;
+	}
+
+	.editsection,
+	.coveractions {
+		display: none;
+	}
+
+	#error {
+		background-color:#FFE4E1;
+		color:#FF6666;
+		padding:7pt;
+		position: relative;
+		margin: 10pt auto;
+		text-align: center;
+		border: 1px dotted #CDD2D6;
+	}
+
+	.yellow {
+		color: #dd0;
+	}
+
+	.bold {
+		font-weight: bold;
+	}
+
+	#big-info {
+		text-align: right;
+		overflow-y: hidden;
+		overflow-x: hidden;
+	}
+
+	#big-jp-progress,
+	.jp-progress,
+	.jp-seek-bar,
+	.jp-play-bar {
+		height: .2em;
+	}
+
+	#filter {
+		border: 0;
+	}
+
+	.left {
+		float: left;
+	}
+
+	.right {
+		float: right;
+	}
+
+	.boxed {
+		border: 1px solid #121314;
+		border-radius: .5em;
+		background-color: whitesmoke;
+		padding: .2em;
+		vertical-align: middle;
+		margin: .5em;
+		width: 2em;
+	}
+
+	#updateCoverArt,
+	.dummy {
+		position: absolute;
+		top: 0;
+		z-index: 1;
+		opacity: 0.1;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.dummy {
+		width: 100%;
+		z-index: 0;
+	}
+
+	#updateCoverArt {
+		z-index: 1;
+	}
+
+	#big-cover {
+		margin: 0 auto;
+		vertical-align: middle;
+		border: 0;
+		position: relative;
+		padding-top: 100%;
+		background-size: contain;
+		background-image: url(images/about.png);
+		background-repeat: no-repeat;
+		background-position: center;
+		transition: background-image .5s ease;
+	}
+
+	#big-cover img {
+		width: 100%;
+		vertical-align: middle;
+		display:block;
+	}
+
+	div.jp-progress {
+		background-color: #272727;
+		border-radius: 1.5em;
+	}
+
+	div.jp-seek-bar {
+		width:0;
+		cursor: pointer;
+		border-radius: 1.5em;
+	}
+
+	div.jp-play-bar {
+		width:0;
+		border-radius: 1.5em;
+	}
+
+	table.itemHeaderDetails {
+		width: 100%;
+		margin: 0;
+		padding-top: 3em;
+	}
+	
+	td.itemHeaderDetails {
+		vertical-align: bottom;
+		text-align: right;
+	}
+
+	td.itemHeaderRemove {
+		vertical-align: top;
+		text-align: right;
+		line-height: 1.5em;
+	}
+
+	.itemHeaderRemove a {
+		padding-left: 1em;
+	}
+
+	span.jp-free-media,
+	a.jp-playlist-item-remove {
+		float: right;
+		display: inline;
+		text-align: right;
+		padding-left: .3em;
+		font-weight: bold;
+	}
+	
+	a.jp-playlist-current {
+		margin-left: -0.5em;
+	}
+
+	a.jp-playlist-current:before {
+		content: "";
+		border-style: solid;
+		border-width: 0.35em 0 0.35em 0.45em;
+		display: inline-block;
+		height: 0;
+		width: 0;
+		left: -1em;
+		top: 0;
+		position: relative;
+	}
+
+	div.jp-playlist ul {
+		list-style: none;
+	}
+
+	.jp-artist {
+	display: none;
+	}
+
+	#big-volume-bar,
+	#volume-value {
+		width: .2em;
+	}
+
+	#big-volume-bar {
+		height: 90%;
+		position: absolute;
+		bottom: 5%;
+		left: 97%;
+		z-index: 2;
+		border-radius: .5em;
+		border: 1px solid white;
+	}
+
+	#volume-value {
+		border-top-left-radius: .5em;
+		border-top-right-radius: .5em;
+		border-bottom: none;
+	}
+
+	.spread {
+		display: flex;
+		justify-content: space-between;
+		align-items: center
+	}
+
+	#big-timer,
+	#big-info {
+		margin: 0 .2em 0 .2em;
+	}
+
+	.nowrap {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	#login {
+		position: fixed;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		background: #ffffff;
+		box-sizing: border-box;
+		box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
+		padding-bottom: 40px;
+		border-radius: 3px;
+	}
+
+	.login-header img {
+		height: 2em;
+		vertical-align: middle;
+		overflow: hidden;
+	}
+
+	.login-header {
+		height: 5em;
+		width: 100%;
+		font-size: 1.5em;
+		background: #A7A97F;
+		color: #E3E5BB;
+		line-height: 150%;
+		border-radius: 3px 3px 0 0;
+		box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.2);
+	}
+
+	.login-form {
+		margin: 4em 2em;
+		width: 200px;
+		display: block;
+		border: none;
+		padding: 1em 0;
+		border-bottom: solid 1px #A7A97F;
+		-webkit-transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+						transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+		background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 96%, #A7A97F 4%);
+		background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #A7A97F 4%);
+		background-position: -200px 0;
+		background-size: 200px 100%;
+		background-repeat: no-repeat;
+		color: #A7A97F;
+	}
+
+	.login-form:focus,
+	.login-form:valid {
+		box-shadow: none;
+		outline: none;
+		background-position: 0 0;
+	}
+
+	.login-form:focus::-webkit-input-placeholder,
+	.login-form:valid::-webkit-input-placeholder {
+		color: #A7A97F;
+		font-size: 1em;
+		-webkit-transform: translateY(-1em);
+						transform: translateY(-1em);
+		visibility: visible !important;
+	}
+
+	.go {
+		border: none;
+		background: #A7A97F;
+		cursor: pointer;
+		border-radius: 3px;
+		padding: 6px;
+		width: 200px;
+		color: #E3E5BB;
+		margin-left: 25px;
+		box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
+	}
+
+	.go:hover {
+		-webkit-transform: translateY(-3px);
+				-ms-transform: translateY(-3px);
+						transform: translateY(-3px);
+		box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.2);
+	}
+
+	#playlist-controls {
+		padding-left: 10%;
+		padding-right: 10%;
+	}
+	
+	#controls {
+		color: #E3E5BB;
+		padding-left: 5%;
+		padding-right: 5%;
+		justify-content: space-around;
+	}
+
+	.big-jp-previous-album,
+	.big-jp-next-album {
+			display: none;
+	}
+
+	/* The highlight colour stuff comes next */
+
+	::-webkit-scrollbar-track {
+		background-color: #121314;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: #272727;
+	}
+
+	body,
+	#updateCoverArt,
+	#aboutBox,
+	#helpBox,
+	#clear,
+	.remove-album,
+	#filterButton,
+	#includeOlAdlbums,
+	#findIt,
+	#big-player,
+	a,
+	#volume-value,
+	#updateCoverArt,
+	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match span.fancytree-title,
+	span.fancytree-title {
+		color: #A7A97F;
+	}
+
+	#header {
+		height: 2em;
+		width: 100%;
+		color: #E3E5BB;
+	}
+
+	#mini-controls {
+		display: none;
+		margin-left: 2em;
+	}
+
+	div.jp-play-bar {
+		background-color: #E3E5BB;
+	}
+
+	#big-volume-bar {
+		background-color: #E3E5BB;
+	}
+
+	#searchText,
+	#filterText {
+		border: 1px solid #E3E5BB;
+	}
+	
+	#searchText::-webkit-input-placeholder {
+		color: #A7A97F;
+	}
+
+	.current,
+	.searchResult a,
+	.new,
+	input,
+	#filter,
+	#filterButton,
+	#clear,
+	#findIt,
+	#updateCoverArt,
+	.itemHeaderAlbum,
+	a.jp-playlist-item-remove:hover,
+	.download:hover,
+	.jp-playlist a:hover,
+	.jp-playlist-current:before,
+	#searchLink,
+	#logout a,
+	#loadingInfo,
+	.selected {
+		color: #E3E5BB;
+	}
+
+	a.jp-playlist-current:before {
+		border-color: transparent #E3E5BB;
+	}
+
+}
+
+@media (max-aspect-ratio: 9/10), (min-aspect-ratio: 9/10) and (max-aspect-ratio: 11/10) {
+ 
+	#viewer:after {
+		content: 'tall';
+		display: none;
+	}
+
+	@media (min-aspect-ratio: 9/10) and (max-aspect-ratio: 11/10) {
+
+		#viewer:after {
+			content: 'square';
+			display: none;
+		}
+
+		#header {
+			height: 1em;
+		}
+
+		#mini-controls {
+			display: inline !important;
+		}
+
+		#mini-controls i {
+			font-size: .8em;
+		}
+
+		#ham,
+		#logout a {
+			font-size: 0.8em;
+		}
+		
+		
+
+		#big-player {
+			position: relative;
+			height: 100%;		
+		}
+
+		#playlist-controls,
+		#controls,
+		#big-timer {
+			display: none;
+		}
+		
+		#big-info {
+			position: absolute;
+			background: rgba(0, 0, 0, 0.8);
+			bottom: 3px;
+			left: -3px;
+			width: 100%;
+			transition: opacity 2s;
+			text-align: left;
+			opacity: 0;
+		}
+
+		#big-info:hover {
+			transition: opacity 0.2s;
+			opacity: 1;
+		}
+		
+		#nowPlayingAlbum,
+		#nowPlayingAlbumYear,
+		#nowPlayingArtist,
+		#nowPlayingTitle {
+			padding-left: 2px;
+		}
+	}
+}
+
+@media (min-aspect-ratio: 11/10) {
+
+	#leftPanel {
+		opacity: 1;
+		border-right: 1px solid black;
+		display: block !important;
+		position: fixed;
+		top: 0;
+		left: 0;
+		max-width: 60%;
+	}
+
+	#big-player {
+		position: fixed;
+		right: 0;
+		left: 61%;
+		overflow: hidden;
+		top: 2em;
+		text-align: center;
+		width: 39%;
+		max-width: 70vh;
+	}
+
+	@media (max-height: 480px) {
+		#viewer:after {
+			content: 'short';
+			display: none;
+		}
+		
+		#playlist-controls {
+			display: none;
+		}
+	}
+
+	@media (min-width: 801px) {
+		#viewer:after {
+			content: 'medium';
+			display: none;
+		}
+	}
+	
+	@media (max-width: 800px) {
+		#viewer:after {
+			content: 'short';
+			display: none;
+		}
+	}
+
+	@media (min-width: 1000px) {
+		#viewer:after {
+			content: 'widescreen';
+			display: none;
+		}
+	}
+}
