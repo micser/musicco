@@ -2,9 +2,5 @@
 /all_music
 /all_music/*
 /all_music.db
-/music
-/music/*
 /music.db
-/playlists/*
-/temp/*
 /musicco.log
