@@ -1374,7 +1374,8 @@ class Musicco {
 						for (var i=musiccoPlaylist.current; ((i < (musiccoPlaylist.current + 5)) && (i < musiccoPlaylist.playlist.length + 1)); i++) {
 							tracks.push(musiccoPlaylist.playlist[i].mp3);
 						}
-						postMessage({command: "playlist", tracks: tracks});
+						console.log("TODO: playlist caching is currently disabled to see if this is the performance hog I have been noticing lately...")
+						//postMessage({command: "playlist", tracks: tracks});
 				});
 
 				function notificationSupported() {
