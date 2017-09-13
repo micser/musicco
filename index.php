@@ -830,7 +830,7 @@ class Musicco {
 					var currentPath = nowPlaying("path");
 					var isValidURL =/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
 					var isValidImage =/^(.)*\.(png|gif|bmp|jpg|jpeg)$/i;
-					var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>");
+					var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>").replace("https", "http");
 					if ((isValidURL.test(userURL)) && (isValidImage.test(userURL))) {
 						printCover(userURL);
 						saveCover(userURL, currentPath);
@@ -905,6 +905,7 @@ class Musicco {
 						}
 						$("#searchResults").html(resultString);
 						$('.searchResult').first().focus();
+						console.log("TODO: add context menu on hitlinks");
 						hideLoadingInfo();}, "json");
 					}
 				});
@@ -2490,6 +2491,7 @@ if(!AuthManager::isAccessAllowed()) {
 			fclose($handle);
 			exit;
 	} elseif (isset($_GET['getTrack'])) {
+			//TODO: escape trck name so that Now that's what I call the 90s downloads fine
 			$album = $_GET['album'];
 			$track = $_GET['track'];
 			$handle = fopen($album.$track, "rb");
