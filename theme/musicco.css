@@ -26,6 +26,32 @@
 	/* tabs */
 	.ui-widget-header { }
 
+	.current,
+	.current .fancytree-title,
+	.searchResult a,
+	.new,
+	input,
+	#filter,
+	#filterButton,
+	#clear,
+	#findIt,
+	#updateCoverArt,
+	.itemHeaderAlbum,
+	a.jp-playlist-item-remove:hover,
+	.download:hover,
+	.jp-playlist a:hover,
+	a.jp-playlist-current,
+	.jp-playlist-current:before,
+	#searchLink,
+	#logout a,
+	#loadingInfo,
+	.selected {
+		color: #E3E5BB;
+	}
+	
+	/* defaults to disable */
+	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match span.fancytree-title, .fancytree-ext-filter-hide tr.fancytree-match span.fancytree-title { color: #A7A97F}
+
 	body,
 	input,
 	.fancytree-node {
@@ -500,7 +526,6 @@
 	a,
 	#volume-value,
 	#updateCoverArt,
-	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match span.fancytree-title,
 	span.fancytree-title {
 		color: #A7A97F;
 	}
@@ -531,27 +556,6 @@
 	
 	#searchText::-webkit-input-placeholder {
 		color: #A7A97F;
-	}
-
-	.current,
-	.searchResult a,
-	.new,
-	input,
-	#filter,
-	#filterButton,
-	#clear,
-	#findIt,
-	#updateCoverArt,
-	.itemHeaderAlbum,
-	a.jp-playlist-item-remove:hover,
-	.download:hover,
-	.jp-playlist a:hover,
-	.jp-playlist-current:before,
-	#searchLink,
-	#logout a,
-	#loadingInfo,
-	.selected {
-		color: #E3E5BB;
 	}
 
 	a.jp-playlist-current:before {

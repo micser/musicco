@@ -543,7 +543,6 @@ class Musicco {
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
 		<link rel="stylesheet" href="lib/jquery-ui/jquery-ui.min.css">
 		<link rel="stylesheet" href="lib/fancytree/skin-awesome/ui.fancytree.min.css">
-		<link rel="stylesheet" type="text/css" href="theme/skin.css" >
 		<link rel="stylesheet" type="text/css" href="theme/musicco.css" >
 		<meta http-equiv="Content-Type" content="text/html; charset=<?php print $this->getConfig('charset'); ?>">
 		<!-- <meta charset="<?php print $this->getConfig('charset'); ?>" /> -->
@@ -2079,7 +2078,6 @@ class Musicco {
 		new Clipboard('.clip');
 
 		var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
-		console.log("TODO: Add new class to nodes that are new");
 		$("#library").fancytree({
 			extensions: ["glyph", "filter"],	
 			glyph: {
@@ -2580,7 +2578,7 @@ function querydb($query_root, $query_type) {
 		$number = $row['number'];
 		$extension = $row['extension'];
 		$folder = ($type == Musicco::TYPE_FOLDER)? true : false;
-
+		$extraClasses = (preg_match("/".Musicco::getConfig('new_marker')."/", $name))? "current" : "treenode";
 		$list[]= array(
 							"title" => str_replace(Musicco::getConfig('new_marker'), "", $name),
 							"path" => $name,
@@ -2595,7 +2593,8 @@ function querydb($query_root, $query_type) {
 							"extension" => $extension,
 							//fancytree properties
 							"folder" => $folder,
-							"lazy" => $folder
+							"lazy" => $folder,
+							"extraClasses" => $extraClasses
 							);
 	}
 	logMessage("Displayed Data in ".number_format((microtime(true) - $_START_DISPLAY), 3)." seconds");
