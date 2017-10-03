@@ -2157,8 +2157,12 @@ class Musicco {
       close: function(event, ui) {
          //Restore tree keyboard handling
         var node = $.ui.fancytree.getNode(ui.target);
-        node.tree.options.keyboard = ui.menu.prevKeyboard;
-        node.setFocus();
+        if (node != null) {
+					node.tree.options.keyboard = ui.menu.prevKeyboard;
+					node.setFocus();
+        } else {
+					console.log("TODO: Node was null, unsure what the status of keyboard support is in that case");
+        }
       },
       select: function(event, ui) {
         var node = $.ui.fancytree.getNode(ui.target);
