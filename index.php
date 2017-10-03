@@ -2110,13 +2110,18 @@ class Musicco {
 			tabindex: "0",
 			titlesTabbable: true,
 			tooltip: true,
-			selectMode: 2,
+			selectMode: 1,
 			source: {
 					url: "?",
 					type: "POST",
 					data: {querydb: '', root: decodeURI(musicRoot), type: 'browse'},
 					cache: true
-				},
+			},
+			beforeExpand: function(event, data) {
+				if (event.which === 3) {
+					return false;
+				}
+			},
 			lazyLoad: function(event, data) {
 				var node = data.node;
 				var root = node.data.parent + node.data.path + "/";
@@ -2128,7 +2133,6 @@ class Musicco {
 				}
 			}
 		});
-		
 		$("#library").contextmenu({
       delegate: "span.fancytree-title",
       autoFocus: true,
