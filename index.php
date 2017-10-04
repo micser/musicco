@@ -232,7 +232,11 @@ $_TRANSLATIONS["en"] = array(
 	"queueing" => "Queueing ",
 	"nodata" => "I did not find anything! :-o",
 	"menu_info" => "Info",
-	"menu_queue" => "Queue",
+	"menu_queue" => "Queue as...",
+	"menu_next_album" => "next album",
+	"menu_next_track" => "next track",
+	"menu_right_now" => "current track",
+	"menu_last_album" => "last album",
 	"menu_download" => "Download",
 	"menu_share" => "Share",
 	"menu_favourite" => "Favourite",
@@ -291,7 +295,11 @@ $_TRANSLATIONS["fr"] = array(
 	"queueing" => "Ajout de ",
 	"nodata" => "Aucun résultat! :-o",
 	"menu_info" => "Info",
-	"menu_queue" => "Ajouter",
+	"menu_queue" => "Lire comme...",
+	"menu_next_album" => "album suivant",
+	"menu_next_track" => "piste suivante",
+	"menu_right_now" => "piste actuelle",
+	"menu_last_album" => "dernier album",
 	"menu_download" => "Télécharger",
 	"menu_share" => "Partager",
 	"menu_favourite" => "Favori",
@@ -1638,7 +1646,7 @@ class Musicco {
 							case 65: //a
 								if (treeIsFocused) {
 									var slash = node.isFolder()? "/": "" ;
-									queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle);
+									queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, false);
 								}
 							break;
 
@@ -1861,7 +1869,6 @@ class Musicco {
 				}
 
 				$(document).on("click", ".move", function(e) {
-					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
 					var direction = "";
 					var from = parseInt($(this).data('from'));
 					var to = parseInt($(this).data('to'));
@@ -1873,13 +1880,18 @@ class Musicco {
 						to = musiccoPlaylist.albums.length -1;
 					}
 				}
+					moveAlbum(from, to);
+				});
+
+				function moveAlbum(from, to) {
+					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
 					var albumArray = getAlbumArray();
 					albumArray.move(from, to);
 					var newPlaylist = [].concat.apply([], albumArray);
 					musiccoPlaylist.setPlaylist(newPlaylist);
 					restorePlaylistPosition = musiccoPlaylist.albums[to].index;
 					refreshPlaylist(current);
-				});
+				}
 
 				$(document).on("click", ".share", function() {
 					saveGuestPlaylist(
@@ -1890,7 +1902,7 @@ class Musicco {
 				});
 
 				$(document).on("click", ".searchResult", function() {
-					queueMusic($(this).data("parent") + $(this).data("path"), $(this).data("title"));
+					queueMusic($(this).data("parent") + $(this).data("path"), $(this).data("title"), false);
 				});
 
 				$('#big-cover').click(function(e) {
@@ -1970,8 +1982,11 @@ class Musicco {
 					showPanel("#infoPanel");					
 				}
 
-				function queueMusic(query, loadingInfo) {
+				function queueMusic(query, loadingInfo, custom) {
 					var playAfter = (musiccoPlaylist.playlist.length < 1);
+					if (custom) {
+						var previousAlbums = getAlbumArray().length;
+					}
 					showLoadingInfo("<?php print $this->getString("queueing"); ?>" + loadingInfo.replace("/",""));
 					$.post('?', {querydb: '', root: query, type: "queue"}, function (response) {
 							var files=response;
@@ -1989,11 +2004,19 @@ class Musicco {
 										poster: files[i].cover.replace(/#/g, "%23"),
 										number: files[i].number
 									});
-								if (playAfter) musiccoPlaylist.play();
 								});
 							}
 					hideLoadingInfo();
 					formatPlaylist();
+					if (custom) {
+					var addedAlbums = getAlbumArray().length - previousAlbums;
+							for (var i=0; i < addedAlbums; i++) {
+								var from = previousAlbums + i;
+								var to = getCurrentAlbumIndex() + 1 + i;
+								moveAlbum(from, to);
+							}
+						}
+					if (playAfter) musiccoPlaylist.play();
 					}, "json");
 				}
 
@@ -2137,8 +2160,13 @@ class Musicco {
       delegate: "span.fancytree-title",
       autoFocus: true,
       menu: [
+          {title: "<?php print $this->getString("menu_queue"); ?>", uiIcon: "ui-icon-play", children: [
+						{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "ui-icon-caret-1-se", cmd: "playAsNextAlbum"},
+						//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "ui-icon-caret-1-e", cmd: "playAsNextTrack"},
+						//{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "ui-icon-arrowstop-1-e", cmd: "playRightNow"},
+						{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "ui-icon-arrowstop-1-s", cmd: "queue"}
+          ]},
           {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "ui-icon-info"},
-          {title: "<?php print $this->getString("menu_queue"); ?>", cmd: "queue", uiIcon: "ui-icon-play"},
           {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "ui-icon-arrowthickstop-1-s"},
           {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "ui-icon-arrowthickstop-1-s"},
           {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
@@ -2177,9 +2205,12 @@ class Musicco {
 						displayInfo(query);
 					break;
 					case "queue":
-						//event.stopImmediatePropagation();
 						var slash = node.isFolder()? "/": "" ;
-						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle);
+						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, false);
+					break;
+					case "playAsNextAlbum":
+						var slash = node.isFolder()? "/": "" ;
+						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, true);
 					break;
 					case "share": 
 						console.log("TODO: sharing does not work for single files, need to rework the query or simply disable for files (most likely)");
