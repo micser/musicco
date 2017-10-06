@@ -23,6 +23,12 @@
 		border-radius: 0 .5em .5em 0;
 	}
 
+
+	mark {
+		text-decoration: underline;
+    background-color: rgba(0, 0, 0, 0);
+	}
+
 	/* tabs */
 	.ui-widget-header { }
 
@@ -41,16 +47,38 @@
 	.download:hover,
 	.jp-playlist a:hover,
 	a.jp-playlist-current,
+	.jp-playlist-current div a,
 	.jp-playlist-current:before,
 	#searchLink,
 	#logout a,
 	#loadingInfo,
-	.selected {
+	.selected,
+	span.current span.fancytree-title mark,
+	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match.current span.fancytree-title,
+	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title {
 		color: #E3E5BB;
 	}
 	
-	/* defaults to disable */
-	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match span.fancytree-title, .fancytree-ext-filter-hide tr.fancytree-match span.fancytree-title { color: #A7A97F}
+	
+	body,
+	#updateCoverArt,
+	#aboutBox,
+	#helpBox,
+	#clear,
+	.remove-album,
+	#filterButton,
+	#includeOlAdlbums,
+	#findIt,
+	#big-player,
+	a,
+	#volume-value,
+	#updateCoverArt,
+	span.fancytree-title,
+	mark,
+	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match span.fancytree-title,
+	.fancytree-ext-filter-hidetr.fancytree-match span.fancytree-title {
+		color: #A7A97F;
+	}
 
 	body,
 	input,
@@ -511,23 +539,6 @@
 
 	::-webkit-scrollbar-thumb {
 		background: #272727;
-	}
-
-	body,
-	#updateCoverArt,
-	#aboutBox,
-	#helpBox,
-	#clear,
-	.remove-album,
-	#filterButton,
-	#includeOlAdlbums,
-	#findIt,
-	#big-player,
-	a,
-	#volume-value,
-	#updateCoverArt,
-	span.fancytree-title {
-		color: #A7A97F;
 	}
 
 	#header {
