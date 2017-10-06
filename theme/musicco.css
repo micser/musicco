@@ -33,6 +33,7 @@
 	.ui-widget-header { }
 
 	.current,
+	a.current,
 	.current .fancytree-title,
 	.searchResult a,
 	.new,

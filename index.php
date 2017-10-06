@@ -890,6 +890,8 @@ class Musicco {
 								var parent = hits[i].parent;
 								var name = hits[i].title;
 								var type = hits[i].type;
+								var extraClasses = hits[i].extraClasses;
+								var path = hits[i].path;
 								var folder = hits[i].folder;
 								var slash="/";
 								var optionalSlash="";
@@ -898,13 +900,13 @@ class Musicco {
 								}
 								var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
 								var parentItem = parent.substr(levelUp.length);
-								var parentItemName = parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1);
+								var parentItemName = parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1).replace(/<?php print Musicco::getConfig('new_marker'); ?>/, "").replace(/\//g, " &gt; ");
 								var hitLink="<div class=\"hits\">";
 								if (parentItemName=="") {
 									parentItemName="home";
 								}
-								hitLink+="<a class=\"searchResult\" tabindex=\"1\" data-parent=\"" + levelUp + "\" data-title=\"" + parentItem + "\" data-path=\"" + parentItem + "\">" + parentItemName +"</a> &gt; ";
-								hitLink+="<a class=\"searchResult\" tabindex=\"1\" data-parent=\"" + parent + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ name +"\">"+ name +"</a></div>";
+								hitLink+="<a class=\"searchResultParent\"  tabindex=\"1\" data-parent=\"" + levelUp + "\" data-title=\"" + parentItem + "\" data-path=\"" + parentItem + "\">" + parentItemName +"</a> &gt; ";
+								hitLink+="<a class=\"searchResult " + extraClasses + "\" tabindex=\"1\" data-parent=\"" + parent + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path +"\">"+ name +"</a></div>";
 								$("#searchResults").before(hitLink);
 							});
 						} else {
@@ -1110,7 +1112,7 @@ class Musicco {
 										+ "</tr>"
 										+ "<tr>"
 											+ "<td class=\"itemHeaderDetails\">"
-												+ "<span class=\"itemHeaderAlbum\">" + thisAlbum + "</span><br/>"
+												+ "<span class=\"itemHeaderAlbum\">" + thisAlbum.replace(/<?php print $this->getConfig('new_marker'); ?>/, "") + "</span><br/>"
 												+ "<span class=\"itemHeaderArtist\">" + artist + "</span>"
 												+ "<span class=\"itemHeaderYear\">" +	 year + "</span>"
 											+ "</td>"
@@ -1901,7 +1903,7 @@ class Musicco {
 					);
 				});
 
-				$(document).on("click", ".searchResult", function() {
+				$(document).on("click", ".searchResult, .searchResultParent", function() {
 					queueMusic($(this).data("parent") + $(this).data("path"), $(this).data("title"), false);
 				});
 
@@ -2635,6 +2637,7 @@ function querydb($query_root, $query_type) {
 							"lazy" => $folder,
 							"extraClasses" => $extraClasses
 							);
+		//logMessage("$name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension, $folder, $extraClasses");
 	}
 	logMessage("Displayed Data in ".number_format((microtime(true) - $_START_DISPLAY), 3)." seconds");
 	return print_r(json_encode($list));
