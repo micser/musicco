@@ -663,14 +663,13 @@ class Musicco {
 				}
 
 				function scrollPlaylist() {
-					console.log("TODO: playlist does not scroll right now");
 					if (musiccoPlaylist.playlist.length != 0) {
 						var element = restorePlaylistPosition + 1;
 						if (element > musiccoPlaylist.length) {
 							element = musiccoPlaylist.length;
 						}
 						var y = $('.my-playlist ul li:nth-child(' + element + ')').offset().top - $('.my-playlist').offset().top - 200 + $('.my-playlist').scrollTop();
-						$('.my-playlist').scrollTop(y);
+						$('#leftPanel').animate({scrollTop:y});
 					}
 				}
 
@@ -1747,6 +1746,10 @@ class Musicco {
 					$(".panelToggle[href='" + panel + "']").trigger("click");
 				}
 
+				$(document).on("click", "#playlistToggle", function(event) { 
+					scrollPlaylist();
+				});
+
 				function jump(percent) {
 					$("#jquery_jplayer_2").jPlayer("playHead", (percent * 10));
 				}
@@ -1790,7 +1793,12 @@ class Musicco {
 				$(document).on("click", ".jp-playlist-item", function(event) { 
 					restoreCurrentTime = -1;
 				});
-				
+
+				$(document).on("mouseenter mouseleave", ".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove", function(event) {
+					var parent = $(this).parent("div");
+					$(parent).children(".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove").toggleClass("current");
+				});
+
 				$(document).on("click", ".remove-album", function(e) {
 					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
 					var removeTarget = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());

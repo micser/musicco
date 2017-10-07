@@ -34,6 +34,7 @@
 
 	.current,
 	a.current,
+	.jp-free-media.current a i:before,
 	.current .fancytree-title,
 	.searchResult a,
 	.new,
