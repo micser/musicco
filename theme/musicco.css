@@ -23,6 +23,9 @@
 		border-radius: 0 .5em .5em 0;
 	}
 
+	*:focus {
+		outline: 1px dotted #E3E5BB;
+	}
 
 	mark {
 		text-decoration: underline;
@@ -36,6 +39,7 @@
 	a.current,
 	.jp-free-media.current a i:before,
 	.current .fancytree-title,
+	.fancytree-title:hover,
 	.searchResult a,
 	.new,
 	input,
@@ -60,7 +64,6 @@
 	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title {
 		color: #E3E5BB;
 	}
-	
 	
 	body,
 	#updateCoverArt,
