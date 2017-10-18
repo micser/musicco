@@ -595,6 +595,19 @@ class Musicco {
 			$(document).ready(function() {
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
+				var menuOptions = [
+          {title: "<?php print $this->getString("menu_queue"); ?>", uiIcon: "ui-icon-play", children: [
+						{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "ui-icon-caret-1-se", cmd: "playAsNextAlbum"},
+						//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "ui-icon-caret-1-e", cmd: "playAsNextTrack"},
+						//{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "ui-icon-arrowstop-1-e", cmd: "playRightNow"},
+						{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "ui-icon-arrowstop-1-s", cmd: "queue"}
+          ]},
+          {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "ui-icon-info"},
+          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "ui-icon-arrowthickstop-1-s"},
+          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "ui-icon-arrowthickstop-1-s"},
+          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
+          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"}
+          ];
 				var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
 				var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
 				var options = { playlistOptions: {
@@ -891,7 +904,12 @@ class Musicco {
 								var type = hits[i].type;
 								var extraClasses = hits[i].extraClasses;
 								var path = hits[i].path;
-								var folder = hits[i].folder;
+								var isFolder = hits[i].folder;
+								var album = hits[i].album;
+								var artist = hits[i].artist;
+								var cover = hits[i].cover;
+								var songtitle = hits[i].songtitle;
+								var year = hits[i].year;
 								var slash="/";
 								var optionalSlash="";
 								if (type == 1) {
@@ -904,8 +922,8 @@ class Musicco {
 								if (parentItemName=="") {
 									parentItemName="home";
 								}
-								hitLink+="<a class=\"searchResultParent\"  tabindex=\"1\" data-parent=\"" + levelUp + "\" data-title=\"" + parentItem + "\" data-path=\"" + parentItem + "\">" + parentItemName +"</a> &gt; ";
-								hitLink+="<a class=\"searchResult " + extraClasses + "\" tabindex=\"1\" data-parent=\"" + parent + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path +"\">"+ name +"</a></div>";
+								hitLink+="<a class=\"searchResultParent\"  tabindex=\"1\" data-folder=\"" + isFolder + "\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + songtitle + "\" data-year=\"" + year + "\" data-parent=\"" + levelUp + "\" data-title=\"" + parentItem + "\" data-path=\"" + parentItem + "\">" + parentItemName +"</a> &gt; ";
+								hitLink+="<a class=\"searchResult " + extraClasses + "\" tabindex=\"1\" data-folder=\"" + isFolder + "\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + songtitle + "\" data-year=\"" + year + "\" data-parent=\"" + parent + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path +"\">"+ name +"</a></div>";
 								$("#searchResults").before(hitLink);
 							});
 						} else {
@@ -913,7 +931,6 @@ class Musicco {
 						}
 						$("#searchResults").html(resultString);
 						$('.searchResult').first().focus();
-						console.log("TODO: add context menu on hitlinks");
 						hideLoadingInfo();}, "json");
 					}
 				});
@@ -1004,7 +1021,7 @@ class Musicco {
 										hitLink+="<a class=\"searchResult uncoverLink\" id=\"" + i +"\" data-parent=\""+ levelUp +"\" data-title=\"" + parentItem + "\" data-path=\"" + parentItem + "\">"+ parentItemName +"</a>";
 									$("#searchResults").before(hitLink);
 									var thisHit = "#"+i;
-									$(thisHit).trigger('click');
+									queueMusic($(thisHit).data("parent") + $(thisHit).data("path"), $(thisHit).data("title"), false);
 									});
 								}
 							$(".uncoverLink").remove(); 
@@ -1912,7 +1929,8 @@ class Musicco {
 				});
 
 				$(document).on("click", ".searchResult, .searchResultParent", function() {
-					queueMusic($(this).data("parent") + $(this).data("path"), $(this).data("title"), false);
+					setMenuEntries($(this).data("folder"), $("#searchPanel"));
+					$("#searchPanel").contextmenu("open", $(this));
 				});
 
 				$('#big-cover').click(function(e) {
@@ -2110,6 +2128,30 @@ class Musicco {
 
 		new Clipboard('.clip');
 
+		$("#searchPanel").contextmenu({
+			autoTrigger: 'false',
+			delegate: ".searchResult,.searchResultParent",
+			menu: menuOptions,
+			select: function(event, ui) {
+				var node = {
+					folder: ui.target.data("folder"),
+					title: ui.target.text(),
+					data: {
+						album: ui.target.data("album"),
+						artist: ui.target.data("artist"),
+						cover: ui.target.data("cover"),
+						parent: ui.target.data("parent"),
+						path: ui.target.data("path"),
+						songtitle: ui.target.data("songtitle"),
+						type: ui.target.data("type"),
+						year: ui.target.data("year")
+					},
+					'isFolder': function() { return ui.target.data("folder"); }
+				};
+				handleMenuSelection(node, ui.cmd);
+			}
+		});
+		
 		var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
 		$("#library").fancytree({
 			extensions: ["glyph", "filter"],	
@@ -2166,30 +2208,62 @@ class Musicco {
 				}
 			}
 		});
+
+		function setMenuEntries(isFolder, target) {
+			 //Modify menu entries depending on node status
+			 $(target).contextmenu("showEntry", "share", isFolder);
+			 $(target).contextmenu("showEntry", "download", (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>));
+			 $(target).contextmenu("showEntry", "downloadAlbum", (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>));
+			 //$(target).contextmenu("enableEntry", "paste", isFolder);		
+		}
+
+		function handleMenuSelection(node, command) {
+			console.log(node);
+			switch (command) {
+				case "info":
+					var query = node.data.songtitle;
+					displayInfo(query);
+				break;
+				case "queue":
+					var slash = node.isFolder()? "/": "" ;
+					queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, false);
+				break;
+				case "playAsNextAlbum":
+					console.log("TODO: handle empty playlists by adding as last instead, or deactivate entry completely");
+					var slash = node.isFolder()? "/": "" ;
+					queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, true);
+				break;
+				case "share": 
+					console.log("TODO: sharing does not work for single files, need to rework the query or simply disable for files (most likely)");
+					var path = node.data.parent + node.data.path;
+					var separator = (node.data.artist == '')? "" : " - ";
+					var info = node.data.artist + separator + node.title;
+					var image = node.data.cover;
+					saveGuestPlaylist(path, info, image);
+				break;
+				case "download":
+					console.log("Download from search panel fails from album level or track level")
+					var link = "?getTrack&album=" + node.data.parent + "&track=" + node.data.path;
+					window.open(link);
+				break;
+				case "downloadAlbum":
+					console.log("Download from search panel fails from album level or track level")
+					var link = "?getAlbum&parent=" + node.data.parent + "&album=" + node.data.path;
+					window.open(link);
+				break;
+				case "favourite":
+					console.log("TODO: fave this node");
+				break;
+			}
+		}
+
 		$("#library").contextmenu({
       delegate: "span.fancytree-title",
       autoFocus: true,
-      menu: [
-          {title: "<?php print $this->getString("menu_queue"); ?>", uiIcon: "ui-icon-play", children: [
-						{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "ui-icon-caret-1-se", cmd: "playAsNextAlbum"},
-						//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "ui-icon-caret-1-e", cmd: "playAsNextTrack"},
-						//{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "ui-icon-arrowstop-1-e", cmd: "playRightNow"},
-						{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "ui-icon-arrowstop-1-s", cmd: "queue"}
-          ]},
-          {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "ui-icon-info"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "ui-icon-arrowthickstop-1-s"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "ui-icon-arrowthickstop-1-s"},
-          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
-          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"}
-          ],
+      menu: menuOptions,
       beforeOpen: function(event, ui) {
         var node = $.ui.fancytree.getNode(ui.target);
-         //Modify menu entries depending on node status
-				 $("#library").contextmenu("showEntry", "share", node.isFolder());
-				 $("#library").contextmenu("showEntry", "download", (!node.isFolder() && <?php print (AuthManager::isAdmin()?"true":"false"); ?>));
-				 $("#library").contextmenu("showEntry", "downloadAlbum", (node.isFolder() && <?php print (AuthManager::isAdmin()?"true":"false"); ?>));
-         //$("#library").contextmenu("enableEntry", "paste", node.isFolder());
-
+         setMenuEntries(node.isFolder(), $("#library"));
          //Activate node on right-click
         node.setActive();
          //Disable tree keyboard handling
@@ -2208,40 +2282,7 @@ class Musicco {
       },
       select: function(event, ui) {
         var node = $.ui.fancytree.getNode(ui.target);
-				switch (ui.cmd) {
-					case "info":
-						//event.stopImmediatePropagation();
-						var query = node.data.songtitle;
-						displayInfo(query);
-					break;
-					case "queue":
-						var slash = node.isFolder()? "/": "" ;
-						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, false);
-					break;
-					case "playAsNextAlbum":
-						var slash = node.isFolder()? "/": "" ;
-						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, true);
-					break;
-					case "share": 
-						console.log("TODO: sharing does not work for single files, need to rework the query or simply disable for files (most likely)");
-						var path = node.data.parent + node.data.path;
-						var separator = (node.data.artist == '')? "" : " - ";
-						var info = node.data.artist + separator + node.title;
-						var image = node.data.cover;
-						saveGuestPlaylist(path, info, image);
-					break;
-					case "download":
-						var link = "?getTrack&album=" + node.data.parent + "&track=" + node.data.path;
-						window.open(link);
-					break;
-					case "downloadAlbum":
-						var link = "?getAlbum&parent=" + node.data.parent + "&album=" + node.data.path;
-						window.open(link);
-					break;
-					case "favourite":
-						console.log("TODO: fave this node");
-					break;
-				}
+				handleMenuSelection(node, ui.cmd);
       }
     });
 		
