@@ -235,7 +235,7 @@ $_TRANSLATIONS["en"] = array(
 	"menu_queue" => "Queue as...",
 	"menu_next_album" => "next album",
 	"menu_next_track" => "next track",
-	"menu_right_now" => "current track",
+	"menu_right_now" => "Play",
 	"menu_last_album" => "last album",
 	"menu_download" => "Download",
 	"menu_share" => "Share",
@@ -298,7 +298,7 @@ $_TRANSLATIONS["fr"] = array(
 	"menu_queue" => "Lire comme...",
 	"menu_next_album" => "album suivant",
 	"menu_next_track" => "piste suivante",
-	"menu_right_now" => "piste actuelle",
+	"menu_right_now" => "Jouer",
 	"menu_last_album" => "dernier album",
 	"menu_download" => "Télécharger",
 	"menu_share" => "Partager",
@@ -596,10 +596,10 @@ class Musicco {
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
 				var menuOptions = [
-          {title: "<?php print $this->getString("menu_queue"); ?>", uiIcon: "ui-icon-play", children: [
+					{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "ui-icon-play", cmd: "playRightNow"},
+          {title: "<?php print $this->getString("menu_queue"); ?>", uiIcon: "ui-icon-play", cmd: "queueMenu", children: [
 						{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "ui-icon-caret-1-se", cmd: "playAsNextAlbum"},
 						//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "ui-icon-caret-1-e", cmd: "playAsNextTrack"},
-						//{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "ui-icon-arrowstop-1-e", cmd: "playRightNow"},
 						{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "ui-icon-arrowstop-1-s", cmd: "queue"}
           ]},
           {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "ui-icon-info"},
@@ -676,7 +676,7 @@ class Musicco {
 				}
 
 				function scrollPlaylist() {
-					if (musiccoPlaylist.playlist.length != 0) {
+					if (hasPlaylist()) {
 						var element = restorePlaylistPosition + 1;
 						if (element > musiccoPlaylist.length) {
 							element = musiccoPlaylist.length;
@@ -897,7 +897,7 @@ class Musicco {
 						$(".hits").remove();
 						$.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
 						var hits= data;
-						if (hits!=null) {
+						if (hits != null) {
 							$.each(hits, function (i, elem) {
 								var parent = hits[i].parent;
 								var name = hits[i].title;
@@ -1005,7 +1005,7 @@ class Musicco {
 						showLoadingInfo("<?php print $this->getString("uncovering"); ?>");
 						$.post('?', {querydb: '', root: '', type: method}, function (response) {
 								var hits=response;
-								if (hits!=null) {
+								if (hits != null) {
 									$.each(hits, function (i, elem) {
 										var slash="/";
 										var parent = hits[i].parent;
@@ -1071,8 +1071,12 @@ class Musicco {
 					}
 				}
 
+				function hasPlaylist() {
+					return (musiccoPlaylist.playlist.length > 0)
+				}
+
 				function formatPlaylist() {
-					if (musiccoPlaylist.playlist.length) {
+					if (hasPlaylist()) {
 						$('.itemHeader').remove();
 						$('.jp-playlist-item-free').html("<i class=\"fa fa-download\"></i>");
 						$('.jp-playlist-item-free').attr("target", "_blank");
@@ -1306,7 +1310,7 @@ class Musicco {
 								var root = response.path;
 								$.post('?', {querydb: '', root: root, type: 'queue'}, function (results) {
 										var files=results;
-										if (files!=null) {
+										if (files != null) {
 										$.each(files, function (i, elem) {
 											musiccoPlaylist.add({
 												title: files[i].songtitle,
@@ -2011,14 +2015,14 @@ class Musicco {
 				}
 
 				function queueMusic(query, loadingInfo, custom) {
-					var playAfter = (musiccoPlaylist.playlist.length < 1);
+					var playAfter = !hasPlaylist();
 					if (custom) {
 						var previousAlbums = getAlbumArray().length;
 					}
 					showLoadingInfo("<?php print $this->getString("queueing"); ?>" + loadingInfo.replace("/",""));
 					$.post('?', {querydb: '', root: query, type: "queue"}, function (response) {
 							var files=response;
-							if (files!=null) {
+							if (files != null) {
 								$.each(files, function (i, elem) {
 									musiccoPlaylist.add({
 										title: files[i].songtitle,
@@ -2211,6 +2215,10 @@ class Musicco {
 
 		function setMenuEntries(isFolder, target) {
 			 //Modify menu entries depending on node status
+			 $(target).contextmenu("showEntry", "playRightNow", !hasPlaylist());
+			 $(target).contextmenu("showEntry", "queueMenu", hasPlaylist());
+			 $(target).contextmenu("showEntry", "queue", hasPlaylist());
+			 $(target).contextmenu("showEntry", "playAsNextAlbum", hasPlaylist());
 			 $(target).contextmenu("showEntry", "share", isFolder);
 			 $(target).contextmenu("showEntry", "download", (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>));
 			 $(target).contextmenu("showEntry", "downloadAlbum", (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>));
@@ -2225,11 +2233,11 @@ class Musicco {
 					displayInfo(query);
 				break;
 				case "queue":
+				case "playRightNow":
 					var slash = node.isFolder()? "/": "" ;
 					queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, false);
 				break;
 				case "playAsNextAlbum":
-					console.log("TODO: handle empty playlists by adding as last instead, or deactivate entry completely");
 					var slash = node.isFolder()? "/": "" ;
 					queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, true);
 				break;

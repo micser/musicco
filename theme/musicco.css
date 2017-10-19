@@ -35,6 +35,10 @@
 	/* tabs */
 	.ui-widget-header { }
 
+	.ui-menu-item-wrapper {
+		width: 100px;
+	}
+
 	.current,
 	a.current,
 	.jp-free-media.current a i:before,
