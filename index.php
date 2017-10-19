@@ -858,20 +858,21 @@ class Musicco {
 
 				function filterTree() {
 					console.log("TODO: when the tree is filtered, keyboard navigation just does not work anymore");
-					console.log("TODO: uncheck old, search for something that triggers old and finds something ==> nodata is displayed ");
-					console.log("TODO: Is normalise still needed? Maybe fancytree can handle all this directly");
-					var filterText = normalise($("#filterText").val().toLowerCase());
+					console.log("TODO: uncheck old, search for something that triggers old and finds nothing or finds something ==> nodata is displayed ");
+					var filterText = $("#filterText").val().toLowerCase();
 					var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
 					var isMatching = new RegExp(filterText, "i");
 					if ($("#includeOlAdlbums").is(':checked')) {
 						if (filterText.length < 1) {
 							$("#library").fancytree("getTree").clearFilter();
 						} else {
-							$("#library").fancytree("getTree").filterBranches(filterText);
+							$("#library").fancytree("getTree").filterBranches(function(node) {
+							return isMatching.test(normalise(node.data.path));
+						});
 						}
 					} else {
 						$("#library").fancytree("getTree").filterBranches(function(node) {
-							return isNew.test(node.data.path) && isMatching.test(node.data.path);
+							return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
 						},
 						{ nodata: function() { 
 							$('#includeOlAdlbums').prop('checked', true); 
