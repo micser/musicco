@@ -918,11 +918,13 @@ class Musicco {
 								var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
 								var parentItem = parent.substr(levelUp.length);
 								var parentItemName = parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1).replace(/<?php print Musicco::getConfig('new_marker'); ?>/, "").replace(/\//g, " &gt; ");
+								var parentSongTitle = parentItem.replace("[" + year + "]", "").replace("/", "");
+								var parentTitle = parentItem.replace("/", "");
 								var hitLink="<div class=\"hits\">";
 								if (parentItemName=="") {
 									parentItemName="home";
 								}
-								hitLink+="<a class=\"searchResultParent\"  tabindex=\"1\" data-folder=\"" + isFolder + "\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + songtitle + "\" data-year=\"" + year + "\" data-parent=\"" + levelUp + "\" data-title=\"" + parentItem + "\" data-path=\"" + parentItem + "\">" + parentItemName +"</a> &gt; ";
+								hitLink+="<a class=\"searchResultParent\"  tabindex=\"1\" data-folder=\"true\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + parentSongTitle + "\" data-year=\"" + year + "\" data-parent=\"" + levelUp + "\" data-title=\"" + parentTitle + "\" data-path=\"" + parentItem + "\">" + parentItemName +"</a> &gt; ";
 								hitLink+="<a class=\"searchResult " + extraClasses + "\" tabindex=\"1\" data-folder=\"" + isFolder + "\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + songtitle + "\" data-year=\"" + year + "\" data-parent=\"" + parent + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path +"\">"+ name +"</a></div>";
 								$("#searchResults").before(hitLink);
 							});
@@ -1932,7 +1934,7 @@ class Musicco {
 					);
 				});
 
-				$(document).on("click", ".searchResult, .searchResultParent", function() {
+				$(document).on("mouseup", ".searchResult, .searchResultParent", function(event) {
 					setMenuEntries($(this).data("folder"), $("#searchPanel"));
 					$("#searchPanel").contextmenu("open", $(this));
 				});
@@ -2139,13 +2141,13 @@ class Musicco {
 			select: function(event, ui) {
 				var node = {
 					folder: ui.target.data("folder"),
-					title: ui.target.text(),
+					title: ui.target.data("title").replace("/", ""),
 					data: {
 						album: ui.target.data("album"),
 						artist: ui.target.data("artist"),
 						cover: ui.target.data("cover"),
 						parent: ui.target.data("parent"),
-						path: ui.target.data("path"),
+						path: ui.target.data("path").replace(/^(.*)\/$/, "$1"),
 						songtitle: ui.target.data("songtitle"),
 						type: ui.target.data("type"),
 						year: ui.target.data("year")
@@ -2226,7 +2228,6 @@ class Musicco {
 		}
 
 		function handleMenuSelection(node, command) {
-			console.log(node);
 			switch (command) {
 				case "info":
 					var query = node.data.songtitle;
@@ -2250,12 +2251,10 @@ class Musicco {
 					saveGuestPlaylist(path, info, image);
 				break;
 				case "download":
-					console.log("Download from search panel fails from album level or track level")
 					var link = "?getTrack&album=" + node.data.parent + "&track=" + node.data.path;
 					window.open(link);
 				break;
 				case "downloadAlbum":
-					console.log("Download from search panel fails from album level or track level")
 					var link = "?getAlbum&parent=" + node.data.parent + "&album=" + node.data.path;
 					window.open(link);
 				break;
