@@ -254,12 +254,12 @@ $_TRANSLATIONS["fr"] = array(
 	"username" => "Utilisateur",
 	"password" => "Mot de passe",
 	"wrong_pass" => "Utilisateur ou mot de passe invalide.",
-	"reset_db" => "rafraichir la discothÃ¨que",
+	"reset_db" => "rafraichir la discothèque",
 	"rebuildingLibrary" => "scan en cours...",
-	"libraryRebuiltIn" => "discothÃ¨que rafraichie en ",
-	"libraryLocked" => "un scan de la discothÃ¨que est dÃ©jÃ  en cours",
+	"libraryRebuiltIn" => "discothèque rafraichie en ",
+	"libraryLocked" => "un scan de la discothèque est déjà en cours",
 	"log_in" => "Connexion",
-	"log_out" => "dÃ©connexion",
+	"log_out" => "déconnexion",
 	"show_all" => "anciens",
 	"help" => "aide",
 	"about" => "info",
@@ -268,47 +268,47 @@ $_TRANSLATIONS["fr"] = array(
 	"..." => "...",
 	"search_placeholder" => "Que cherchez-vous ?",
 	"searchingLibrary" => "Recherche en cours...",
-	"noResultsForThisSearch" => "Pas de rÃ©sultats pour cette recherche",
+	"noResultsForThisSearch" => "Pas de résultats pour cette recherche",
 	"searchingLyricsFor" => "Recherche de paroles en cours pour ",
-	"noLyricsFoundFor" => "Aucune paroles trouvÃ©es pour ",
+	"noLyricsFoundFor" => "Aucune paroles trouvées pour ",
 	"search" => "Chercher sur ",
 	"genius" => "genius ",
 	"or" => "ou ",
 	"lastfm" => "last.fm ",
 	"google" => "google",
 	"noInfoFoundFor" => "Pas d'information sur ",
-	"updateRequiredTitle" => "Upgrade nÃ©cessaire",
-	"updateRequiredText" => "Pour lire ce contenu, il est nÃ©cessaire de faire un upgrade de ",
+	"updateRequiredTitle" => "Upgrade nécessaire",
+	"updateRequiredText" => "Pour lire ce contenu, il est nécessaire de faire un upgrade de ",
 	"updateRequiredLink" => "Flash",
-	"updateCoverArt" => "mettre Ã  jour la couverture",
+	"updateCoverArt" => "mettre à jour la couverture",
 	"noAlbum" => "album non reconnu",
-	"fetchingAlbumArt" => "tÃ©lÃ©chargement de la couverture en cours...",
-	"fetchedAlbumArt" => "couverture mise Ã  jour",
-	"noAlbumArt" => "Pas de couverture trouvÃ©e",
+	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
+	"fetchedAlbumArt" => "couverture mise à jour",
+	"noAlbumArt" => "Pas de couverture trouvée",
 	"searchOne" => "&nbsp;&bull;&nbsp;rechercher&nbsp;&bull;&nbsp;", 
 	"clickToUploadYourOwn" => "charger", 
 	"promptCoverURL" => "Adresse de la couverture", 
 	"defaultCoverURL" => "http://",
 	"searchingFor" => "Recherche de ",
 	"opening" => "Overture de ",
-	"uncovering" => "DÃ©couverte en cours ",
+	"uncovering" => "Découverte en cours ",
 	"queueing" => "Ajout de ",
-	"nodata" => "Aucun rÃ©sultat! :-o",
+	"nodata" => "Aucun résultat! :-o",
 	"menu_info" => "Info",
 	"menu_queue" => "Lire comme...",
 	"menu_next_album" => "album suivant",
 	"menu_next_track" => "piste suivante",
 	"menu_right_now" => "Jouer",
 	"menu_last_album" => "dernier album",
-	"menu_download" => "TÃ©lÃ©charger",
+	"menu_download" => "Télécharger",
 	"menu_share" => "Partager",
 	"menu_favourite" => "Favori",
 	"play" => "Lecture", 
 	"pause" => "Pause", 
 	"nexttrack" => "Suivant",
-	"previoustrack" => "PrÃ©cÃ©dent",
+	"previoustrack" => "Précédent",
 	"seekforward" => "Album suivant",
-	"seekbackward" => "Album prÃ©cÃ©dent"
+	"seekbackward" => "Album précédent"
 );
 
 /***************************************************************************/
@@ -2645,7 +2645,7 @@ function querydb($query_root, $query_type) {
 		}
 		break;
 		case "search":
-		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE name LIKE \"%$query_root%\" AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY parent, name COLLATE NOCASE";
+		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE normalised_name LIKE \"%$query_root%\" AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY parent, name COLLATE NOCASE";
 		break;
 		case "uncover":
 		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
@@ -2729,15 +2729,15 @@ function builddb() {
 			//create the database
 			$db->exec("DELETE FROM item_tmp;");
 			$db->exec("DELETE FROM data;");
-			$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");		
-			$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");		
+			$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");		
+			$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");		
 			$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
 			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
 			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
 			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
 			$db->exec("INSERT INTO data (key, value) VALUES ('version', '".Musicco::getConfig('dbVersion')."');");
 
-			$insert_item = $db->prepare('INSERT INTO item_tmp (name, type, parent, cover, album, artist, title, year, number, extension) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
+			$insert_item = $db->prepare('INSERT INTO item_tmp (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
 			
 			$_START_SCAN = microtime(true);
 			$library = build_library($folder, ".mp3");
@@ -2746,6 +2746,7 @@ function builddb() {
 			$_START_INSERT = microtime(true);
 			foreach ($library as $item) {
 				$name= $item[0];
+				$normalised_name = normalise($name);
 				$type= $item[1];
 				$parent= $item[2];
 				$cover= "";
@@ -2801,7 +2802,7 @@ function builddb() {
 				$artist = str_replace(Musicco::getConfig('new_marker'), "", $artist);
 
 				// insert all info in DB
-				$insert_item->execute(array($name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension));
+				$insert_item->execute(array($name, $normalised_name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension));
 			}
 			
 			// Update non-temp tables and reindex the DB
@@ -2809,13 +2810,16 @@ function builddb() {
 			$db->exec("DROP INDEX item_idx;");
 			$db->exec("DROP INDEX item_idx2;");
 			$db->exec("DROP INDEX item_idx3;");
-			$db->exec("INSERT INTO item (name, type, parent, cover, album, artist, title, year, number, extension) SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item_tmp;");
+			$db->exec("DROP INDEX item_idx4;");
+			$db->exec("INSERT INTO item (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) SELECT name, normalised_name, type, parent, cover, album, artist, title, year, number, extension FROM item_tmp;");
 			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");
 			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx2 ON item (parent, name, type);");
 			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx3 ON item (name, type);");
+			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx4 ON item (normalised_name, type);");
 			$db->exec("REINDEX item_idx;");
 			$db->exec("REINDEX item_idx2;");
 			$db->exec("REINDEX item_idx3;");
+			$db->exec("REINDEX item_idx4;");
 			$db->exec("DELETE FROM item_tmp;");
 
 			// close the database connection
@@ -2829,6 +2833,29 @@ function builddb() {
 		}
 	}
 }
+
+	function normalise($name) {
+    $normalised_name = strtolower(utf8_decode($name));
+    $patterns[0] = '/[á|â|à|å|ä]/';
+    $patterns[1] = '/[ð|é|ê|è|ë]/';
+    $patterns[2] = '/[í|î|ì|ï]/';
+    $patterns[3] = '/[ó|ô|ò|ø|õ|ö]/';
+    $patterns[4] = '/[ú|û|ù|ü]/';
+    $patterns[5] = '/æ/';
+    $patterns[6] = '/ç/';
+    $patterns[7] = '/ß/';
+    $replacements[0] = 'a';
+    $replacements[1] = 'e';
+    $replacements[2] = 'i';
+    $replacements[3] = 'o';
+    $replacements[4] = 'u';
+    $replacements[5] = 'ae';
+    $replacements[6] = 'c';
+    $replacements[7] = 'ss';
+    return preg_replace($patterns, $replacements, $normalised_name);
+	
+	}
+
 	function build_library($dir, $extension) {
 		if (!isset($item)) {
 			$item = array();
