@@ -855,8 +855,6 @@ class Musicco {
 				}
 
 				function filterTree() {
-					console.log("TODO: when the tree is filtered, keyboard navigation just does not work anymore");
-					console.log("TODO: uncheck old, search for something that triggers old and finds nothing or finds something ==> nodata is displayed ");
 					var filterText = $("#filterText").val().toLowerCase();
 					var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
 					var isMatching = new RegExp(filterText, "i");
@@ -1422,7 +1420,7 @@ class Musicco {
 						for (var i=musiccoPlaylist.current; ((i < (musiccoPlaylist.current + 5)) && (i < musiccoPlaylist.playlist.length + 1)); i++) {
 							tracks.push(musiccoPlaylist.playlist[i].mp3);
 						}
-						console.log("TODO: playlist caching is currently disabled to see if this is the performance hog I have been noticing lately...")
+						// Disable playlist caching for performance reasons. Is it possible to do this async?
 						//postMessage({command: "playlist", tracks: tracks});
 				});
 
@@ -1441,7 +1439,6 @@ class Musicco {
 				}
 
 				function showNotification(status) {
-					console.log("TODO: sometimes the previous track is displayed in the notification, unsure why or who is slow in that case. Actually, that would be too fast maybe.");
 					if ((notificationSupported()) && (!notificationAllowed())) {
 						Notification.requestPermission().then(function() {
 								if (notificationAllowed()) {
@@ -1622,7 +1619,6 @@ class Musicco {
 					}
 					
 					if (allowedKeys.indexOf(e.keyCode) > -1) {
-						console.log("TODO: is there a way to prevent the default action here?");
 						switch (e.keyCode) {
 							case 13: //enter
 								if ($(".hits a").is(':focus')) {
@@ -2028,7 +2024,6 @@ class Musicco {
 				}
 
 				function displayInfo(query) {
-					console.log("TODO: It looks like after every click the panel is reset to whetever is currently playing, could be a problem with the detection of whether the panel is visible.");
 					updateInfoPanel(wikiLink(query), query);
 					showPanel("#infoPanel");					
 				}
@@ -2106,7 +2101,6 @@ class Musicco {
 					});
 				});
 				navigator.serviceWorker.onmessage = function (e) {
-					console.log("TODO: implement the rest of the events: library reloaded, playlist is out of date (other client is playing)");
 					switch (e.data) {
 							case "play":
 								triggerPlayPause();
@@ -2260,7 +2254,6 @@ class Musicco {
 					queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, true);
 				break;
 				case "share": 
-					console.log("TODO: sharing does not work for single files, need to rework the query or simply disable for files (most likely)");
 					var path = node.data.parent + node.data.path;
 					var separator = (node.data.artist == '')? "" : " - ";
 					var info = node.data.artist + separator + node.title;
@@ -2276,7 +2269,6 @@ class Musicco {
 					window.open(link);
 				break;
 				case "favourite":
-					console.log("TODO: fave this node");
 				break;
 			}
 		}
@@ -2301,7 +2293,7 @@ class Musicco {
 					node.tree.options.keyboard = ui.menu.prevKeyboard;
 					node.setFocus();
         } else {
-					console.log("TODO: Node was null, unsure what the status of keyboard support is in that case");
+					console.log("Node was null, unsure what the status of keyboard support is in that case");
         }
       },
       select: function(event, ui) {
@@ -2604,7 +2596,7 @@ if(!AuthManager::isAccessAllowed()) {
 			fclose($handle);
 			exit;
 	} elseif (isset($_GET['getTrack'])) {
-			//TODO: escape trck name so that Now that's what I call the 90s downloads fine
+			//TODO: escape track name so that Now that's what I call the 90s downloads fine
 			$album = $_GET['album'];
 			$track = $_GET['track'];
 			$handle = fopen($album.$track, "rb");
