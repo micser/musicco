@@ -194,7 +194,6 @@ $_TRANSLATIONS["en"] = array(
 	"reset_db" => "update library",
 	"rebuildingLibrary" => "library refreshing...",
 	"libraryRebuiltIn" => "library updated in ",
-	"libraryLocked" => "another library refresh is already in progress",
 	"log_in" => "Log in",
 	"log_out" => "log out",
 	"show_all" => "show old",
@@ -257,7 +256,6 @@ $_TRANSLATIONS["fr"] = array(
 	"reset_db" => "rafraichir la discothèque",
 	"rebuildingLibrary" => "scan en cours...",
 	"libraryRebuiltIn" => "discothèque rafraichie en ",
-	"libraryLocked" => "un scan de la discothèque est déjà en cours",
 	"log_in" => "Connexion",
 	"log_out" => "déconnexion",
 	"show_all" => "anciens",
@@ -963,6 +961,24 @@ class Musicco {
 						window.open(link);
 					});
 
+				function checkLibraryRefresh(oldHTML) {
+					(function worker() {
+						$.ajax({
+							url: "<?php print Musicco::getConfig("musicRoot") ?>.lock", 
+							success: function(data) {
+								tempHTML = ("<?php print $this->getString("rebuildingLibrary"); ?>");
+								$("#reset_db").html(tempHTML);
+								setTimeout(worker, 10000);
+							},
+							error: function(data) {
+								tempHTML = oldHTML;
+								$("#reset_db").html(tempHTML);
+								$("#library").fancytree("getTree").reload();
+							}
+						});
+					})();
+				}
+
 				$(document).on("click", "#reset_db", function() {
 					var oldHTML = $("#reset_db").html();
 					$(this).html("<?php print $this->getString("rebuildingLibrary"); ?>");
@@ -976,11 +992,11 @@ class Musicco {
 								tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response;
 								$("#library").fancytree("getTree").reload();
 							} else {
-								tempHTML="<?php print $this->getString("libraryLocked"); ?>";
+								checkLibraryRefresh(oldHTML);
 							}
-							$("#reset_db").html(tempHTML).delay(5000).queue(function(n) {
+							$("#reset_db").html(tempHTML).delay(10000).queue(function(n) {
 								$("#reset_db").html(oldHTML);
-								n();	
+								n();
 							}).fadeIn(500);
 						}
 					});
@@ -2293,7 +2309,7 @@ class Musicco {
 				handleMenuSelection(node, ui.cmd);
       }
     });
-		
+    checkLibraryRefresh($("#reset_db").html());
 	});
 //]]>
 		</script>
@@ -2714,11 +2730,11 @@ function logMessage($log_message) {
 	}
 }
 function builddb() {
-	if (file_exists("library.lock")) {
+	if (file_exists(Musicco::getConfig('musicRoot').".lock")) {
 			printf("-1");
 			logMessage("Aborting, another library refresh is already in progress.");
 	} else {
-		$lock_file = fopen("library.lock", "w") or die("Unable to create lock file.");
+		$lock_file = fopen(Musicco::getConfig('musicRoot').".lock", "w") or die("Unable to create lock file.");
 		fclose($lock_file);
 		try {
 			$folder = Musicco::getConfig('musicRoot');
@@ -2826,10 +2842,10 @@ function builddb() {
 			$db = NULL;
 			printf("%.1s s",(microtime(true) - $_START_INSERT));
 			logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
-			unlink("library.lock");
+			unlink(Musicco::getConfig('musicRoot').".lock");
 		} catch(PDOException $e) {
 			print 'Exception : '.$e->getMessage();
-			unlink("library.lock");
+			unlink(Musicco::getConfig('musicRoot').".lock");
 		}
 	}
 }
