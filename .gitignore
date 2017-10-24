@@ -3,5 +3,6 @@
 /all_music/*
 /all_music.db
 /music.db
+/music.lock
 /musicco.log
 /WIPmusicco.log

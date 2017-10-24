@@ -35,8 +35,8 @@
 	/* tabs */
 	.ui-widget-header { }
 
-	.ui-menu-item-wrapper {
-		width: 100px;
+	.ui-menu {
+		width: 150px;
 	}
 
 	.current,

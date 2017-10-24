@@ -1606,23 +1606,26 @@ class Musicco {
 					// 103: 7
 					// 104: 8
 					// 105: 9
-					var treeIsFocused = (($("#library").find(":focus")).length > 0) && $(".fancytree-container").hasClass("fancytree-treefocus");
 					var inputIsFocused = $("input").is(":focus");
+					var treeIsFocused = (($("#library").find(":focus")).length > 0) && $(".fancytree-container").hasClass("fancytree-treefocus");
+					var menuIsFocused = $(".ui-contextmenu").is(":focus");
 					var node = treeIsFocused? $("#library").fancytree("getActiveNode") : null;
-					var allowedKeys = [];
+					var customKeyEvents = [];
 					if (inputIsFocused) {
-						allowedKeys.push(27);
+						customKeyEvents.push(27);
 					} else if (treeIsFocused) {
-						allowedKeys.push(27, 191, 65, 73);
+						customKeyEvents.push(27, 191, 65, 73);
+					} else if (menuIsFocused) {
+						//no keys intercepted on context menu
 					} else {
-						allowedKeys.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 71, 73, 76, 80, 83, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
+						customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 71, 73, 76, 80, 83, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
 					}
 					
-					if (allowedKeys.indexOf(e.keyCode) > -1) {
+					if (customKeyEvents.indexOf(e.keyCode) > -1) {
 						switch (e.keyCode) {
 							case 13: //enter
 								if ($(".hits a").is(':focus')) {
-									$(".hits a:focus").trigger('click');
+									$(".hits a:focus").trigger('mouseup');
 								}
 							break;
 							case 32: //space
@@ -2148,6 +2151,7 @@ class Musicco {
 		$("#searchPanel").contextmenu({
 			autoTrigger: 'false',
 			delegate: ".searchResult,.searchResultParent",
+			autoFocus: true,
 			menu: menuOptions,
 			select: function(event, ui) {
 				var node = {
@@ -2227,15 +2231,22 @@ class Musicco {
 		});
 
 		function setMenuEntries(isFolder, target) {
-			 //Modify menu entries depending on node status
-			 $(target).contextmenu("showEntry", "playRightNow", !hasPlaylist());
-			 $(target).contextmenu("showEntry", "queueMenu", hasPlaylist());
-			 $(target).contextmenu("showEntry", "queue", hasPlaylist());
-			 $(target).contextmenu("showEntry", "playAsNextAlbum", hasPlaylist());
-			 $(target).contextmenu("showEntry", "share", isFolder);
-			 $(target).contextmenu("showEntry", "download", (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>));
-			 $(target).contextmenu("showEntry", "downloadAlbum", (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>));
-			 //$(target).contextmenu("enableEntry", "paste", isFolder);		
+			 $(target).contextmenu("replaceMenu", menuOptions);
+			 var playRightNow = !hasPlaylist();
+			 var queueMenu = hasPlaylist();
+			 var queue = hasPlaylist();
+			 var playAsNextAlbum = hasPlaylist();
+			 var share = isFolder;
+			 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
+			 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
+			 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
+			 $(target).contextmenu("updateEntry", "queueMenu", {setClass: queueMenu.toString()});
+			 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
+			 $(target).contextmenu("updateEntry", "playAsNextAlbum", {setClass: playAsNextAlbum.toString()});
+			 $(target).contextmenu("updateEntry", "share", {setClass: share.toString()});
+			 $(target).contextmenu("updateEntry", "download", {setClass: download.toString()});
+			 $(target).contextmenu("updateEntry", "downloadAlbum", {setClass: downloadAlbum.toString()});
+			 $(".ui-menu .false").remove();
 		}
 
 		function handleMenuSelection(node, command) {
