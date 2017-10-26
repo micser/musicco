@@ -907,7 +907,7 @@ class Musicco {
 					if (term.length > 0) {
 						showLoadingInfo("<?php print $this->getString("searchingFor"); ?>" + term);
 						var resultString="&nbsp;";
-						$("#searchResults").html("<?php print $this->getString("searchingLibrary"); ?>");
+						$("#searchResults").html("<i class=\"fa fa-spin fa-spinner\"></i>&nbsp;<?php print $this->getString("searchingLibrary"); ?>");
 						$(".hits").remove();
 						$.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
 						var hits= data;

@@ -39,6 +39,10 @@
 		width: 150px;
 	}
 
+	a:hover {
+		color: #E3E5BB;
+	}
+
 	.current,
 	a.current,
 	.jp-free-media.current a i:before,
@@ -115,14 +119,7 @@
 		text-decoration: none;
 	}
 
-	a:hover {
-		text-decoration: underline;
-	}
 	#searchLink:hover {
-		text-decoration: none;
-	}
-
-	.jp-playlist a:hover {
 		text-decoration: none;
 	}
 
