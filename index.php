@@ -593,6 +593,9 @@ class Musicco {
 			$(document).ready(function() {
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
+				$(window).focus(function() {
+					flashInfo();
+				});
 				var menuOptions = [
 					{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "ui-icon-play", cmd: "playRightNow"},
           {title: "<?php print $this->getString("menu_queue"); ?>", uiIcon: "ui-icon-play", cmd: "queueMenu", children: [
@@ -1385,6 +1388,13 @@ class Musicco {
 					});
 				}
 
+				function flashInfo() {
+					setTimeout(function(){ 
+						$("#big-info").css('opacity', '');
+					 }, 3000);
+					$("#big-info").css('opacity', '1');
+				}
+
 				$("#musiccoplayer").on($.jPlayer.event.play, function(event) { 
 					 if (restoreCurrentTime != -1) {
 						 setTimeout(function(){ 
@@ -1403,10 +1413,7 @@ class Musicco {
 							albumYear = "(" + nowPlaying('year') + ")";
 						}
 						$("#nowPlayingAlbumYear").text(albumYear);
-						setTimeout(function(){ 
-							$("#big-info").css('opacity', '');
-						 }, 3000);
-						$("#big-info").css('opacity', '1');
+						flashInfo();
 						$('#searchLink').attr("href", "<?php print $this->getConfig("searchEngine"); ?>" + nowPlaying('artist') + " " + nowPlaying('album'));
 						showNotification();
 						if (!$('#infoPanel').hasClass('shown')) {
