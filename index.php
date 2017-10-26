@@ -593,6 +593,20 @@ class Musicco {
 			$(document).ready(function() {
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
+
+			$("#reload").on("click", function() {
+				$.ajax({
+					url: window.location.href,
+					headers: {
+						"Pragma": "no-cache",
+						"Expires": -1,
+						"Cache-Control": "no-cache"
+				}
+				}).done(function () {
+					window.location.reload(true);
+				});
+			});
+
 				$(window).focus(function() {
 					flashInfo();
 				});
@@ -2433,7 +2447,7 @@ if(!AuthManager::isAccessAllowed()) {
 			if (AuthManager::isAdmin()) {
 				print "<div id=\"reset_db\" class=\"guestPlay\"><a>".$this->getString("reset_db")."</a></div>";
 			}
-			print "<div id=\"reload\"><a href=\"javascript:window.location.reload(true);\">".$this->getString("reload")."</a></div>";
+			print "<div id=\"reload\"><a>".$this->getString("reload")."</a></div>";
 			print "<div id=\"help\"><a>".$this->getString("help")."</a></div>";
 			print "<div id=\"about\"><a>".$this->getString("about")."</a></div>";
 			?>
