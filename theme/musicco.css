@@ -171,7 +171,16 @@
 	}
 
 	#shared-album-cover,
-	#shared-qr,
+	#shared-qr {
+		max-width: 30vw;
+		width: 90%;
+		vertical-align: text-bottom;
+	}
+
+	#shared-album-link {
+		width: 55%;
+	}
+
 	.fill {
 		width: 90%;
 	}
@@ -232,6 +241,7 @@
 	
 	#shared-album-qr {
 		padding-top: 1em;
+		display: inline;
 	}
 
 	.editsection,

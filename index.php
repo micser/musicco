@@ -2189,6 +2189,7 @@ class Musicco {
 			menu: [
           {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "ui-icon-folder-open"},
           {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "ui-icon-search"},
+          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
           {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"}
           ],
 			select: function(event, ui) {
@@ -2199,6 +2200,13 @@ class Musicco {
 						break;
 					case "goto_album":
 						goToAlbum(target.title);
+					break;
+					case "share": 
+						var path = target.path;
+						var separator = " - ";
+						var info = target.artist + separator + target.title;
+						var image = target.poster;
+						saveGuestPlaylist(path, info, image);
 					break;
 					case "favourite":
 					break;
@@ -2294,14 +2302,12 @@ class Musicco {
 			 var queueMenu = hasPlaylist();
 			 var queue = hasPlaylist();
 			 var playAsNextAlbum = hasPlaylist();
-			 var share = isFolder;
 			 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 			 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 			 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
 			 $(target).contextmenu("updateEntry", "queueMenu", {setClass: queueMenu.toString()});
 			 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
 			 $(target).contextmenu("updateEntry", "playAsNextAlbum", {setClass: playAsNextAlbum.toString()});
-			 $(target).contextmenu("updateEntry", "share", {setClass: share.toString()});
 			 $(target).contextmenu("updateEntry", "download", {setClass: download.toString()});
 			 $(target).contextmenu("updateEntry", "downloadAlbum", {setClass: downloadAlbum.toString()});
 			 $(".ui-menu .false").remove();
@@ -2397,13 +2403,13 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="sharing-banner" class="modal">
 			<div id="shared-album-title" class="big"></div>
 			<img id="shared-album-cover" class="boxed" src="app/apple-touch-icon.png" />
+			<div id="shared-album-qr"></div>
 			<div>
-				<input tabindex="-1" type="text" value="" class="shared-link fill" id="shared-album-link" />
+				<input tabindex="-1" type="text" value="" class="shared-link" id="shared-album-link" />
 					<button tabindex="-1" class="clip" data-clipboard-target="#shared-album-link">
 						<i class="fa fa-clipboard"></i>
 					</button>
 			</div>
-			<div id="shared-album-qr"></div>
 		</div>
 		<!-- END: Modal Dialogues -->
 		<!-- START: header -->
