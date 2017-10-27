@@ -239,6 +239,8 @@ $_TRANSLATIONS["en"] = array(
 	"menu_download" => "Download",
 	"menu_share" => "Share",
 	"menu_favourite" => "Favourite",
+	"menu_goto_album" => "Find album",
+	"menu_goto_artist" => "Browse artist",
 	"play" => "Play", 
 	"pause" => "Pause", 
 	"nexttrack" => "Next",
@@ -301,6 +303,8 @@ $_TRANSLATIONS["fr"] = array(
 	"menu_download" => "Télécharger",
 	"menu_share" => "Partager",
 	"menu_favourite" => "Favori",
+	"menu_goto_album" => "Trouver l'album",
+	"menu_goto_artist" => "Voir l'artiste",
 	"play" => "Lecture", 
 	"pause" => "Pause", 
 	"nexttrack" => "Suivant",
@@ -957,17 +961,26 @@ class Musicco {
 					toggleSearch();
 				});
 
+				function goToArtist(artist) {
+					$('#filterText').val(artist);
+					var e = jQuery.Event("keyup");
+					e.which = 80; // p
+					$("#filterText").trigger(e);
+					showPanel("#browserPanel");
+				}
+
+				function goToAlbum(album) {
+					$('#searchText').val(album);
+					toggleSearch();
+					$("#findIt").trigger("click");
+				}
+
 					$(document).on("dblclick", ".itemHeaderArtist, #nowPlayingArtist", function() {
-						$('#filterText').val($(this).text());
-						var e = jQuery.Event("keyup");
-						e.which = 80; // p
-						$("#filterText").trigger(e);
-						showPanel("#browserPanel");
+						goToArtist($(this).text());
 					});
 
 					$(document).on("dblclick", ".itemHeaderAlbum, #nowPlayingAlbum, #nowPlayingAlbumYear, #nowPlayingTitle", function() {
-						$('#searchText').val($(this).text().replace("(", "").replace(")", ""));
-						toggleSearch();
+						goToAlbum($(this).text().replace("(", "").replace(")", ""));
 					});
 
 					$(document).on("click", ".download", function(event) {
@@ -2168,6 +2181,30 @@ class Musicco {
 		$("#leftPanel").hide();
 
 		new Clipboard('.clip');
+
+		$("#playlistPanel").contextmenu({
+			autoTrigger: 'false',
+			delegate: ".jp-playlist-item",
+			autoFocus: true,
+			menu: [
+          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "ui-icon-folder-open"},
+          {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "ui-icon-search"},
+          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"}
+          ],
+			select: function(event, ui) {
+				target = musiccoPlaylist.playlist[$(ui.target).parents("li").index()];
+				switch (ui.cmd) {
+					case "goto_artist":
+						goToArtist(target.artist);
+						break;
+					case "goto_album":
+						goToAlbum(target.title);
+					break;
+					case "favourite":
+					break;
+				}
+			}
+		});
 
 		$("#searchPanel").contextmenu({
 			autoTrigger: 'false',
