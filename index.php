@@ -621,6 +621,7 @@ class Musicco {
 						//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "ui-icon-caret-1-e", cmd: "playAsNextTrack"},
 						{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "ui-icon-arrowstop-1-s", cmd: "queue"}
           ]},
+          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "ui-icon-folder-open"},
           {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "ui-icon-info"},
           {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "ui-icon-arrowthickstop-1-s"},
           {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "ui-icon-arrowthickstop-1-s"},
@@ -911,7 +912,7 @@ class Musicco {
 					if (term.length > 0) {
 						showLoadingInfo("<?php print $this->getString("searchingFor"); ?>" + term);
 						var resultString="&nbsp;";
-						$("#searchResults").html("<i class=\"fa fa-spin fa-spinner\"></i>&nbsp;<?php print $this->getString("searchingLibrary"); ?>");
+						$("#searchResults").html("&nbsp;&nbsp;<i class=\"fa fa-spin fa-spinner\"></i>&nbsp;&nbsp;<?php print $this->getString("searchingLibrary"); ?>");
 						$(".hits").remove();
 						$.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
 						var hits= data;
@@ -2225,7 +2226,7 @@ class Musicco {
 					title: ui.target.data("title").replace("/", ""),
 					data: {
 						album: ui.target.data("album"),
-						artist: ui.target.data("artist"),
+						artist: (ui.target.data("artist").length > 0 ? ui.target.data("artist") : ui.target.data("path")),
 						cover: ui.target.data("cover"),
 						parent: ui.target.data("parent"),
 						path: ui.target.data("path").replace(/^(.*)\/$/, "$1"),
@@ -2302,12 +2303,14 @@ class Musicco {
 			 var queueMenu = hasPlaylist();
 			 var queue = hasPlaylist();
 			 var playAsNextAlbum = hasPlaylist();
+			 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
 			 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 			 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 			 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
 			 $(target).contextmenu("updateEntry", "queueMenu", {setClass: queueMenu.toString()});
 			 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
 			 $(target).contextmenu("updateEntry", "playAsNextAlbum", {setClass: playAsNextAlbum.toString()});
+			 $(target).contextmenu("updateEntry", "goto_artist", {setClass: goto_artist.toString()});
 			 $(target).contextmenu("updateEntry", "download", {setClass: download.toString()});
 			 $(target).contextmenu("updateEntry", "downloadAlbum", {setClass: downloadAlbum.toString()});
 			 $(".ui-menu .false").remove();
@@ -2327,6 +2330,9 @@ class Musicco {
 				case "playAsNextAlbum":
 					var slash = node.isFolder()? "/": "" ;
 					queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, true);
+				break;
+				case "goto_artist":
+					goToArtist(node.data.artist);
 				break;
 				case "share": 
 					var path = node.data.parent + node.data.path;
