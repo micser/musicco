@@ -876,7 +876,7 @@ class Musicco {
 				}
 
 				function filterTree() {
-					var filterText = $("#filterText").val().toLowerCase();
+					var filterText = normalise($("#filterText").val().toLowerCase());
 					var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
 					var isMatching = new RegExp(filterText, "i");
 					if ($("#includeOlAdlbums").is(':checked')) {
