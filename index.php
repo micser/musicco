@@ -1023,22 +1023,32 @@ class Musicco {
 					});
 				});
 
-				$(document).on("click", ".uncover", function(e) {
-					if (e.altKey) {
-						if ($('.move').length) {
-							var currentAlbum = musiccoPlaylist.playlist[musiccoPlaylist.current].album;
-							var currentAlbumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(currentAlbum);
-							var randomAlbumStart = currentAlbumStart;
-							while (randomAlbumStart == currentAlbumStart) {
-								var randomTrack = Math.floor(Math.random() * musiccoPlaylist.playlist.length);
-								var randomAlbum = musiccoPlaylist.playlist[randomTrack].album;
-								randomAlbumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(randomAlbum);
-							}
-							musiccoPlaylist.play(randomAlbumStart);
+				function playRandomAlbum() {
+					if ($('.move').length) {
+						var currentAlbum = musiccoPlaylist.playlist[musiccoPlaylist.current].album;
+						var currentAlbumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(currentAlbum);
+						var randomAlbumStart = currentAlbumStart;
+						while (randomAlbumStart == currentAlbumStart) {
+							var randomTrack = Math.floor(Math.random() * musiccoPlaylist.playlist.length);
+							var randomAlbum = musiccoPlaylist.playlist[randomTrack].album;
+							randomAlbumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(randomAlbum);
 						}
+						musiccoPlaylist.play(randomAlbumStart);
+					}
+				}
+
+				$(document).on("taphold", "#big-cover, .big-jp-play, .big-jp-pause", function(e) {
+					playRandomAlbum();
+				});
+
+				$(document).on("click taphold", ".uncover", function(e) {
+					var alt = (e.type === "taphold")? false : e.altKey;
+					var shift = (e.type === "taphold")? true : e.shiftKey;
+					if (alt) {
+						playRandomAlbum();
 					} else {
 						var method="uncover";
-						if (e.shiftKey) {
+						if (shift) {
 							method="uncover_new";
 						}
 						showLoadingInfo("<?php print $this->getString("uncovering"); ?>");
@@ -1834,8 +1844,9 @@ class Musicco {
 					return ("<?php print AuthManager::isGuestPlay(); ?>");
 				}
 
-				$('.big-jp-previous').click(function(e) {
-					if (e.shiftKey) {
+				$(document).on("click taphold", ".big-jp-previous", function(e) {
+					var shift = (e.type === "taphold")? true : e.shiftKey;
+					if (shift) {
 						skip("backward");
 					} else {
 						previousTrack();
@@ -1875,13 +1886,14 @@ class Musicco {
 					$(parent).children(".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove").toggleClass("current");
 				});
 
-				$(document).on("click", ".remove-album", function(e) {
+				$(document).on("click taphold", ".remove-album", function(e) {
+					var shift = (e.type === "taphold")? true : e.shiftKey;
 					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
 					var removeTarget = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
 					restoreCurrentTime = Math.floor(jpData.status.currentTime);
 					var repeats = 1;
 					var albumIndex = removeTarget;
-					if (e.shiftKey) {
+					if (shift) {
 						repeats = albumIndex;
 						albumIndex = 0;
 					} else if (e.ctrlKey) {
@@ -1954,11 +1966,11 @@ class Musicco {
 					 }, 1500);
 				}
 
-				$(document).on("click", ".move", function(e) {
-					var direction = "";
+				$(document).on("click taphold", ".move", function(e) {
+					var shift = (e.type === "taphold")? true : e.shiftKey;
 					var from = parseInt($(this).data('from'));
 					var to = parseInt($(this).data('to'));
-					if (e.shiftKey) {
+					if (shift) {
 						direction = $(this).data('direction');
 						if (direction == "up") {
 							to = 0;
@@ -2023,8 +2035,9 @@ class Musicco {
 					$('.jp-pause').trigger('click');
 				});
 
-				$('.big-jp-next').click(function(e) {
-					if (e.shiftKey) {
+				$(document).on("click taphold", ".big-jp-next", function(e) {
+					var shift = (e.type === "taphold")? true : e.shiftKey;
+					if (shift) {
 						skip("forward");
 					} else {
 						nextTrack();
