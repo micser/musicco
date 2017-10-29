@@ -661,13 +661,6 @@ class Musicco {
 					$('#includeOlAdlbums').prop('checked', true);
 				});
 
-				$("#infoPanel").click(function() {
-					if (wikiHistory[wikiHistoryPos].href != wikiLink(nowPlaying("artist"))) {
-						updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"));
-					}
-					showPanel("#infoPanel");
-				});
-
 				$("#ham").on("click", function() {
 					$('#leftPanel').toggle('slide', { direction: 'left' }, 200);
 					if (viewerType != '"widescreen"') {
@@ -1012,7 +1005,6 @@ class Musicco {
 					var oldHTML = $("#reset_db").html();
 					$(this).html("<?php print $this->getString("rebuildingLibrary"); ?>");
 					var tempHTML = "";
-					event.preventDefault();
 					$.ajax({
 						type: "GET",
 						url: "?builddb",
@@ -1049,7 +1041,6 @@ class Musicco {
 						if (e.shiftKey) {
 							method="uncover_new";
 						}
-						event.preventDefault();
 						showLoadingInfo("<?php print $this->getString("uncovering"); ?>");
 						$.post('?', {querydb: '', root: '', type: method}, function (response) {
 								var hits=response;
@@ -1077,20 +1068,13 @@ class Musicco {
 					}
 				});
 
-				$('#infoPanel').scroll(function() {
+				$(document).on("click", ".infoPanelLink", function(event) {
 					event.preventDefault();
-					$('body').scrollTop(0);
-				});
-
-				$(document).on("click", ".infoPanelLink", function() {
-					event.preventDefault();
-					var href = $(this).attr('href');
 					var title = $(this).attr('title');
-					updateInfoPanel(wikiLink(href.replace(/\/wiki\//g, "")), title);
+					displayInfo(title);
 				});
 
 				$(document).on('mouseenter', ".nowrap", function() {
-					//show tooltips for truncated text
 					var $this = $(this);
 					if(this.offsetWidth < this.scrollWidth) {
 						$this.attr('title', $this.text());
@@ -1098,7 +1082,6 @@ class Musicco {
 				});
 
 				$(document).on("click", ".historyLink", function() {
-					event.preventDefault();
 					for (var i=0;i<wikiHistory.length;i++) { 
 						if (wikiHistory[i].seq >= (wikiHistoryPos -1)) {
 							wikiHistory.splice(i, 1);
@@ -1106,7 +1089,7 @@ class Musicco {
 						}
 					}
 					wikiHistoryPos -= 2;
-					updateInfoPanel($(this).attr('href'), $(this).attr('title'));
+					displayInfo($(this).attr('title'));
 				});
 
 				function isFirstAlbumTrack(index) {
@@ -1213,7 +1196,20 @@ class Musicco {
 					return '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
 				}
 
-				function updateInfoPanel(url, artist) {
+				function updateInfoPanel(url, artist, show) {
+					updateInfoPanel(url, artist, show, false);
+				}
+
+				function updateInfoPanel(url, artist, show, force) {
+					if (show) {
+						showPanel("#infoPanel");
+					}
+					if (force) {
+							var resyncText = "&nbsp;&#8226;&nbsp;" + nowPlaying("artist") + "&nbsp;&#9654;";
+							$("#resync").html(resyncText);
+							$("#resync").show();
+					}
+					if (force || $("#resync").is(":hidden")) {
 						var searchArtistExt = "<?php print $this->getString("search"); ?>";
 						searchArtistExt +=  "<a target=\"blank\" href=\"http://last.fm/search?q=" + "+" + artist +"\">" + "<?php print $this->getString("lastfm"); ?>" + "</a>" ;
 						searchArtistExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
@@ -1235,27 +1231,29 @@ class Musicco {
 						$('#wikiPrev').html("<a href=\"" + prevHref + "\" class=\"historyLink\" title=\"" + prevTitle + "\">&#9664;&nbsp;" + prevTitle + "</a>");
 						}
 
+						$('#infoPanelTitle').html(artist);
 						$('#infoPanelText').html("");
 						$.ajax({
-						tupe: "GET",
-						dataType: "jsonP",
-						url: url,
-						success: function(json) {
-							if (json.parse) {
-							$('#infoPanelText').html(searchArtistExt + "<br/>" + json.parse.text['*']);
-							$("#infoPanelText").find("*").removeAttr("style"); 
-							$("#infoPanelText").find(".mw-editsection").hide(); 
-							$("#infoPanelText").find('.image').removeAttr("href", ""); 
-							$("#infoPanelText").find('.new').removeAttr("href", ""); 
-							$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
-							$("#infoPanelText").find('a').removeClass("new"); 
-							$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
-						} else {
-							$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist + " - " + searchArtistExt);
-						}
+							type: "GET",
+							dataType: "jsonP",
+							url: url,
+							success: function(json) {
+								if (json.parse) {
+									$('#infoPanelText').html(searchArtistExt + json.parse.text['*']);
+									$("#infoPanelText").find("*").removeAttr("style"); 
+									$("#infoPanelText").find(".mw-editsection").hide(); 
+									$("#infoPanelText").find('.image').removeAttr("href", ""); 
+									$("#infoPanelText").find('.new').removeAttr("href", ""); 
+									$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
+									$("#infoPanelText").find('a').removeClass("new"); 
+									$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
+								} else {
+									$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist + " - " + searchArtistExt);
+								}
+							}
+						});
 					}
-					});
-					}
+				}
 
 				function updateLyricsPanel(artist, song) {
 					var artist=nowPlaying("artist");
@@ -1444,9 +1442,7 @@ class Musicco {
 						flashInfo();
 						$('#searchLink').attr("href", "<?php print $this->getConfig("searchEngine"); ?>" + nowPlaying('artist') + " " + nowPlaying('album'));
 						showNotification();
-						if (!$('#infoPanel').hasClass('shown')) {
-							updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"));
-						}
+						updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"), false, false);
 						updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
 						displayCover();
 						savePlaylist();
@@ -1820,6 +1816,12 @@ class Musicco {
 					$(".panelToggle[href='" + panel + "']").trigger("click");
 				}
 
+				$(document).on("click", "#resync", function(event) { 
+					event.preventDefault();
+					$("#resync").hide();
+					updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"), false, false);
+				});
+
 				$(document).on("click", "#playlistToggle", function(event) { 
 					scrollPlaylist();
 				});
@@ -2062,8 +2064,7 @@ class Musicco {
 				}
 
 				function displayInfo(query) {
-					updateInfoPanel(wikiLink(query), query);
-					showPanel("#infoPanel");					
+					updateInfoPanel(wikiLink(query), query, true, true);
 				}
 
 				function queueMusic(query, loadingInfo, custom) {
@@ -2488,6 +2489,8 @@ if(!AuthManager::isAccessAllowed()) {
 			</div>
 			<div id="infoPanel" class="panel">
 				<span id="wikiPrev"></span>
+				<span id="sync"><a id="resync" href="#"></a></span>
+				<div id="infoPanelTitle" class="bigger"></div>
 				<div id="infoPanelText"></div>
 			</div>
 			<div id="lyricsPanel" class="panel"></div>

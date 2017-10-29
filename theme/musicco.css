@@ -32,6 +32,10 @@
     background-color: rgba(0, 0, 0, 0);
 	}
 
+	#resync {
+		display: none;
+	}
+
 	/* tabs */
 	.ui-widget-header { }
 
@@ -67,10 +71,15 @@
 	#logout a,
 	#loadingInfo,
 	.selected,
+	a.infoPanelLink:hover,
 	span.current span.fancytree-title mark,
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match.current span.fancytree-title,
 	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title {
 		color: #E3E5BB;
+	}
+	
+	a.infoPanelLink {
+	color: #7e805f;
 	}
 	
 	body,
@@ -228,6 +237,12 @@
 	#nowPlayingAlbumYear,
 	div.jp-duration {
 		font-size: .8em;
+	}
+
+	#infoPanelTitle {
+		font-size: 2em;
+		padding-top: 1em;
+    padding-bottom: 2em;
 	}
 
 	.hits {
