@@ -2461,48 +2461,50 @@ if(!AuthManager::isAccessAllowed()) {
 				<li id="lyricsToggle"><a href="#lyricsPanel" class="panelToggle fa fa-microphone"></a></li>
 				<li id="settingsToggle"><a href="#settingsPanel" class="panelToggle fa fa-gears"></a></li>
 			</ul>
-			<div id="browserPanel" class="panel guestPlay">
-				<div class="table">
-					<div id="filter">
-						<input id="includeOlAdlbums" tabindex="0" type="checkbox" checked="true"/>
-						<?php print $this->getString("show_all"); ?>
-						<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" />
-						<a class="btn" id="filterButton" href="#"><i class="fa fa-border fa-close"></i></a>
+			<div id="panelContainer">
+				<div id="browserPanel" class="panel guestPlay">
+					<div class="table">
+						<div id="filter">
+							<input id="includeOlAdlbums" tabindex="0" type="checkbox" checked="true"/>
+							<?php print $this->getString("show_all"); ?>
+							<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" />
+							<a class="btn" id="filterButton" href="#"><i class="fa fa-border fa-close"></i></a>
+						</div>
+						<div id="library"></div>
 					</div>
-					<div id="library"></div>
 				</div>
-			</div>
-			<div id="searchPanel" class="panel guestPlay">
-				<form action="?" id="searchForm">
-					<input id="searchText" type="text" class="fill" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
-					<span class="right">
-						<a class="btn" id="findIt" href="#"><i class="fa fa-border fa-search"></i></a>
-						<a class="btn" id="clear" href="#"><i class="fa fa-border fa-close"></i></a>
-					</span>
-				</form>
-				<div id="searchResults">&nbsp;</div>
-			</div>
-			<div id="playlistPanel" class="panel jp-playlist my-playlist">
-				<ul>
-					<li></li>
-				</ul>
-			</div>
-			<div id="infoPanel" class="panel">
-				<span id="wikiPrev"></span>
-				<span id="sync"><a id="resync" href="#"></a></span>
-				<div id="infoPanelTitle" class="bigger"></div>
-				<div id="infoPanelText"></div>
-			</div>
-			<div id="lyricsPanel" class="panel"></div>
-			<div id="settingsPanel">
-			<?php
-			if (AuthManager::isAdmin()) {
-				print "<div id=\"reset_db\" class=\"guestPlay\"><a>".$this->getString("reset_db")."</a></div>";
-			}
-			print "<div id=\"reload\"><a>".$this->getString("reload")."</a></div>";
-			print "<div id=\"help\"><a>".$this->getString("help")."</a></div>";
-			print "<div id=\"about\"><a>".$this->getString("about")."</a></div>";
-			?>
+				<div id="searchPanel" class="panel guestPlay">
+					<form action="?" id="searchForm">
+						<input id="searchText" type="text" class="fill" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
+						<span class="right">
+							<a class="btn" id="findIt" href="#"><i class="fa fa-border fa-search"></i></a>
+							<a class="btn" id="clear" href="#"><i class="fa fa-border fa-close"></i></a>
+						</span>
+					</form>
+					<div id="searchResults">&nbsp;</div>
+				</div>
+				<div id="playlistPanel" class="panel jp-playlist my-playlist">
+					<ul>
+						<li></li>
+					</ul>
+				</div>
+				<div id="infoPanel" class="panel">
+					<span id="wikiPrev"></span>
+					<span id="sync"><a id="resync" href="#"></a></span>
+					<div id="infoPanelTitle" class="bigger"></div>
+					<div id="infoPanelText"></div>
+				</div>
+				<div id="lyricsPanel" class="panel"></div>
+				<div id="settingsPanel">
+				<?php
+				if (AuthManager::isAdmin()) {
+					print "<div id=\"reset_db\" class=\"guestPlay\"><a>".$this->getString("reset_db")."</a></div>";
+				}
+				print "<div id=\"reload\"><a>".$this->getString("reload")."</a></div>";
+				print "<div id=\"help\"><a>".$this->getString("help")."</a></div>";
+				print "<div id=\"about\"><a>".$this->getString("about")."</a></div>";
+				?>
+				</div>
 			</div>
 		</div>
 		<!-- END: Left Panel -->
