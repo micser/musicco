@@ -1091,7 +1091,8 @@ class Musicco {
 					}
 				});
 
-				$(document).on("click", ".historyLink", function() {
+				$(document).on("click", ".historyLink", function(event) {
+					event.preventDefault();
 					for (var i=0;i<wikiHistory.length;i++) { 
 						if (wikiHistory[i].seq >= (wikiHistoryPos -1)) {
 							wikiHistory.splice(i, 1);
@@ -1211,12 +1212,12 @@ class Musicco {
 				}
 
 				function updateInfoPanel(url, artist, show, force) {
+					var resyncText = "&nbsp;&#8226;&nbsp;" + nowPlaying("artist") + "&nbsp;&#9654;";
+					$("#resync").html(resyncText);
 					if (show) {
 						showPanel("#infoPanel");
 					}
 					if (force) {
-							var resyncText = "&nbsp;&#8226;&nbsp;" + nowPlaying("artist") + "&nbsp;&#9654;";
-							$("#resync").html(resyncText);
 							$("#resync").show();
 					}
 					if (force || $("#resync").is(":hidden")) {
@@ -1226,19 +1227,24 @@ class Musicco {
 						searchArtistExt +=  "<a target=\"blank\" href=\"https://google.com/search?q=" + artist + "+band\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
 						$('#wikiPrev').html("");
 						wikiHistoryPos += 1;
-						var prevUrl = "";
-						if (wikiHistoryPos > 0) {
-							prevUrl = wikiHistory[wikiHistoryPos -1].href;
-						}
-						if (url != prevUrl) {
+						
+						var hasHistory = ((wikiHistoryPos > 0)) ? true : false;
+						var prevUrl = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].href : "";
+						var prevTitle = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].title : "";
+						var isCurrentArtist = (artist ===  nowPlaying("artist"));
+
+						if ((url != "") && (url != prevUrl)) {
 							wikiHistory.push({seq: wikiHistoryPos, title: artist, href: url})
 						} else {
 							wikiHistoryPos -= 1;
 						}
-						if (wikiHistory.length > 1) {
-							var prevHref = wikiHistory[wikiHistoryPos - 1 ].href;
-							var prevTitle = wikiHistory[wikiHistoryPos - 1].title;
-						$('#wikiPrev').html("<a href=\"" + prevHref + "\" class=\"historyLink\" title=\"" + prevTitle + "\">&#9664;&nbsp;" + prevTitle + "</a>");
+						
+						if ((hasHistory) && (wikiHistoryPos >= 0)) {
+							$('#wikiPrev').html("<a href=\"" + prevUrl + "\" class=\"historyLink\" title=\"" + prevTitle + "\">&#9664;&nbsp;" + prevTitle + "</a>");
+						} else if (isCurrentArtist) {
+							$("#resync").hide();
+						} else if (!isCurrentArtist) {
+							$("#resync").show();
 						}
 
 						$('#infoPanelTitle').html(artist);
@@ -2504,7 +2510,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="infoPanel" class="panel">
 					<span id="wikiPrev"></span>
 					<span id="sync"><a id="resync" href="#"></a></span>
-					<div id="infoPanelTitle" class="bigger"></div>
+					<div id="infoPanelTitle"></div>
 					<div id="infoPanelText"></div>
 				</div>
 				<div id="lyricsPanel" class="panel"></div>
