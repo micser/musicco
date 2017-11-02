@@ -1340,6 +1340,14 @@ class Musicco {
 					$('#lyricsPanel').html(noLyricsText);
 				}
 
+				function addFavourite(path) {
+					var user = "<?php echo AuthManager::getUserName(); ?>";
+					$.post('?', {addFavourite: '', u: user, p: path}, function (response) {
+					});	
+					//TODO: handle folders, send notification on save successful, refresh browser tree.
+				}
+
+
 				function saveCover(coverURL, path) {
 					$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
 					});	
@@ -2370,6 +2378,7 @@ class Musicco {
 					window.open(link);
 				break;
 				case "favourite":
+					addFavourite(node.data.parent + node.data.path);
 				break;
 			}
 		}
@@ -2650,6 +2659,11 @@ if(!AuthManager::isAccessAllowed()) {
 			logMessage("Saved guest playlist ".$user." for ".$path);
 			return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
 			exit;
+	} elseif (isset($_POST['addFavourite'])) {
+			$user = $_POST['u'];
+			$path = $_POST['p'];
+			addFavourite($user, $path);
+			exit;
 	} elseif (isset($_POST['saveCover'])) {
 			$url = $_POST['u'];
 			$path = $_POST['p'];
@@ -2736,6 +2750,46 @@ function file_get_contents_utf8($fn) {
 //
 // And here are the database functions...
 
+function addFavourite($user, $path) {
+	$userId = getId($user);
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$tracks=[];
+		if (preg_match("/.*\.mp3$/", $path)) {
+			array_push($tracks, $path);
+		} else {
+			$query = "SELECT parent, name FROM item WHERE parent LIKE \"$path%\" AND type IN (".Musicco::TYPE_FILE.");";
+			$children = $db->query($query);
+			foreach($children as $row) {
+				array_push($tracks, $row["parent"] . $row["name"]);
+			}
+		}
+		foreach($tracks as $track) {
+			$insert_track = "REPLACE INTO favourites (userId, path) VALUES (\"$userId\", \"$track\")";
+			$db->exec($insert_track);
+		}
+	$db = NULL;
+	}
+
+}
+
+function getId($user) {
+	$id = 0;
+	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+	$count_query = $db->prepare("SELECT count(id) from users where username = \"$user\";");
+	$count_query->execute();
+	$count = $count_query->fetchColumn();
+	if ($count > 0) {
+		$id_query = $db->prepare("SELECT id from users where username = \"$user\";");
+		$id_query->execute();
+		$id=$id_query->fetchColumn();
+	} else {
+		$db ->exec("INSERT into users (username) VALUES (\"" . $user . "\");");
+		$id = $db->lastInsertId();
+	}
+	$db = NULL;
+	return $id;
+}
 
 function querydb($query_root, $query_type) {
 	try	{
@@ -2842,9 +2896,11 @@ function builddb() {
 			//create the database
 			$db->exec("DELETE FROM item_tmp;");
 			$db->exec("DELETE FROM data;");
-			$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");		
-			$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");		
+			$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
+			$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 			$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
+			$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE);");
+			$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
 			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
 			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
 			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
