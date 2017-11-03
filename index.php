@@ -659,6 +659,10 @@ class Musicco {
 					$("#library").fancytree("getTree").clearFilter();
 					$("#filterText").val('');
 					$('#includeOlAdlbums').prop('checked', true);
+					var user = "<?php echo AuthManager::getUserName(); ?>";
+					$.post('?', {getFavourites: '', u: user}, function (response) {
+						console.log(response);
+					});
 				});
 
 				$("#ham").on("click", function() {
@@ -2659,6 +2663,10 @@ if(!AuthManager::isAccessAllowed()) {
 			logMessage("Saved guest playlist ".$user." for ".$path);
 			return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
 			exit;
+	} elseif (isset($_POST['getFavourites'])) {
+			$user = $_POST['u'];
+			getFavourites($user);
+			exit;
 	} elseif (isset($_POST['addFavourite'])) {
 			$user = $_POST['u'];
 			$path = $_POST['p'];
@@ -2789,6 +2797,35 @@ function getId($user) {
 	}
 	$db = NULL;
 	return $id;
+}
+
+function getFavourites($user) {
+	$userId = getId($user);
+	$temp=[];
+	$final=[];
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$query = "SELECT path FROM favourites WHERE userId=$userId;";
+		$result = $db->query($query);
+		foreach($result as $favourite) {
+			$path = $favourite["path"];
+			$leaf = substr($path, strrpos($path, "/") + 1);
+			$tree = explode("/", substr($path, 0, (strlen($path) - strlen($leaf))));
+			$arr = array();
+			$tmp = &$arr;
+			foreach ($tree as $segment) {
+					$tmp[$segment] = array();
+					$tmp = &$tmp[$segment];
+			}
+			$tmp = $leaf;
+			array_push($temp, $arr);
+		}
+		foreach($temp as $entry) {
+			$final = array_merge_recursive($final, $entry);
+		}
+		$db = NULL;
+	}
+	return json_encode(print_r($final));
 }
 
 function querydb($query_root, $query_type) {
