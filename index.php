@@ -2273,6 +2273,23 @@ class Musicco {
 		});
 		
 		var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
+		$("#favourites").fancytree({
+			source: [{title: "Favourites", "lazy": true}],
+			selectMode: 1,
+			lazyLoad: function(event, data) {
+				data.result = {
+					url: "?",
+					type: "POST",
+					data: {getFavourites: '', u: "<?php echo AuthManager::getUserName(); ?>"},
+					cache: true
+				}
+			},
+			//postProcess: function(event, data) {
+			//	console.log(data.response);
+			//	data.result = [{}];
+				 //data.response[0].title += " - hello from postProcess";
+			//}		
+		});
 		$("#library").fancytree({
 			extensions: ["glyph", "filter"],	
 			glyph: {
@@ -2502,6 +2519,7 @@ if(!AuthManager::isAccessAllowed()) {
 							<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" />
 							<a class="btn" id="filterButton" href="#"><i class="fa fa-border fa-close"></i></a>
 						</div>
+						<div id="favourites"></div>
 						<div id="library"></div>
 					</div>
 				</div>
@@ -2802,7 +2820,7 @@ function getId($user) {
 function getFavourites($user) {
 	$userId = getId($user);
 	$temp=[];
-	$final=[];
+	$favourites=[];
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$query = "SELECT path FROM favourites WHERE userId=$userId;";
@@ -2821,11 +2839,12 @@ function getFavourites($user) {
 			array_push($temp, $arr);
 		}
 		foreach($temp as $entry) {
-			$final = array_merge_recursive($final, $entry);
+			$favourites = array_merge_recursive($favourites, $entry);
 		}
 		$db = NULL;
 	}
-	return json_encode(print_r($final));
+	logMessage(print_r($favourites, true));
+	return json_encode(print_r($favourites));
 }
 
 function querydb($query_root, $query_type) {
