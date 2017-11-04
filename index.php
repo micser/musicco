@@ -188,129 +188,131 @@ $_TRANSLATIONS = array();
 
 // English
 $_TRANSLATIONS["en"] = array(
-	"username" => "Username",
-	"password" => "Password",
-	"wrong_pass" => "Wrong username or password",
-	"reset_db" => "update library",
-	"rebuildingLibrary" => "library refreshing...",
+	"..." => "...",
+	"about" => "about",
+	"by" => " by ",
+	"clickToUploadYourOwn" => "upload", 
+	"defaultCoverURL" => "http://",
+	"fetchedAlbumArt" => "cover art fetched",
+	"fetchingAlbumArt" => "fetching album art...",
+	"genius" => "genius ",
+	"google" => "google",
+	"help" => "help",
+	"lastfm" => "last.fm ",
 	"libraryRebuiltIn" => "library updated in ",
 	"log_in" => "Log in",
 	"log_out" => "log out",
-	"show_all" => "show old",
-	"help" => "help",
-	"about" => "about",
-	"reload" => "reload",
-	"by" => " by ",
-	"..." => "...",
-	"search_placeholder" => "What are you looking for?",
-	"searchingLibrary" => "Searching library...",
-	"noResultsForThisSearch" => "No results for this search",
-	"searchingLyricsFor" => "Searching lyrics for ",
-	"noLyricsFoundFor" => "No lyrics found for ",
-	"search" => "Search ",
-	"genius" => "genius ",
-	"or" => "or ",
-	"lastfm" => "last.fm ",
-	"google" => "google",
-	"noInfoFoundFor" => "No information found about ",
-	"updateRequiredTitle" => "Upgrade Required",
-	"updateRequiredText" => "To play the media you will need to either update your browser to a recent version or update your ",
-	"updateRequiredLink" => "Flash",
-	"updateCoverArt" => "update album art",
-	"noAlbum" => "album not recognised",
-	"fetchingAlbumArt" => "fetching album art...",
-	"fetchedAlbumArt" => "cover art fetched",
-	"noAlbumArt" => "no album art found", 
-	"searchOne" => "&nbsp;&bull;&nbsp;search&nbsp;&bull;&nbsp;", 
-	"clickToUploadYourOwn" => "upload", 
-	"promptCoverURL" => "Album cover URL", 
-	"defaultCoverURL" => "http://",
-	"searchingFor" => "Searching for ",
-	"opening" => "Opening ",
-	"uncovering" => "Uncovering gems ",
-	"queueing" => "Queueing ",
-	"nodata" => "I did not find anything! :-o",
-	"menu_info" => "Info",
-	"menu_queue" => "Queue as...",
-	"menu_next_album" => "next album",
-	"menu_next_track" => "next track",
-	"menu_right_now" => "Play",
-	"menu_last_album" => "last album",
 	"menu_download" => "Download",
-	"menu_share" => "Share",
 	"menu_favourite" => "Favourite",
 	"menu_goto_album" => "Find album",
 	"menu_goto_artist" => "Browse artist",
-	"play" => "Play", 
-	"pause" => "Pause", 
+	"menu_info" => "Info",
+	"menu_last_album" => "last album",
+	"menu_next_album" => "next album",
+	"menu_next_track" => "next track",
+	"menu_queue" => "Queue as...",
+	"menu_right_now" => "Play",
+	"menu_share" => "Share",
+	"my_favourites" => "My Favourites",
 	"nexttrack" => "Next",
+	"noAlbum" => "album not recognised",
+	"noAlbumArt" => "no album art found", 
+	"nodata" => "I did not find anything! :-o",
+	"noInfoFoundFor" => "No information found about ",
+	"noLyricsFoundFor" => "No lyrics found for ",
+	"noResultsForThisSearch" => "No results for this search",
+	"opening" => "Opening ",
+	"or" => "or ",
+	"password" => "Password",
+	"pause" => "Pause", 
+	"play" => "Play", 
 	"previoustrack" => "Previous",
+	"promptCoverURL" => "Album cover URL", 
+	"queueing" => "Queueing ",
+	"rebuildingLibrary" => "library refreshing...",
+	"reload" => "reload",
+	"reset_db" => "update library",
+	"search" => "Search ",
+	"search_placeholder" => "What are you looking for?",
+	"searchingFor" => "Searching for ",
+	"searchingLibrary" => "Searching library...",
+	"searchingLyricsFor" => "Searching lyrics for ",
+	"searchOne" => "&nbsp;&bull;&nbsp;search&nbsp;&bull;&nbsp;", 
+	"seekbackward" => "Previous Album",
 	"seekforward" => "Next Album",
-	"seekbackward" => "Previous Album"
+	"show_all" => "show old",
+	"uncovering" => "Uncovering gems ",
+	"updateCoverArt" => "update album art",
+	"updateRequiredLink" => "Flash",
+	"updateRequiredText" => "To play the media you will need to either update your browser to a recent version or update your ",
+	"updateRequiredTitle" => "Upgrade Required",
+	"username" => "Username",
+	"wrong_pass" => "Wrong username or password",
 );
 
 
 // French
 $_TRANSLATIONS["fr"] = array(
-	"username" => "Utilisateur",
-	"password" => "Mot de passe",
-	"wrong_pass" => "Utilisateur ou mot de passe invalide.",
-	"reset_db" => "rafraichir la discothèque",
-	"rebuildingLibrary" => "scan en cours...",
+	"..." => "...",
+	"about" => "info",
+	"by" => " par ",
+	"clickToUploadYourOwn" => "charger", 
+	"defaultCoverURL" => "http://",
+	"fetchedAlbumArt" => "couverture mise à jour",
+	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
+	"genius" => "genius ",
+	"google" => "google",
+	"help" => "aide",
+	"lastfm" => "last.fm ",
 	"libraryRebuiltIn" => "discothèque rafraichie en ",
 	"log_in" => "Connexion",
 	"log_out" => "déconnexion",
-	"show_all" => "anciens",
-	"help" => "aide",
-	"about" => "info",
-	"reload" => "recharger",
-	"by" => " par ",
-	"..." => "...",
-	"search_placeholder" => "Que cherchez-vous ?",
-	"searchingLibrary" => "Recherche en cours...",
-	"noResultsForThisSearch" => "Pas de résultats pour cette recherche",
-	"searchingLyricsFor" => "Recherche de paroles en cours pour ",
-	"noLyricsFoundFor" => "Aucune paroles trouvées pour ",
-	"search" => "Chercher sur ",
-	"genius" => "genius ",
-	"or" => "ou ",
-	"lastfm" => "last.fm ",
-	"google" => "google",
-	"noInfoFoundFor" => "Pas d'information sur ",
-	"updateRequiredTitle" => "Upgrade nécessaire",
-	"updateRequiredText" => "Pour lire ce contenu, il est nécessaire de faire un upgrade de ",
-	"updateRequiredLink" => "Flash",
-	"updateCoverArt" => "mettre à jour la couverture",
-	"noAlbum" => "album non reconnu",
-	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
-	"fetchedAlbumArt" => "couverture mise à jour",
-	"noAlbumArt" => "Pas de couverture trouvée",
-	"searchOne" => "&nbsp;&bull;&nbsp;rechercher&nbsp;&bull;&nbsp;", 
-	"clickToUploadYourOwn" => "charger", 
-	"promptCoverURL" => "Adresse de la couverture", 
-	"defaultCoverURL" => "http://",
-	"searchingFor" => "Recherche de ",
-	"opening" => "Overture de ",
-	"uncovering" => "Découverte en cours ",
-	"queueing" => "Ajout de ",
-	"nodata" => "Aucun résultat! :-o",
-	"menu_info" => "Info",
-	"menu_queue" => "Lire comme...",
-	"menu_next_album" => "album suivant",
-	"menu_next_track" => "piste suivante",
-	"menu_right_now" => "Jouer",
-	"menu_last_album" => "dernier album",
 	"menu_download" => "Télécharger",
-	"menu_share" => "Partager",
 	"menu_favourite" => "Favori",
 	"menu_goto_album" => "Trouver l'album",
 	"menu_goto_artist" => "Voir l'artiste",
-	"play" => "Lecture", 
-	"pause" => "Pause", 
+	"menu_info" => "Info",
+	"menu_last_album" => "dernier album",
+	"menu_next_album" => "album suivant",
+	"menu_next_track" => "piste suivante",
+	"menu_queue" => "Lire comme...",
+	"menu_right_now" => "Jouer",
+	"menu_share" => "Partager",
+	"my_favourites" => "Mes Favouris",
 	"nexttrack" => "Suivant",
+	"noAlbum" => "album non reconnu",
+	"noAlbumArt" => "Pas de couverture trouvée",
+	"nodata" => "Aucun résultat! :-o",
+	"noInfoFoundFor" => "Pas d'information sur ",
+	"noLyricsFoundFor" => "Aucune paroles trouvées pour ",
+	"noResultsForThisSearch" => "Pas de résultats pour cette recherche",
+	"opening" => "Overture de ",
+	"or" => "ou ",
+	"password" => "Mot de passe",
+	"pause" => "Pause", 
+	"play" => "Lecture", 
 	"previoustrack" => "Précédent",
+	"promptCoverURL" => "Adresse de la couverture", 
+	"queueing" => "Ajout de ",
+	"rebuildingLibrary" => "scan en cours...",
+	"reload" => "recharger",
+	"reset_db" => "rafraichir la discothèque",
+	"search" => "Chercher sur ",
+	"search_placeholder" => "Que cherchez-vous ?",
+	"searchingFor" => "Recherche de ",
+	"searchingLibrary" => "Recherche en cours...",
+	"searchingLyricsFor" => "Recherche de paroles en cours pour ",
+	"searchOne" => "&nbsp;&bull;&nbsp;rechercher&nbsp;&bull;&nbsp;", 
+	"seekbackward" => "Album précédent",
 	"seekforward" => "Album suivant",
-	"seekbackward" => "Album précédent"
+	"show_all" => "anciens",
+	"uncovering" => "Découverte en cours ",
+	"updateCoverArt" => "mettre à jour la couverture",
+	"updateRequiredLink" => "Flash",
+	"updateRequiredText" => "Pour lire ce contenu, il est nécessaire de faire un upgrade de ",
+	"updateRequiredTitle" => "Upgrade nécessaire",
+	"username" => "Utilisateur",
+	"wrong_pass" => "Utilisateur ou mot de passe invalide."
 );
 
 /***************************************************************************/
@@ -662,6 +664,9 @@ class Musicco {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					$.post('?', {getFavourites: '', u: user}, function (response) {
 						console.log(response);
+						$("#favourites").fancytree("destroy");
+						$("#favourites").empty();
+						initFavouriteTree();
 					});
 				});
 
@@ -2273,43 +2278,45 @@ class Musicco {
 		});
 		
 		var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
-		$("#favourites").fancytree({
-			source: [{title: "Favourites", "lazy": true}],
-			selectMode: 1,
-			lazyLoad: function(event, data) {
-				data.result = {
-					url: "?",
-					type: "POST",
-					data: {getFavourites: '', u: "<?php echo AuthManager::getUserName(); ?>"},
-					cache: true
-				}
-			},
-			//postProcess: function(event, data) {
-			//	console.log(data.response);
-			//	data.result = [{}];
-				 //data.response[0].title += " - hello from postProcess";
-			//}		
-		});
+		
+		function initFavouriteTree() {
+			$("#favourites li span:contains('my_favourites')").text("<?php print Musicco::getString('my_favourites'); ?>");
+			$("#favourites").fancytree({
+				extensions: ["glyph"],	
+				glyph: { map: treeGlyphMap },
+				autoScroll: true,
+				clickFolderMode: 3,
+				keyboard: true,
+				tabindex: "0",
+				titlesTabbable: true,
+				tooltip: true,
+				selectMode: 1
+			});
+		}
+		
+		// Common settings for trees
+		var treeGlyphMap = {
+			doc: "fa fa-music",
+			docOpen: "fa fa-music",
+			checkbox: "fa fa-square-o",
+			checkboxSelected: "fa fa-check-square-o",
+			checkboxUnknown: "fa fa-square",
+			dragHelper: "fa fa-arrow-right",
+			dropMarker: "fa fa-long-arrow-right",
+			error: "fa fa-warning",
+			expanderClosed: "fa fa-caret-right",
+			expanderLazy: "fa fa-caret-right",
+			expanderOpen: "fa fa-caret-down",
+			folder: "fa fa-folder-o",
+			folderOpen: "fa fa-folder-open-o",
+			loading: "fa fa-spinner fa-pulse"
+		}
+		
+		initFavouriteTree();
+		
 		$("#library").fancytree({
 			extensions: ["glyph", "filter"],	
-			glyph: {
-        map: {
-          doc: "fa fa-music",
-          docOpen: "fa fa-music",
-          checkbox: "fa fa-square-o",
-          checkboxSelected: "fa fa-check-square-o",
-          checkboxUnknown: "fa fa-square",
-          dragHelper: "fa fa-arrow-right",
-          dropMarker: "fa fa-long-arrow-right",
-          error: "fa fa-warning",
-          expanderClosed: "fa fa-caret-right",
-          expanderLazy: "fa fa-caret-right",
-          expanderOpen: "fa fa-caret-down",
-          folder: "fa fa-folder-o",
-          folderOpen: "fa fa-folder-open-o",
-          loading: "fa fa-spinner fa-pulse"
-        }
-			},
+			glyph: { map: treeGlyphMap },
 			filter: {
 				mode: "hide",
 				fuzzy: true,
@@ -2519,7 +2526,9 @@ if(!AuthManager::isAccessAllowed()) {
 							<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" />
 							<a class="btn" id="filterButton" href="#"><i class="fa fa-border fa-close"></i></a>
 						</div>
-						<div id="favourites"></div>
+						<div id="favourites">
+							<?php print getFavourites(AuthManager::getUserName()); ?>
+						</div>
 						<div id="library"></div>
 					</div>
 				</div>
@@ -2653,7 +2662,7 @@ if(!AuthManager::isAccessAllowed()) {
 }
 
 //
-// This is where the system is activated. 
+// This is where the system is activated.
 	if(isset($_POST['loadPlaylist'])) {
 		$user = $_POST['u'];
 			$response = file_get_contents(dirname(__FILE__)."/playlists/".$user.".playlist");
@@ -2683,7 +2692,7 @@ if(!AuthManager::isAccessAllowed()) {
 			exit;
 	} elseif (isset($_POST['getFavourites'])) {
 			$user = $_POST['u'];
-			getFavourites($user);
+			return print getFavourites($user);
 			exit;
 	} elseif (isset($_POST['addFavourite'])) {
 			$user = $_POST['u'];
@@ -2776,6 +2785,8 @@ function file_get_contents_utf8($fn) {
 //
 // And here are the database functions...
 
+$favourites_list = "";
+
 function addFavourite($user, $path) {
 	$userId = getId($user);
 	if ($userId != 0) {
@@ -2822,29 +2833,43 @@ function getFavourites($user) {
 	$temp=[];
 	$favourites=[];
 	if ($userId != 0) {
+		global $favourites_list;
+		$favourites_list = "";
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$query = "SELECT path FROM favourites WHERE userId=$userId;";
 		$result = $db->query($query);
-		foreach($result as $favourite) {
-			$path = $favourite["path"];
-			$leaf = substr($path, strrpos($path, "/") + 1);
-			$tree = explode("/", substr($path, 0, (strlen($path) - strlen($leaf))));
-			$arr = array();
-			$tmp = &$arr;
-			foreach ($tree as $segment) {
-					$tmp[$segment] = array();
-					$tmp = &$tmp[$segment];
-			}
-			$tmp = $leaf;
-			array_push($temp, $arr);
-		}
-		foreach($temp as $entry) {
-			$favourites = array_merge_recursive($favourites, $entry);
-		}
 		$db = NULL;
+		foreach($result as $favourite) {
+			$list = explode('/', preg_replace("/".Musicco::getConfig('musicRoot')."\//", "my_favourites/", $favourite["path"]));
+			$n = count($list);
+
+			$arrayRef = &$favourites; // start from the root
+			for ($i = 0; $i < $n; $i++) {
+				$key = $list[$i];
+				$arrayRef = &$arrayRef[$key]; // index into the next level
+			}
+		}
 	}
-	logMessage(print_r($favourites, true));
-	return json_encode(print_r($favourites));
+	buildUL($favourites, "");
+	return $favourites_list;
+}
+
+function buildUL($favourites, $prefix) {
+  global $favourites_list;
+  $favourites_list .= "\n<ul>\n";
+  foreach ($favourites as $key => $value) {
+    if (is_array($value)) {
+			$favourites_list .= "<li class='folder'><span>";
+    } else {
+			$favourites_list .= "<li><span>";
+    }
+    $favourites_list .= "$key</span>";
+    // if the value is another array, recursively build the list
+    if (is_array($value))
+      buildUL($value, "$prefix$key");
+    $favourites_list .= "</li>\n";
+  }
+  $favourites_list .= "</ul>\n";
 }
 
 function querydb($query_root, $query_type) {
