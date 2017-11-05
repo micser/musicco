@@ -193,6 +193,8 @@ $_TRANSLATIONS["en"] = array(
 	"by" => " by ",
 	"clickToUploadYourOwn" => "upload", 
 	"defaultCoverURL" => "http://",
+	"favourites_added" => "Adding favourite...",
+	"favourites_removed" => "Removing favourite...",
 	"fetchedAlbumArt" => "cover art fetched",
 	"fetchingAlbumArt" => "fetching album art...",
 	"genius" => "genius ",
@@ -211,6 +213,7 @@ $_TRANSLATIONS["en"] = array(
 	"menu_next_album" => "next album",
 	"menu_next_track" => "next track",
 	"menu_queue" => "Queue as...",
+	"menu_remove_favourite" => "Remove",
 	"menu_right_now" => "Play",
 	"menu_share" => "Share",
 	"my_favourites" => "My Favourites",
@@ -258,6 +261,8 @@ $_TRANSLATIONS["fr"] = array(
 	"by" => " par ",
 	"clickToUploadYourOwn" => "charger", 
 	"defaultCoverURL" => "http://",
+	"favourites_added" => "Favouris ajouté",
+	"favourites_removed" => "Favouris retiré",
 	"fetchedAlbumArt" => "couverture mise à jour",
 	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
 	"genius" => "genius ",
@@ -276,6 +281,7 @@ $_TRANSLATIONS["fr"] = array(
 	"menu_next_album" => "album suivant",
 	"menu_next_track" => "piste suivante",
 	"menu_queue" => "Lire comme...",
+	"menu_remove_favourite" => "Retirer",
 	"menu_right_now" => "Jouer",
 	"menu_share" => "Partager",
 	"my_favourites" => "Mes Favouris",
@@ -628,7 +634,8 @@ class Musicco {
           {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "ui-icon-arrowthickstop-1-s"},
           {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "ui-icon-arrowthickstop-1-s"},
           {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
-          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"}
+          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"},
+          {title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "ui-icon-cancel"}
           ];
 				var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
 				var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
@@ -661,13 +668,6 @@ class Musicco {
 					$("#library").fancytree("getTree").clearFilter();
 					$("#filterText").val('');
 					$('#includeOlAdlbums').prop('checked', true);
-					var user = "<?php echo AuthManager::getUserName(); ?>";
-					$.post('?', {getFavourites: '', u: user}, function (response) {
-						console.log(response);
-						$("#favourites").fancytree("destroy");
-						$("#favourites").empty();
-						initFavouriteTree();
-					});
 				});
 
 				$("#ham").on("click", function() {
@@ -986,10 +986,14 @@ class Musicco {
 						goToAlbum($(this).text().replace("(", "").replace(")", ""));
 					});
 
-					$(document).on("click", ".download", function(event) {
+					$(document).on("click", ".downloadAlbum", function(event) {
 						event.preventDefault();
-						var link = "?getTrack&album=&track=" + $(this).attr("href");
+						var link = "?getAlbum&parent=" + $(this).data("parent") + "&album=" + $(this).data("album");
 						window.open(link);
+					});
+
+					$(document).on("click", ".favouriteAlbum", function(event) {
+						addFavourite($(this).data("path"));
 					});
 
 				function checkLibraryRefresh(oldHTML) {
@@ -1129,9 +1133,7 @@ class Musicco {
 				function formatPlaylist() {
 					if (hasPlaylist()) {
 						$('.itemHeader').remove();
-						$('.jp-playlist-item-free').html("<i class=\"fa fa-download\"></i>");
-						$('.jp-playlist-item-free').attr("target", "_blank");
-						$('.jp-playlist-item-free').removeClass('jp-playlist-item-free').addClass('download');
+						$('.jp-playlist-item-free').html("");
 						var firstAlbum = musiccoPlaylist.playlist[0].album;
 						var lastAlbum = musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album;
 						var albums = [];
@@ -1167,6 +1169,15 @@ class Musicco {
 								var artist = musiccoPlaylist.playlist[index].artist;
 								var cover = musiccoPlaylist.playlist[index].poster;
 								var path = musiccoPlaylist.playlist[index].path;
+								var parent = "";
+								var albumFolder = ""
+								var parents = path.split("/");
+								for (var i=0; i<parents.length - 2; i++) {
+									parent += parents[i] + "/";
+								}
+								albumFolder = parents[parents.length -2];
+								var download = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay downloadAlbum' data-parent='replacemeParent' data-album='replacemeAlbum'><i class='fa fa-download'></i></a>\"":"\"\""); ?>;
+								var favourite = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay favouriteAlbum' data-path='replacemePath'><i class='fa fa-heart'></i></a>\"":"\"\""); ?>;
 								var share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' data-path='replacemePath' data-info='replacemeInfo'><i class='fa fa-external-link'></i></a>\"":"\"\""); ?>;
 								var itemHeader = 
 								"<span class=\"itemHeader\">"
@@ -1178,6 +1189,8 @@ class Musicco {
 												+ "<br/>"
 												+ moveUp
 												+ moveDown
+												+ favourite.replace(/replacemePath/, path)
+												+ download.replace(/replacemeParent/, parent).replace(/replacemeAlbum/, albumFolder)
 												+ share.replace(/replacemePath/, path).replace(/replacemeInfo/, artist + " - " + thisAlbum)
 											+ "</td>"
 										+ "</tr>"
@@ -1349,14 +1362,6 @@ class Musicco {
 					$('#lyricsPanel').html(noLyricsText);
 				}
 
-				function addFavourite(path) {
-					var user = "<?php echo AuthManager::getUserName(); ?>";
-					$.post('?', {addFavourite: '', u: user, p: path}, function (response) {
-					});	
-					//TODO: handle folders, send notification on save successful, refresh browser tree.
-				}
-
-
 				function saveCover(coverURL, path) {
 					$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
 					});	
@@ -1399,6 +1404,7 @@ class Musicco {
 												free: false,
 												path: files[i].parent.replace(/\"/g,""),
 												mp3: encodeURI((files[i].parent+files[i].title).replace(/\"/g,"")),
+												filename: files[i].title,
 												extension: files[i].extension,
 												poster: files[i].cover,
 												number: files[i].number
@@ -2121,6 +2127,7 @@ class Musicco {
 										free:<?php print (AuthManager::isAdmin()?"true":"false"); ?>,
 										path: files[i].parent.replace(/\"/g,""),
 										mp3: encodeURI((files[i].parent + files[i].path).replace(/\"/g,"")).replace(/#/g, "%23"),
+										filename: files[i].path,
 										extension: files[i].extension,
 										poster: files[i].cover.replace(/#/g, "%23"),
 										number: files[i].number
@@ -2219,79 +2226,64 @@ class Musicco {
 		$("#leftPanel").hide();
 
 		new Clipboard('.clip');
-
-		$("#playlistPanel").contextmenu({
-			autoTrigger: 'false',
-			delegate: ".jp-playlist-item",
-			autoFocus: true,
-			menu: [
-          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "ui-icon-folder-open"},
-          {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "ui-icon-search"},
-          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
-          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"}
-          ],
-			select: function(event, ui) {
-				target = musiccoPlaylist.playlist[$(ui.target).parents("li").index()];
-				switch (ui.cmd) {
-					case "goto_artist":
-						goToArtist(target.artist);
-						break;
-					case "goto_album":
-						goToAlbum(target.title);
-					break;
-					case "share": 
-						var path = target.path;
-						var separator = " - ";
-						var info = target.artist + separator + target.title;
-						var image = target.poster;
-						saveGuestPlaylist(path, info, image);
-					break;
-					case "favourite":
-					break;
-				}
-			}
-		});
-
-		$("#searchPanel").contextmenu({
-			autoTrigger: 'false',
-			delegate: ".searchResult,.searchResultParent",
-			autoFocus: true,
-			menu: menuOptions,
-			select: function(event, ui) {
-				var node = {
-					folder: ui.target.data("folder"),
-					title: ui.target.data("title").replace("/", ""),
-					data: {
-						album: ui.target.data("album"),
-						artist: (ui.target.data("artist").length > 0 ? ui.target.data("artist") : ui.target.data("path")),
-						cover: ui.target.data("cover"),
-						parent: ui.target.data("parent"),
-						path: ui.target.data("path").replace(/^(.*)\/$/, "$1"),
-						songtitle: ui.target.data("songtitle"),
-						type: ui.target.data("type"),
-						year: ui.target.data("year")
-					},
-					'isFolder': function() { return ui.target.data("folder"); }
-				};
-				handleMenuSelection(node, ui.cmd);
-			}
-		});
 		
 		var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
 		
+		var customTreeIcons = { 
+			preset: "awesome4",
+			map: {
+				doc: "fa fa-music",
+				docOpen: "fa fa-music"
+			}
+		};
+
+		function addFavourite(path) {
+			var user = "<?php echo AuthManager::getUserName(); ?>";
+			showLoadingInfo("<?php print $this->getString("favourites_added"); ?>");
+			hideLoadingInfo();
+			$.post('?', {addFavourite: '', u: user, p: path}, function (response) {
+				updateFavourites();
+			});
+		}
+
+
+		function deleteFavourite(path) {
+			var user = "<?php echo AuthManager::getUserName(); ?>";
+			showLoadingInfo("<?php print $this->getString("favourites_removed"); ?>");
+			$.post('?', {deleteFavourite: '', u: user, p: path}, function (response) {
+					updateFavourites();
+			});
+		}
+
+
+		function updateFavourites() {
+			var user = "<?php echo AuthManager::getUserName(); ?>";
+			$.post('?', {getFavourites: '', u: user}, function (response) {
+					$("#favourites").fancytree("destroy");
+					$("#favourites").empty();
+					$("#favourites").append(response);
+					initFavouriteTree();
+					setTimeout(function() { hideLoadingInfo(); }, 2000);
+			});
+		}
+
 		function initFavouriteTree() {
-			$("#favourites li span:contains('my_favourites')").text("<?php print Musicco::getString('my_favourites'); ?>");
-			$("#favourites ul li:first").data("icon", "fa fa-star");
 			$("#favourites").fancytree({
 				extensions: ["glyph"],	
-				glyph: { preset: "awesome4"},
+				glyph: customTreeIcons,
 				autoScroll: true,
 				clickFolderMode: 3,
 				keyboard: true,
 				tabindex: "0",
 				titlesTabbable: true,
 				tooltip: true,
-				selectMode: 1
+				selectMode: 1,
+				postProcess: function(event, data) {
+					if (data.response.length != 0 ) {
+						data.response[0].title = "<?php print Musicco::getString('my_favourites'); ?>";
+						data.response[0].icon = "fa fa-heart";
+					}
+				}
 			});
 		}
 
@@ -2299,7 +2291,7 @@ class Musicco {
 		
 		$("#library").fancytree({
 			extensions: ["glyph", "filter"],	
-			glyph: { preset: "awesome4"},
+			glyph: customTreeIcons,
 			filter: {
 				mode: "hide",
 				fuzzy: true,
@@ -2345,6 +2337,8 @@ class Musicco {
 			 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
 			 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 			 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
+			 var removeFavourite = ($(target).get(0) === $("#favourites").get(0));
+			 var favourite = !removeFavourite;
 			 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
 			 $(target).contextmenu("updateEntry", "queueMenu", {setClass: queueMenu.toString()});
 			 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
@@ -2352,6 +2346,8 @@ class Musicco {
 			 $(target).contextmenu("updateEntry", "goto_artist", {setClass: goto_artist.toString()});
 			 $(target).contextmenu("updateEntry", "download", {setClass: download.toString()});
 			 $(target).contextmenu("updateEntry", "downloadAlbum", {setClass: downloadAlbum.toString()});
+			 $(target).contextmenu("updateEntry", "favourite", {setClass: favourite.toString()});
+			 $(target).contextmenu("updateEntry", "removeFavourite", {setClass: removeFavourite.toString()});
 			 $(".ui-menu .false").remove();
 		}
 
@@ -2391,8 +2387,84 @@ class Musicco {
 				case "favourite":
 					addFavourite(node.data.parent + node.data.path);
 				break;
+				case "removeFavourite":
+					deleteFavourite(node.data.parent + node.data.path);
+				break;
 			}
 		}
+
+		$("#playlistPanel").contextmenu({
+			autoTrigger: 'false',
+			delegate: ".jp-playlist-item",
+			autoFocus: true,
+			menu: [
+          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "ui-icon-folder-open"},
+          {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "ui-icon-search"},
+          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
+          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"}
+          ],
+			select: function(event, ui) {
+				target = musiccoPlaylist.playlist[$(ui.target).parents("li").index()];
+				switch (ui.cmd) {
+					case "goto_artist":
+						goToArtist(target.artist);
+						break;
+					case "goto_album":
+						goToAlbum(target.title);
+					break;
+					case "share": 
+						var path = target.path;
+						var separator = " - ";
+						var info = target.artist + separator + target.title;
+						var image = target.poster;
+						saveGuestPlaylist(path, info, image);
+					break;
+					case "favourite":
+						addFavourite(target.path + target.filename);
+					break;
+				}
+			}
+		});
+
+		$("#searchPanel").contextmenu({
+			autoTrigger: 'false',
+			delegate: ".searchResult,.searchResultParent",
+			autoFocus: true,
+			menu: menuOptions,
+			select: function(event, ui) {
+				var node = {
+					folder: ui.target.data("folder"),
+					title: ui.target.data("title").replace("/", ""),
+					data: {
+						album: ui.target.data("album"),
+						artist: (ui.target.data("artist").length > 0 ? ui.target.data("artist") : ui.target.data("path")),
+						cover: ui.target.data("cover"),
+						parent: ui.target.data("parent"),
+						path: ui.target.data("path").replace(/^(.*)\/$/, "$1"),
+						songtitle: ui.target.data("songtitle"),
+						type: ui.target.data("type"),
+						year: ui.target.data("year")
+					},
+					'isFolder': function() { return ui.target.data("folder"); }
+				};
+				handleMenuSelection(node, ui.cmd);
+			}
+		});
+
+		$("#favourites").contextmenu({
+      delegate: "span.fancytree-title",
+      autoFocus: true,
+      menu: menuOptions,
+      beforeOpen: function(event, ui) {
+        var node = $.ui.fancytree.getNode(ui.target);
+        setMenuEntries(node.isFolder(), $("#favourites"));
+        node.setActive();
+      },
+			select: function(event, ui) {
+				var node = $.ui.fancytree.getNode(ui.target);
+				handleMenuSelection(node, ui.cmd);
+			}
+    });
 
 		$("#library").contextmenu({
       delegate: "span.fancytree-title",
@@ -2422,6 +2494,7 @@ class Musicco {
 				handleMenuSelection(node, ui.cmd);
       }
     });
+
     checkLibraryRefresh($("#reset_db").html());
 	});
 //]]>
@@ -2677,6 +2750,11 @@ if(!AuthManager::isAccessAllowed()) {
 			$user = $_POST['u'];
 			return print getFavourites($user);
 			exit;
+	} elseif (isset($_POST['deleteFavourite'])) {
+			$user = $_POST['u'];
+			$path = $_POST['p'];
+			deleteFavourite($user, $path);
+			exit;
 	} elseif (isset($_POST['addFavourite'])) {
 			$user = $_POST['u'];
 			$path = $_POST['p'];
@@ -2733,7 +2811,7 @@ if(!AuthManager::isAccessAllowed()) {
 			fclose($handle);
 			exit;
 	} elseif (isset($_GET['getTrack'])) {
-			//TODO: escape track name so that Now that's what I call the 90s downloads fine
+			//TODO: escape track name so that Now that's what I call the 90s downloads fine -- also Breton - Other People's problems
 			$album = $_GET['album'];
 			$track = $_GET['track'];
 			$handle = fopen($album.$track, "rb");
@@ -2785,12 +2863,22 @@ function addFavourite($user, $path) {
 			}
 		}
 		foreach($tracks as $track) {
-			$insert_track = "REPLACE INTO favourites (userId, path) VALUES (\"$userId\", \"$track\")";
+			$insert_track = "REPLACE INTO favourites (userId, path) VALUES ($userId, \"$track\")";
 			$db->exec($insert_track);
 		}
 	$db = NULL;
 	}
 
+}
+
+function deleteFavourite($user, $path) {
+	$userId = getId($user);
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$query = "DELETE FROM favourites WHERE path LIKE \"$path%\" AND userId=$userId;";
+		$children = $db->query($query);
+		$db = NULL;
+	}
 }
 
 function getId($user) {
@@ -2823,7 +2911,7 @@ function getFavourites($user) {
 		$result = $db->query($query);
 		$db = NULL;
 		foreach($result as $favourite) {
-			$list = explode('/', preg_replace("/".Musicco::getConfig('musicRoot')."\//", "my_favourites/", $favourite["path"]));
+			$list = explode('/', $favourite["path"]);
 			$n = count($list);
 
 			$arrayRef = &$favourites; // start from the root
@@ -2840,16 +2928,15 @@ function getFavourites($user) {
 function buildUL($favourites, $prefix) {
   global $favourites_list;
   $favourites_list .= "\n<ul>\n";
+  $slash = ($prefix != "") ? "/" : "";
   foreach ($favourites as $key => $value) {
-    if (is_array($value)) {
-			$favourites_list .= "<li class='folder'><span>";
-    } else {
-			$favourites_list .= "<li><span>";
-    }
+    $is_folder = (is_array($value)) ? "class='folder' data-folder='true'": "data-folder='false'";
+		$li_data = "$is_folder data-parent='$prefix$slash' data-path='$key' data-album='$key' data-artist='$key' data-cover=''  data-songtitle='$key' data-type='' data-year='' data-favourite='true'";
+		$favourites_list .= "<li $li_data><span>";
     $favourites_list .= "$key</span>";
     // if the value is another array, recursively build the list
     if (is_array($value))
-      buildUL($value, "$prefix$key");
+      buildUL($value, "$prefix$slash$key");
     $favourites_list .= "</li>\n";
   }
   $favourites_list .= "</ul>\n";
