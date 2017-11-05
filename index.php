@@ -2233,7 +2233,9 @@ class Musicco {
 			preset: "awesome4",
 			map: {
 				doc: "fa fa-music",
-				docOpen: "fa fa-music"
+				docOpen: "fa fa-music",
+				expanderClosed: "fa fa-angle-right",
+				expanderOpen: "fa fa-angle-down",
 			}
 		};
 
