@@ -1671,7 +1671,7 @@ class Musicco {
 					// 104: 8
 					// 105: 9
 					var inputIsFocused = $("input").is(":focus");
-					var treeIsFocused = (($("#library").find(":focus")).length > 0) && $(".fancytree-container").hasClass("fancytree-treefocus");
+					var treeIsFocused = (($("#library,#favourites").find(":focus")).length > 0) && $(".fancytree-container").hasClass("fancytree-treefocus");
 					var menuIsFocused = $(".ui-contextmenu").is(":focus");
 					var node = treeIsFocused? $("#library").fancytree("getActiveNode") : null;
 					var customKeyEvents = [];
@@ -2281,9 +2281,10 @@ class Musicco {
 		
 		function initFavouriteTree() {
 			$("#favourites li span:contains('my_favourites')").text("<?php print Musicco::getString('my_favourites'); ?>");
+			$("#favourites ul li:first").data("icon", "fa fa-star");
 			$("#favourites").fancytree({
 				extensions: ["glyph"],	
-				glyph: { map: treeGlyphMap },
+				glyph: { preset: "awesome4"},
 				autoScroll: true,
 				clickFolderMode: 3,
 				keyboard: true,
@@ -2293,30 +2294,12 @@ class Musicco {
 				selectMode: 1
 			});
 		}
-		
-		// Common settings for trees
-		var treeGlyphMap = {
-			doc: "fa fa-music",
-			docOpen: "fa fa-music",
-			checkbox: "fa fa-square-o",
-			checkboxSelected: "fa fa-check-square-o",
-			checkboxUnknown: "fa fa-square",
-			dragHelper: "fa fa-arrow-right",
-			dropMarker: "fa fa-long-arrow-right",
-			error: "fa fa-warning",
-			expanderClosed: "fa fa-caret-right",
-			expanderLazy: "fa fa-caret-right",
-			expanderOpen: "fa fa-caret-down",
-			folder: "fa fa-folder-o",
-			folderOpen: "fa fa-folder-open-o",
-			loading: "fa fa-spinner fa-pulse"
-		}
-		
+
 		initFavouriteTree();
 		
 		$("#library").fancytree({
 			extensions: ["glyph", "filter"],	
-			glyph: { map: treeGlyphMap },
+			glyph: { preset: "awesome4"},
 			filter: {
 				mode: "hide",
 				fuzzy: true,
