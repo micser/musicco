@@ -590,6 +590,7 @@ class Musicco {
 		<script type="text/javascript" src="lib/jquery/jquery.mobile.custom.min.js"></script>
 		<script type="text/javascript" src="lib/jquery-ui/jquery-ui.min.js"></script>
 		<script type="text/javascript" src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
+		<script type="text/javascript" src="lib/js-cookie/js.cookie-2.2.0.min.js"></script>
 		<script type="text/javascript" src="lib/fancytree/jquery.fancytree-all.min.js"></script>
 		<script type="text/javascript" src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
 		<script type="text/javascript" src="lib/clipboard.js/clipboard.min.js"></script>
@@ -2271,7 +2272,8 @@ class Musicco {
 
 		function initFavouriteTree() {
 			$("#favourites").fancytree({
-				extensions: ["glyph"],	
+				extensions: ["glyph", "persist"],	
+				persist: { cookiePrefix: "favourites", expandOpts: {noAnimation: true, noEvents: true}},
 				glyph: customTreeIcons,
 				autoScroll: true,
 				clickFolderMode: 3,
@@ -2287,12 +2289,13 @@ class Musicco {
 					}
 				}
 			});
+			$("#favourites").fancytree("getTree").getPersistData();
 		}
 
 		initFavouriteTree();
 		
 		$("#library").fancytree({
-			extensions: ["glyph", "filter"],	
+			extensions: ["glyph", "filter", "persist"],	
 			glyph: customTreeIcons,
 			filter: {
 				mode: "hide",
@@ -2933,7 +2936,7 @@ function buildUL($favourites, $prefix) {
   $slash = ($prefix != "") ? "/" : "";
   foreach ($favourites as $key => $value) {
     $is_folder = (is_array($value)) ? "class='folder' data-folder='true'": "data-folder='false'";
-		$li_data = "$is_folder data-parent='$prefix$slash' data-path='$key' data-album='$key' data-artist='$key' data-cover=''  data-songtitle='$key' data-type='' data-year='' data-favourite='true'";
+		$li_data = "$is_folder data-parent='$prefix$slash' data-key='".urlencode($prefix.$slash.$key)."' data-path='$key' data-album='$key' data-artist='$key' data-cover=''  data-songtitle='$key' data-type='' data-year='' data-favourite='true'";
 		$favourites_list .= "<li $li_data><span>";
     $favourites_list .= "$key</span>";
     // if the value is another array, recursively build the list
