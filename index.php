@@ -2209,7 +2209,7 @@ class Musicco {
 
 			// JQuery UI and other UI stuff
 			$( "#leftPanel" ).tabs();
-			console.log("can we do tabs at the bottom the way Spofity does?");
+			//console.log("can we do tabs at the bottom the way Spofity does?");
 
 			$( ".modal" ).dialog({
 				modal: true,
@@ -2936,9 +2936,10 @@ function buildUL($favourites, $prefix) {
   $slash = ($prefix != "") ? "/" : "";
   foreach ($favourites as $key => $value) {
     $is_folder = (is_array($value)) ? "class='folder' data-folder='true'": "data-folder='false'";
-		$li_data = "$is_folder data-parent='$prefix$slash' data-key='".urlencode($prefix.$slash.$key)."' data-path='$key' data-album='$key' data-artist='$key' data-cover=''  data-songtitle='$key' data-type='' data-year='' data-favourite='true'";
+    $isNew = (preg_match("/".Musicco::getConfig('new_marker')."/", $key))? "current" : "treenode";
+		$li_data = "$is_folder data-parent='$prefix$slash' data-key='".urlencode($prefix.$slash.$key)."' data-extraClasses='$isNew' data-path='$key' data-album='$key' data-artist='$key' data-cover=''  data-songtitle='$key' data-type='' data-year='' data-favourite='true'";
 		$favourites_list .= "<li $li_data><span>";
-    $favourites_list .= "$key</span>";
+    $favourites_list .= preg_replace("/".Musicco::getConfig('new_marker')."/", "", $key)."</span>";
     // if the value is another array, recursively build the list
     if (is_array($value))
       buildUL($value, "$prefix$slash$key");
