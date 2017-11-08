@@ -2861,7 +2861,7 @@ function addFavourite($user, $path) {
 		if (preg_match("/.*\.mp3$/", $path)) {
 			array_push($tracks, $path);
 		} else {
-			$query = "SELECT parent, name FROM item WHERE parent LIKE \"$path%\" AND type IN (".Musicco::TYPE_FILE.");";
+			$query = "SELECT parent, name FROM item WHERE parent LIKE \"$path/%\" AND type IN (".Musicco::TYPE_FILE.");";
 			$children = $db->query($query);
 			foreach($children as $row) {
 				array_push($tracks, $row["parent"] . $row["name"]);
@@ -2880,7 +2880,7 @@ function deleteFavourite($user, $path) {
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$query = "DELETE FROM favourites WHERE path LIKE \"$path%\" AND userId=$userId;";
+		$query = "DELETE FROM favourites WHERE path LIKE \"$path/%\" AND userId=$userId;";
 		$children = $db->query($query);
 		$db = NULL;
 	}
