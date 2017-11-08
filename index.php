@@ -994,7 +994,8 @@ class Musicco {
 					});
 
 					$(document).on("click", ".favouriteAlbum", function(event) {
-						addFavourite($(this).data("path"));
+						var albumPath = $(this).data("path").substr(0, $(this).data("path").length -1);
+						addFavourite(albumPath);
 					});
 
 				function checkLibraryRefresh(oldHTML) {
