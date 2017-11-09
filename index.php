@@ -1011,6 +1011,7 @@ class Musicco {
 								tempHTML = oldHTML;
 								$("#reset_db").html(tempHTML);
 								$("#library").fancytree("getTree").reload();
+								updateFavourites();
 							}
 						});
 					})();
@@ -1027,6 +1028,7 @@ class Musicco {
 							if (parseInt(response) > -1) {
 								tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response;
 								$("#library").fancytree("getTree").reload();
+								updateFavourites();
 							} else {
 								checkLibraryRefresh(oldHTML);
 							}
@@ -3149,10 +3151,36 @@ function builddb() {
 			$db->exec("REINDEX item_idx4;");
 			$db->exec("DELETE FROM item_tmp;");
 
-			// close the database connection
-			$db = NULL;
 			printf("%.1s s",(microtime(true) - $_START_INSERT));
 			logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
+
+			// clean up favourites			
+			$_START_FAVOURITES = microtime(true);
+			$get_favourites = "SELECT path from favourites";
+			$favourites = $db->query($get_favourites);
+			$file_check = $db->prepare('SELECT COUNT(id) from item where parent = ? AND name = ?;');
+			foreach($favourites as $row) {
+				$favourite = pathinfo($row['path']);
+				$parent = $favourite["dirname"]."/";
+				$file = $favourite["basename"];
+				$file_check->execute(array($parent, $file));
+				$count = $file_check->fetchColumn();
+				if (!$count) {
+					$alt_parent = preg_replace("/".Musicco::getConfig('new_marker')."/", "", $parent);
+					$file_check->execute(array($alt_parent, $file));
+					$count = $file_check->fetchColumn();
+					if (!$count) {
+						$db->exec("DELETE from favourites where path=\"$parent$file\";");
+					} else {
+						$db->exec("UPDATE favourites SET path=\"$alt_parent$file\" where path=\"$parent$file\";");
+					}
+				}
+			}
+			logMessage("Refreshed favourites in ".number_format((microtime(true) - $_START_FAVOURITES), 3)." seconds");
+
+
+			// close the database connection
+			$db = NULL;
 			unlink(Musicco::getConfig('musicRoot').".lock");
 		} catch(PDOException $e) {
 			print 'Exception : '.$e->getMessage();

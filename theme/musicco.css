@@ -23,8 +23,21 @@
 		border-radius: 0 .5em .5em 0;
 	}
 
-	*:focus {
-		outline: 1px dotted #E3E5BB;
+	.fancytree-treefocus span.fancytree-active span.fancytree-title, .fancytree-treefocus span.fancytree-selected span.fancytree-title {
+		outline: 0px dotted #E3E5BB;
+		color: #E3E5BB;
+		background-color: transparent;
+	}
+
+/*
+	.fancytree-treefocus span.fancytree-active span.fancytree-title:after,
+	 .fancytree-treefocus span.fancytree-selected span.fancytree-title:after {
+		content: '\00a0\00a0\2039';
+ }
+*/
+
+	span.fancytree-active span.fancytree-title, span.fancytree-selected span.fancytree-title {
+		background-color: transparent;
 	}
 
 	mark {
