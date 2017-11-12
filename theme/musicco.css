@@ -711,6 +711,10 @@
 	#playlistPanel {
 		left: 26%;
 		width: 32%;
+		height: 90%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	border-right: 0;
 	}
 
 	#big-player {
@@ -722,6 +726,7 @@
 		text-align: center;
 		width: 35%;
 		max-width: 70vh;
+		z-index: 2;
 	}
 
 	@media (max-height: 480px) {
