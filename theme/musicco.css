@@ -694,14 +694,27 @@
 
 @media (min-aspect-ratio: 11/10) {
 
-	#leftPanel {
+	#leftPanel,
+	#playlistPanel {
 		opacity: 1;
 		border-right: 1px solid black;
 		display: block !important;
 		position: fixed;
 		top: 0;
-		left: 0;
+	}
+
+	#contentLeft {
 		max-width: 60%;
+	}
+
+	#leftPanel {
+		left: 0;
+		width: 25%;
+	}
+
+	#playlistPanel {
+		left: 26%;
+		width: 34%;
 	}
 
 	#big-player {
