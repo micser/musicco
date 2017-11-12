@@ -607,18 +607,18 @@ class Musicco {
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
 
-			$("#reload").on("click", function() {
-				$.ajax({
-					url: window.location.href,
-					headers: {
-						"Pragma": "no-cache",
-						"Expires": -1,
-						"Cache-Control": "no-cache"
-				}
-				}).done(function () {
-					window.location.reload(true);
+				$("#reload").on("click", function() {
+					$.ajax({
+						url: window.location.href,
+						headers: {
+							"Pragma": "no-cache",
+							"Expires": -1,
+							"Cache-Control": "no-cache"
+					}
+					}).done(function () {
+						window.location.reload(true);
+					});
 				});
-			});
 
 				$(window).focus(function() {
 					flashInfo();
@@ -673,7 +673,7 @@ class Musicco {
 
 				$("#ham").on("click", function() {
 					$('#leftPanel').toggle('slide', { direction: 'left' }, 200);
-					if (viewerType != '"widescreen"') {
+					if (isPortrait()) {
 						$("#mini-controls").toggle();
 					}
 				});
@@ -1775,7 +1775,9 @@ class Musicco {
 							break;
 								
 							case 80: //p
-								 showPanel("#playlistPanel");
+								 if (isPortrait()) {
+									showPanel("#playlistPanel");
+								 }
 							break;
 
 							case 73: //i
@@ -1843,7 +1845,7 @@ class Musicco {
 				}
 
 				function closeLeftPanel() {
-					if ($("#leftPanel").is(":visible") && canEscape()) {
+					if ($("#leftPanel").is(":visible") && isPortrait()) {
 						$("#ham").trigger("click");
 						$("#mini-controls").hide();
 						$(".panel").removeClass("shown");
@@ -2160,16 +2162,27 @@ class Musicco {
 					ChangeVolume("+");
 				});
 
-			$(window).resize(function() {
+				function adaptUI(init) {
 				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				var newWindowWidth = $(window).width();
-				if ((newViewerType != viewerType) && (newWindowWidth != windowWidth)) {
+				if ((newViewerType != viewerType) && (newWindowWidth != windowWidth) || (init)) {
 					viewerType = newViewerType;
 					windowWidth = newWindowWidth;
 					console.log(viewerType);
 					//$("#big-player, #playlistPanel, #browserPanel, #panels, .panel").removeAttr("style");
 					//$(".panel").removeClass("shown");
+					if (isPortrait()) {
+						$("#playlistToggle").show();
+					} else {
+						$("#playlistToggle").hide();
+						showPanel("#browserPanel");
+					}
+					$("#leftPanel").tabs("refresh");
 				}
+			}
+
+			$(window).resize(function(){
+				adaptUI();
 			});
 
 			//ServiceWorker
@@ -2203,17 +2216,16 @@ class Musicco {
 				};
 			}
 
-			function canEscape() {
-				if ((viewerType === '"tall"') || (viewerType === '"square"')){
-					return true;
-				}
-				return false;
+			function isPortrait() {
+				return (viewerType === '"tall"') || (viewerType === '"square"');
 			}
 
 			// JQuery UI and other UI stuff
+			
 			$( "#leftPanel" ).tabs();
-			//console.log("can we do tabs at the bottom the way Spofity does?");
-
+			adaptUI(true);
+			$("#leftPanel").hide();
+			
 			$( ".modal" ).dialog({
 				modal: true,
 				autoOpen: false,
@@ -2227,7 +2239,6 @@ class Musicco {
 			$('.guestPlay').hide();
 		} 
 
-		$("#leftPanel").hide();
 
 		new Clipboard('.clip');
 		
@@ -2571,124 +2582,110 @@ if(!AuthManager::isAccessAllowed()) {
 			?> 
 		</div>
 		<!-- END: header -->
-		<!-- START: Content -->
-		<div id="content">
-			<!-- START: ContentLeft -->
-			<div id="contentLeft">
-				<!-- START: Left Panel -->
-				<div id="leftPanel">
-					<ul>
-						<li id="browserToggle"><a href="#browserPanel" class="guestPlay panelToggle fa fa-folder-open"></a></li>
-						<li id="searchToggle"><a href="#searchPanel" class="guestPlay panelToggle fa fa-search"></a></li>
-						<li id="playlistToggle"><a href="#playlistPanel" class="panelToggle fa fa-list"></a></li>
-						<li id="infoToggle"><a href="#infoPanel" class="panelToggle fa fa-info-circle"></a></li>
-						<li id="lyricsToggle"><a href="#lyricsPanel" class="panelToggle fa fa-microphone"></a></li>
-						<li id="settingsToggle"><a href="#settingsPanel" class="panelToggle fa fa-gears"></a></li>
-					</ul>
-					<div id="panelContainer">
-						<div id="browserPanel" class="panel guestPlay">
-							<div class="table">
-								<div id="filter">
-									<input id="includeOlAdlbums" tabindex="0" type="checkbox" checked="true"/>
-									<?php print $this->getString("show_all"); ?>
-									<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" />
-									<a class="btn" id="filterButton" href="#"><i class="fa fa-border fa-close"></i></a>
-								</div>
-								<div id="favourites">
-									<?php print getFavourites(AuthManager::getUserName()); ?>
-								</div>
-								<div id="library" class="nowrap"></div>
-							</div>
+		<!-- START: Left Panel -->
+		<div id="leftPanel">
+			<ul>
+				<li id="browserToggle"><a href="#browserPanel" class="guestPlay panelToggle fa fa-folder-open"></a></li>
+				<li id="searchToggle"><a href="#searchPanel" class="guestPlay panelToggle fa fa-search"></a></li>
+				<li id="playlistToggle"><a href="#playlistPanel" class="panelToggle fa fa-list"></a></li>
+				<li id="infoToggle"><a href="#infoPanel" class="panelToggle fa fa-info-circle"></a></li>
+				<li id="lyricsToggle"><a href="#lyricsPanel" class="panelToggle fa fa-microphone"></a></li>
+				<li id="settingsToggle"><a href="#settingsPanel" class="panelToggle fa fa-gears"></a></li>
+			</ul>
+			<div id="panelContainer">
+				<div id="browserPanel" class="panel guestPlay">
+					<div class="table">
+						<div id="filter">
+							<input id="includeOlAdlbums" tabindex="0" type="checkbox" checked="true"/>
+							<?php print $this->getString("show_all"); ?>
+							<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" />
+							<a class="btn" id="filterButton" href="#"><i class="fa fa-border fa-close"></i></a>
 						</div>
-						<div id="searchPanel" class="panel guestPlay">
-							<form action="?" id="searchForm">
-								<input id="searchText" type="text" class="fill" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
-								<span class="right">
-									<a class="btn" id="findIt" href="#"><i class="fa fa-border fa-search"></i></a>
-									<a class="btn" id="clear" href="#"><i class="fa fa-border fa-close"></i></a>
-								</span>
-							</form>
-							<div id="searchResults">&nbsp;</div>
+						<div id="favourites">
+							<?php print getFavourites(AuthManager::getUserName()); ?>
 						</div>
-						<div id="infoPanel" class="panel">
-							<span id="wikiPrev"></span>
-							<span id="sync"><a id="resync" href="#"></a></span>
-							<div id="infoPanelTitle"></div>
-							<div id="infoPanelText"></div>
-						</div>
-						<div id="lyricsPanel" class="panel"></div>
-						<div id="settingsPanel">
-						<?php
-						if (AuthManager::isAdmin()) {
-							print "<div id=\"reset_db\" class=\"guestPlay\"><a>".$this->getString("reset_db")."</a></div>";
-						}
-						print "<div id=\"reload\"><a>".$this->getString("reload")."</a></div>";
-						print "<div id=\"help\"><a>".$this->getString("help")."</a></div>";
-						print "<div id=\"about\"><a>".$this->getString("about")."</a></div>";
-						?>
-						</div>
+						<div id="library" class="nowrap"></div>
 					</div>
 				</div>
-				<!-- END: Left Panel -->
-				<!-- START: playlist -->
+				<div id="searchPanel" class="panel guestPlay">
+					<form action="?" id="searchForm">
+						<input id="searchText" type="text" class="fill" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
+						<span class="right">
+							<a class="btn" id="findIt" href="#"><i class="fa fa-border fa-search"></i></a>
+							<a class="btn" id="clear" href="#"><i class="fa fa-border fa-close"></i></a>
+						</span>
+					</form>
+					<div id="searchResults">&nbsp;</div>
+				</div>
 				<div id="playlistPanel" class="panel jp-playlist my-playlist">
 					<ul>
 						<li></li>
 					</ul>
 				</div>
-				<!-- END: playlist -->
+				<div id="infoPanel" class="panel">
+					<span id="wikiPrev"></span>
+					<span id="sync"><a id="resync" href="#"></a></span>
+					<div id="infoPanelTitle"></div>
+					<div id="infoPanelText"></div>
+				</div>
+				<div id="lyricsPanel" class="panel"></div>
+				<div id="settingsPanel">
+				<?php
+				if (AuthManager::isAdmin()) {
+					print "<div id=\"reset_db\" class=\"guestPlay\"><a>".$this->getString("reset_db")."</a></div>";
+				}
+				print "<div id=\"reload\"><a>".$this->getString("reload")."</a></div>";
+				print "<div id=\"help\"><a>".$this->getString("help")."</a></div>";
+				print "<div id=\"about\"><a>".$this->getString("about")."</a></div>";
+				?>
+				</div>
 			</div>
-			<!-- END: ContentLeft -->
-			<!-- START: ContentRight -->
-			<div id="contentRight">
-				<!-- START: big player -->
-				<div id="big-player">
-					<div id="playerPanel">
-						<div id="big-cover">
-							<div id="big-volume-bar">
-								<div id="volume-value"></div>
-							</div>
-							<div id="updateCoverArt" class="guestPlay">
-								<span id="statusText"><?php print $this->getString("..."); ?></span>
-								<span id="searchOne" class="coveractions"><a id="searchLink" target="_blank" href="<?php print $this->getConfig("searchEngine"); ?>musicco"><?php print $this->getString("searchOne"); ?></a></span>
-								<span id="uploadIt" class="coveractions"><?php print $this->getString("clickToUploadYourOwn"); ?></a></span>
-								</div>
-							<div class="dummy">&nbsp;</div>
-							<div id="big-jp-progress"></div>
+		</div>
+		<!-- END: Left Panel -->
+		<!-- START: big player -->
+		<div id="big-player">
+			<div id="playerPanel">
+				<div id="big-cover">
+					<div id="big-volume-bar">
+						<div id="volume-value"></div>
+					</div>
+					<div id="updateCoverArt" class="guestPlay">
+						<span id="statusText"><?php print $this->getString("..."); ?></span>
+						<span id="searchOne" class="coveractions"><a id="searchLink" target="_blank" href="<?php print $this->getConfig("searchEngine"); ?>musicco"><?php print $this->getString("searchOne"); ?></a></span>
+						<span id="uploadIt" class="coveractions"><?php print $this->getString("clickToUploadYourOwn"); ?></a></span>
 						</div>
-						<div id="big-timer" class="spread"></div>
-						<div id="big-info">
-							<div id="nowPlayingTitle" class="nowrap">&nbsp;</div>
-							<div id="nowPlayingArtist" class="nowrap">&nbsp;</div>
-							<div>
-								<span id="nowPlayingAlbum" class="nowrap">&nbsp;</span>
-								<span id="nowPlayingAlbumYear" class="nowrap">&nbsp;</span>
-							</div>
-						</div>
-						<div id="playlist-controls" class="spread">
-							<i id="big-mute" class="toggles jp-mute fa fa-volume-off fa-2x"></i>
-								<i id="clear-playlist" class="guestPlay toggles fa fa-trash-o fa-2x"></i>
-								<i class="guestPlay uncover toggles fa fa-bolt fa-2x"></i>
-								<i id="big-shuffle" class="toggles touch-jp-shuffle fa fa-random fa-2x"></i>
-								<i id="big-repeat" class="toggles touch-jp-repeat fa fa-repeat fa-2x"></i>
-								<i class="big-volume-down toggles fa fa-volume-down fa-2x"></i>
-								<i class="big-volume-up toggles fa fa-volume-up fa-2x"></i>
-						</div>
-						<div id="controls" class="spread big-controls">
-							<i class="big-jp-previous-album"></i>
-							<i class="left big-jp-previous fa fa-step-backward fa-2x"></i>
-							<i class="big-jp-play fa fa-play-circle-o fa-5x"></i>
-							<i class="big-jp-pause fa fa-pause-circle-o fa-5x" style=" display: none;"></i>
-							<i class="right big-jp-next fa fa-step-forward fa-2x"></i>
-							<i class="big-jp-next-album"></i>
-						</div>
+					<div class="dummy">&nbsp;</div>
+					<div id="big-jp-progress"></div>
+				</div>
+				<div id="big-timer" class="spread"></div>
+				<div id="big-info">
+					<div id="nowPlayingTitle" class="nowrap">&nbsp;</div>
+					<div id="nowPlayingArtist" class="nowrap">&nbsp;</div>
+					<div>
+						<span id="nowPlayingAlbum" class="nowrap">&nbsp;</span>
+						<span id="nowPlayingAlbumYear" class="nowrap">&nbsp;</span>
 					</div>
 				</div>
-				<!-- END: big player -->
+				<div id="playlist-controls" class="spread">
+					<i id="big-mute" class="toggles jp-mute fa fa-volume-off fa-2x"></i>
+						<i id="clear-playlist" class="guestPlay toggles fa fa-trash-o fa-2x"></i>
+						<i class="guestPlay uncover toggles fa fa-bolt fa-2x"></i>
+						<i id="big-shuffle" class="toggles touch-jp-shuffle fa fa-random fa-2x"></i>
+						<i id="big-repeat" class="toggles touch-jp-repeat fa fa-repeat fa-2x"></i>
+						<i class="big-volume-down toggles fa fa-volume-down fa-2x"></i>
+						<i class="big-volume-up toggles fa fa-volume-up fa-2x"></i>
+				</div>
+				<div id="controls" class="spread big-controls">
+					<i class="big-jp-previous-album"></i>
+					<i class="left big-jp-previous fa fa-step-backward fa-2x"></i>
+					<i class="big-jp-play fa fa-play-circle-o fa-5x"></i>
+					<i class="big-jp-pause fa fa-pause-circle-o fa-5x" style=" display: none;"></i>
+					<i class="right big-jp-next fa fa-step-forward fa-2x"></i>
+					<i class="big-jp-next-album"></i>
+				</div>
 			</div>
-		<!-- END: ContentRight -->
 		</div>
-		<!-- END: Content -->
+		<!-- END: big player -->
 		<!-- START: JPlayerPlaylist -->
 		<div class="jp-type-playlist" style="display: none;">
 			<div id="jquery_jplayer_2" class="jp-jplayer"></div>
