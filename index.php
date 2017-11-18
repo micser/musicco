@@ -1775,7 +1775,7 @@ class Musicco {
 							break;
 								
 							case 80: //p
-								 if (isPortrait()) {
+								 if (!isWidescreen()) {
 									showPanel("#playlistPanel");
 								 }
 							break;
@@ -2171,8 +2171,13 @@ class Musicco {
 					console.log(viewerType);
 					//$("#big-player, #playlistPanel, #browserPanel, #panels, .panel").removeAttr("style");
 					//$(".panel").removeClass("shown");
-					if (isPortrait()) {
+					if (!isWidescreen()) {
 						$("#playlistToggle").show();
+							if (isPortrait()) {
+								$("#leftPanel").hide();								
+							} else {
+								showPanel("#playlistPanel");
+							}
 					} else {
 						$("#playlistToggle").hide();
 						showPanel("#browserPanel");
@@ -2220,11 +2225,18 @@ class Musicco {
 				return (viewerType === '"tall"') || (viewerType === '"square"');
 			}
 
+			function isMedium() {
+				return (viewerType === '"medium"');
+			}
+
+			function isWidescreen() {
+				return (viewerType === '"widescreen"');
+			}
+
 			// JQuery UI and other UI stuff
 			
 			$( "#leftPanel" ).tabs();
 			adaptUI(true);
-			$("#leftPanel").hide();
 			
 			$( ".modal" ).dialog({
 				modal: true,
