@@ -613,20 +613,22 @@
 
 }
 
-@media (max-height: 480px), (max-width: 800px) {		
+@media (max-height: 480px) {
 	#playlist-controls {
 		display: none;
 	}
 }
 
-@media (max-width: 12em) {
-
-	#big-mute,
-	.big-volume-up,
-	.big-volume-down {
-		display: none;
+@media (max-width: 480px) {	
+	#playlist-controls {
+		padding-right: 0;
 	}
 
+	#big-volume-up:before,
+	#big-volume-down:before,
+	#big-mute:before {
+		display: none;
+	}
 }
 
 @media (max-aspect-ratio: 9/10), (min-aspect-ratio: 9/10) and (max-aspect-ratio: 11/10) {

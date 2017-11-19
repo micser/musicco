@@ -704,8 +704,12 @@ class Musicco {
 						if (element > musiccoPlaylist.length) {
 							element = musiccoPlaylist.length;
 						}
+						var target = $('#playlistPanel');
+						if (isPortrait()) {
+							target = $('#panelContainer');
+						}
 						var y = $('.my-playlist ul li:nth-child(' + element + ')').offset().top - $('.my-playlist').offset().top - 200 + $('.my-playlist').scrollTop();
-						$('#leftPanel').animate({scrollTop:y});
+						target.animate({scrollTop:y});
 					}
 				}
 
@@ -2154,11 +2158,11 @@ class Musicco {
 					}, "json");
 				}
 
-				$('.big-volume-down').click(function() {
+				$('#big-volume-down').click(function() {
 					ChangeVolume("-");
 				});
 
-				$('.big-volume-up').click(function() {
+				$('#big-volume-up').click(function() {
 					ChangeVolume("+");
 				});
 
@@ -2168,9 +2172,6 @@ class Musicco {
 				if ((newViewerType != viewerType) && (newWindowWidth != windowWidth) || (init)) {
 					viewerType = newViewerType;
 					windowWidth = newWindowWidth;
-					console.log(viewerType);
-					//$("#big-player, #playlistPanel, #browserPanel, #panels, .panel").removeAttr("style");
-					//$(".panel").removeClass("shown");
 					if (!isWidescreen()) {
 						$("#playlistToggle").show();
 							if (isPortrait()) {
@@ -2684,8 +2685,8 @@ if(!AuthManager::isAccessAllowed()) {
 						<i class="guestPlay uncover toggles fa fa-bolt fa-2x"></i>
 						<i id="big-shuffle" class="toggles touch-jp-shuffle fa fa-random fa-2x"></i>
 						<i id="big-repeat" class="toggles touch-jp-repeat fa fa-repeat fa-2x"></i>
-						<i class="big-volume-down toggles fa fa-volume-down fa-2x"></i>
-						<i class="big-volume-up toggles fa fa-volume-up fa-2x"></i>
+						<i id="big-volume-down" class="toggles fa fa-volume-down fa-2x"></i>
+						<i id="big-volume-up" class="toggles fa fa-volume-up fa-2x"></i>
 				</div>
 				<div id="controls" class="spread big-controls">
 					<i class="big-jp-previous-album"></i>
