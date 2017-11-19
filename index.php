@@ -1016,7 +1016,10 @@ class Musicco {
 							error: function(data) {
 								tempHTML = oldHTML;
 								$("#reset_db").html(tempHTML);
-								$("#library").fancytree("getTree").reload();
+								var library = $("#library").fancytree("getTree");
+								if (library.length > 0) {
+									library.reload();
+								}
 								updateFavourites();
 							}
 						});
@@ -2941,26 +2944,28 @@ function getId($user) {
 	$id = 0;
 	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 	$count_query = $db->prepare("SELECT count(id) from users where username = \"$user\";");
-	$count_query->execute();
-	$count = $count_query->fetchColumn();
-	if ($count > 0) {
-		$id_query = $db->prepare("SELECT id from users where username = \"$user\";");
-		$id_query->execute();
-		$id=$id_query->fetchColumn();
-	} else {
-		$db ->exec("INSERT into users (username) VALUES (\"" . $user . "\");");
-		$id = $db->lastInsertId();
+	if ($count_query) {
+		$count_query->execute();
+		$count = $count_query->fetchColumn();
+		if ($count > 0) {
+			$id_query = $db->prepare("SELECT id from users where username = \"$user\";");
+			$id_query->execute();
+			$id=$id_query->fetchColumn();
+		} else {
+			$db ->exec("INSERT into users (username) VALUES (\"" . $user . "\");");
+			$id = $db->lastInsertId();
+		}
 	}
 	$db = NULL;
 	return $id;
 }
 
 function getFavourites($user) {
+	global $favourites_list;
 	$userId = getId($user);
 	$temp=[];
 	$favourites=[];
 	if ($userId != 0) {
-		global $favourites_list;
 		$favourites_list = "";
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$query = "SELECT path FROM favourites WHERE userId=$userId;";
@@ -3039,6 +3044,7 @@ function querydb($query_root, $query_type) {
 	$list = [];
 	logMessage("Queried DB in ".number_format((microtime(true) - $_START_QUERY), 3)." seconds");
 	$_START_DISPLAY = microtime(true);
+	if (sizeOf($results))
 	foreach($result as $row) {
 		$name = $row['name'];
 		$type = $row['type'];
