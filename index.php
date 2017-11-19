@@ -3044,7 +3044,7 @@ function querydb($query_root, $query_type) {
 	$list = [];
 	logMessage("Queried DB in ".number_format((microtime(true) - $_START_QUERY), 3)." seconds");
 	$_START_DISPLAY = microtime(true);
-	if (sizeOf($results))
+	if (sizeOf($result))
 	foreach($result as $row) {
 		$name = $row['name'];
 		$type = $row['type'];
