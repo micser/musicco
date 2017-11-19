@@ -188,13 +188,12 @@
 
 	#shared-album-cover,
 	#shared-qr {
-		max-width: 30vw;
 		width: 90%;
 		vertical-align: text-bottom;
 	}
 
 	#shared-album-link {
-		width: 55%;
+		width: 95%;
 	}
 
 	.fill {
@@ -205,16 +204,16 @@
 		display: none;
 	}
 
+	.big {
+		font-size: 2em;
+	}
+
 	.bigger {
 		height: 2em;
 	}
 
 	span.jp-free-media {
 		color: #121314;
-	}
-
-	.big {
-		font-size: 3em !important;
 	}
 
 	.move,
@@ -261,9 +260,9 @@
 		text-align: center;
 	}
 	
-	#shared-album-qr {
-		padding-top: 1em;
-		display: inline;
+	#shared-album-qr,
+	#shared-album-show-cover {
+		display: none;
 	}
 
 	.editsection,
@@ -317,11 +316,10 @@
 	.boxed {
 		border: 1px solid #121314;
 		border-radius: .5em;
-		background-color: whitesmoke;
+		background-color: #E3E5BB;
 		padding: .2em;
 		vertical-align: middle;
 		margin: .5em;
-		width: 2em;
 	}
 
 	#updateCoverArt,
@@ -555,6 +553,17 @@
 	#playlist-controls {
 		padding-left: 10%;
 		padding-right: 10%;
+	}
+	
+	#share-actions {
+		margin-top: 1em;
+    margin-bottom: 1em;
+	}
+
+	#share-actions,
+	#playlist-controls,
+	#big-controls {
+		justify-content: space-evenly;
 	}
 	
 	#controls {

@@ -190,6 +190,7 @@ $_TRANSLATIONS = array();
 $_TRANSLATIONS["en"] = array(
 	"..." => "...",
 	"about" => "about",
+	"album_sharing" => "Some music for you to try on " . Musicco::getConfig('appName'),
 	"by" => " by ",
 	"clickToUploadYourOwn" => "upload", 
 	"defaultCoverURL" => "http://",
@@ -258,6 +259,7 @@ $_TRANSLATIONS["en"] = array(
 $_TRANSLATIONS["fr"] = array(
 	"..." => "...",
 	"about" => "info",
+	"album_sharing" => "Un peu de musique pour toi sur " . Musicco::getConfig('appName'),
 	"by" => " par ",
 	"clickToUploadYourOwn" => "charger", 
 	"defaultCoverURL" => "http://",
@@ -1454,12 +1456,24 @@ class Musicco {
 					$("#shared-album-title").text(info);
 					$("#shared-album-cover").attr("src", cover);
 					$.post('?', {saveGuestPlaylist: '', u: user, p: path}, function (response) {
-						var link = getBaseURL() + "?guestPlay&u=" + user;
-						$("#shared-album-link").val(link).select().attr('size', link.length);
-						$("#shared-album-qr").qrcode(link);
 						$("#sharing-banner").dialog("open");
+						var link = getBaseURL() + "?guestPlay&u=" + user;
+						var qrW = $("#shared-album-cover").width();
+						var qrH = $("#shared-album-cover").height();
+						$("#shared-album-link").val(link).select().attr('size', link.length);
+						$("#shared-album-qr").qrcode({width: qrW, height: qrH, text: link});
+						if (navigator.share) {
+							$("#shared-album-share").show();
+						} else {
+							$("#shared-album-share").hide();
+						}
 					});
 				}
+
+				$("#shared-album-show-qr, #shared-album-show-cover").on("click", function() {
+					$("#shared-album-cover, #shared-album-qr, #shared-album-show-qr, #shared-album-show-cover").toggle();
+					$("#shared-album-qr canvas").addClass("boxed");
+				});
 
 				function flashInfo() {
 					setTimeout(function(){ 
@@ -1468,7 +1482,17 @@ class Musicco {
 					$("#big-info").css('opacity', '1');
 				}
 
-				$("#musiccoplayer").on($.jPlayer.event.play, function(event) { 
+				$("#shared-album-share").on("click", function(event) { 
+					navigator.share({
+						title: "<?php echo Musicco::getString('album_sharing'); ?>",
+						text: $("#shared-album-title").text(),
+						url: $("#shared-album-link").val()
+					})
+						.then(() => console.log('Successful share'))
+						.catch((error) => console.log('Error sharing', error));
+				});
+
+				$("#musiccoplayer").on($.jPlayer.event.play, function(event) {
 					 if (restoreCurrentTime != -1) {
 						 setTimeout(function(){ 
 								 jp.jPlayer( "play", restoreCurrentTime); 
@@ -2185,6 +2209,14 @@ class Musicco {
 					}
 					$("#leftPanel").tabs("refresh");
 				}
+				$( ".modal" ).dialog({
+					modal: true,
+					autoOpen: false,
+					width: isPortrait() ? "100%": "40%",
+					height: $(window).height(),
+					show: { effect: "fade", duration: 400 },
+					hide: { effect: "fold", duration: 200 }
+				});
 			}
 
 			$(window).resize(function(){
@@ -2238,15 +2270,6 @@ class Musicco {
 			
 			$( "#leftPanel" ).tabs();
 			adaptUI(true);
-			
-			$( ".modal" ).dialog({
-				modal: true,
-				autoOpen: false,
-				width: "80%",
-				height: "700",
-				show: { effect: "fade", duration: 400 },
-				hide: { effect: "fold", duration: 200 }
-			});
 		
 		if (isGuestPlay()) {
 			$('.guestPlay').hide();
@@ -2552,15 +2575,16 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="helpPanel" class="modal"><?php print getHelp(); ?></div>
 		<div id="aboutPanel" class="modal"><?php print getAbout(); ?></div>
 		<div id="sharing-banner" class="modal">
-			<div id="shared-album-title" class="big"></div>
-			<img id="shared-album-cover" class="boxed" src="app/apple-touch-icon.png" />
+		<img id="shared-album-cover" class="boxed" src="app/apple-touch-icon.png" />
 			<div id="shared-album-qr"></div>
-			<div>
-				<input tabindex="-1" type="text" value="" class="shared-link" id="shared-album-link" />
-					<button tabindex="-1" class="clip" data-clipboard-target="#shared-album-link">
-						<i class="fa fa-clipboard"></i>
-					</button>
+			<div id="shared-album-title" class="big"></div>
+			<div id="share-actions" class="spread">
+					<i class="fa fa-2x fa-qrcode" id="shared-album-show-qr"></i>
+					<i class="fa fa-2x fa-picture-o" id="shared-album-show-cover"></i>
+					<i class="fa fa-2x fa-clipboard clip" data-clipboard-target="#shared-album-link"></i>
+					<i class="fa fa-2x fa-external-link" id="shared-album-share"></i>
 			</div>
+			<input tabindex="-1" type="text" value="" class="shared-link" id="shared-album-link"/>
 		</div>
 		<!-- END: Modal Dialogues -->
 		<!-- START: header -->
