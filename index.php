@@ -2073,7 +2073,6 @@ class Musicco {
 					if (e.target !== this) 
 					return;
 					triggerPlayPause();
-					showNotification();
 				});
 
 				$('#big-cover').on( "swipeup", function() {
@@ -2243,12 +2242,10 @@ class Musicco {
 					switch (e.data) {
 							case "play":
 								triggerPlayPause();
-								showNotification();
 							break;
 							case "pause":
 								triggerPlayPause();
-								showNotification("isPaused");
-							break;							
+							break;
 							case "nexttrack":
 								nextTrack();
 							break;
