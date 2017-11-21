@@ -59,6 +59,7 @@
 		color: #E3E5BB;
 	}
 
+	i.toggles:hover,
 	.current,
 	a.current,
 	.jp-free-media.current a i:before,
