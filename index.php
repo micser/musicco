@@ -917,7 +917,7 @@ class Musicco {
 				$("#searchForm").submit(function(event) {
 					event.preventDefault();
 					var $form = $( this ),
-							term = $form.find( 'input[name="s"]' ).val();
+							term = normalise($form.find( 'input[name="s"]' ).val());
 					if (term.length > 0) {
 						showLoadingInfo("<?php print $this->getString("searchingFor"); ?>" + term);
 						var resultString="&nbsp;";
