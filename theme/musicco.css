@@ -26,6 +26,10 @@
  }
 */
 
+	.ui-tabs .ui-tabs-nav {
+		border-bottom: 1px solid #A7A97F;
+	}
+
 	span.fancytree-active span.fancytree-title, span.fancytree-selected span.fancytree-title {
 		background-color: transparent;
 	}
@@ -118,7 +122,7 @@
 	}
 
 	input {
-		background-color: #666;
+		background-color: #222;
 	}
 
 	body {
