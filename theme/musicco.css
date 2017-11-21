@@ -29,6 +29,11 @@
 	.ui-tabs .ui-tabs-nav {
 		border-bottom: 1px solid #A7A97F;
 	}
+	
+	.ui-menu {
+		border: 1px solid #A7A97F!important;
+		background-color: #222!important;
+	}
 
 	span.fancytree-active span.fancytree-title, span.fancytree-selected span.fancytree-title {
 		background-color: transparent;
