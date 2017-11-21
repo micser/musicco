@@ -995,8 +995,7 @@ class Musicco {
 
 					$(document).on("click", ".downloadAlbum", function(event) {
 						event.preventDefault();
-						var link = "?getAlbum&parent=" + $(this).data("parent") + "&album=" + $(this).data("album");
-						window.open(link);
+						downloadAlbum($(this).data("parent"), $(this).data("album"))
 					});
 
 					$(document).on("click", ".favouriteAlbum", function(event) {
@@ -2293,6 +2292,14 @@ class Musicco {
 			}
 		};
 
+		function downloadTrack(parent, track) {
+			window.open("?getTrack&album=" + parent + "&track=" + track);
+		}
+
+		function downloadAlbum(parent, album) {
+			window.open("?getAlbum&parent=" + parent + "&album=" + album);
+		}
+
 		function addFavourite(path) {
 			var user = "<?php echo AuthManager::getUserName(); ?>";
 			showLoadingInfo("<?php print $this->getString("favourites_added"); ?>");
@@ -2435,12 +2442,10 @@ class Musicco {
 					saveGuestPlaylist(path, info, image);
 				break;
 				case "download":
-					var link = "?getTrack&album=" + node.data.parent + "&track=" + node.data.path;
-					window.open(link);
+					downloadTrack(node.data.parent, node.data.path)
 				break;
 				case "downloadAlbum":
-					var link = "?getAlbum&parent=" + node.data.parent + "&album=" + node.data.path;
-					window.open(link);
+					downloadAlbum(node.data.parent, node.data.path);
 				break;
 				case "favourite":
 					addFavourite(node.data.parent + node.data.path);
@@ -2458,6 +2463,7 @@ class Musicco {
 			menu: [
           {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "ui-icon-folder-open"},
           {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "ui-icon-search"},
+          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "ui-icon-arrowthickstop-1-s"},
           {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
           {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"}
           ],
@@ -2469,6 +2475,9 @@ class Musicco {
 						break;
 					case "goto_album":
 						goToAlbum(target.title);
+					break;
+					case "download":
+						downloadTrack(target.path, target.filename);
 					break;
 					case "share": 
 						var path = target.path;
