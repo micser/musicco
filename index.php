@@ -694,7 +694,7 @@ class Musicco {
 				});
 
 				function toggleSearch() {
-					showPanel("#searchPanel");
+					togglePanel("#searchPanel");
 						$('.hits').remove();
 						$('#searchText').select();
 						$('#searchText').focus();
@@ -976,7 +976,7 @@ class Musicco {
 					var e = jQuery.Event("keyup");
 					e.which = 80; // p
 					$("#filterText").trigger(e);
-					showPanel("#browserPanel");
+					togglePanel("#browserPanel");
 				}
 
 				function goToAlbum(album) {
@@ -1249,7 +1249,7 @@ class Musicco {
 					var resyncText = "&nbsp;&#8226;&nbsp;" + nowPlaying("artist") + "&nbsp;&#9654;";
 					$("#resync").html(resyncText);
 					if (show) {
-						showPanel("#infoPanel");
+						togglePanel("#infoPanel");
 					}
 					if (force) {
 							$("#resync").show();
@@ -1443,7 +1443,7 @@ class Musicco {
 							formatPlaylist();
 							if (isGuestPlay()) {
 								setTimeout(function() {
-									showPanel("#playlistPanel");
+									togglePanel("#playlistPanel");
 								}, 3000);
 							}
 						}, "json");	
@@ -1774,14 +1774,14 @@ class Musicco {
 
 							case 66: //b
 								if (!isGuestPlay()){	
-									 showPanel("#browserPanel");
+									 togglePanel("#browserPanel");
 									$("#library").fancytree("getTree").getFirstChild().setActive();
 								}
 							break;
 							
 							case	191: // /
 								if (!isGuestPlay()) {
-									 showPanel("#browserPanel");
+									 togglePanel("#browserPanel");
 									 $('#filterText').select();
 									 $('#filterText').focus();
 								} 
@@ -1797,7 +1797,7 @@ class Musicco {
 							case 83: //s
 								if (!isGuestPlay()){
 									 if ($('#searchPanel').is(':hidden')) {
-										showPanel("#searchPanel");
+										togglePanel("#searchPanel");
 									 }
 									 $('#searchText').select();
 									 $('#searchText').focus();
@@ -1806,7 +1806,7 @@ class Musicco {
 								
 							case 80: //p
 								 if (!isWidescreen()) {
-									showPanel("#playlistPanel");
+									togglePanel("#playlistPanel");
 								 }
 							break;
 
@@ -1816,19 +1816,19 @@ class Musicco {
 								if (treeIsFocused) { 
 									displayInfo(node.data.songtitle);
 								} else {
-									showPanel("#infoPanel");
+									togglePanel("#infoPanel");
 								}
 							 }
 							break;
 
 							case 76: //l
-							 showPanel("#lyricsPanel");
+							 togglePanel("#lyricsPanel");
 							break;
 							
 							case 71: //g
 							 if (e.ctrlKey) {
 							 } else {
-								showPanel("#settingsPanel");
+								togglePanel("#settingsPanel");
 							 }
 							break;
 							
@@ -1882,13 +1882,17 @@ class Musicco {
 					}
 				}
 
-				function showPanel(panel) {
-					if ($("#leftPanel").is(":hidden")) {
+				function togglePanel(panel) {
+					if ($(panel).hasClass("shown") && isPortrait()) {
 						$("#ham").trigger("click");
+					} else {
+						if ($("#leftPanel").is(":hidden")) {
+							$("#ham").trigger("click");
+						}
+						$(".panel").removeClass("shown");
+						$(panel).addClass("shown");
+						$(".panelToggle[href='" + panel + "']").trigger("click");
 					}
-					$(".panel").removeClass("shown");
-					$(panel).addClass("shown");
-					$(".panelToggle[href='" + panel + "']").trigger("click");
 				}
 
 				$(document).on("click", "#resync", function(event) { 
@@ -2202,11 +2206,11 @@ class Musicco {
 							if (isPortrait()) {
 								$("#leftPanel").hide();								
 							} else {
-								showPanel("#playlistPanel");
+								togglePanel("#playlistPanel");
 							}
 					} else {
 						$("#playlistToggle").hide();
-						showPanel("#browserPanel");
+						togglePanel("#browserPanel");
 					}
 					$("#leftPanel").tabs("refresh");
 				}
