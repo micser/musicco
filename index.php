@@ -606,6 +606,7 @@ class Musicco {
 			var restoreCurrentTime = -1;
 			var restorePlaylistPosition = -1;
 			$(document).ready(function() {
+				$("#loading").progressbar( {value: false} );
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
 
@@ -1440,6 +1441,7 @@ class Musicco {
 								}
 							}
 							hideLoadingInfo();
+							$("#loading").hide();
 							formatPlaylist();
 							if (isGuestPlay()) {
 								setTimeout(function() {
@@ -2570,6 +2572,7 @@ class Musicco {
 		<title><?php if(Musicco::getConfig('appName') != null) print Musicco::getConfig('appName'); ?></title>
 	</head>
 	<body id="viewer">
+	<div id="loading"></div>
 <?php 
 //
 // Print the error (if there is something to print)
