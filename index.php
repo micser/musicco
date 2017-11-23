@@ -1228,8 +1228,19 @@ class Musicco {
 							$('.jp-playlist-item-remove').hide();
 						}
 					musiccoPlaylist.albums = albums;
-					setTimeout(function() { scrollPlaylist(); }, 500);
+					setTimeout(function() { hideSpinner(); scrollPlaylist(); }, 500);
 					}
+			}
+
+			function hideSpinner() {
+				$("#playlistSpinner").toggle();
+				$("#playlistPanel ul").fadeTo("fast", 1);
+			}
+
+			function showSpinner() {
+				$("#playlistPanel").scrollTop(0);
+				$("#playlistSpinner").toggle();
+				$("#playlistPanel ul").fadeTo(0, 0);
 			}
 
 				function postMessage(message) {
@@ -2003,6 +2014,7 @@ class Musicco {
 				}
 
 				Array.prototype.move = function (old_index, new_index) {
+					showSpinner();
 					if (new_index >= this.length) {
 						var k = new_index - this.length;
 						while ((k--) + 1) {
@@ -2671,6 +2683,9 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="searchResults">&nbsp;</div>
 				</div>
 				<div id="playlistPanel" class="panel jp-playlist my-playlist">
+					<div id="playlistSpinner">
+						<i class="fa fa-spin fa-5x fa-spinner current"></i>
+					</div>
 					<ul>
 						<li></li>
 					</ul>
