@@ -1906,10 +1906,21 @@ class Musicco {
 						if ($("#leftPanel").is(":hidden")) {
 							$("#ham").trigger("click");
 						}
-						$(".panel").removeClass("shown");
-						$(panel).addClass("shown");
-						$(".panelToggle[href='" + panel + "']").trigger("click");
+						showPanel(panel);
 					}
+				}
+
+				function forcePanel(panel) {
+					$(panel).addClass("default");
+					if (($(".panel[class~='shown']").not("[class*='default']")).length = 0) {
+						showPanel(panel);
+					}
+				}
+
+				function showPanel(panel) {
+					$(".panel").removeClass("shown");
+					$(panel).addClass("shown");
+					$(".panelToggle[href='" + panel + "']").trigger("click");
 				}
 
 				$(document).on("click", "#resync", function(event) { 
@@ -2222,16 +2233,17 @@ class Musicco {
 					if (!isWidescreen()) {
 						$("#playlistToggle").show();
 							if (isPortrait()) {
-								$("#leftPanel").hide();								
+								$("#leftPanel").hide();
 							} else {
-								togglePanel("#playlistPanel");
+								forcePanel("#playlistPanel");
 							}
 					} else {
 						$("#playlistToggle").hide();
-						togglePanel("#browserPanel");
+						forcePanel("#browserPanel");
 					}
 					$("#leftPanel").tabs("refresh");
 				}
+				restorePanel();
 				$( ".modal" ).dialog({
 					modal: true,
 					autoOpen: false,
@@ -2240,6 +2252,17 @@ class Musicco {
 					show: { effect: "fade", duration: 400 },
 					hide: { effect: "fold", duration: 200 }
 				});
+			}
+
+			function restorePanel() {
+				var panel = ($(".panel[class~='shown']").not("[class*='default']"));
+				if (panel.length) {
+					$("#leftPanel").show();
+					$(".panelToggle[href='" + "#" + panel + "']").trigger("click");
+					if (isPortrait()) {
+						$(".default").removeClass("default");
+					}
+				}
 			}
 
 			$(window).resize(function(){
@@ -2289,7 +2312,12 @@ class Musicco {
 
 			// JQuery UI and other UI stuff
 			
-			$( "#leftPanel" ).tabs();
+			$( "#leftPanel" ).tabs({
+				beforeActivate: function( event, ui ) {
+					ui.oldPanel.removeClass("shown");
+					ui.newPanel.addClass("shown");
+				}
+			});
 			adaptUI(true);
 		
 		if (isGuestPlay()) {
