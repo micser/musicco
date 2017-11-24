@@ -606,7 +606,11 @@ class Musicco {
 			var restoreCurrentTime = -1;
 			var restorePlaylistPosition = -1;
 			$(document).ready(function() {
-				$("#loading").progressbar( {value: false} );
+				if ($("#login").is(":visible")) {
+					$("#loading").hide()
+				} else {
+					$("#loading").progressbar( {value: false} );
+				}
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
 
