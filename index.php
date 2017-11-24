@@ -1148,6 +1148,7 @@ class Musicco {
 				}
 
 				function formatPlaylist() {
+					hideSpinner();
 					if (hasPlaylist()) {
 						$('.itemHeader').remove();
 						$('.jp-playlist-item-free').html("");
@@ -1232,7 +1233,7 @@ class Musicco {
 							$('.jp-playlist-item-remove').hide();
 						}
 					musiccoPlaylist.albums = albums;
-					setTimeout(function() { hideSpinner(); scrollPlaylist(); }, 500);
+					setTimeout(function() { scrollPlaylist(); }, 500);
 					}
 			}
 
@@ -2235,11 +2236,9 @@ class Musicco {
 							if (isPortrait()) {
 								$("#leftPanel").hide();
 							} else {
-								forcePanel("#playlistPanel");
 							}
 					} else {
 						$("#playlistToggle").hide();
-						forcePanel("#browserPanel");
 					}
 					$("#leftPanel").tabs("refresh");
 				}
@@ -2262,6 +2261,17 @@ class Musicco {
 					if (isPortrait()) {
 						$(".default").removeClass("default");
 					}
+				} else {
+					if (!isPortrait()) {
+						forcePanel("#playlistPanel");
+					}
+					if (isWidescreen()) {
+						forcePanel("#browserPanel");
+						$("#leftPanel").tabs("option", "active", 0);
+					}
+					if (isMedium()) {
+						showPanel("#playlistPanel");
+					} 
 				}
 			}
 
