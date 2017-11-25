@@ -912,12 +912,7 @@ class Musicco {
 					} else {
 						$("#library").fancytree("getTree").filterBranches(function(node) {
 							return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
-						},
-						{ nodata: function() { 
-							$('#includeOlAdlbums').prop('checked', true); 
-								filterTree();
-							}}
-						);
+						});
 					}
 					//console.log(Date.now() - start);
 				}
@@ -2426,7 +2421,18 @@ class Musicco {
 				mode: "hide",
 				fuzzy: true,
 				hideExpanders: false,
-				nodata: "<?php print $this->getString("nodata"); ?>"
+				nodata: function() { 
+					setTimeout(function() {
+						$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
+					}, 50);
+					if (!$("#includeOlAdlbums").is(':checked')) {
+						$('#includeOlAdlbums').prop('checked', true);
+						filterTree();
+						setTimeout(function() {
+							$(".fancytree-statusnode-nodata").hide();
+						}, 50);
+					}
+				}
 			},
 			autoScroll: true,
 			clickFolderMode: 3,
