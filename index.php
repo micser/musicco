@@ -891,17 +891,14 @@ class Musicco {
 				}
 
 				function filterTree() {
+					//var start = Date.now();
 					var filterText = normalise($("#filterText").val().toLowerCase());
 					var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
 					var isMatching = new RegExp(filterText, "i");
 					if ($("#includeOlAdlbums").is(':checked')) {
-						if (filterText.length < 1) {
-							$("#library").fancytree("getTree").clearFilter();
-						} else {
-							$("#library").fancytree("getTree").filterBranches(function(node) {
+						$("#library").fancytree("getTree").filterBranches(function(node) {
 							return isMatching.test(normalise(node.data.path));
 						});
-						}
 					} else {
 						$("#library").fancytree("getTree").filterBranches(function(node) {
 							return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
@@ -912,6 +909,7 @@ class Musicco {
 							}}
 						);
 					}
+					//console.log(Date.now() - start);
 				}
 
 				$("#findIt").on("click", function(event) {
