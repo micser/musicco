@@ -613,6 +613,7 @@ class Musicco {
 				}
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
+				var userIsStillTyping = false;
 
 				$("#reload").on("click", function() {
 					$.ajax({
@@ -668,7 +669,16 @@ class Musicco {
 				});
 
 				$("#filterText").keyup(function() {
-					filterTree();
+					setTimeout( function() {
+						if (userIsStillTyping) {
+							userIsStillTyping = false;
+							filterTree();
+						}
+					}, 400);
+				});
+				
+				$("#filterText").keydown(function() {
+					userIsStillTyping = true;
 				});
 
 				$("#filterButton").on("click", function(event) {
