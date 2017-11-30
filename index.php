@@ -981,9 +981,7 @@ class Musicco {
 
 				function goToArtist(artist) {
 					$('#filterText').val(artist);
-					var e = jQuery.Event("keyup");
-					e.which = 80; // p
-					$("#filterText").trigger(e);
+					filterTree();
 					togglePanel("#browserPanel");
 				}
 
