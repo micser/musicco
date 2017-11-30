@@ -210,10 +210,9 @@ $_TRANSLATIONS["en"] = array(
 	"menu_goto_album" => "Find album",
 	"menu_goto_artist" => "Browse artist",
 	"menu_info" => "Info",
-	"menu_last_album" => "last album",
-	"menu_next_album" => "next album",
+	"menu_last_album" => "Play last",
+	"menu_next_album" => "Play next",
 	"menu_next_track" => "next track",
-	"menu_queue" => "Queue as...",
 	"menu_remove_favourite" => "Remove",
 	"menu_right_now" => "Play",
 	"menu_share" => "Share",
@@ -279,10 +278,9 @@ $_TRANSLATIONS["fr"] = array(
 	"menu_goto_album" => "Trouver l'album",
 	"menu_goto_artist" => "Voir l'artiste",
 	"menu_info" => "Info",
-	"menu_last_album" => "dernier album",
-	"menu_next_album" => "album suivant",
+	"menu_last_album" => "Jouer en dernier",
+	"menu_next_album" => "Jouer après",
 	"menu_next_track" => "piste suivante",
-	"menu_queue" => "Lire comme...",
 	"menu_remove_favourite" => "Retirer",
 	"menu_right_now" => "Jouer",
 	"menu_share" => "Partager",
@@ -632,19 +630,17 @@ class Musicco {
 					flashInfo();
 				});
 				var menuOptions = [
-					{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "ui-icon-play", cmd: "playRightNow"},
-          {title: "<?php print $this->getString("menu_queue"); ?>", uiIcon: "ui-icon-play", cmd: "queueMenu", children: [
-						{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "ui-icon-caret-1-se", cmd: "playAsNextAlbum"},
-						//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "ui-icon-caret-1-e", cmd: "playAsNextTrack"},
-						{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "ui-icon-arrowstop-1-s", cmd: "queue"}
-          ]},
-          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "ui-icon-folder-open"},
-          {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "ui-icon-info"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "ui-icon-arrowthickstop-1-s"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "ui-icon-arrowthickstop-1-s"},
-          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
-          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"},
-          {title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "ui-icon-cancel"}
+					{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fa fa-play", cmd: "playRightNow"},
+					{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fa fa-indent", cmd: "playAsNextAlbum"},
+					//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "fa fa-play", cmd: "playAsNextTrack"},
+					{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fa fa-sort-amount-desc", cmd: "queue"},
+          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "fa fa-user-o"},
+          {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fa fa-info-circle"},
+          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fa fa-download"},
+          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "fa fa-download"},
+          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fa fa-external-link"},
+          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fa fa-heart"},
+          {title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fa fa-remove"}
           ];
 				var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
 				var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
@@ -2465,7 +2461,6 @@ class Musicco {
 		function setMenuEntries(isFolder, target) {
 			 $(target).contextmenu("replaceMenu", menuOptions);
 			 var playRightNow = !hasPlaylist();
-			 var queueMenu = hasPlaylist();
 			 var queue = hasPlaylist();
 			 var playAsNextAlbum = hasPlaylist();
 			 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
@@ -2474,7 +2469,6 @@ class Musicco {
 			 var removeFavourite = ($(target).get(0) === $("#favourites").get(0));
 			 var favourite = !removeFavourite;
 			 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
-			 $(target).contextmenu("updateEntry", "queueMenu", {setClass: queueMenu.toString()});
 			 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
 			 $(target).contextmenu("updateEntry", "playAsNextAlbum", {setClass: playAsNextAlbum.toString()});
 			 $(target).contextmenu("updateEntry", "goto_artist", {setClass: goto_artist.toString()});
@@ -2530,11 +2524,11 @@ class Musicco {
 			delegate: ".jp-playlist-item",
 			autoFocus: true,
 			menu: [
-          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "ui-icon-folder-open"},
-          {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "ui-icon-search"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "ui-icon-arrowthickstop-1-s"},
-          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "ui-icon-extlink"},
-          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "ui-icon-heart"}
+          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "fa fa-user-o"},
+          {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fa fa-search"},
+          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fa fa-download"},
+          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fa fa-external-link"},
+          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fa fa-heart"}
           ],
 			select: function(event, ui) {
 				target = musiccoPlaylist.playlist[$(ui.target).parents("li").index()];
@@ -2682,7 +2676,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<i class="big-jp-next-album">&nbsp;</i>
 				&nbsp;
 				&nbsp;
-				<i class="uncover guestPlay toggles fa fa-bolt">&nbsp;</i>
+				<i class="uncover guestPlay toggles fa fa-magic">&nbsp;</i>
 				&nbsp;
 				&nbsp;
 				<i class="big-volume-down toggles fa fa-volume-down">&nbsp;</i>
@@ -2791,7 +2785,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="playlist-controls" class="spread">
 					<i id="big-mute" class="toggles jp-mute fa fa-volume-off fa-2x"></i>
 						<i id="clear-playlist" class="guestPlay toggles fa fa-trash-o fa-2x"></i>
-						<i class="guestPlay uncover toggles fa fa-bolt fa-2x"></i>
+						<i class="guestPlay uncover toggles fa fa-magic fa-2x"></i>
 						<i id="big-shuffle" class="toggles touch-jp-shuffle fa fa-random fa-2x"></i>
 						<i id="big-repeat" class="toggles touch-jp-repeat fa fa-repeat fa-2x"></i>
 						<i id="big-volume-down" class="toggles fa fa-volume-down fa-2x"></i>

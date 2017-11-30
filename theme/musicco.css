@@ -648,6 +648,13 @@
 	a.jp-playlist-current:before {
 		border-color: transparent #E3E5BB;
 	}
+	
+	.ui-icon[class*=" fa-"] {
+		background: none repeat scroll 0 0 transparent;
+		text-indent: 0;
+		margin-left: .5em;
+		font-size: .75em;
+	}
 
 }
 
