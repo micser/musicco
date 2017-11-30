@@ -1269,7 +1269,7 @@ class Musicco {
 					var resyncText = "&nbsp;&#8226;&nbsp;" + nowPlaying("artist") + "&nbsp;&#9654;";
 					$("#resync").html(resyncText);
 					if (show) {
-						togglePanel("#infoPanel");
+						showPanel("#infoPanel");
 					}
 					if (force) {
 							$("#resync").show();
