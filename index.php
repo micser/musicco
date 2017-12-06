@@ -1407,15 +1407,16 @@ class Musicco {
 					var time = Math.floor(jpData.status.currentTime);
 					var loop = musiccoPlaylist.loop;
 					var shuffled = musiccoPlaylist.shuffled;
-					$.post('?', {savePlaylist: '', u: user, p: playlist, c: current, t: time, l: loop, s: shuffled}, function (response) {
+					$.post('?', {savePlaylist: '', u: user, n: "default", p: playlist, c: current, t: time, l: loop, s: shuffled}, function (response) {
 					});	
 				}
 
 				function loadPlaylist() {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					if (user!="") {
-								$.post('?', {loadPlaylist: '', u: user}, function(response) {
-						var needsBuilding = response.build;
+						$.post('?', {loadPlaylist: '', u: user}, function(response) {
+							console.log(response);
+							var needsBuilding = response.build;
 							if (needsBuilding) {
 								var root = response.path;
 								$.post('?', {querydb: '', root: root, type: 'queue'}, function (results) {
@@ -2855,24 +2856,10 @@ if(!AuthManager::isAccessAllowed()) {
 //
 // This is where the system is activated.
 	if(isset($_POST['loadPlaylist'])) {
-		$user = $_POST['u'];
-			$response = file_get_contents(dirname(__FILE__)."/playlists/".$user.".playlist");
-			if ($response == "") {
-				$response = '{"song": "0" , "time": 0, "repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
-			}
-			logMessage("Loaded playlist for ".$user);
-			return	print_r($response);
+			return print_r(loadPlaylist($_POST['u']));
 			exit;
 	} elseif (isset($_POST['savePlaylist'])) {
-			$user = $_POST['u'];
-			$playlist = str_replace("\"", "\\\"", $_POST['p']);
-			$current = $_POST['c'];
-			$time = $_POST['t'];
-			$loop = $_POST['l'];
-			$shuffled = $_POST['s'];
-			$save = "{\"current\": \"".$current."\" , \"time\": \"".$time."\" , \"loop\": \"".$loop."\" , \"shuffled\": \"".$shuffled."\" , \"playlist\": \"".$playlist."\"}";
-			logMessage("Saved playlist for ".$user);
-			return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
+			savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t'], $_POST['l'], $_POST['s']);
 			exit;
 	} elseif (isset($_POST['saveGuestPlaylist'])) {
 			$user = $_POST['u'];
@@ -3016,25 +3003,6 @@ function deleteFavourite($user, $path) {
 	}
 }
 
-function getId($user) {
-	$id = 0;
-	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-	$count_query = $db->prepare("SELECT count(id) from users where username = \"$user\";");
-	if ($count_query) {
-		$count_query->execute();
-		$count = $count_query->fetchColumn();
-		if ($count > 0) {
-			$id_query = $db->prepare("SELECT id from users where username = \"$user\";");
-			$id_query->execute();
-			$id=$id_query->fetchColumn();
-		} else {
-			$db ->exec("INSERT into users (username) VALUES (\"" . $user . "\");");
-			$id = $db->lastInsertId();
-		}
-	}
-	$db = NULL;
-	return $id;
-}
 
 function getFavourites($user) {
 	global $favourites_list;
@@ -3078,6 +3046,54 @@ function buildUL($favourites, $prefix) {
     $favourites_list .= "</li>\n";
   }
   $favourites_list .= "</ul>\n";
+}
+
+function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled) {
+	$userId = getId($user);
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$data = preg_replace('/"/', '\\\'', "{\"current\": \"$current\" , \"time\": \"$time\" , \"loop\": \"$loop\" , \"shuffled\": \"$shuffled\" , \"playlist\": \"".preg_replace('/"/', '\\"', $playlist)."\"}");
+		$update_playlist_query = $db->prepare("REPLACE INTO playlists (userId, name, current, data) VALUES ($userId, \"$name\", 1, \"$data\")");
+		$update_playlist_query->execute();
+		$db = NULL;
+		logMessage("Saved playlist for ".$user);
+	}
+}
+
+function loadPlaylist($user) {
+	$userId = getId($user);
+	$playlist = '{"song": "0" , "time": 0, "repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$query = "SELECT data FROM playlists WHERE userId=$userId; AND name=\"default\"";
+		$result = $db->query($query);
+		$db = NULL;
+		foreach($result as $row) {
+			$playlist = preg_replace("/\\\'/", '"', $row['data']);
+		}
+		logMessage("Loaded playlist for ".$user);
+	}
+	return $playlist;
+}
+
+function getId($user) {
+	$id = 0;
+	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+	$count_query = $db->prepare("SELECT count(id) from users where username = \"$user\";");
+	if ($count_query) {
+		$count_query->execute();
+		$count = $count_query->fetchColumn();
+		if ($count > 0) {
+			$id_query = $db->prepare("SELECT id from users where username = \"$user\";");
+			$id_query->execute();
+			$id=$id_query->fetchColumn();
+		} else {
+			$db ->exec("INSERT into users (username) VALUES (\"" . $user . "\");");
+			$id = $db->lastInsertId();
+		}
+	}
+	$db = NULL;
+	return $id;
 }
 
 function querydb($query_root, $query_type) {
@@ -3191,6 +3207,7 @@ function builddb() {
 			$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
 			$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE);");
 			$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
+			$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, current BOOLEAN, data TEXT, unique(userId, name));");
 			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
 			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
 			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
