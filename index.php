@@ -231,7 +231,9 @@ $_TRANSLATIONS["en"] = array(
 	"play" => "Play", 
 	"previoustrack" => "Previous",
 	"promptCoverURL" => "Album cover URL", 
+	"promptFolderName" => "Folder name", 
 	"queueing" => "Queueing ",
+	"quick_scan" => "quick add folder",
 	"rebuildingLibrary" => "library refreshing...",
 	"reload" => "reload",
 	"reset_db" => "update library",
@@ -299,7 +301,9 @@ $_TRANSLATIONS["fr"] = array(
 	"play" => "Lecture", 
 	"previoustrack" => "Précédent",
 	"promptCoverURL" => "Adresse de la couverture", 
+	"promptFolderName" => "Nome du dossier", 
 	"queueing" => "Ajout de ",
+	"quick_scan" => "ajout rapide...",
 	"rebuildingLibrary" => "scan en cours...",
 	"reload" => "recharger",
 	"reset_db" => "rafraichir la discothèque",
@@ -976,9 +980,9 @@ class Musicco {
 				});
 
 				function goToArtist(artist) {
+					togglePanel("#browserPanel");
 					$('#filterText').val(artist);
 					filterTree();
-					togglePanel("#browserPanel");
 				}
 
 				function goToAlbum(album) {
@@ -1026,6 +1030,25 @@ class Musicco {
 						});
 					})();
 				}
+
+				$(document).on("click", "#quick_scan", function() {
+					var folderName = window.prompt("<?php print $this->getString("promptFolderName"); ?>", "");
+					if (folderName != "") {
+						$.ajax({
+							type: "POST",
+							url: "",
+							data: {quickscan: "", folder: folderName},
+							success: function(response) {
+								if (parseInt(response) > 0) {
+									$("#library").fancytree("getTree").reload();
+									goToArtist(folderName);
+								} else {
+									// show an error
+								}
+							}
+						});
+					}
+				});
 
 				$(document).on("click", "#reset_db", function() {
 					var oldHTML = $("#reset_db").html();
@@ -2757,6 +2780,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<?php
 				if (AuthManager::isAdmin()) {
 					print "<div id=\"reset_db\" class=\"guestPlay\"><a>".$this->getString("reset_db")."</a></div>";
+					print "<div id=\"quick_scan\" class=\"guestPlay\"><a>".$this->getString("quick_scan")."</a></div>";
 				}
 				print "<div id=\"reload\"><a>".$this->getString("reload")."</a></div>";
 				print "<div id=\"help\"><a>".$this->getString("help")."</a></div>";
@@ -2959,6 +2983,10 @@ if(!AuthManager::isAccessAllowed()) {
 	} elseif (isset($_GET['builddb']) || ((defined('STDIN')) && $argv[1]=="builddb")) {
 			logMessage("User requested library rebuild");
 			builddb();
+			exit;
+	} elseif (isset($_POST['quickscan'])) {
+			$folder = $_POST['folder'];
+			quickscan($folder);
 			exit;
 	} else {
 			$musicco = new Musicco();
@@ -3193,101 +3221,128 @@ function logMessage($log_message) {
 		error_log(date('Y-m-d H:i:s').": ".$log_message."\n", 3, dirname(__FILE__).'/'.Musicco::getConfig('appName').'.log');
 	}
 }
+
+function quickscan($folder) {
+	$newMusic = build_library(Musicco::getConfig('musicRoot')."/".$folder, ".mp3");
+	if (sizeof($newMusic) > 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$db->exec('INSERT INTO item (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) VALUES ("'.$folder.'","'. normalise($folder).'", "1", "'.Musicco::getConfig('musicRoot').'/", "", "", "", "'.$folder.'", "", "", "");');
+		insertResults($newMusic, $db, false);
+		$db = NULL;
+	}
+	printf(sizeof($newMusic));
+}
+
+function lockDB() {
+	$lock_file = fopen(Musicco::getConfig('musicRoot').".lock", "w") or die("Unable to create lock file.");
+	fclose($lock_file);
+}
+
+function cleanDB($db) {
+	$db->exec("DELETE FROM item_tmp;");
+	$db->exec("DELETE FROM data;");
+	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
+	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
+	$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
+	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE);");
+	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
+	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, current BOOLEAN, data TEXT, unique(userId, name));");
+	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
+	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
+	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
+	$db->exec("INSERT INTO data (key, value) VALUES ('version', '".Musicco::getConfig('dbVersion')."');");
+}
+
+function insertResults($library, $db, $background) {
+	$destTable = "item";
+	if ($background) {
+		$destTable = "item_tmp";
+	}
+	$insert_item = $db->prepare('INSERT INTO '.$destTable.' (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
+
+	foreach ($library as $item) {
+		$name= $item[0];
+		$normalised_name = normalise($name);
+		$type= $item[1];
+		$parent= $item[2];
+		$cover= "";
+		$album= "";
+		$artist= "";
+		$title= "";
+		$year= "";
+		$number= "";
+		$extension= "";
+		// compute year 
+		$target =  ($type == Musicco::TYPE_FOLDER)? $name : $parent;
+		if (preg_match(Musicco::getConfig('yearPattern'), $target, $year_matches)) {
+			$year = $year_matches[1];
+		}				
+
+		// compute title and track info
+		if ($type == Musicco::TYPE_FILE) {
+			if (preg_match(Musicco::getConfig('filenamePattern'), $name, $filename_matches)) {
+				$number = $filename_matches[1];
+				$title = $filename_matches[3];
+				$extension = $filename_matches[4];
+			} else {
+				$title = str_ireplace(" - ", " ", str_ireplace($artist, "", str_ireplace(".mp3", "", $name)));
+			}
+		} elseif ($type == Musicco::TYPE_FOLDER) {
+			$title  = str_replace("[$year] ", "", str_replace(Musicco::getConfig('new_marker'), "", $name));
+		}
+
+		// compute album
+		$exploded_parent = explode("/", $parent);
+		
+		$album_location = ($type == Musicco::TYPE_FOLDER)? 3 : 2;
+		if (sizeOf($exploded_parent) - $album_location > 0) {
+			$album = $exploded_parent[sizeOf($exploded_parent) - $album_location];
+			$i=1;
+			while(($i < sizeOf($exploded_parent)) && (preg_match(Musicco::getConfig('albumPattern'), $album))) {
+				$i+=1;
+				$album = $exploded_parent[$i];
+			}
+		} else {
+			$album = $name;
+		}
+		$album = str_replace("[$year] ", "", $album);
+		
+		// compute artist
+		$i=1;
+		$artist = $exploded_parent[$i];
+		while(($i < sizeOf($exploded_parent)) && (preg_match(Musicco::getConfig('artistPattern'), $artist))) {
+			$i+=1;
+			$artist = $exploded_parent[$i];
+		}
+		$artist = str_replace(Musicco::getConfig('new_marker'), "", $artist);
+
+		// insert all info in DB
+		$insert_item->execute(array($name, $normalised_name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension));
+	}
+}
+
 function builddb() {
 	if (file_exists(Musicco::getConfig('musicRoot').".lock")) {
 			printf("-1");
 			logMessage("Aborting, another library refresh is already in progress.");
 	} else {
-		$lock_file = fopen(Musicco::getConfig('musicRoot').".lock", "w") or die("Unable to create lock file.");
-		fclose($lock_file);
+		// write lock file
+		lockDB();
 		try {
 			$folder = Musicco::getConfig('musicRoot');
-			// write lock file
 			//open the database
 			$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-
+			cleanDB($db);
 			//create the database
-			$db->exec("DELETE FROM item_tmp;");
-			$db->exec("DELETE FROM data;");
-			$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
-			$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
-			$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
-			$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE);");
-			$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
-			$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, current BOOLEAN, data TEXT, unique(userId, name));");
-			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
-			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
-			$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
-			$db->exec("INSERT INTO data (key, value) VALUES ('version', '".Musicco::getConfig('dbVersion')."');");
 
-			$insert_item = $db->prepare('INSERT INTO item_tmp (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
 			
 			$_START_SCAN = microtime(true);
 			$library = build_library($folder, ".mp3");
 			logMessage("Scanned drive in ".number_format((microtime(true) - $_START_SCAN), 3)." seconds");
 
 			$_START_INSERT = microtime(true);
-			foreach ($library as $item) {
-				$name= $item[0];
-				$normalised_name = normalise($name);
-				$type= $item[1];
-				$parent= $item[2];
-				$cover= "";
-				$album= "";
-				$artist= "";
-				$title= "";
-				$year= "";
-				$number= "";
-				$extension= "";
-			
-				// compute year 
-				$target =  ($type == Musicco::TYPE_FOLDER)? $name : $parent;
-				if (preg_match(Musicco::getConfig('yearPattern'), $target, $year_matches)) {
-					$year = $year_matches[1];
-				}				
+			insertResults($library, $db, true);
 
-				// compute title and track info
-				if ($type == Musicco::TYPE_FILE) {
-					if (preg_match(Musicco::getConfig('filenamePattern'), $name, $filename_matches)) {
-						$number = $filename_matches[1];
-						$title = $filename_matches[3];
-						$extension = $filename_matches[4];
-					} else {
-						$title = str_ireplace(" - ", " ", str_ireplace($artist, "", str_ireplace(".mp3", "", $name)));
-					}
-				} elseif ($type == Musicco::TYPE_FOLDER) {
-					$title  = str_replace("[$year] ", "", str_replace(Musicco::getConfig('new_marker'), "", $name));
-				}
-
-				// compute album
-				$exploded_parent = explode("/", $parent);
-				
-				$album_location = ($type == Musicco::TYPE_FOLDER)? 3 : 2;
-				if (sizeOf($exploded_parent) - $album_location > 0) {
-					$album = $exploded_parent[sizeOf($exploded_parent) - $album_location];
-					$i=1;
-					while(($i < sizeOf($exploded_parent)) && (preg_match(Musicco::getConfig('albumPattern'), $album))) {
-						$i+=1;
-						$album = $exploded_parent[$i];
-					}
-				} else {
-					$album = $name;
-				}
-				$album = str_replace("[$year] ", "", $album);
-				
-				// compute artist
-				$i=1;
-				$artist = $exploded_parent[$i];
-				while(($i < sizeOf($exploded_parent)) && (preg_match(Musicco::getConfig('artistPattern'), $artist))) {
-					$i+=1;
-					$artist = $exploded_parent[$i];
-				}
-				$artist = str_replace(Musicco::getConfig('new_marker'), "", $artist);
-
-				// insert all info in DB
-				$insert_item->execute(array($name, $normalised_name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension));
-			}
-			
 			// Update non-temp tables and reindex the DB
 			$db->exec("DELETE FROM item;");
 			$db->exec("DROP INDEX item_idx;");
