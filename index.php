@@ -1415,7 +1415,6 @@ class Musicco {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					if (user!="") {
 						$.post('?', {loadPlaylist: '', u: user}, function(response) {
-							console.log(response);
 							var needsBuilding = response.build;
 							if (needsBuilding) {
 								var root = response.path;
@@ -1703,6 +1702,7 @@ class Musicco {
 					// 66: b
 					// 83: s
 					// 80: p
+					// 84: t
 					// 73: i
 					// 76: l
 					// 71: g
@@ -1728,6 +1728,7 @@ class Musicco {
 					// 105: 9
 					var inputIsFocused = $("input").is(":focus");
 					var treeIsFocused = (($("#library,#favourites").find(":focus")).length > 0) && $(".fancytree-container").hasClass("fancytree-treefocus");
+					var tabIsFocused = $(document.activeElement).hasClass("ui-tabs-tab");
 					var menuIsFocused = $(".ui-contextmenu").is(":focus");
 					var node = treeIsFocused? $("#library").fancytree("getActiveNode") : null;
 					var customKeyEvents = [];
@@ -1735,10 +1736,10 @@ class Musicco {
 						customKeyEvents.push(27);
 					} else if (treeIsFocused) {
 						customKeyEvents.push(27, 191, 65, 73);
-					} else if (menuIsFocused) {
+					} else if (menuIsFocused || tabIsFocused) {
 						//no keys intercepted on context menu
 					} else {
-						customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 71, 73, 76, 80, 83, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
+						customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 71, 73, 76, 80, 83, 84, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
 					}
 					
 					if (customKeyEvents.indexOf(e.keyCode) > -1) {
@@ -1808,6 +1809,10 @@ class Musicco {
 									var slash = node.isFolder()? "/": "" ;
 									queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, false);
 								}
+							break;
+
+							case 84: //t
+								$(".ui-tabs-active").focus();
 							break;
 
 							case 83: //s
@@ -2231,12 +2236,14 @@ class Musicco {
 					windowWidth = newWindowWidth;
 					if (!isWidescreen()) {
 						$("#playlistToggle").show();
+						$("#leftPanel").tabs("enable", 2 );
 							if (isPortrait()) {
 								$("#leftPanel").hide();
 							} else {
 							}
 					} else {
 						$("#playlistToggle").hide();
+						$("#leftPanel").tabs("disable", 2 );
 					}
 					$("#leftPanel").tabs("refresh");
 				}
@@ -3412,6 +3419,7 @@ function builddb() {
 		$helpString.="<div class='guestPlay'>b: show browser</div>";
 		$helpString.="<div class='guestPlay'>/: go to filter box in browser</div>";
 		$helpString.="<div class='guestPlay'>s: show/ search</div>";
+		$helpString.="<div>t: focus tab header</div>";
 		$helpString.="<div>p: show playlist</div>";
 		$helpString.="<div>i: show artist information</div>";
 		$helpString.="<div>l: show lyrics</div>";
