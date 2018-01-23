@@ -233,10 +233,13 @@ $_TRANSLATIONS["en"] = array(
 	"promptCoverURL" => "Album cover URL", 
 	"promptFolderName" => "Folder name", 
 	"queueing" => "Queueing ",
-	"quick_scan" => "quick add folder",
+	"quick_scan" => "quick scan folder",
 	"rebuildingLibrary" => "library refreshing...",
 	"reload" => "reload",
 	"reset_db" => "update library",
+	"scanning" => "Scanning ",
+	"scanning_ko" => "Scanning failed",
+	"scanning_ok" => "Folder scanned successfully",
 	"search" => "Search ",
 	"search_placeholder" => "What are you looking for?",
 	"searchingFor" => "Searching for ",
@@ -307,6 +310,9 @@ $_TRANSLATIONS["fr"] = array(
 	"rebuildingLibrary" => "scan en cours...",
 	"reload" => "recharger",
 	"reset_db" => "rafraichir la discothèque",
+	"scanning" => "Scan de ",
+	"scanning_ko" => "échec du scan",
+	"scanning_ok" => "Dossier ajouté",
 	"search" => "Chercher sur ",
 	"search_placeholder" => "Que cherchez-vous ?",
 	"searchingFor" => "Recherche de ",
@@ -779,12 +785,11 @@ class Musicco {
 				}
 
 				function showLoadingInfo(info) {
+					$('#loadingInfo').stop(true);
 					$("#toast_text").text(info);
-					$('#loadingInfo').fadeTo(100, 1);
-				}
-
-				function hideLoadingInfo() {
-					$('#loadingInfo').fadeTo(1500, 0, function() { $("#toast_text").text(""); });
+					$('#loadingInfo').fadeTo(100, 1, function() {
+																						$('#loadingInfo').fadeTo(2000, 0, function() { $("#toast_text").text(""); });
+																					});
 				}
 
 				function fetchCover() {
@@ -905,12 +910,13 @@ class Musicco {
 					var filterText = normalise($("#filterText").val().toLowerCase());
 					var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
 					var isMatching = new RegExp(filterText, "i");
+					var tree = $("#library").fancytree("getTree");
 					if ($("#includeOlAdlbums").is(':checked')) {
-						$("#library").fancytree("getTree").filterBranches(function(node) {
+						tree.filterBranches(function(node) {
 							return isMatching.test(normalise(node.data.path));
 						});
 					} else {
-						$("#library").fancytree("getTree").filterBranches(function(node) {
+						tree.filterBranches(function(node) {
 							return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
 						});
 					}
@@ -967,9 +973,9 @@ class Musicco {
 						} else {
 							resultString="<?php print $this->getString("noResultsForThisSearch"); ?>";
 						}
-						$("#searchResults").html(resultString);
-						$('.searchResult').first().focus();
-						hideLoadingInfo();}, "json");
+							$("#searchResults").html(resultString);
+							$('.searchResult').first().focus();
+						}, "json");
 					}
 				});
 
@@ -982,7 +988,7 @@ class Musicco {
 				function goToArtist(artist) {
 					togglePanel("#browserPanel");
 					$('#filterText').val(artist);
-					filterTree();
+					setTimeout(function() { filterTree(); }, 200);
 				}
 
 				function goToAlbum(album) {
@@ -1033,7 +1039,8 @@ class Musicco {
 
 				$(document).on("click", "#quick_scan", function() {
 					var folderName = window.prompt("<?php print $this->getString("promptFolderName"); ?>", "");
-					if (folderName != "") {
+					if ((folderName != "") && (folderName != null)) {
+						showLoadingInfo("<?php print $this->getString("scanning"); ?>" + folderName);
 						$.ajax({
 							type: "POST",
 							url: "",
@@ -1041,9 +1048,10 @@ class Musicco {
 							success: function(response) {
 								if (parseInt(response) > 0) {
 									$("#library").fancytree("getTree").reload();
+									showLoadingInfo("<?php print $this->getString("scanning_ok"); ?>");
 									goToArtist(folderName);
 								} else {
-									// show an error
+									showLoadingInfo("<?php print $this->getString("scanning_ko"); ?>");
 								}
 							}
 						});
@@ -1124,7 +1132,7 @@ class Musicco {
 									});
 								}
 							$(".uncoverLink").remove(); 
-								hideLoadingInfo(); }, "json");
+						}, "json");
 					}
 				});
 
@@ -1476,7 +1484,6 @@ class Musicco {
 									$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
 								}
 							}
-							hideLoadingInfo();
 							$("#loading").hide();
 							formatPlaylist();
 							if (isGuestPlay()) {
@@ -2229,7 +2236,6 @@ class Musicco {
 									});
 								});
 							}
-					hideLoadingInfo();
 					formatPlaylist();
 					if (custom) {
 					var addedAlbums = getAlbumArray().length - previousAlbums;
@@ -2388,7 +2394,6 @@ class Musicco {
 		function addFavourite(path) {
 			var user = "<?php echo AuthManager::getUserName(); ?>";
 			showLoadingInfo("<?php print $this->getString("favourites_added"); ?>");
-			hideLoadingInfo();
 			$.post('?', {addFavourite: '', u: user, p: path}, function (response) {
 				updateFavourites();
 			});
@@ -2411,7 +2416,6 @@ class Musicco {
 					$("#favourites").empty();
 					$("#favourites").append(response);
 					initFavouriteTree();
-					setTimeout(function() { hideLoadingInfo(); }, 2000);
 			});
 		}
 
