@@ -26,6 +26,10 @@
  }
 */
 
+	.settings {
+		margin-top: 0.5em;
+	}
+
 	.ui-tabs .ui-tabs-nav {
 		border-bottom: 1px solid #A7A97F;
 	}

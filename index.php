@@ -569,7 +569,6 @@ class Musicco {
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $this->getConfig('lang'); ?>" lang="<?php print $this->getConfig('lang'); ?>">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/font-awesome.min.css" >
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
 		<link rel="stylesheet" href="lib/jquery-ui/jquery-ui.min.css">
 		<link rel="stylesheet" href="lib/fancytree/skin-awesome/ui.fancytree.min.css">
@@ -598,6 +597,7 @@ class Musicco {
 		<meta name="msapplication-TileColor" content="#a7a97f">
 		<meta name="msapplication-TileImage" content="app/mstile-310x310.png">
 		<meta name="theme-color" content="#a7a97f">
+		<script defer src="lib/font-awesome/js/fontawesome-all.min.js"></script>
 		<script type="text/javascript" src="lib/jquery/jquery-2.2.4.min.js"></script>
 		<script type="text/javascript" src="lib/jquery/jquery.mobile.custom.min.js"></script>
 		<script type="text/javascript" src="lib/jquery-ui/jquery-ui.min.js"></script>
@@ -642,17 +642,17 @@ class Musicco {
 					flashInfo();
 				});
 				var menuOptions = [
-					{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fa fa-play", cmd: "playRightNow"},
-					{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fa fa-indent", cmd: "playAsNextAlbum"},
-					//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "fa fa-play", cmd: "playAsNextTrack"},
-					{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fa fa-sort-amount-desc", cmd: "queue"},
-          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "fa fa-user-o"},
-          {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fa fa-info-circle"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fa fa-download"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "fa fa-download"},
-          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fa fa-external-link"},
-          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fa fa-heart"},
-          {title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fa fa-remove"}
+					{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "playRightNow"},
+					{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fas fa-indent", cmd: "playAsNextAlbum"},
+					//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "fas fa-play", cmd: "playAsNextTrack"},
+					{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fas fa-sort-amount-down", cmd: "queue"},
+          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
+          {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
+          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
+          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "fas fa-download"},
+          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
+          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"},
+          {title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fas fa-times"}
           ];
 				var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
 				var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
@@ -947,7 +947,7 @@ class Musicco {
 					if (term.length > 0) {
 						showLoadingInfo("<?php print $this->getString("searchingFor"); ?>" + term);
 						var resultString="&nbsp;";
-						$("#searchResults").html("&nbsp;&nbsp;<i class=\"fa fa-spin fa-spinner\"></i>&nbsp;&nbsp;<?php print $this->getString("searchingLibrary"); ?>");
+						$("#searchResults").html("&nbsp;&nbsp;<i class=\"fas fa-spin fa-spinner\"></i>&nbsp;&nbsp;<?php print $this->getString("searchingLibrary"); ?>");
 						$(".hits").remove();
 						$.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
 						var hits= data;
@@ -1205,7 +1205,7 @@ class Musicco {
 								albums.push({thisAlbum, albumIndex, index, tracks});
 								var moveUp = "";
 								if (thisAlbum != firstAlbum) {
-									moveUp = "<a class=\"move fa fa-arrow-up\""
+									moveUp = "<a class=\"move fas fa-arrow-up\""
 												+ "data-from=\"" + albumIndex + "\""
 												+ "data-to=\"" + (albumIndex - 1) + "\""
 												+ "data-direction=\"up\""
@@ -1214,7 +1214,7 @@ class Musicco {
 
 								var moveDown="";
 								if (thisAlbum != lastAlbum) {
-									moveDown = "<a class=\"move fa fa-arrow-down\""
+									moveDown = "<a class=\"move fas fa-arrow-down\""
 												+ "data-from=\"" + albumIndex + "\""
 												+ "data-to=\"" + (albumIndex + 1) + "\""
 												+ "data-direction=\"down\""
@@ -1234,16 +1234,16 @@ class Musicco {
 									parent += parents[i] + "/";
 								}
 								albumFolder = parents[parents.length -2];
-								var download = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay downloadAlbum' data-parent='replacemeParent' data-album='replacemeAlbum'><i class='fa fa-download'></i></a>\"":"\"\""); ?>;
-								var favourite = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay favouriteAlbum' data-path='replacemePath'><i class='fa fa-heart'></i></a>\"":"\"\""); ?>;
-								var share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' data-path='replacemePath' data-info='replacemeInfo'><i class='fa fa-external-link'></i></a>\"":"\"\""); ?>;
+								var download = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay downloadAlbum' data-parent='replacemeParent' data-album='replacemeAlbum'><i class='fas fa-download'></i></a>\"":"\"\""); ?>;
+								var favourite = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay favouriteAlbum' data-path='replacemePath'><i class='fas fa-heart'></i></a>\"":"\"\""); ?>;
+								var share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' data-path='replacemePath' data-info='replacemeInfo'><i class='fas fa-external-link-alt'></i></a>\"":"\"\""); ?>;
 								var itemHeader = 
 								"<span class=\"itemHeader\">"
 									+ "<table class=\"itemHeaderDetails\">"
 										+ "<tr>"
 											+ "<td rowspan=\"2\"><img class=\"album-cover\" src=\"" + cover + "\"/></td>"
 											+ "<td class=\"itemHeaderRemove\">"
-												+ "<a class=\"guestPlay remove-album fa fa-remove\" data-album=\"" + thisAlbum + "\"></a>"
+												+ "<a class=\"guestPlay remove-album fas fa-times\" data-album=\"" + thisAlbum + "\"></a>"
 												+ "<br/>"
 												+ moveUp
 												+ moveDown
@@ -2386,12 +2386,12 @@ class Musicco {
 		var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
 		
 		var customTreeIcons = { 
-			preset: "awesome4",
+			preset: "awesome5",
 			map: {
-				doc: "fa fa-music",
-				docOpen: "fa fa-music",
-				expanderClosed: "fa fa-angle-right",
-				expanderOpen: "fa fa-angle-down",
+				doc: "fas fa-music",
+				docOpen: "fas fa-music",
+				expanderClosed: "fas fa-angle-right",
+				expanderOpen: "fas fa-angle-down"
 			}
 		};
 
@@ -2446,7 +2446,7 @@ class Musicco {
 				postProcess: function(event, data) {
 					if (data.response.length != 0 ) {
 						data.response[0].title = "<?php print Musicco::getString('my_favourites'); ?>";
-						data.response[0].icon = "fa fa-heart";
+						data.response[0].icon = "fas fa-heart";
 					}
 				}
 			});
@@ -2571,11 +2571,11 @@ class Musicco {
 			delegate: ".jp-playlist-item",
 			autoFocus: true,
 			menu: [
-          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "fa fa-user-o"},
-          {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fa fa-search"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fa fa-download"},
-          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fa fa-external-link"},
-          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fa fa-heart"}
+          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
+          {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fas fa-search"},
+          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
+          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
+          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"}
           ],
 			select: function(event, ui) {
 				target = musiccoPlaylist.playlist[$(ui.target).parents("li").index()];
@@ -2702,10 +2702,10 @@ if(!AuthManager::isAccessAllowed()) {
 			<div id="shared-album-qr"></div>
 			<div id="shared-album-title" class="big"></div>
 			<div id="share-actions" class="spread">
-					<i class="fa fa-2x fa-qrcode" id="shared-album-show-qr"></i>
-					<i class="fa fa-2x fa-picture-o" id="shared-album-show-cover"></i>
-					<i class="fa fa-2x fa-clipboard clip" data-clipboard-target="#shared-album-link"></i>
-					<i class="fa fa-2x fa-external-link" id="shared-album-share"></i>
+					<span id="shared-album-show-qr"><i class="fas fa-2x fa-qrcode"></i></span>
+					<span id="shared-album-show-cover"><i class="far fa-2x fa-image"></i></span>
+					<span data-clipboard-target="#shared-album-link" class="clip"><i class="far fa-2x fa-clipboard"></i></span>
+					<span id="shared-album-share"><i class="fas fa-2x fa-external-link-alt"></i></span>
 			</div>
 			<input tabindex="-1" type="text" value="" class="shared-link" id="shared-album-link"/>
 		</div>
@@ -2713,27 +2713,25 @@ if(!AuthManager::isAccessAllowed()) {
 		<!-- START: header -->
 		<div id="header" class="spread nowrap">
 			<span>
-			<i id="ham" class="fa fa-navicon fa-2x"></i>
+			<span id="ham"><i class="fas fa-bars fa-2x"></i></span>
 			<span id="mini-controls" class="big-controls">
-				<i class="big-jp-previous-album"></i>
-				<i class="big-jp-previous fa fa-step-backward">&nbsp;</i>
-				<i class="big-jp-play fa fa-play-circle-o">&nbsp;</i>
-				<i class="big-jp-pause fa fa-pause-circle-o" style=" display: none;">&nbsp;</i>
-				<i class="big-jp-next fa fa-step-forward">&nbsp;</i>
-				<i class="big-jp-next-album">&nbsp;</i>
+				<span class="big-jp-previous-album">&nbsp;</span>
+				<span class="big-jp-previous"><i class="fas fa-step-backward"></i>&nbsp;</span>
+				<span class="big-jp-play"><i class="far fa-play-circle"></i>&nbsp;</span>
+				<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle"></i>&nbsp;</span>
+				<span class="big-jp-next"><i class="fas fa-step-forward"></i>&nbsp;</span>
+				<span class="big-jp-next-album">&nbsp;</span>
 				&nbsp;
 				&nbsp;
-				<i class="uncover guestPlay toggles fa fa-magic">&nbsp;</i>
+				<span class="uncover guestPlay toggles"><i class="fas fa-magic"></i>&nbsp;</span>
 				&nbsp;
 				&nbsp;
-				<i class="big-volume-down toggles fa fa-volume-down">&nbsp;</i>
-				<i class="big-volume-down toggles fa fa-volume-up">&nbsp;</i>
+				<span class="big-volume-down toggles"><i class="fas fa-volume-down"></i>&nbsp;</span>
+				<span class="big-volume-down toggles"><i class="fas fa-volume-up"></i>&nbsp;</span>
 			</span>
 			</span>
 			<span id="loadingInfo">
-				<i class="fa fa-spin fa-music"></i><span>&nbsp;</span>
-				<span id="toast_text"></span><span>&nbsp;</span>
-				<i class="fa fa-spin fa-music"></i>
+				<i class="fas fa-spin fa-music"></i>&nbsp;<span id="toast_text"></span>&nbsp;<i class="fas fa-spin fa-music"></i>
 			</span>
 			<?php
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
@@ -2745,12 +2743,12 @@ if(!AuthManager::isAccessAllowed()) {
 		<!-- START: Left Panel -->
 		<div id="leftPanel">
 			<ul>
-				<li id="browserToggle"><a href="#browserPanel" class="guestPlay panelToggle fa fa-folder-open"></a></li>
-				<li id="searchToggle"><a href="#searchPanel" class="guestPlay panelToggle fa fa-search"></a></li>
-				<li id="playlistToggle"><a href="#playlistPanel" class="panelToggle fa fa-list"></a></li>
-				<li id="infoToggle"><a href="#infoPanel" class="panelToggle fa fa-info-circle"></a></li>
-				<li id="lyricsToggle"><a href="#lyricsPanel" class="panelToggle fa fa-microphone"></a></li>
-				<li id="settingsToggle"><a href="#settingsPanel" class="panelToggle fa fa-gears"></a></li>
+				<li id="browserToggle"><a href="#browserPanel" class="guestPlay panelToggle"><i class="far fa-folder-open"></i></a></li>
+				<li id="searchToggle"><a href="#searchPanel" class="guestPlay panelToggle"><i class="fas fa-search"></i></a></li>
+				<li id="playlistToggle"><i class="fas fa-list"></i><a href="#playlistPanel" class="panelToggle"></a></li>
+				<li id="infoToggle"><a href="#infoPanel" class="panelToggle"><i class="fas fa-info-circle"></i></a></li>
+				<li id="lyricsToggle"><a href="#lyricsPanel" class="panelToggle"><i class="fas fa-microphone"></i></a></li>
+				<li id="settingsToggle"><a href="#settingsPanel" class="panelToggle"><i class="fas fa-cogs"></i></a></li>
 			</ul>
 			<div id="panelContainer">
 				<div id="browserPanel" class="panel guestPlay">
@@ -2759,7 +2757,7 @@ if(!AuthManager::isAccessAllowed()) {
 							<input id="includeOlAdlbums" tabindex="0" type="checkbox" checked="true"/>
 							<?php print $this->getString("show_all"); ?>
 							<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" />
-							<a class="btn" id="filterButton" href="#"><i class="fa fa-border fa-close"></i></a>
+							<a class="btn" id="filterButton" href="#"><i class="fas fa-border fa-times"></i></a>
 						</div>
 						<div id="favourites">
 							<?php print getFavourites(AuthManager::getUserName()); ?>
@@ -2771,15 +2769,15 @@ if(!AuthManager::isAccessAllowed()) {
 					<form action="?" id="searchForm">
 						<input id="searchText" type="text" class="fill" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
 						<span class="right">
-							<a class="btn" id="findIt" href="#"><i class="fa fa-border fa-search"></i></a>
-							<a class="btn" id="clear" href="#"><i class="fa fa-border fa-close"></i></a>
+							<a class="btn" id="findIt" href="#"><i class="fas fa-border fa-search"></i></a>
+							<a class="btn" id="clear" href="#"><i class="fas fa-border fa-times"></i></a>
 						</span>
 					</form>
 					<div id="searchResults">&nbsp;</div>
 				</div>
 				<div id="playlistPanel" class="panel jp-playlist my-playlist">
 					<div id="playlistSpinner">
-						<i class="fa fa-spin fa-5x fa-spinner current"></i>
+						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
 					</div>
 					<ul>
 						<li></li>
@@ -2795,12 +2793,12 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="settingsPanel">
 				<?php
 				if (AuthManager::isAdmin()) {
-					print "<div id=\"reset_db\" class=\"guestPlay\"><a>".$this->getString("reset_db")."</a></div>";
-					print "<div id=\"quick_scan\" class=\"guestPlay\"><a>".$this->getString("quick_scan")."</a></div>";
+					print "<div id=\"reset_db\" class=\"settings guestPlay\"><a><i class=\"fas fa-sync\"></i>&nbsp;&nbsp;".$this->getString("reset_db")."</a></div>";
+					print "<div id=\"quick_scan\" class=\"settings guestPlay\"><a><i class=\"fab fa-searchengin\"></i>&nbsp;&nbsp;".$this->getString("quick_scan")."</a></div>";
 				}
-				print "<div id=\"reload\"><a>".$this->getString("reload")."</a></div>";
-				print "<div id=\"help\"><a>".$this->getString("help")."</a></div>";
-				print "<div id=\"about\"><a>".$this->getString("about")."</a></div>";
+				print "<div id=\"reload\" class=\"settings\"><a><i class=\"fas fa-bath\"></i>&nbsp;&nbsp;".$this->getString("reload")."</a></div>";
+				print "<div id=\"help\" class=\"settings\"><a><i class=\"fas fa-question\"></i>&nbsp;&nbsp;".$this->getString("help")."</a></div>";
+				print "<div id=\"about\" class=\"settings\"><a><i class=\"fas fa-info\"></i>&nbsp;&nbsp;".$this->getString("about")."</a></div>";
 				?>
 				</div>
 			</div>
@@ -2831,21 +2829,21 @@ if(!AuthManager::isAccessAllowed()) {
 					</div>
 				</div>
 				<div id="playlist-controls" class="spread">
-					<i id="big-mute" class="toggles jp-mute fa fa-volume-off fa-2x"></i>
-						<i id="clear-playlist" class="guestPlay toggles fa fa-trash-o fa-2x"></i>
-						<i class="guestPlay uncover toggles fa fa-magic fa-2x"></i>
-						<i id="big-shuffle" class="toggles touch-jp-shuffle fa fa-random fa-2x"></i>
-						<i id="big-repeat" class="toggles touch-jp-repeat fa fa-repeat fa-2x"></i>
-						<i id="big-volume-down" class="toggles fa fa-volume-down fa-2x"></i>
-						<i id="big-volume-up" class="toggles fa fa-volume-up fa-2x"></i>
+					<span id="big-mute" class="toggles jp-mute"><i class="fas fa-volume-off fa-2x"></i></span>
+					<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x"></i></span>
+					<span class="guestPlay uncover toggles"><i class="fas fa-magic fa-2x"></i></span>
+					<span id="big-shuffle" class="toggles touch-jp-shuffle"><i class="fas fa-random fa-2x"></i></span>
+					<span id="big-repeat" class="toggles touch-jp-repeat"><i class="fas fa-redo fa-2x"></i></span>
+					<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x"></i></span>
+					<span id="big-volume-up" class="toggles"><i class="fas fa-volume-up fa-2x"></i></span>
 				</div>
 				<div id="controls" class="spread big-controls">
-					<i class="big-jp-previous-album"></i>
-					<i class="left big-jp-previous fa fa-step-backward fa-2x"></i>
-					<i class="big-jp-play fa fa-play-circle-o fa-5x"></i>
-					<i class="big-jp-pause fa fa-pause-circle-o fa-5x" style=" display: none;"></i>
-					<i class="right big-jp-next fa fa-step-forward fa-2x"></i>
-					<i class="big-jp-next-album"></i>
+					<span class="big-jp-previous-album"></span>
+					<span class="left big-jp-previous"><i class="fas fa-step-backward fa-2x"></i></span>
+					<span class="big-jp-play"><i class="far fa-play-circle fa-5x"></i></span>
+					<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-5x"></i></span>
+					<span class="right big-jp-next"><i class="fas fa-step-forward fa-2x"></i></span>
+					<span class="big-jp-next-album"></span>
 				</div>
 			</div>
 		</div>
