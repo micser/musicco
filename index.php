@@ -224,6 +224,7 @@ $_TRANSLATIONS["en"] = array(
 	"noInfoFoundFor" => "No information found about ",
 	"noLyricsFoundFor" => "No lyrics found for ",
 	"noResultsForThisSearch" => "No results for this search",
+	"notDownloaded" => "Could not download your album cover",
 	"opening" => "Opening ",
 	"or" => "or ",
 	"password" => "Password",
@@ -297,6 +298,7 @@ $_TRANSLATIONS["fr"] = array(
 	"noInfoFoundFor" => "Pas d'information sur ",
 	"noLyricsFoundFor" => "Aucune paroles trouvées pour ",
 	"noResultsForThisSearch" => "Pas de résultats pour cette recherche",
+	"notDownloaded" => "Couverture non téléchargeable",
 	"opening" => "Overture de ",
 	"or" => "ou ",
 	"password" => "Mot de passe",
@@ -900,8 +902,18 @@ class Musicco {
 					var isValidImage =/^(.)*\.(png|gif|bmp|jpg|jpeg)$/i;
 					var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>").replace("https", "http");
 					if ((isValidURL.test(userURL)) && (isValidImage.test(userURL))) {
-						printCover(userURL);
-						saveCover(userURL, currentPath);
+						$.ajax({
+							 type: "GET",
+							 url: "?head&url="+userURL,
+							 complete: function(data){
+							 if (data.responseText < 400) {
+								 printCover(userURL);
+								 saveCover(userURL, currentPath);
+							 } else {
+								 setCoverInfoStatus("<?php print $this->getString("notDownloaded"); ?>"); 
+							 }
+						 }
+						});
 					}
 				}
 
@@ -1421,7 +1433,7 @@ class Musicco {
 
 				function saveCover(coverURL, path) {
 					$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
-					});	
+					});
 					for (var i=0; i<musiccoPlaylist.playlist.length; i++) {
 							if (musiccoPlaylist.playlist[i].path == path) {
 								musiccoPlaylist.playlist[i].poster = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
