@@ -225,7 +225,7 @@ $_TRANSLATIONS["en"] = array(
 	"noInfoFoundFor" => "No information found about ",
 	"noLyricsFoundFor" => "No lyrics found for ",
 	"noResultsForThisSearch" => "No results for this search",
-	"notDownloaded" => "Could not download album art",
+	"notDownloaded" => "Could not download your album art",
 	"opening" => "Opening ",
 	"or" => "or ",
 	"password" => "Password",
@@ -269,7 +269,7 @@ $_TRANSLATIONS["fr"] = array(
 	"by" => " par ",
 	"clickToUploadYourOwn" => "charger", 
 	"defaultCoverURL" => "http://",
-	"downloadSuccessful" => "couverture sauvegardée",
+	"downloadSuccessful" => "Couverture sauvegardée",
 	"favourites_added" => "Favouris ajouté",
 	"favourites_removed" => "Favouris retiré",
 	"fetchedAlbumArt" => "couverture mise à jour",
@@ -674,9 +674,20 @@ class Musicco {
 				var wikiHistory = [];
 				var wikiHistoryPos = -1;
 
-				$('#includeOlAdlbums').click(function () {
+				$("#includeOldAlbums").click(function () {
+					toggleCheckbox();
 					filterTree();
 				});
+
+				function resetCheckbox() {
+					$('#includeOldAlbums').prop("checked", true);
+					$("label[for='includeOldAlbums'] i").removeClass("fa-square");
+					$("label[for='includeOldAlbums'] i").addClass("fa-check-square ");
+				}
+
+				function toggleCheckbox() {
+					$("label[for='includeOldAlbums'] i").toggleClass("fa-check-square fa-square");
+				}
 
 				$("#filterText").keyup(function() {
 					setTimeout( function() {
@@ -695,7 +706,7 @@ class Musicco {
 					event.preventDefault();
 					$("#library").fancytree("getTree").clearFilter();
 					$("#filterText").val('');
-					$('#includeOlAdlbums').prop('checked', true);
+					resetCheckbox();
 				});
 
 				$("#ham").on("click", function() {
@@ -926,7 +937,7 @@ class Musicco {
 					var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
 					var isMatching = new RegExp(filterText, "i");
 					var tree = $("#library").fancytree("getTree");
-					if ($("#includeOlAdlbums").is(':checked')) {
+					if ($("#includeOldAlbums").is(':checked')) {
 						tree.filterBranches(function(node) {
 							return isMatching.test(normalise(node.data.path));
 						});
@@ -950,7 +961,7 @@ class Musicco {
 					if (term.length > 0) {
 						showLoadingInfo("<?php print $this->getString("searchingFor"); ?>" + term);
 						var resultString="&nbsp;";
-						$("#searchResults").html("&nbsp;&nbsp;<i class=\"fas fa-spin fa-spinner\"></i>&nbsp;&nbsp;<?php print $this->getString("searchingLibrary"); ?>");
+						$("#searchResults").html("&nbsp;&nbsp;<i class=\"fas fa-pulse fa-spin fa-spinner\"></i>&nbsp;&nbsp;<?php print $this->getString("searchingLibrary"); ?>");
 						$(".hits").remove();
 						$.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
 						var hits= data;
@@ -2212,10 +2223,6 @@ class Musicco {
 					$(toggleAndUpdate($(this), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
 				});
 
-				$('#big-mute').click(function() {
-					$(toggleAndUpdate($(this), 'selected jp-mute jp-unmute')).trigger('click');
-				});
-
 				function toggleAndUpdate(toggle, classes) {
 					var target = "#musiccoplayer ."+ $(toggle).attr('class').replace(/selected /, "").replace(/toggles /, "").replace(/touch-/, "");
 					$(toggle).toggleClass(classes);
@@ -2469,8 +2476,8 @@ class Musicco {
 					setTimeout(function() {
 						$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
 					}, 50);
-					if (!$("#includeOlAdlbums").is(':checked')) {
-						$('#includeOlAdlbums').prop('checked', true);
+					if (!$("#includeOldAlbums").is(':checked')) {
+						resetCheckbox();
 						filterTree();
 						setTimeout(function() {
 							$(".fancytree-statusnode-nodata").hide();
@@ -2719,22 +2726,22 @@ if(!AuthManager::isAccessAllowed()) {
 			<span id="ham"><i class="fas fa-bars fa-2x"></i></span>
 			<span id="mini-controls" class="big-controls">
 				<span class="big-jp-previous-album">&nbsp;</span>
-				<span class="big-jp-previous"><i class="fas fa-step-backward"></i>&nbsp;</span>
-				<span class="big-jp-play"><i class="far fa-play-circle"></i>&nbsp;</span>
-				<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle"></i>&nbsp;</span>
-				<span class="big-jp-next"><i class="fas fa-step-forward"></i>&nbsp;</span>
+				<span class="big-jp-previous"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
+				<span class="big-jp-play"><i class="far fa-play-circle fa-fw"></i>&nbsp;</span>
+				<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-fw"></i>&nbsp;</span>
+				<span class="big-jp-next"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
 				<span class="big-jp-next-album">&nbsp;</span>
 				&nbsp;
 				&nbsp;
-				<span class="uncover guestPlay toggles"><i class="fas fa-magic"></i>&nbsp;</span>
+				<span class="uncover guestPlay toggles"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
 				&nbsp;
 				&nbsp;
-				<span class="big-volume-down toggles"><i class="fas fa-volume-down"></i>&nbsp;</span>
-				<span class="big-volume-down toggles"><i class="fas fa-volume-up"></i>&nbsp;</span>
+				<span class="big-volume-down toggles"><i class="fas fa-volume-down fa-fw"></i>&nbsp;</span>
+				<span class="big-volume-down toggles"><i class="fas fa-volume-up fa-fw"></i>&nbsp;</span>
 			</span>
 			</span>
 			<span id="loadingInfo">
-				<i class="fas fa-spin fa-music"></i>&nbsp;<span id="toast_text"></span>&nbsp;<i class="fas fa-spin fa-music"></i>
+				<i class="fas fa-spin fa-circle-notch"></i>&nbsp;<i class="fas fa-music"></i>&nbsp;<span id="toast_text"></span>
 			</span>
 			<?php
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
@@ -2757,8 +2764,8 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="browserPanel" class="panel guestPlay">
 					<div class="table">
 						<div id="filter">
-							<input id="includeOlAdlbums" tabindex="0" type="checkbox" checked="true"/>
-							<?php print $this->getString("show_all"); ?>
+							<input id="includeOldAlbums" tabindex="0" type="checkbox" checked="true"/>
+							<label for="includeOldAlbums"><i class="fas fa-check-square"></i>&nbsp;<?php print $this->getString("show_all"); ?></label>
 							<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" />
 							<a class="btn" id="filterButton" href="#"><i class="fas fa-border fa-times"></i></a>
 						</div>
@@ -2796,12 +2803,12 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="settingsPanel">
 				<?php
 				if (AuthManager::isAdmin()) {
-					print "<div id=\"reset_db\" class=\"settings guestPlay\"><a><i class=\"fas fa-fw fa-sync\"></i>&nbsp;&nbsp;".$this->getString("reset_db")."</a></div>";
-					print "<div id=\"quick_scan\" class=\"settings guestPlay\"><a><i class=\"fab fa-fw fa-searchengin\"></i>&nbsp;&nbsp;".$this->getString("quick_scan")."</a></div>";
+					print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-sync\"></i><span id=\"reset_db\"><a>".$this->getString("reset_db")."</a></span></div>";
+					print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
 				}
-				print "<div id=\"reload\" class=\"settings\"><a><i class=\"fas fa-fw fa-bath\"></i>&nbsp;&nbsp;".$this->getString("reload")."</a></div>";
-				print "<div id=\"help\" class=\"settings\"><a><i class=\"fas fa-fw fa-question\"></i>&nbsp;&nbsp;".$this->getString("help")."</a></div>";
-				print "<div id=\"about\" class=\"settings\"><a><i class=\"fas fa-fw fa-info\"></i>&nbsp;&nbsp;".$this->getString("about")."</a></div>";
+				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-bath\"></i><span id=\"reload\"><a>".$this->getString("reload")."</a></span></div>";
+				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-question\"></i><span id=\"help\"><a>".$this->getString("help")."</a></span></div>";
+				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-info\"></i><span id=\"about\"><a>".$this->getString("about")."</a></span></div>";
 				?>
 				</div>
 			</div>
@@ -2832,20 +2839,21 @@ if(!AuthManager::isAccessAllowed()) {
 					</div>
 				</div>
 				<div id="playlist-controls" class="spread">
-					<span id="big-mute" class="toggles jp-mute"><i class="fas fa-volume-off fa-2x"></i></span>
-					<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x"></i></span>
-					<span class="guestPlay uncover toggles"><i class="fas fa-magic fa-2x"></i></span>
-					<span id="big-shuffle" class="toggles touch-jp-shuffle"><i class="fas fa-random fa-2x"></i></span>
-					<span id="big-repeat" class="toggles touch-jp-repeat"><i class="fas fa-redo fa-2x"></i></span>
-					<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x"></i></span>
-					<span id="big-volume-up" class="toggles"><i class="fas fa-volume-up fa-2x"></i></span>
+					<span id="big-unmute" class="toggles selected jp-unmute"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
+					<span id="big-mute" class="toggles jp-mute"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
+					<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
+					<span class="guestPlay uncover toggles"><i class="fas fa-magic fa-2x fa-fw"></i></span>
+					<span id="big-shuffle" class="toggles touch-jp-shuffle"><i class="fas fa-random fa-2x fa-fw"></i></span>
+					<span id="big-repeat" class="toggles touch-jp-repeat"><i class="fas fa-redo fa-2x fa-fw"></i></span>
+					<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x fa-fw"></i></span>
+					<span id="big-volume-up" class="toggles"><i class="fas fa-volume-up fa-2x fa-fw"></i></span>
 				</div>
 				<div id="controls" class="spread big-controls">
 					<span class="big-jp-previous-album"></span>
-					<span class="left big-jp-previous"><i class="fas fa-step-backward fa-2x"></i></span>
-					<span class="big-jp-play"><i class="far fa-play-circle fa-5x"></i></span>
-					<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-5x"></i></span>
-					<span class="right big-jp-next"><i class="fas fa-step-forward fa-2x"></i></span>
+					<span class="left big-jp-previous"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
+					<span class="big-jp-play"><i class="far fa-play-circle fa-5x fa-fw"></i></span>
+					<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-5x fa-fw"></i></span>
+					<span class="right big-jp-next"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
 					<span class="big-jp-next-album"></span>
 				</div>
 			</div>
@@ -3475,7 +3483,7 @@ function builddb() {
 	 // Finally, the contents of the help and about panels
 	 function getHelp() {
 		$helpString="<div id='helpBox'>";
-		$helpString.="<div class='bold big'>Keyboard Shortcuts</div>";
+		$helpString.="<div class='bold big'><i class='fas fa-keyboard'></i>&nbsp;Keyboard Shortcuts</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='yellow bold'>Playback</div>";
 		$helpString.="<div>&larr;: previous track</div>";

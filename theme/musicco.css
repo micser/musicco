@@ -26,6 +26,14 @@
  }
 */
 
+	#includeOldAlbums {
+		display: none;
+	}
+	
+	.space-after {
+		margin-right: 0.8em;
+	}
+
 	.settings {
 		margin-top: 0.5em;
 	}
@@ -82,7 +90,16 @@
 		color: #E3E5BB;
 	}
 
-	i.toggles:hover,
+	.toggles,
+	div.jp-seek-bar, 
+	.go,
+	a,
+	#controls > span > i {
+		cursor: pointer;
+	}
+
+	.toggles:hover,
+	.settings:hover,
 	.current,
 	a.current,
 	.jp-free-media.current a i:before,
@@ -125,7 +142,7 @@
 	#clear,
 	.remove-album,
 	#filterButton,
-	#includeOlAdlbums,
+	#includeOldAlbums,
 	#findIt,
 	#big-player,
 	a,
@@ -401,7 +418,6 @@
 
 	div.jp-seek-bar {
 		width:0;
-		cursor: pointer;
 		border-radius: 1.5em;
 	}
 
@@ -567,7 +583,6 @@
 	.go {
 		border: none;
 		background: #A7A97F;
-		cursor: pointer;
 		border-radius: 3px;
 		padding: 6px;
 		width: 200px;
@@ -669,6 +684,10 @@
 		display: none;
 	}
 
+	#mini-controls {
+		vertical-align: super;
+	}
+
 	@media (min-aspect-ratio: 9/10) and (max-aspect-ratio: 11/10) {
 
 		#viewer:after {
@@ -682,13 +701,14 @@
 
 		#mini-controls {
 			display: inline !important;
+			vertical-align: unset;
 		}
 
 		#mini-controls i {
 			font-size: .8em;
 		}
 
-		#ham,
+		#ham i,
 		#logout a {
 			font-size: 0.8em;
 		}
