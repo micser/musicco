@@ -194,9 +194,10 @@ $_TRANSLATIONS["en"] = array(
 	"by" => " by ",
 	"clickToUploadYourOwn" => "upload", 
 	"defaultCoverURL" => "http://",
+	"downloadSuccessful" => "album art saved",
 	"favourites_added" => "Adding favourite...",
 	"favourites_removed" => "Removing favourite...",
-	"fetchedAlbumArt" => "cover art fetched",
+	"fetchedAlbumArt" => "album art fetched",
 	"fetchingAlbumArt" => "fetching album art...",
 	"genius" => "genius ",
 	"google" => "google",
@@ -224,14 +225,14 @@ $_TRANSLATIONS["en"] = array(
 	"noInfoFoundFor" => "No information found about ",
 	"noLyricsFoundFor" => "No lyrics found for ",
 	"noResultsForThisSearch" => "No results for this search",
-	"notDownloaded" => "Could not download your album cover",
+	"notDownloaded" => "Could not download album art",
 	"opening" => "Opening ",
 	"or" => "or ",
 	"password" => "Password",
 	"pause" => "Pause", 
 	"play" => "Play", 
 	"previoustrack" => "Previous",
-	"promptCoverURL" => "Album cover URL", 
+	"promptCoverURL" => "Album art URL", 
 	"promptFolderName" => "Folder name", 
 	"queueing" => "Queueing ",
 	"quick_scan" => "quick scan folder",
@@ -268,6 +269,7 @@ $_TRANSLATIONS["fr"] = array(
 	"by" => " par ",
 	"clickToUploadYourOwn" => "charger", 
 	"defaultCoverURL" => "http://",
+	"downloadSuccessful" => "couverture sauvegardée",
 	"favourites_added" => "Favouris ajouté",
 	"favourites_removed" => "Favouris retiré",
 	"fetchedAlbumArt" => "couverture mise à jour",
@@ -909,6 +911,7 @@ class Musicco {
 							 if (data.responseText < 400) {
 								 printCover(userURL);
 								 saveCover(userURL, currentPath);
+								 setCoverInfoStatus("<?php print $this->getString("downloadSuccessful"); ?>"); 
 							 } else {
 								 setCoverInfoStatus("<?php print $this->getString("notDownloaded"); ?>"); 
 							 }
