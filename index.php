@@ -569,9 +569,10 @@ class Musicco {
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $this->getConfig('lang'); ?>" lang="<?php print $this->getConfig('lang'); ?>">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/fontawesome-all.min.css">
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
-		<link rel="stylesheet" href="lib/jquery-ui/jquery-ui.min.css">
-		<link rel="stylesheet" href="lib/fancytree/skin-awesome/ui.fancytree.min.css">
+		<link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.min.css">
+		<link rel="stylesheet" type="text/css" href="lib/fancytree/skin-awesome/ui.fancytree.min.css">
 		<link rel="stylesheet" type="text/css" href="theme/musicco.css" >
 		<meta http-equiv="Content-Type" content="text/html; charset=<?php print $this->getConfig('charset'); ?>">
 		<!-- <meta charset="<?php print $this->getConfig('charset'); ?>" /> -->
@@ -597,7 +598,6 @@ class Musicco {
 		<meta name="msapplication-TileColor" content="#a7a97f">
 		<meta name="msapplication-TileImage" content="app/mstile-310x310.png">
 		<meta name="theme-color" content="#a7a97f">
-		<script defer src="lib/font-awesome/js/fontawesome-all.min.js"></script>
 		<script type="text/javascript" src="lib/jquery/jquery-2.2.4.min.js"></script>
 		<script type="text/javascript" src="lib/jquery/jquery.mobile.custom.min.js"></script>
 		<script type="text/javascript" src="lib/jquery-ui/jquery-ui.min.js"></script>
@@ -2745,7 +2745,7 @@ if(!AuthManager::isAccessAllowed()) {
 			<ul>
 				<li id="browserToggle"><a href="#browserPanel" class="guestPlay panelToggle"><i class="far fa-folder-open"></i></a></li>
 				<li id="searchToggle"><a href="#searchPanel" class="guestPlay panelToggle"><i class="fas fa-search"></i></a></li>
-				<li id="playlistToggle"><i class="fas fa-list"></i><a href="#playlistPanel" class="panelToggle"></a></li>
+				<li id="playlistToggle"><a href="#playlistPanel" class="panelToggle"><i class="fas fa-list"></i></a></li>
 				<li id="infoToggle"><a href="#infoPanel" class="panelToggle"><i class="fas fa-info-circle"></i></a></li>
 				<li id="lyricsToggle"><a href="#lyricsPanel" class="panelToggle"><i class="fas fa-microphone"></i></a></li>
 				<li id="settingsToggle"><a href="#settingsPanel" class="panelToggle"><i class="fas fa-cogs"></i></a></li>
@@ -2793,12 +2793,12 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="settingsPanel">
 				<?php
 				if (AuthManager::isAdmin()) {
-					print "<div id=\"reset_db\" class=\"settings guestPlay\"><a><i class=\"fas fa-sync\"></i>&nbsp;&nbsp;".$this->getString("reset_db")."</a></div>";
-					print "<div id=\"quick_scan\" class=\"settings guestPlay\"><a><i class=\"fab fa-searchengin\"></i>&nbsp;&nbsp;".$this->getString("quick_scan")."</a></div>";
+					print "<div id=\"reset_db\" class=\"settings guestPlay\"><a><i class=\"fas fa-fw fa-sync\"></i>&nbsp;&nbsp;".$this->getString("reset_db")."</a></div>";
+					print "<div id=\"quick_scan\" class=\"settings guestPlay\"><a><i class=\"fab fa-fw fa-searchengin\"></i>&nbsp;&nbsp;".$this->getString("quick_scan")."</a></div>";
 				}
-				print "<div id=\"reload\" class=\"settings\"><a><i class=\"fas fa-bath\"></i>&nbsp;&nbsp;".$this->getString("reload")."</a></div>";
-				print "<div id=\"help\" class=\"settings\"><a><i class=\"fas fa-question\"></i>&nbsp;&nbsp;".$this->getString("help")."</a></div>";
-				print "<div id=\"about\" class=\"settings\"><a><i class=\"fas fa-info\"></i>&nbsp;&nbsp;".$this->getString("about")."</a></div>";
+				print "<div id=\"reload\" class=\"settings\"><a><i class=\"fas fa-fw fa-bath\"></i>&nbsp;&nbsp;".$this->getString("reload")."</a></div>";
+				print "<div id=\"help\" class=\"settings\"><a><i class=\"fas fa-fw fa-question\"></i>&nbsp;&nbsp;".$this->getString("help")."</a></div>";
+				print "<div id=\"about\" class=\"settings\"><a><i class=\"fas fa-fw fa-info\"></i>&nbsp;&nbsp;".$this->getString("about")."</a></div>";
 				?>
 				</div>
 			</div>
