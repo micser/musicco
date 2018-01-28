@@ -238,6 +238,8 @@ $_TRANSLATIONS["en"] = array(
 	"quick_scan" => "quick scan folder",
 	"rebuildingLibrary" => "library refreshing...",
 	"reload" => "reload",
+	"remove_shared_links" => "delete shared playlists",
+	"removing_shared_links" => "deleting shared playlists...",
 	"reset_db" => "update library",
 	"scanning" => "Scanning ",
 	"scanning_ko" => "Scanning failed",
@@ -313,6 +315,8 @@ $_TRANSLATIONS["fr"] = array(
 	"quick_scan" => "ajout rapide...",
 	"rebuildingLibrary" => "scan en cours...",
 	"reload" => "recharger",
+	"remove_shared_links" => "supprimer les playlists partagées",
+	"removing_shared_links" => "suppression des playlists partagées...",
 	"reset_db" => "rafraichir la discothèque",
 	"scanning" => "Scan de ",
 	"scanning_ko" => "échec du scan",
@@ -1063,6 +1067,15 @@ class Musicco {
 					})();
 				}
 
+				$(document).on("click", "#remove_shared_links", function() {
+						showLoadingInfo("<?php print $this->getString("removing_shared_links"); ?>");
+						$.ajax({
+							type: "POST",
+							url: "",
+							data: {deleteGuestPlaylists: ""}
+						});
+				});
+
 				$(document).on("click", "#quick_scan", function() {
 					var folderName = window.prompt("<?php print $this->getString("promptFolderName"); ?>", "");
 					if ((folderName != "") && (folderName != null)) {
@@ -1464,7 +1477,8 @@ class Musicco {
 					var time = Math.floor(jpData.status.currentTime);
 					var loop = musiccoPlaylist.loop;
 					var shuffled = musiccoPlaylist.shuffled;
-					$.post('?', {savePlaylist: '', u: user, n: "default", p: playlist, c: current, t: time, l: loop, s: shuffled}, function (response) {
+					var name = isGuestPlay()? "guestPlay" : "default";
+					$.post('?', {savePlaylist: '', u: user, n: name, p: playlist, c: current, t: time, l: loop, s: shuffled}, function (response) {
 					});	
 				}
 
@@ -1472,9 +1486,10 @@ class Musicco {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					if (user!="") {
 						$.post('?', {loadPlaylist: '', u: user}, function(response) {
-							var needsBuilding = response.build;
+							var data = JSON.parse(response.playlist)[0];
+							var needsBuilding = (data !=null)? data.build: false;
 							if (needsBuilding) {
-								var root = response.path;
+								var root = data.path;
 								$.post('?', {querydb: '', root: root, type: 'queue'}, function (results) {
 										var files=results;
 										if (files != null) {
@@ -1528,18 +1543,18 @@ class Musicco {
 					$("#shared-album-qr").empty();
 					$("#shared-album-title").text(info);
 					$("#shared-album-cover").attr("src", cover);
+					$("#sharing-banner").dialog("open");
+					var link = getBaseURL() + "?guestPlay&u=" + user;
+					var qrW = $("#shared-album-cover").width();
+					var qrH = $("#shared-album-cover").height();
+					$("#shared-album-link").val(link).select().attr('size', link.length);
+					$("#shared-album-qr").qrcode({width: qrW, height: qrH, text: link});
+					if (navigator.share) {
+						$("#shared-album-share").show();
+					} else {
+						$("#shared-album-share").hide();
+					}
 					$.post('?', {saveGuestPlaylist: '', u: user, p: path}, function (response) {
-						$("#sharing-banner").dialog("open");
-						var link = getBaseURL() + "?guestPlay&u=" + user;
-						var qrW = $("#shared-album-cover").width();
-						var qrH = $("#shared-album-cover").height();
-						$("#shared-album-link").val(link).select().attr('size', link.length);
-						$("#shared-album-qr").qrcode({width: qrW, height: qrH, text: link});
-						if (navigator.share) {
-							$("#shared-album-share").show();
-						} else {
-							$("#shared-album-share").hide();
-						}
 					});
 				}
 
@@ -2806,6 +2821,7 @@ if(!AuthManager::isAccessAllowed()) {
 					print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-sync\"></i><span id=\"reset_db\"><a>".$this->getString("reset_db")."</a></span></div>";
 					print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
 				}
+				print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-bath\"></i><span id=\"reload\"><a>".$this->getString("reload")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-question\"></i><span id=\"help\"><a>".$this->getString("help")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-info\"></i><span id=\"about\"><a>".$this->getString("about")."</a></span></div>";
@@ -2920,9 +2936,9 @@ if(!AuthManager::isAccessAllowed()) {
 	} elseif (isset($_POST['saveGuestPlaylist'])) {
 			$user = $_POST['u'];
 			$path = str_replace("\"", "\\\"", $_POST['p']);
-			$save = "{\"build\": true , \"path\": \"".$path."\"}";
+			$data = "[{\"build\": true , \"path\": \"".$path."\"}]";
+			savePlaylist($user, "guestPlay", $data, "true", "0", "true", "false");
 			logMessage("Saved guest playlist ".$user." for ".$path);
-			return file_put_contents(dirname(__FILE__)."/playlists/".$user.".playlist", $save);
 			exit;
 	} elseif (isset($_POST['getFavourites'])) {
 			$user = $_POST['u'];
@@ -3009,6 +3025,10 @@ if(!AuthManager::isAccessAllowed()) {
 			logMessage("User requested library rebuild");
 			builddb();
 			exit;
+	} elseif (isset($_POST['deleteGuestPlaylists'])) {
+			logMessage("Removing guest playlists");
+			deleteGuestPlaylists();
+			exit;
 	} elseif (isset($_POST['quickscan'])) {
 			$folder = $_POST['folder'];
 			quickscan($folder);
@@ -3050,7 +3070,6 @@ function addFavourite($user, $path) {
 		}
 	$db = NULL;
 	}
-
 }
 
 function deleteFavourite($user, $path) {
@@ -3063,6 +3082,14 @@ function deleteFavourite($user, $path) {
 	}
 }
 
+function deleteGuestPlaylists() {
+	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+	$query1 = "DELETE FROM playlists WHERE name=\"guestPlay\";";
+	$query2 = "DELETE FROM users WHERE id IN (SELECT id FROM users WHERE id NOT IN (SELECT userId FROM playlists));";
+	$db->query($query1);
+	$db->query($query2);
+	$db = NULL;
+}
 
 function getFavourites($user) {
 	global $favourites_list;
@@ -3186,7 +3213,6 @@ function querydb($query_root, $query_type) {
 		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE parent LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		default:
-		//exit;
 	}
 
 	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
@@ -3229,11 +3255,9 @@ function querydb($query_root, $query_type) {
 							);
 		//logMessage("$name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension, $folder, $extraClasses");
 	}
+	$db = NULL;
 	logMessage("Displayed Data in ".number_format((microtime(true) - $_START_DISPLAY), 3)." seconds");
 	return print_r(json_encode($list));
-	// close the database connection
-	$db = NULL;
-	//exit;
 	}
 	catch(PDOException $e) {
 		print 'Exception : '.$e->getMessage();
