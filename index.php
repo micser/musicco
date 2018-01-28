@@ -2338,7 +2338,8 @@ class Musicco {
 					}
 					if (isWidescreen()) {
 						forcePanel("#browserPanel");
-						$("#leftPanel").tabs("option", "active", 0);
+						var activeTab = isGuestPlay()? 3 : 0;
+						$("#leftPanel").tabs("option", "active", activeTab);
 					}
 					if (isMedium()) {
 						showPanel("#playlistPanel");
