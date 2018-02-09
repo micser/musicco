@@ -239,7 +239,9 @@ $_TRANSLATIONS["en"] = array(
 	"rebuildingLibrary" => "library refreshing...",
 	"reload" => "reload",
 	"remove_shared_links" => "delete shared playlists",
+	"remove_temp_files" => "clean temp folder",
 	"removing_shared_links" => "deleting shared playlists...",
+	"removing_temp_files" => "cleaning in progress...",
 	"reset_db" => "update library",
 	"scanning" => "Scanning ",
 	"scanning_ko" => "Scanning failed",
@@ -316,7 +318,9 @@ $_TRANSLATIONS["fr"] = array(
 	"rebuildingLibrary" => "scan en cours...",
 	"reload" => "recharger",
 	"remove_shared_links" => "supprimer les playlists partagées",
+	"remove_temp_files" => "nettoyage en cours...",
 	"removing_shared_links" => "suppression des playlists partagées...",
+	"removing_temp_files" => "cleaning in progress",
 	"reset_db" => "rafraichir la discothèque",
 	"scanning" => "Scan de ",
 	"scanning_ko" => "échec du scan",
@@ -1073,6 +1077,15 @@ class Musicco {
 							type: "POST",
 							url: "",
 							data: {deleteGuestPlaylists: ""}
+						});
+				});
+
+				$(document).on("click", "#remove_temp_files", function() {
+						showLoadingInfo("<?php print $this->getString("removing_temp_files"); ?>");
+						$.ajax({
+							type: "POST",
+							url: "",
+							data: {cleanTempFiles: ""}
 						});
 				});
 
@@ -2823,6 +2836,7 @@ if(!AuthManager::isAccessAllowed()) {
 					print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
 				}
 				print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
+				print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-bath\"></i><span id=\"reload\"><a>".$this->getString("reload")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-question\"></i><span id=\"help\"><a>".$this->getString("help")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-info\"></i><span id=\"about\"><a>".$this->getString("about")."</a></span></div>";
@@ -3030,6 +3044,10 @@ if(!AuthManager::isAccessAllowed()) {
 			logMessage("Removing guest playlists");
 			deleteGuestPlaylists();
 			exit;
+	} elseif (isset($_POST['cleanTempFiles'])) {
+			logMessage("Cleaning temp folder");
+			cleanTempFiles();
+			exit;
 	} elseif (isset($_POST['quickscan'])) {
 			$folder = $_POST['folder'];
 			quickscan($folder);
@@ -3080,6 +3098,14 @@ function deleteFavourite($user, $path) {
 		$query = "DELETE FROM favourites WHERE path LIKE \"$path/%\" AND userId=$userId;";
 		$children = $db->query($query);
 		$db = NULL;
+	}
+}
+
+function cleanTempFiles() {
+	$files = glob('temp/*.zip');
+	foreach($files as $file){ 
+		if(is_file($file))
+			unlink($file);
 	}
 }
 
