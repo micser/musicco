@@ -14,8 +14,8 @@
 	}
 
 	.fancytree-treefocus span.fancytree-active span.fancytree-title, .fancytree-treefocus span.fancytree-selected span.fancytree-title {
-		outline: 0px dotted #E3E5BB;
-		color: #E3E5BB;
+		outline: 1px dotted #E3E5BB;
+		color: #E3E5BB!important;
 		background-color: transparent;
 	}
 
