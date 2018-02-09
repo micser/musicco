@@ -35,6 +35,12 @@ Check out https://www.musicco.org for more information or try the demo at https:
 ![musicco](/doc/img/readme/square.png?raw=true "Showcase that beautiful album art")
 
 
+# Required php extensions
+
+## pdo_sqlite (mandatory)
+## openssl (optional, for cover art support)
+## zip (optional, for download support)
+
 
 # Changelog
 

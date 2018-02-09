@@ -3477,7 +3477,7 @@ function builddb() {
 		$root = scandir($dir); 
 		$filter = $extension;
 			foreach($root as $value) {
-				if($value === '.' || $value === '..') {continue;} 
+				if($value === '.' || $value === '..' || $value === '#recycle' || $value === '@eaDir') {continue;} 
 				if(is_dir("$dir/$value")) {
 						$item[]=array($value, Musicco::TYPE_FOLDER, "$dir/");
 						} else {
