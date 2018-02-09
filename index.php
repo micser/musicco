@@ -2439,7 +2439,7 @@ class Musicco {
 		}
 
 		function downloadAlbum(parent, album) {
-			window.open("?getAlbum&parent=" + parent + "&album=" + album);
+			window.open("?getAlbum&parent=" + encodeURIComponent(parent) + "&album=" + encodeURIComponent(album));
 		}
 
 		function addFavourite(path) {
@@ -2995,7 +2995,6 @@ if(!AuthManager::isAccessAllowed()) {
 			$parent = $_GET['parent'];
 			$album = $_GET['album'];
 			$rootPath = realpath($parent.$album);
-			
 			$zip = new ZipArchive();
 			$zip->open('./temp/'.$album.'.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
 			
