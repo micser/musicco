@@ -75,7 +75,7 @@ $_CONFIG['downLoadMissingCovers'] = true;
 // The search engine to use to search for covers
 // when none could be found automatically
 // Default: $_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&tbs=imgo:1,isz:l&q=";
-// You could also try: $_CONFIG['searchEngine'] = "https://duckduckgo.com/?ia=images&q=";
+// You could also try: $_CONFIG['searchEngine'] = "https://duckduckgo.com/?t=hf&iar=images&iaf=size%3Aimagesize-wallpaper&iax=images&ia=images&q=";
 $_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&tbs=imgo:1,isz:l&q=";
 
 // Folders in your library that should not 
