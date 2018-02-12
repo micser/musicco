@@ -1490,15 +1490,31 @@ class Musicco {
 					var time = Math.floor(jpData.status.currentTime);
 					var loop = musiccoPlaylist.loop;
 					var shuffled = musiccoPlaylist.shuffled;
-					var name = isGuestPlay()? "guestPlay" : "default";
+					var name = isGuestPlay()? "guestPlay" : $("#playlist_select").find(":selected").text();
 					$.post('?', {savePlaylist: '', u: user, n: name, p: playlist, c: current, t: time, l: loop, s: shuffled}, function (response) {
 					});	
 				}
 
-				function loadPlaylist() {
+				function getPlaylists() {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					if (user!="") {
-						$.post('?', {loadPlaylist: '', u: user}, function(response) {
+						$.post('?', {getPlaylists: '', u: user}, function(response) {
+							var playlists = JSON.parse(response);
+							$.each(playlists, function (i, name) {
+								$("#playlist_select").append('<option value="' + i + '">' + name  + '</option>');
+							});
+						});
+					}
+				}
+
+				function loadPlaylist(name) {
+					//TODO: Playlist formatting does not run on playlist switch
+					if (name == null) {
+						name = "";
+					}
+					var user = "<?php echo AuthManager::getUserName(); ?>";
+					if (user!="") {
+						$.post('?', {loadPlaylist: '', u: user, n: name}, function(response) {
 							var data = JSON.parse(response.playlist)[0];
 							var needsBuilding = (data !=null)? data.build: false;
 							if (needsBuilding) {
@@ -1714,6 +1730,7 @@ class Musicco {
 
 				$("#musiccoplayer").on($.jPlayer.event.ready, function(event) {
 					loadPlaylist();
+					getPlaylists()
 					updateVolumeValue();
 				});
 
@@ -2010,6 +2027,11 @@ class Musicco {
 					$(panel).addClass("shown");
 					$(".panelToggle[href='" + panel + "']").trigger("click");
 				}
+
+				$(document).on("change", "#playlist_select", function() {
+					var new_playlist = $("#playlist_select").find(":selected").text();
+					loadPlaylist(new_playlist);
+				});
 
 				$(document).on("click", "#resync", function(event) { 
 					event.preventDefault();
@@ -2818,6 +2840,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="playlistSpinner">
 						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
 					</div>
+					<div><select id="playlist_select"></select></div>
 					<ul>
 						<li></li>
 					</ul>
@@ -2943,7 +2966,7 @@ if(!AuthManager::isAccessAllowed()) {
 //
 // This is where the system is activated.
 	if(isset($_POST['loadPlaylist'])) {
-			return print_r(loadPlaylist($_POST['u']));
+			return print_r(loadPlaylist($_POST['u'], $_POST['n']));
 			exit;
 	} elseif (isset($_POST['savePlaylist'])) {
 			savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t'], $_POST['l'], $_POST['s']);
@@ -2952,8 +2975,11 @@ if(!AuthManager::isAccessAllowed()) {
 			$user = $_POST['u'];
 			$path = str_replace("\"", "\\\"", $_POST['p']);
 			$data = "[{\"build\": true , \"path\": \"".$path."\"}]";
-			savePlaylist($user, "guestPlay", $data, "true", "0", "true", "false");
+			savePlaylist($user, "guestPlay", $data, "0", "0", "true", "false");
 			logMessage("Saved guest playlist ".$user." for ".$path);
+			exit;
+	} elseif (isset($_POST['getPlaylists'])) {
+			return print getPlaylists($_POST['u']);
 			exit;
 	} elseif (isset($_POST['getFavourites'])) {
 			$user = $_POST['u'];
@@ -3117,6 +3143,24 @@ function deleteGuestPlaylists() {
 	$db = NULL;
 }
 
+function getPlaylists($user) {
+	$playlists = [];
+	$userId = getId($user);
+	if ($userId != 0) {
+		array_push($playlists, getCurrentPlaylistName($userId));
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$query = "SELECT name FROM playlists WHERE userId=$userId;";
+		$result = $db->query($query);
+		$db = NULL;
+		foreach($result as $playlist) {
+			if (!in_array($playlist['name'], $playlists)) {
+				array_push($playlists, $playlist['name']);
+			}
+		}
+	}
+	return json_encode($playlists);
+}
+
 function getFavourites($user) {
 	global $favourites_list;
 	$userId = getId($user);
@@ -3161,30 +3205,54 @@ function buildUL($favourites, $prefix) {
   $favourites_list .= "</ul>\n";
 }
 
+function setCurrentPlaylistId($userId, $playlistId) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$db->exec("UPDATE users set current_playlist=$playlistId WHERE id=$userId;");
+		$db = NULL;
+		logMessage("Set $playlistId as current playlist for $userId");
+}
+
+function getCurrentPlaylistName($userId) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$query = $db->prepare("SELECT name FROM playlists WHERE id = (SELECT current_playlist FROM users WHERE id=$userId);");
+		$query->execute();
+		$name = $query->fetchColumn();
+		$db = NULL;
+		return $name;
+}
+
 function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled) {
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$data = preg_replace('/"/', '\\\'', "{\"current\": \"$current\" , \"time\": \"$time\" , \"loop\": \"$loop\" , \"shuffled\": \"$shuffled\" , \"playlist\": \"".preg_replace('/"/', '\\"', $playlist)."\"}");
-		$update_playlist_query = $db->prepare("REPLACE INTO playlists (userId, name, current, data) VALUES ($userId, \"$name\", 1, \"$data\")");
+		$update_playlist_query = $db->prepare("REPLACE INTO playlists (userId, name, data) VALUES ($userId, \"$name\", \"$data\")");
 		$update_playlist_query->execute();
+		$playlistId = $db->lastInsertId();
 		$db = NULL;
-		logMessage("Saved playlist for ".$user);
+		setCurrentPlaylistId($userId, $playlistId);
+		logMessage("Saved playlist $name for $user");
 	}
 }
 
-function loadPlaylist($user) {
+function loadPlaylist($user, $name) {
 	$userId = getId($user);
 	$playlist = '{"song": "0" , "time": 0, "repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$query = "SELECT data FROM playlists WHERE userId=$userId; AND name=\"default\"";
+		if ($name == "") {
+			//TODO: Handle null playlist
+			$query = "SELECT data FROM playlists WHERE id = (SELECT current_playlist FROM users WHERE id=$userId);";
+			logMessage("Loading current playlist for ".$user);
+		} else {
+			$query = "SELECT data FROM playlists WHERE userId=$userId AND name=\"$name\";";
+			logMessage("Loading playlist ".$name."  for ".$user);
+		}
 		$result = $db->query($query);
 		$db = NULL;
 		foreach($result as $row) {
 			$playlist = preg_replace("/\\\'/", '"', $row['data']);
 		}
-		logMessage("Loaded playlist for ".$user);
 	}
 	return $playlist;
 }
@@ -3319,9 +3387,9 @@ function cleanDB($db) {
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
-	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE);");
+	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
-	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, current BOOLEAN, data TEXT, unique(userId, name));");
+	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, data TEXT, unique(userId, name));");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
