@@ -124,6 +124,7 @@
 	#logout a,
 	#loadingInfo,
 	.selected,
+	#playlist_select,
 	a.infoPanelLink:hover,
 	span.current span.fancytree-title mark,
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match.current span.fancytree-title,
@@ -191,7 +192,8 @@
 	#aboutBox,
 	#helpBox,
 	#sharing-banner,
-	#volume-value {
+	#volume-value,
+	#playlist_select {
 		-webkit-user-select: none;
 		-ms-user-select: none;
 		-moz-user-select: none;
