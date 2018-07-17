@@ -1508,7 +1508,6 @@ class Musicco {
 				}
 
 				function loadPlaylist(name) {
-					//TODO: Playlist formatting does not run on playlist switch
 					if (name == null) {
 						name = "";
 					}
@@ -1555,7 +1554,9 @@ class Musicco {
 								}
 							}
 							$("#loading").hide();
-							formatPlaylist();
+							setTimeout(function() {
+								formatPlaylist();
+							}, 1000);
 							if (isGuestPlay()) {
 								setTimeout(function() {
 									togglePanel("#playlistPanel");
