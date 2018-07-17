@@ -35,12 +35,15 @@ $_CONFIG['lang'] = "en";
 // Default: $_CONFIG['charset'] = "UTF-8";
 $_CONFIG['charset'] = "UTF-8";
 
-
 // The name of the folder containing your music.
 // Create a 'music' symbolic link to your music root folder
 // to be on the safe side
 // Default: $_CONFIG['musicRoot'] = "music";
 $_CONFIG['musicRoot'] = "music";
+
+// The name to use for a user's default playlist
+// Default: $_CONFIG['defaultPlaylist'] = "Now Playing";
+$_CONFIG['defaultPlaylist'] = "Now Playing";
 
 // The name you give to your covert art files
 // in your music library. This is used to find covers
@@ -3148,6 +3151,12 @@ function getPlaylists($user) {
 	$playlists = [];
 	$userId = getId($user);
 	if ($userId != 0) {
+			$currentPlaylist = getCurrentPlaylistId($userId);
+			if (!$currentPlaylist) {
+				logMessage("Creating a new playlist for ".$user);
+				createNewPlaylist($user, Musicco::getConfig('defaultPlaylist'));
+				$currentPlaylist = getCurrentPlaylistId($userId);
+			}
 		array_push($playlists, getCurrentPlaylistName($userId));
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$query = "SELECT name FROM playlists WHERE userId=$userId;";
@@ -3213,6 +3222,14 @@ function setCurrentPlaylistId($userId, $playlistId) {
 		logMessage("Set $playlistId as current playlist for $userId");
 }
 
+function getCurrentPlaylistId($userId) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$query = $db->prepare("SELECT current_playlist FROM users WHERE id=$userId;");
+		$query->execute();
+		$id = $query->fetchColumn();
+		$db = NULL;
+		return $id;
+}
 function getCurrentPlaylistName($userId) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$query = $db->prepare("SELECT name FROM playlists WHERE id = (SELECT current_playlist FROM users WHERE id=$userId);");
@@ -3236,19 +3253,24 @@ function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled
 	}
 }
 
+function createNewPlaylist($user, $name) {
+	savePlaylist($user, $name, "[]", 0, 0, "false", "false");
+}
+
 function loadPlaylist($user, $name) {
 	$userId = getId($user);
+	//TODO: Setting a default value should no longer be needed since we create a playlist if none is found.
 	$playlist = '{"song": "0" , "time": 0, "repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
 	if ($userId != 0) {
-		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		if ($name == "") {
-			//TODO: Handle null playlist
-			$query = "SELECT data FROM playlists WHERE id = (SELECT current_playlist FROM users WHERE id=$userId);";
+			$currentPlaylist = getCurrentPlaylistId($userId);
+			$query = "SELECT data FROM playlists WHERE id = $currentPlaylist;";
 			logMessage("Loading current playlist for ".$user);
 		} else {
 			$query = "SELECT data FROM playlists WHERE userId=$userId AND name=\"$name\";";
 			logMessage("Loading playlist ".$name."  for ".$user);
 		}
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$result = $db->query($query);
 		$db = NULL;
 		foreach($result as $row) {
@@ -3270,7 +3292,7 @@ function getId($user) {
 			$id_query->execute();
 			$id=$id_query->fetchColumn();
 		} else {
-			$db ->exec("INSERT into users (username) VALUES (\"" . $user . "\");");
+			$db ->exec("INSERT into users (username, current_playlist) VALUES (\"" . $user . "\", 0);");
 			$id = $db->lastInsertId();
 		}
 	}
