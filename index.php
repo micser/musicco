@@ -41,6 +41,11 @@ $_CONFIG['charset'] = "UTF-8";
 // Default: $_CONFIG['musicRoot'] = "music";
 $_CONFIG['musicRoot'] = "music";
 
+// The name of the folder containing temp files.
+// Default: $_CONFIG['tempFolder'] = "temp";
+$_CONFIG['tempFolder'] = "temp";
+
+
 // The name to use for a user's default playlist
 // Default: $_CONFIG['defaultPlaylist'] = "Now Playing";
 $_CONFIG['defaultPlaylist'] = "Now Playing";
@@ -1449,12 +1454,17 @@ class Musicco {
 								$(xml).find('GetLyricResult').each(function(){
 									var lyricArtist=$(this).find('LyricArtist').text();
 									var lyricSong=$(this).find('LyricSong').text();
-									var lyricCovertArtUrl=$(this).find('LyricCovertArtUrl').text();
 									var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
-									var lyricInfo="<img src=\""+lyricCovertArtUrl+"\"/><br/><a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a> - " + searchLyricsExt + "<br/>";
+									var lyricImage = "";
+									var lyricCovertArtUrl = $(this).find('LyricCovertArtUrl').text();
+									if (lyricCovertArtUrl != "") {
+										proxyImage(lyricCovertArtUrl)
+										lyricImage = "<img class=\"hidden\" id=\"lyricCoverArt\" src=\"\"/><br/>";
+									}
+									var lyricInfo="<a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a> - " + searchLyricsExt + "<br/><br/>";
 									//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.
 									lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
-									$('#lyricsPanel').html(lyricInfo+lyrics);
+									$('#lyricsPanel').html(lyricImage + lyricInfo + lyrics);
 								});
 								if (lyrics=="") {
 									noLyricsFound(song, artist, searchLyricsExt);
@@ -1474,13 +1484,24 @@ class Musicco {
 					$('#lyricsPanel').html(noLyricsText);
 				}
 
+				function proxyImage(URL) {
+					var path = "<?php print $this->getConfig('tempFolder'); ?>" + "/" + Math.floor(Date.now());
+					var imagePath = path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig('coverExtension'); ?>" + "?" + Math.floor(Date.now());
+					$.post('?', {saveCover: '', u: URL, p: path}, function (response) {
+					});
+					setTimeout(function() { $("#lyricCoverArt").attr("src", imagePath); $("#lyricCoverArt").fadeIn(); }, 3000);
+					return path;
+				}
+
 				function saveCover(coverURL, path) {
 					$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
 					});
+					var imagePath = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
 					for (var i=0; i<musiccoPlaylist.playlist.length; i++) {
 							if (musiccoPlaylist.playlist[i].path == path) {
-								musiccoPlaylist.playlist[i].poster = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
+								musiccoPlaylist.playlist[i].poster = imagePath;
 							}
+					printCover(imagePath);
 					}
 					savePlaylist();
 					setTimeout(function() { formatPlaylist(); }, 4000);
@@ -3026,7 +3047,7 @@ if(!AuthManager::isAccessAllowed()) {
 			$album = $_GET['album'];
 			$rootPath = realpath($parent.$album);
 			$zip = new ZipArchive();
-			$zip->open('./temp/'.$album.'.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
+			$zip->open('./'.Musicco::getConfig('tempFolder').'/'.$album.'.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
 			
 			$files = new RecursiveIteratorIterator(
 				new RecursiveDirectoryIterator($rootPath),
@@ -3041,7 +3062,7 @@ if(!AuthManager::isAccessAllowed()) {
 					}
 			}
 			$zip->close();
-			$handle = fopen('./temp/'.$album.'.zip', "rb");
+			$handle = fopen('./'.Musicco::getConfig('tempFolder').'/'.$album.'.zip', "rb");
 			header('Content-Type: application/zip, application/octet-stream');
 			header('Content-Disposition: attachment;filename="'.$album.'.zip"');
 			ob_end_clean();
@@ -3131,7 +3152,7 @@ function deleteFavourite($user, $path) {
 }
 
 function cleanTempFiles() {
-	$files = glob('temp/*.zip');
+	$files = glob(Musicco::getConfig('tempFolder').'/*.*');
 	foreach($files as $file){ 
 		if(is_file($file))
 			unlink($file);
