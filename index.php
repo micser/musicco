@@ -241,6 +241,7 @@ $_TRANSLATIONS["en"] = array(
 	"play" => "Play", 
 	"previoustrack" => "Previous",
 	"promptCoverURL" => "Album art URL", 
+	"promptPlaylistName" => "Save Playlist As", 
 	"promptFolderName" => "Folder name", 
 	"queueing" => "Queueing ",
 	"quick_scan" => "quick scan folder",
@@ -320,6 +321,7 @@ $_TRANSLATIONS["fr"] = array(
 	"play" => "Lecture", 
 	"previoustrack" => "Précédent",
 	"promptCoverURL" => "Adresse de la couverture", 
+	"promptPlaylistName" => "Nom de la playlist", 
 	"promptFolderName" => "Nome du dossier", 
 	"queueing" => "Ajout de ",
 	"quick_scan" => "ajout rapide...",
@@ -1507,16 +1509,26 @@ class Musicco {
 					setTimeout(function() { formatPlaylist(); }, 4000);
 				}
 
-				function savePlaylist() {
+				function savePlaylist(playlistName) {
+					var name = playlistName;
+					if (name == null) {
+						name = isGuestPlay()? "guestPlay" : $("#playlist_select").find(":selected").text();
+					}
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					var playlist = JSON.stringify(musiccoPlaylist.original);
 					var current = musiccoPlaylist.current;
 					var time = Math.floor(jpData.status.currentTime);
 					var loop = musiccoPlaylist.loop;
 					var shuffled = musiccoPlaylist.shuffled;
-					var name = isGuestPlay()? "guestPlay" : $("#playlist_select").find(":selected").text();
 					$.post('?', {savePlaylist: '', u: user, n: name, p: playlist, c: current, t: time, l: loop, s: shuffled}, function (response) {
-					});	
+					});
+				}
+
+				function savePlaylistAs(name) {
+					savePlaylist(name);
+					$("#playlist_select").append('<option value="' + name + '">' + name  + '</option>');
+					$("#playlist_select").val(name);
+					loadPlaylist(name);
 				}
 
 				function getPlaylists() {
@@ -2052,6 +2064,13 @@ class Musicco {
 					$(panel).addClass("shown");
 					$(".panelToggle[href='" + panel + "']").trigger("click");
 				}
+
+				$(document).on("click", "#savePlaylistAs", function() {
+					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>");
+					if (newPlaylistName != '') {
+						savePlaylistAs(newPlaylistName);
+					}
+				});
 
 				$(document).on("change", "#playlist_select", function() {
 					var new_playlist = $("#playlist_select").find(":selected").text();
@@ -2865,7 +2884,12 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="playlistSpinner">
 						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
 					</div>
-					<div><select id="playlist_select"></select></div>
+					<div>
+						<select id="playlist_select"></select>
+						<span id="savePlaylistAs" class="playlist-tools"><i class="fa fa-save"></i></span>
+						<span id="newPlaylist" class="playlist-tools"><i class="fa fa-plus"></i></span>
+						<span id="deletePlaylist" class="playlist-tools"><i class="fa fa-trash"></i></span>
+						</div>
 					<ul>
 						<li></li>
 					</ul>
