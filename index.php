@@ -1531,6 +1531,13 @@ class Musicco {
 					loadPlaylist(name);
 				}
 
+				function deletePlaylist() {
+					var user = "<?php echo AuthManager::getUserName(); ?>";
+					var name = $("#playlist_select").find(":selected").text();
+					$.post('?', {deletePlaylist: '', u: user, n: name}, function (response) {
+					});
+				}
+
 				function getPlaylists() {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					if (user!="") {
@@ -2070,6 +2077,15 @@ class Musicco {
 					if (newPlaylistName != '') {
 						savePlaylistAs(newPlaylistName);
 					}
+				});
+
+				$(document).on("click", "#deletePlaylist", function() {
+					//TODO: Create new default playlist if there are no playlists left
+					deletePlaylist();
+					$("#playlist_select").val("1");
+					$("#playlist_select option[value='0']").remove()
+					loadPlaylist($("#playlist_select").find(":selected").text());
+					savePlaylist();
 				});
 
 				$(document).on("change", "#playlist_select", function() {
@@ -3017,6 +3033,9 @@ if(!AuthManager::isAccessAllowed()) {
 	if(isset($_POST['loadPlaylist'])) {
 			return print_r(loadPlaylist($_POST['u'], $_POST['n']));
 			exit;
+	} elseif(isset($_POST['deletePlaylist'])) {
+			deletePlaylist($_POST['u'], $_POST['n']);
+			exit;
 	} elseif (isset($_POST['savePlaylist'])) {
 			savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t'], $_POST['l'], $_POST['s']);
 			exit;
@@ -3323,6 +3342,17 @@ function loadPlaylist($user, $name) {
 		}
 	}
 	return $playlist;
+}
+
+function deletePlaylist($user, $name) {
+	$userId = getId($user);
+	if ($userId != 0) {
+			$query = "DELETE FROM playlists WHERE name = \"$name\" and userId=\"$userId\"";
+			logMessage("Deleting playlist $name for $user");
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$result = $db->query($query);
+		$db = NULL;
+	}
 }
 
 function getId($user) {
