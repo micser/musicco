@@ -1529,11 +1529,8 @@ class Musicco {
 					}, 500);
 				}
 
-				function deletePlaylist() {
+				function deletePlaylist(name) {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
-					var name = $("#playlist_select").find(":selected").text();
-					$("#playlist_select option:contains('" +  name + "')").remove();
-					$("#playlist_select").val($("#target option:first").val());
 					$.post('?', {deletePlaylist: '', u: user, n: name}, function (response) {
 					});
 				}
@@ -2080,12 +2077,16 @@ class Musicco {
 				});
 
 				$(document).on("click", "#deletePlaylist", function() {
-					//TODO: Create new default playlist if there are no playlists left
-					deletePlaylist();
-					$("#playlist_select").val("1");
-					$("#playlist_select option[value='0']").remove()
-					loadPlaylist($("#playlist_select").find(":selected").text());
-					savePlaylist();
+					var name = $("#playlist_select").find(":selected").text();
+					deletePlaylist(name);
+					$("#playlist_select option:contains('" +  name + "')").remove();
+					if ($('#playlist_select option').length) {
+						$("#playlist_select").val($("#playlist_select option:first").val());
+						loadPlaylist($("#playlist_select").find(":selected").text());
+					} else {
+						//TODO: Do this as a callback rather than after a set time
+						setTimeout(function() { getPlaylists(); loadPlaylist(); }, 500);
+					}
 				});
 
 				$(document).on("change", "#playlist_select", function() {
@@ -3212,14 +3213,18 @@ function deleteGuestPlaylists() {
 	$db = NULL;
 }
 
+function createDefaultPlaylist($user) {
+	logMessage("Creating a new playlist for ".$user);
+	savePlaylist($user, Musicco::getConfig('defaultPlaylist'), "[]", 0, 0, "false", "false");
+}
+
 function getPlaylists($user) {
 	$playlists = [];
 	$userId = getId($user);
 	if ($userId != 0) {
 			$currentPlaylist = getCurrentPlaylistId($userId);
 			if (!$currentPlaylist) {
-				logMessage("Creating a new playlist for ".$user);
-				createNewPlaylist($user, Musicco::getConfig('defaultPlaylist'));
+				createDefaultPlaylist($user);
 				$currentPlaylist = getCurrentPlaylistId($userId);
 			}
 		array_push($playlists, getCurrentPlaylistName($userId));
@@ -3282,7 +3287,8 @@ function buildUL($favourites, $prefix) {
 
 function setCurrentPlaylistId($userId, $playlistId) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$db->exec("UPDATE users set current_playlist=$playlistId WHERE id=$userId;");
+		$playlist_update_query = $db->prepare("UPDATE users set current_playlist=$playlistId WHERE id=$userId;");
+		$playlist_update_query->execute();
 		$db = NULL;
 		logMessage("Set $playlistId as current playlist for $userId");
 }
@@ -3318,10 +3324,6 @@ function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled
 	}
 }
 
-function createNewPlaylist($user, $name) {
-	savePlaylist($user, $name, "[]", 0, 0, "false", "false");
-}
-
 function loadPlaylist($user, $name) {
 	$userId = getId($user);
 	//TODO: Setting a default value should no longer be needed since we create a playlist if none is found.
@@ -3329,17 +3331,20 @@ function loadPlaylist($user, $name) {
 	if ($userId != 0) {
 		if ($name == "") {
 			$currentPlaylist = getCurrentPlaylistId($userId);
-			$query = "SELECT data FROM playlists WHERE id = $currentPlaylist;";
+			$query = "SELECT id,data FROM playlists WHERE id = $currentPlaylist;";
 			logMessage("Loading current playlist for ".$user);
 		} else {
-			$query = "SELECT data FROM playlists WHERE userId=$userId AND name=\"$name\";";
-			logMessage("Loading playlist ".$name."  for ".$user);
+			$query = "SELECT id,data FROM playlists WHERE userId=$userId AND name=\"$name\";";
+			logMessage("Loading playlist ".$name." for ".$user);
 		}
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$result = $db->query($query);
+		$results_query = $db->prepare($query);
+		$results_query->execute();
+		$result = $results_query->fetchAll();
 		$db = NULL;
 		foreach($result as $row) {
 			$playlist = preg_replace("/\\\'/", '"', $row['data']);
+			setCurrentPlaylistId($userId, $row['id']);
 		}
 	}
 	return $playlist;
@@ -3348,11 +3353,19 @@ function loadPlaylist($user, $name) {
 function deletePlaylist($user, $name) {
 	$userId = getId($user);
 	if ($userId != 0) {
-			$query = "DELETE FROM playlists WHERE name = \"$name\" and userId=\"$userId\"";
-			logMessage("Deleting playlist $name for $user");
+		logMessage("Deleting playlist $name for $user");
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$result = $db->query($query);
+		$num_playlists_query = $db->prepare("SELECT count(id) from playlists WHERE userId=$userId;");
+		$delete_query = $db->prepare("DELETE FROM playlists WHERE name = \"$name\" and userId=$userId;");
+		$num_playlists_query->execute();
+		$num_playlists = $num_playlists_query->fetchColumn();
+		$delete_query->execute();
+		$num_playlists_query = NULL;
+		$delete_query = NULL;
 		$db = NULL;
+		if ($num_playlists == 1) {
+			setCurrentPlaylistId($userId, 0);
+		}
 	}
 }
 
@@ -3591,15 +3604,21 @@ function builddb() {
 			$db->exec("DROP INDEX item_idx2;");
 			$db->exec("DROP INDEX item_idx3;");
 			$db->exec("DROP INDEX item_idx4;");
+			$db->exec("DROP INDEX users_idx;");
+			$db->exec("DROP INDEX playlists_idx;");
 			$db->exec("INSERT INTO item (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) SELECT name, normalised_name, type, parent, cover, album, artist, title, year, number, extension FROM item_tmp;");
 			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");
 			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx2 ON item (parent, name, type);");
-			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx3 ON item (name, type);");
-			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx4 ON item (normalised_name, type);");
+			$db->exec("CREATE INDEX IF NOT EXISTS item_idx3 ON item (name, type);");
+			$db->exec("CREATE INDEX IF NOT EXISTS item_idx4 ON item (normalised_name, type);");
+			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS users_idx ON users (id, current_playlist);");
+			$db->exec("CREATE INDEX IF NOT EXISTS playlists_idx ON playlists (id, name, userId);");
 			$db->exec("REINDEX item_idx;");
 			$db->exec("REINDEX item_idx2;");
 			$db->exec("REINDEX item_idx3;");
 			$db->exec("REINDEX item_idx4;");
+			$db->exec("REINDEX users_idx;");
+			$db->exec("REINDEX playlists_idx;");
 			$db->exec("DELETE FROM item_tmp;");
 
 			printf("%.1s s",(microtime(true) - $_START_INSERT));
