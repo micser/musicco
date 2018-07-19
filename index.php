@@ -847,9 +847,6 @@ class Musicco {
 										 url: "?head&url="+coverUrl,
 										 complete: function(data){
 										if (data.responseText < 400) {
-											if (!isTooLate()) {
-												printCover(coverUrl);
-											}
 											saveCover(coverUrl, currentPath);
 											setCoverInfoStatus("<?php print $this->getString("fetchedAlbumArt"); ?>");
 										} else {
@@ -1503,10 +1500,9 @@ class Musicco {
 							if (musiccoPlaylist.playlist[i].path == path) {
 								musiccoPlaylist.playlist[i].poster = imagePath;
 							}
-					printCover(imagePath);
 					}
 					savePlaylist();
-					setTimeout(function() { formatPlaylist(); }, 4000);
+					setTimeout(function() { formatPlaylist(); if (!isTooLate()) { printCover(imagePath); } }, 4000);
 				}
 
 				function savePlaylist(playlistName) {
@@ -2146,6 +2142,7 @@ class Musicco {
 
 				$(document).on("click", ".jp-playlist-item", function(event) { 
 					restoreCurrentTime = -1;
+					formatPlaylist();
 				});
 
 				$(document).on("mouseenter mouseleave", ".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove", function(event) {
