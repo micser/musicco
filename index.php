@@ -1524,7 +1524,9 @@ class Musicco {
 					savePlaylist(name);
 					$("#playlist_select").append('<option value="' + name + '">' + name  + '</option>');
 					$("#playlist_select").val(name);
-					loadPlaylist(name);
+					setTimeout(function() {
+						loadPlaylist(name);
+					}, 500);
 				}
 
 				function deletePlaylist() {
@@ -3309,8 +3311,8 @@ function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled
 		$update_playlist_query->execute();
 		$playlistId = $db->lastInsertId();
 		$db = NULL;
-		setCurrentPlaylistId($userId, $playlistId);
 		logMessage("Saved playlist $name for $user");
+		setCurrentPlaylistId($userId, $playlistId);
 	}
 }
 
