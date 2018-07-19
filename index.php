@@ -1532,6 +1532,8 @@ class Musicco {
 				function deletePlaylist() {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					var name = $("#playlist_select").find(":selected").text();
+					$("#playlist_select option:contains('" +  name + "')").remove();
+					$("#playlist_select").val($("#target option:first").val());
 					$.post('?', {deletePlaylist: '', u: user, n: name}, function (response) {
 					});
 				}
