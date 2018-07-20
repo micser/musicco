@@ -3312,6 +3312,7 @@ function setCurrentPlaylistId($userId, $playlistId) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$playlist_update_query = $db->prepare("UPDATE users set current_playlist=$playlistId WHERE id=$userId;");
 		$playlist_update_query->execute();
+		$playlist_update_query = NULL;
 		$db = NULL;
 		logMessage("Set $playlistId as current playlist for $userId");
 }
@@ -3321,6 +3322,7 @@ function getCurrentPlaylistId($userId) {
 		$query = $db->prepare("SELECT current_playlist FROM users WHERE id=$userId;");
 		$query->execute();
 		$id = $query->fetchColumn();
+		$query = NULL;
 		$db = NULL;
 		return $id;
 }
@@ -3329,6 +3331,7 @@ function getCurrentPlaylistName($userId) {
 		$query = $db->prepare("SELECT name FROM playlists WHERE id = (SELECT current_playlist FROM users WHERE id=$userId);");
 		$query->execute();
 		$name = $query->fetchColumn();
+		$squery = NULL;
 		$db = NULL;
 		return $name;
 }
@@ -3341,6 +3344,7 @@ function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled
 		$update_playlist_query = $db->prepare("REPLACE INTO playlists (userId, name, data) VALUES ($userId, \"$name\", \"$data\")");
 		$update_playlist_query->execute();
 		$playlistId = $db->lastInsertId();
+		$playlistId = NULL;
 		$db = NULL;
 		logMessage("Saved playlist $name for $user");
 		setCurrentPlaylistId($userId, $playlistId);
@@ -3364,6 +3368,7 @@ function loadPlaylist($user, $name) {
 		$results_query = $db->prepare($query);
 		$results_query->execute();
 		$result = $results_query->fetchAll();
+		$results_query = NULL;
 		$db = NULL;
 		foreach($result as $row) {
 			$playlist = preg_replace("/\\\'/", '"', $row['data']);
@@ -3420,6 +3425,7 @@ function getId($user) {
 			$id = $db->lastInsertId();
 		}
 	}
+	$id_query = NULL;
 	$db = NULL;
 	return $id;
 }
