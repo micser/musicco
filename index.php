@@ -2773,8 +2773,12 @@ class Musicco {
       menu: menuOptions,
       beforeOpen: function(event, ui) {
         var node = $.ui.fancytree.getNode(ui.target);
-        setMenuEntries(node.isFolder(), $("#favourites"));
-        node.setActive();
+        if (node.title=="<?php print Musicco::getString('my_favourites'); ?>" ) {
+					event.preventDefault();
+					} else {
+					setMenuEntries(node.isFolder(), $("#favourites"));
+					node.setActive();
+				}
       },
 			select: function(event, ui) {
 				var node = $.ui.fancytree.getNode(ui.target);
