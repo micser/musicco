@@ -2918,15 +2918,15 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="playlistSpinner">
 						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
 					</div>
-					<div id="playlist-tools">
+					<ul>
+						<li></li>
+					</ul>
+					<div id="playlist-tools" class="guestPlay">
 						<select id="playlist_select"></select>
 						<span id="renamePlaylist" class="playlist-tools"><i class="fa fa-edit"></i></span>
 						<span id="newPlaylist" class="playlist-tools"><i class="fa fa-plus"></i></span>
 						<span id="deletePlaylist" class="playlist-tools"><i class="fa fa-trash"></i></span>
 					</div>
-					<ul>
-						<li></li>
-					</ul>
 				</div>
 				<div id="infoPanel" class="panel">
 					<span id="wikiPrev"></span>

@@ -26,6 +26,16 @@
  }
 */
 
+	#playlist-tools {
+		position: fixed;
+		bottom: 0;
+		padding-bottom: .5em;
+		padding-top: .6em;
+		left: inherit;
+		width: 100%;
+		box-shadow: 0 -5px 15px -5px #333;
+	}
+
 	#includeOldAlbums {
 		display: none;
 	}
@@ -101,6 +111,19 @@
 	#controls > span > i {
 		cursor: pointer;
 	}
+
+	.playlist-tools,
+	.jp-playlist-item-remove,
+	.itemHeaderDetails a {
+		opacity: 0.5;
+	}
+
+	.playlist-tools:hover,
+	.jp-playlist-item-remove:hover,
+	.itemHeaderDetails a:hover {
+		opacity: 1;
+	}
+
 
 	.playlist-tools:hover,
 	.toggles:hover,
@@ -198,7 +221,8 @@
 	#helpBox,
 	#sharing-banner,
 	#volume-value,
-	#playlist_select {
+	#playlist_select,
+	#playlist-tools {
 		-webkit-user-select: none;
 		-ms-user-select: none;
 		-moz-user-select: none;
@@ -212,8 +236,17 @@
 		border: 0;
 	}
 
+	#browserPanel,
+	#infoPanel,
+	#lyricsPanel,
+	#settingsPanel,
+	#searchPanel,
+	#playlistPanel > ul {
+		margin-bottom: 5em;
+	}
+
 	#panelContainer {
-		height: 90%;
+		height: 100%;
 		overflow-y: auto;
 	}
 
@@ -259,6 +292,9 @@
 
 	#loadingInfo {
 		display: none;
+		background: #121314;
+		padding-top: 1em;
+		z-index: 3;
 	}
 
 	.big {
@@ -708,6 +744,10 @@
 			height: 1em;
 		}
 
+		#playlistPanel > ul {
+			margin-bottom: 6em;
+		}
+
 		#mini-controls {
 			display: inline !important;
 			vertical-align: unset;
@@ -777,6 +817,10 @@
 		width: 60%;
 	}
 
+	#playlist-tools {
+		width: 58%;
+	}
+
 	#big-player {
 		position: fixed;
 		top: 2em;
@@ -812,7 +856,7 @@
 		#playlistPanel {
 			left: 26%;
 			width: 32%;
-			height: 90%;
+			height: 100%;
 			overflow-x: hidden;
 			overflow-y: auto;
 			border-right: 0;
