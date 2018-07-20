@@ -241,7 +241,7 @@ $_TRANSLATIONS["en"] = array(
 	"play" => "Play", 
 	"previoustrack" => "Previous",
 	"promptCoverURL" => "Album art URL", 
-	"promptPlaylistName" => "Save Playlist As", 
+	"promptPlaylistName" => "New Playlist Name", 
 	"promptFolderName" => "Folder name", 
 	"queueing" => "Queueing ",
 	"quick_scan" => "quick scan folder",
@@ -743,9 +743,13 @@ class Musicco {
 				});
 
 				$("#clear-playlist").click(function() {
+					clearPlaylist();
+				});
+
+				function clearPlaylist() {
 					musiccoPlaylist.remove();
 					savePlaylist();
-				});
+				}
 
 				function toggleSearch() {
 					togglePanel("#searchPanel");
@@ -1519,18 +1523,22 @@ class Musicco {
 					});
 				}
 
-				function savePlaylistAs(name) {
-					savePlaylist(name);
+				function createNewPlaylist(name) {
+					savePlaylist();
 					$("#playlist_select").append('<option value="' + name + '">' + name  + '</option>');
 					$("#playlist_select").val(name);
-					setTimeout(function() {
-						loadPlaylist(name);
-					}, 500);
+					clearPlaylist();
 				}
 
 				function deletePlaylist(name) {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					$.post('?', {deletePlaylist: '', u: user, n: name}, function (response) {
+					});
+				}
+
+				function renamePlaylist(oldName, newName) {
+					var user = "<?php echo AuthManager::getUserName(); ?>";
+					$.post('?', {renamePlaylist: '', u: user, o: oldName, n: newName}, function (response) {
 					});
 				}
 
@@ -2068,10 +2076,19 @@ class Musicco {
 					$(".panelToggle[href='" + panel + "']").trigger("click");
 				}
 
-				$(document).on("click", "#savePlaylistAs", function() {
+				$(document).on("click", "#newPlaylist", function() {
 					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>");
-					if (newPlaylistName != '') {
-						savePlaylistAs(newPlaylistName);
+					if ((newPlaylistName != '') &&  (newPlaylistName != null)) {
+						createNewPlaylist(newPlaylistName);
+					}
+				});
+
+				$(document).on("click", "#renamePlaylist", function() {
+					var oldPlaylistName = $("#playlist_select").find(":selected").text();
+					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>");
+					if ((newPlaylistName != '') &&  (newPlaylistName != null) && (newPlaylistName != oldPlaylistName)) {
+						$("#playlist_select").find(":selected").text(newPlaylistName);
+						renamePlaylist(oldPlaylistName, newPlaylistName);
 					}
 				});
 
@@ -2901,12 +2918,12 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="playlistSpinner">
 						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
 					</div>
-					<div>
+					<div id="playlist-tools">
 						<select id="playlist_select"></select>
-						<span id="savePlaylistAs" class="playlist-tools"><i class="fa fa-save"></i></span>
+						<span id="renamePlaylist" class="playlist-tools"><i class="fa fa-edit"></i></span>
 						<span id="newPlaylist" class="playlist-tools"><i class="fa fa-plus"></i></span>
 						<span id="deletePlaylist" class="playlist-tools"><i class="fa fa-trash"></i></span>
-						</div>
+					</div>
 					<ul>
 						<li></li>
 					</ul>
@@ -3033,6 +3050,9 @@ if(!AuthManager::isAccessAllowed()) {
 // This is where the system is activated.
 	if(isset($_POST['loadPlaylist'])) {
 			return print_r(loadPlaylist($_POST['u'], $_POST['n']));
+			exit;
+	} elseif(isset($_POST['renamePlaylist'])) {
+			renamePlaylist($_POST['u'], $_POST['o'], $_POST['n']);
 			exit;
 	} elseif(isset($_POST['deletePlaylist'])) {
 			deletePlaylist($_POST['u'], $_POST['n']);
@@ -3347,6 +3367,18 @@ function loadPlaylist($user, $name) {
 		}
 	}
 	return $playlist;
+}
+
+function renamePlaylist($user, $oldName, $newName) {
+	$userId = getId($user);
+	if ($userId != 0) {
+		logMessage("Renaming playlist $oldName for $user to $newName");
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$rename_query = $db->prepare("UPDATE playlists SET name=\"$newName\" WHERE name=\"$oldName\" and userId=$userId;");
+		$rename_query->execute();
+		$rename_query = NULL;
+		$db = NULL;
+	}
 }
 
 function deletePlaylist($user, $name) {
