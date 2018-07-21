@@ -1852,6 +1852,7 @@ class Musicco {
 					// 83: s
 					// 80: p
 					// 84: t
+					// 72: h
 					// 73: i
 					// 76: l
 					// 71: g
@@ -1888,7 +1889,7 @@ class Musicco {
 					} else if (menuIsFocused || tabIsFocused) {
 						//no keys intercepted on context menu
 					} else {
-						customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 71, 73, 76, 80, 83, 84, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
+						customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 71, 72, 73, 76, 80, 83, 84, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
 					}
 					
 					if (customKeyEvents.indexOf(e.keyCode) > -1) {
@@ -1944,13 +1945,17 @@ class Musicco {
 									$("#library").fancytree("getTree").getFirstChild().setActive();
 								}
 							break;
-							
+
+							case	72: // h
+								showHelp();
+							break;
+
 							case	191: // /
 								if (!isGuestPlay()) {
 									 togglePanel("#browserPanel");
 									 $('#filterText').select();
 									 $('#filterText').focus();
-								} 
+								}
 							break;
 
 							case 65: //a
@@ -2042,6 +2047,10 @@ class Musicco {
 							break;
 						}
 					}
+				}
+
+				function showHelp() {
+					$("#help").trigger("click");
 				}
 
 				function closeLeftPanel() {
@@ -3765,14 +3774,20 @@ function builddb() {
 		$helpString.="<div class='yellow bold'>Playback</div>";
 		$helpString.="<div>&larr;: previous track</div>";
 		$helpString.="<div>&rarr;: next track</div>";
-		$helpString.="<div>Shift + &larr;: previous album</div>";
-		$helpString.="<div>Shift + &rarr;: next album</div>";
+		$helpString.="<div>shift + &larr;: previous album</div>";
+		$helpString.="<div>shift + &rarr;: next album</div>";
 		$helpString.="<div>&uarr;: volume up</div>";
 		$helpString.="<div>&darr;: volume down</div>";
 		$helpString.="<div>&lt;space&gt;: play/pause</div>";
 		$helpString.="<div>You can also use media keys on <br/>most multimedia keyboards</div>";
 		$helpString.="<div><br/></div>";
+		$helpString.="<div class='guestPlay yellow bold'>Browser</div>";
+		$helpString.="<div class='guestPlay'>j/k: highlight previous/next item</div>";
+		$helpString.="<div class='guestPlay'>o: open current selection</div>";
+		$helpString.="<div class='guestPlay'>a: queue current selection</div>";
+		$helpString.="<div><br/></div>";
 		$helpString.="<div class='yellow bold'>Main</div>";
+		$helpString.="<div>h: show help</div>";
 		$helpString.="<div class='guestPlay'>b: show browser</div>";
 		$helpString.="<div class='guestPlay'>/: go to filter box in browser</div>";
 		$helpString.="<div class='guestPlay'>s: show/ search</div>";
@@ -3784,13 +3799,29 @@ function builddb() {
 		$helpString.="<div>Esc: hide all panels</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='yellow bold'>Ninja</div>";
-		$helpString.="<div>Shift + Uncover: add new albums to playlist</div>";
-		$helpString.="<div>Alt + Uncover: play a random album from the playlist</div>";
+		$helpString.="<div>shift + <i class='fas fa-step-backward'></i>: previous album</div>";
+		$helpString.="<div>shift + <i class='fas fa-step-forward'></i>: next album</div>";
+		$helpString.="<div class='guestPlay'>shift + <i class='fas fa-magic'></i>: add new albums to playlist</div>";
+		$helpString.="<div class='guestPlay'>alt + <i class='fas fa-magic'></i>: play random album from playlist</div>";
+		$helpString.="<div>shift + <i class='fas fa-arrow-up'></i>/<i class='fas fa-arrow-down'></i>: move album to top/bottom</div>";
+		$helpString.="<div class='guestPlay'>shift + <i class='fas fa-times'></i>: remove all previous albums</div>";
+		$helpString.="<div class='guestPlay'>ctrl + <i class='fas fa-times'></i>: remove all following albums</div>";
 		$helpString.="<div><br/></div>";
-		$helpString.="<div class='guestPlay yellow bold'>Browser</div>";
-		$helpString.="<div class='guestPlay'>j/k: highlight previous/next item</div>";
-		$helpString.="<div class='guestPlay'>o: open current selection</div>";
-		$helpString.="<div class='guestPlay'>a: queue current selection</div>";
+		$helpString.="<div class='bold big'><i class='fas fa-mobile-alt'></i>&nbsp;Mobile</div>";
+		$helpString.="<div class='yellow bold'>Swipe Album Art</div>";
+		$helpString.="<div>&larr;: previous track</div>";
+		$helpString.="<div>&rarr;: next track</div>";
+		$helpString.="<div>&uarr;: volume up</div>";
+		$helpString.="<div>&darr;: volume down</div>";
+		$helpString.="<div><br/></div>";
+		$helpString.="<div class='yellow bold'>Long Press</div>";
+		$helpString.="<div class='guestPlay'><i class='far fa-folder'></i> Album / <i class='fas fa-music'></i> Track: open context menu</div>";
+		$helpString.="<div><i class='fas fa-step-backward'></i>: previous album</div>";
+		$helpString.="<div><i class='fas fa-step-forward'></i>: next album</div>";
+		$helpString.="<div class='guestPlay'><i class='fas fa-magic'></i>: add new albums to playlist</div>";
+		$helpString.="<div><i class='fas fa-arrow-up'></i>/<i class='fas fa-arrow-down'></i>: move album to top/bottom</div>";
+		$helpString.="<div class='guestPlay'><i class='fas fa-times'></i>: remove all previous albums</div>";
+		$helpString.="<div><i class='far fa-play-circle'></i>/<i class='far fa-pause-circle'></i>/<i class='far fa-image'></i>: play random album from playlist</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='yellow bold'>Find Out More at ";
 		$helpString.="<a tabindex='-1' class='yellow' target='_blank' href='https://www.musicco.org/#features'>musicco.org</a></div>";
@@ -3836,9 +3867,15 @@ function builddb() {
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold'>2.0</div>";
 				$aboutString.="<li>Refreshed UI</li>";
+				$aboutString.="<li>Added support for multiple playlists per user</li>";
+				$aboutString.="<li>Added support for marking albums and tracks as favourites</li>";
+				$aboutString.="<li>Improved controls for touchcreen browsers</li>";
 				$aboutString.="<li>Added support for rich notifications on Android using Media Session API</li>";
 				$aboutString.="<li>Added play/pause and skip actions to desktop notification</li>";
+				$aboutString.="<li>Added support for quickly adding an album without scanning the entire library</li>";
+				$aboutString.="<li>Handle accent-insensitive search</li>";
 				$aboutString.="<li>Improved webapp manifest so you can add musicco to your Android home screen</li>";
+				$aboutString.="<li>Fixed many things!</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold'>1.3</div>";
