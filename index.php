@@ -139,11 +139,18 @@ $_CONFIG['uncover_limit'] = 5;
 $_CONFIG['new_marker'] = "__";
 
 // Whether or not to log queries to 
-// file for debugging. logs are written
+// file for debugging. Logs are written
 // in $_CONFIG['appName'].log
 // next to index.php
 // Default: $_CONFIG['debug_queries'] = false;
 $_CONFIG['debug_queries'] = false;
+
+// Whether or not to log extra 
+// debug informationfile for debugging. Logs are written
+// in $_CONFIG['appName'].log
+// next to index.php
+// Default: $_CONFIG['debug_stack'] = false;
+$_CONFIG['debug_stack'] = false;
 
 
 /*
@@ -1778,7 +1785,9 @@ class Musicco {
 
 				$("#musiccoplayer").on($.jPlayer.event.ready, function(event) {
 					loadPlaylist();
-					getPlaylists()
+					if (!isGuestPlay()) {
+						getPlaylists();
+					}
 					updateVolumeValue();
 				});
 
@@ -2601,57 +2610,64 @@ class Musicco {
 			$("#favourites").fancytree("getTree").getPersistData();
 		}
 
-		initFavouriteTree();
-		
-		$("#library").fancytree({
-			extensions: ["glyph", "filter", "persist"],	
-			glyph: customTreeIcons,
-			filter: {
-				mode: "hide",
-				fuzzy: true,
-				hideExpanders: false,
-				nodata: function() { 
-					setTimeout(function() {
-						$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
-					}, 50);
-					if (!$("#includeOldAlbums").is(':checked')) {
-						resetCheckbox();
-						filterTree();
+		function initLibraryTree() {
+			$("#library").fancytree({
+				extensions: ["glyph", "filter", "persist"],	
+				glyph: customTreeIcons,
+				filter: {
+					mode: "hide",
+					fuzzy: true,
+					hideExpanders: false,
+					nodata: function() { 
 						setTimeout(function() {
-							$(".fancytree-statusnode-nodata").hide();
+							$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
 						}, 50);
+						if (!$("#includeOldAlbums").is(':checked')) {
+							resetCheckbox();
+							filterTree();
+							setTimeout(function() {
+								$(".fancytree-statusnode-nodata").hide();
+							}, 50);
+						}
+					}
+				},
+				autoScroll: true,
+				clickFolderMode: 3,
+				keyboard: true,
+				tabindex: "0",
+				titlesTabbable: true,
+				tooltip: true,
+				selectMode: 1,
+				source: {
+						url: "?",
+						type: "POST",
+						data: {querydb: '', root: decodeURI(musicRoot), type: 'browse'},
+						cache: true
+				},
+				beforeExpand: function(event, data) {
+					if (event.which === 3) {
+						return false;
+					}
+				},
+				lazyLoad: function(event, data) {
+					var node = data.node;
+					var root = node.data.parent + node.data.path + "/";
+					data.result = {
+						url: "?",
+						type: "POST",
+						data: {querydb: '', root: decodeURI(root), type: 'browse'},
+						cache: true
 					}
 				}
-			},
-			autoScroll: true,
-			clickFolderMode: 3,
-			keyboard: true,
-			tabindex: "0",
-			titlesTabbable: true,
-			tooltip: true,
-			selectMode: 1,
-			source: {
-					url: "?",
-					type: "POST",
-					data: {querydb: '', root: decodeURI(musicRoot), type: 'browse'},
-					cache: true
-			},
-			beforeExpand: function(event, data) {
-				if (event.which === 3) {
-					return false;
-				}
-			},
-			lazyLoad: function(event, data) {
-				var node = data.node;
-				var root = node.data.parent + node.data.path + "/";
-				data.result = {
-					url: "?",
-					type: "POST",
-					data: {querydb: '', root: decodeURI(root), type: 'browse'},
-					cache: true
-				}
-			}
-		});
+			});
+		}
+
+
+		if (!isGuestPlay()) {
+			initFavouriteTree();
+			initLibraryTree();
+			initContextMenus();
+		}
 
 		function setMenuEntries(isFolder, target) {
 			 $(target).contextmenu("replaceMenu", menuOptions);
@@ -2751,80 +2767,84 @@ class Musicco {
 			}
 		});
 
-		$("#searchPanel").contextmenu({
-			autoTrigger: 'false',
-			delegate: ".searchResult,.searchResultParent",
-			autoFocus: true,
-			menu: menuOptions,
-			select: function(event, ui) {
-				var node = {
-					folder: ui.target.data("folder"),
-					title: ui.target.data("title").replace("/", ""),
-					data: {
-						album: ui.target.data("album"),
-						artist: (ui.target.data("artist").length > 0 ? ui.target.data("artist") : ui.target.data("path")),
-						cover: ui.target.data("cover"),
-						parent: ui.target.data("parent"),
-						path: ui.target.data("path").replace(/^(.*)\/$/, "$1"),
-						songtitle: ui.target.data("songtitle"),
-						type: ui.target.data("type"),
-						year: ui.target.data("year")
-					},
-					'isFolder': function() { return ui.target.data("folder"); }
-				};
-				handleMenuSelection(node, ui.cmd);
-			}
-		});
-
-		$("#favourites").contextmenu({
-      delegate: "span.fancytree-title",
-      autoFocus: true,
-      menu: menuOptions,
-      beforeOpen: function(event, ui) {
-        var node = $.ui.fancytree.getNode(ui.target);
-        if (node.title=="<?php print Musicco::getString('my_favourites'); ?>" ) {
-					event.preventDefault();
-					} else {
-					setMenuEntries(node.isFolder(), $("#favourites"));
-					node.setActive();
+		function initContextMenus() {
+			$("#searchPanel").contextmenu({
+				autoTrigger: 'false',
+				delegate: ".searchResult,.searchResultParent",
+				autoFocus: true,
+				menu: menuOptions,
+				select: function(event, ui) {
+					var node = {
+						folder: ui.target.data("folder"),
+						title: ui.target.data("title").replace("/", ""),
+						data: {
+							album: ui.target.data("album"),
+							artist: (ui.target.data("artist").length > 0 ? ui.target.data("artist") : ui.target.data("path")),
+							cover: ui.target.data("cover"),
+							parent: ui.target.data("parent"),
+							path: ui.target.data("path").replace(/^(.*)\/$/, "$1"),
+							songtitle: ui.target.data("songtitle"),
+							type: ui.target.data("type"),
+							year: ui.target.data("year")
+						},
+						'isFolder': function() { return ui.target.data("folder"); }
+					};
+					handleMenuSelection(node, ui.cmd);
 				}
-      },
-			select: function(event, ui) {
-				var node = $.ui.fancytree.getNode(ui.target);
-				handleMenuSelection(node, ui.cmd);
-			}
-    });
+			});
 
-		$("#library").contextmenu({
-      delegate: "span.fancytree-title",
-      autoFocus: true,
-      menu: menuOptions,
-      beforeOpen: function(event, ui) {
-        var node = $.ui.fancytree.getNode(ui.target);
-         setMenuEntries(node.isFolder(), $("#library"));
-         //Activate node on right-click
-        node.setActive();
-         //Disable tree keyboard handling
-        ui.menu.prevKeyboard = node.tree.options.keyboard;
-        node.tree.options.keyboard = false;
-      },
-      close: function(event, ui) {
-         //Restore tree keyboard handling
-        var node = $.ui.fancytree.getNode(ui.target);
-        if (node != null) {
-					node.tree.options.keyboard = ui.menu.prevKeyboard;
-					node.setFocus();
-        } else {
-					console.log("Node was null, unsure what the status of keyboard support is in that case");
-        }
-      },
-      select: function(event, ui) {
-        var node = $.ui.fancytree.getNode(ui.target);
-				handleMenuSelection(node, ui.cmd);
-      }
-    });
+			$("#favourites").contextmenu({
+				delegate: "span.fancytree-title",
+				autoFocus: true,
+				menu: menuOptions,
+				beforeOpen: function(event, ui) {
+					var node = $.ui.fancytree.getNode(ui.target);
+					if (node.title=="<?php print Musicco::getString('my_favourites'); ?>" ) {
+						event.preventDefault();
+						} else {
+						setMenuEntries(node.isFolder(), $("#favourites"));
+						node.setActive();
+					}
+				},
+				select: function(event, ui) {
+					var node = $.ui.fancytree.getNode(ui.target);
+					handleMenuSelection(node, ui.cmd);
+				}
+			});
 
-    checkLibraryRefresh($("#reset_db").html());
+			$("#library").contextmenu({
+				delegate: "span.fancytree-title",
+				autoFocus: true,
+				menu: menuOptions,
+				beforeOpen: function(event, ui) {
+					var node = $.ui.fancytree.getNode(ui.target);
+					 setMenuEntries(node.isFolder(), $("#library"));
+					 //Activate node on right-click
+					node.setActive();
+					 //Disable tree keyboard handling
+					ui.menu.prevKeyboard = node.tree.options.keyboard;
+					node.tree.options.keyboard = false;
+				},
+				close: function(event, ui) {
+					 //Restore tree keyboard handling
+					var node = $.ui.fancytree.getNode(ui.target);
+					if (node != null) {
+						node.tree.options.keyboard = ui.menu.prevKeyboard;
+						node.setFocus();
+					} else {
+						console.log("Node was null, unsure what the status of keyboard support is in that case");
+					}
+				},
+				select: function(event, ui) {
+					var node = $.ui.fancytree.getNode(ui.target);
+					handleMenuSelection(node, ui.cmd);
+				}
+			});
+    }
+
+    if (!isGuestPlay()) {
+			checkLibraryRefresh($("#reset_db").html());
+		}
 	});
 //]]>
 		</script>
@@ -2912,7 +2932,7 @@ if(!AuthManager::isAccessAllowed()) {
 							<a class="btn" id="filterButton" href="#"><i class="fas fa-border fa-times"></i></a>
 						</div>
 						<div id="favourites">
-							<?php print getFavourites(AuthManager::getUserName()); ?>
+							<?php if (!isGuestPlay) { print getFavourites(AuthManager::getUserName()); } ?>
 						</div>
 						<div id="library" class="nowrap"></div>
 					</div>
@@ -3077,8 +3097,9 @@ if(!AuthManager::isAccessAllowed()) {
 			$user = $_POST['u'];
 			$path = str_replace("\"", "\\\"", $_POST['p']);
 			$data = "[{\"build\": true , \"path\": \"".$path."\"}]";
+			createUser($user, true);
 			savePlaylist($user, "guestPlay", $data, "0", "0", "true", "false");
-			logMessage("Saved guest playlist ".$user." for ".$path);
+			logMessage("Saved guest playlist $path for $user");
 			exit;
 	} elseif (isset($_POST['getPlaylists'])) {
 			return print getPlaylists($_POST['u']);
@@ -3197,6 +3218,7 @@ function file_get_contents_utf8($fn) {
 $favourites_list = "";
 
 function addFavourite($user, $path) {
+	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
@@ -3219,16 +3241,20 @@ function addFavourite($user, $path) {
 }
 
 function deleteFavourite($user, $path) {
+	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$query = "DELETE FROM favourites WHERE path LIKE \"$path/%\" AND userId=$userId;";
-		$children = $db->query($query);
+		$favourites_query = $db->prepare("DELETE FROM favourites WHERE path LIKE \"$path/%\" AND userId=$userId;");
+		$favourites_query->execute();
+		$children = $favourites_query->fetchAll();
+		$favourites_query = NULL;
 		$db = NULL;
 	}
 }
 
 function cleanTempFiles() {
+	debugMessage(__FUNCTION__);
 	$files = glob(Musicco::getConfig('tempFolder').'/*.*');
 	foreach($files as $file){ 
 		if(is_file($file))
@@ -3237,20 +3263,25 @@ function cleanTempFiles() {
 }
 
 function deleteGuestPlaylists() {
+	debugMessage(__FUNCTION__);
 	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-	$query1 = "DELETE FROM playlists WHERE name=\"guestPlay\";";
-	$query2 = "DELETE FROM users WHERE id IN (SELECT id FROM users WHERE id NOT IN (SELECT userId FROM playlists));";
-	$db->query($query1);
-	$db->query($query2);
+	$playlist_query = $db->prepare("DELETE FROM playlists WHERE name=\"guestPlay\";");
+	$user_query = $db->prepare("DELETE FROM users WHERE id IN (SELECT id FROM users WHERE id NOT IN (SELECT userId FROM playlists));");
+	$playlist_query->execute();
+	$user_query->execute();
+	$playlist_query = NULL;
+	$user_query = NULL;
 	$db = NULL;
 }
 
 function createDefaultPlaylist($user) {
+	debugMessage(__FUNCTION__);
 	logMessage("Creating a new playlist for ".$user);
 	savePlaylist($user, Musicco::getConfig('defaultPlaylist'), "[]", 0, 0, "false", "false");
 }
 
 function getPlaylists($user) {
+	debugMessage(__FUNCTION__);
 	$playlists = [];
 	$userId = getId($user);
 	if ($userId != 0) {
@@ -3261,8 +3292,10 @@ function getPlaylists($user) {
 			}
 		array_push($playlists, getCurrentPlaylistName($userId));
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$query = "SELECT name FROM playlists WHERE userId=$userId;";
-		$result = $db->query($query);
+		$playlist_query = $db->prepare("SELECT name FROM playlists WHERE userId=$userId;");
+		$playlist_query->execute();
+		$result = $playlist_query->fetchAll();
+		$playlist_query = NULL;
 		$db = NULL;
 		foreach($result as $playlist) {
 			if (!in_array($playlist['name'], $playlists)) {
@@ -3274,6 +3307,7 @@ function getPlaylists($user) {
 }
 
 function getFavourites($user) {
+	debugMessage(__FUNCTION__);
 	global $favourites_list;
 	$userId = getId($user);
 	$temp=[];
@@ -3281,8 +3315,10 @@ function getFavourites($user) {
 	if ($userId != 0) {
 		$favourites_list = "";
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$query = "SELECT path FROM favourites WHERE userId=$userId;";
-		$result = $db->query($query);
+		$favourites_query = $db->prepare("SELECT path FROM favourites WHERE userId=$userId;");
+		$favourites_query->execute();
+		$result = $favourites_query->fetchAll();
+		$favourites_query = NULL;
 		$db = NULL;
 		foreach($result as $favourite) {
 			$list = explode('/', $favourite["path"]);
@@ -3300,6 +3336,7 @@ function getFavourites($user) {
 }
 
 function buildUL($favourites, $prefix) {
+  debugMessage(__FUNCTION__);
   global $favourites_list;
   $favourites_list .= "\n<ul>\n";
   $slash = ($prefix != "") ? "/" : "";
@@ -3318,6 +3355,7 @@ function buildUL($favourites, $prefix) {
 }
 
 function setCurrentPlaylistId($userId, $playlistId) {
+		debugMessage(__FUNCTION__);
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$playlist_update_query = $db->prepare("UPDATE users set current_playlist=$playlistId WHERE id=$userId;");
 		$playlist_update_query->execute();
@@ -3327,6 +3365,7 @@ function setCurrentPlaylistId($userId, $playlistId) {
 }
 
 function getCurrentPlaylistId($userId) {
+		debugMessage(__FUNCTION__);
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$query = $db->prepare("SELECT current_playlist FROM users WHERE id=$userId;");
 		$query->execute();
@@ -3336,6 +3375,7 @@ function getCurrentPlaylistId($userId) {
 		return $id;
 }
 function getCurrentPlaylistName($userId) {
+		debugMessage(__FUNCTION__);
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$query = $db->prepare("SELECT name FROM playlists WHERE id = (SELECT current_playlist FROM users WHERE id=$userId);");
 		$query->execute();
@@ -3346,6 +3386,7 @@ function getCurrentPlaylistName($userId) {
 }
 
 function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled) {
+	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
@@ -3360,9 +3401,24 @@ function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled
 	}
 }
 
+function isUser($user) {
+	debugMessage(__FUNCTION__);
+	$found = false;
+	if (!$found) {
+		foreach(Musicco::getConfig("users") as $userData) {
+			if (in_array($user, $userData)) {
+				$found = true;
+				debugMessage("found user in config: $user");
+			}
+		}
+	}
+	return $found;
+}
+
 function loadPlaylist($user, $name) {
+	debugMessage(__FUNCTION__);
 	$userId = getId($user);
-	//TODO: Setting a default value should no longer be needed since we create a playlist if none is found.
+	//TODO: Setting a default value should no longer be needed since we create a playlist if none is found. In practice, that's not the case yet.
 	$playlist = '{"song": "0" , "time": 0, "repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
 	if ($userId != 0) {
 		if ($name == "") {
@@ -3388,6 +3444,7 @@ function loadPlaylist($user, $name) {
 }
 
 function renamePlaylist($user, $oldName, $newName) {
+	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
 		logMessage("Renaming playlist $oldName for $user to $newName");
@@ -3400,6 +3457,7 @@ function renamePlaylist($user, $oldName, $newName) {
 }
 
 function deletePlaylist($user, $name) {
+	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
 		logMessage("Deleting playlist $name for $user");
@@ -3418,28 +3476,46 @@ function deletePlaylist($user, $name) {
 	}
 }
 
+function createUser($user, $force) {
+	debugMessage(__FUNCTION__);
+	//TODO: Restrict user creation to prevent a guestPlay loading from creating a user that matches one from the configuration
+	// No access to AuthManager from here...
+	$id = 0;
+	if (isUser($user) || $force) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist) VALUES (\"" . $user . "\", 0);");
+		$create_user_query->execute();
+		$id = $db->lastInsertId();
+		$create_user_query = NULL;
+		$db = NULL;
+	}
+	return $id;
+}
+
 function getId($user) {
+	debugMessage(__FUNCTION__);
 	$id = 0;
 	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 	$count_query = $db->prepare("SELECT count(id) from users where username = \"$user\";");
-	if ($count_query) {
-		$count_query->execute();
-		$count = $count_query->fetchColumn();
-		if ($count > 0) {
-			$id_query = $db->prepare("SELECT id from users where username = \"$user\";");
-			$id_query->execute();
-			$id=$id_query->fetchColumn();
-		} else {
-			$db ->exec("INSERT into users (username, current_playlist) VALUES (\"" . $user . "\", 0);");
-			$id = $db->lastInsertId();
-		}
+	$count_query->execute();
+	$count = $count_query->fetchColumn();
+	$count_query = NULL;
+	if ($count > 0) {
+		$id_query = $db->prepare("SELECT id from users where username = \"$user\";");
+		$id_query->execute();
+		$id=$id_query->fetchColumn();
+		$id_query = NULL;
+		$db = NULL;
+	} else {
+		$db = NULL;
+		$id = createUser($user, false);
 	}
-	$id_query = NULL;
-	$db = NULL;
+	debugMessage("DONE!: $id");
 	return $id;
 }
 
 function querydb($query_root, $query_type) {
+	debugMessage(__FUNCTION__);
 	try	{
 		switch ($query_type) {
 		case "browse":
@@ -3527,7 +3603,14 @@ function logMessage($log_message) {
 	}
 }
 
+function debugMessage($message) {
+	if (Musicco::getConfig('debug_stack')) {
+		error_log(date('Y-m-d H:i:s').": <<<<<DEBUG>>>>> ".$message."\n", 3, dirname(__FILE__).'/'.Musicco::getConfig('appName').'.log');
+	}
+}
+
 function quickscan($folder) {
+	debugMessage(__FUNCTION__);
 	$newMusic = build_library(Musicco::getConfig('musicRoot')."/".$folder, ".mp3");
 	if (sizeof($newMusic) > 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
@@ -3539,11 +3622,13 @@ function quickscan($folder) {
 }
 
 function lockDB() {
+	debugMessage(__FUNCTION__);
 	$lock_file = fopen(Musicco::getConfig('musicRoot').".lock", "w") or die("Unable to create lock file.");
 	fclose($lock_file);
 }
 
 function cleanDB($db) {
+	debugMessage(__FUNCTION__);
 	$db->exec("DELETE FROM item_tmp;");
 	$db->exec("DELETE FROM data;");
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
@@ -3623,10 +3708,12 @@ function insertResults($library, $db, $background) {
 
 		// insert all info in DB
 		$insert_item->execute(array($name, $normalised_name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension));
+		$insert_item = NULL;
 	}
 }
 
 function builddb() {
+	debugMessage(__FUNCTION__);
 	if (file_exists(Musicco::getConfig('musicRoot').".lock")) {
 			printf("-1");
 			logMessage("Aborting, another library refresh is already in progress.");
@@ -3676,8 +3763,10 @@ function builddb() {
 
 			// clean up favourites			
 			$_START_FAVOURITES = microtime(true);
-			$get_favourites = "SELECT path from favourites";
-			$favourites = $db->query($get_favourites);
+			$get_favourites_query = $db->prepare("SELECT path from favourites;");
+			$get_favourites_query->execute();
+			$favourites = $get_favourites_query->fetchAll();
+			$get_favourites_query = NULL;
 			$file_check = $db->prepare('SELECT COUNT(id) from item where parent = ? AND name = ?;');
 			foreach($favourites as $row) {
 				$favourite = pathinfo($row['path']);
@@ -3695,6 +3784,7 @@ function builddb() {
 						$db->exec("UPDATE favourites SET path=\"$alt_parent$file\" where path=\"$parent$file\";");
 					}
 				}
+				$file_check = NULL;
 			}
 			logMessage("Refreshed favourites in ".number_format((microtime(true) - $_START_FAVOURITES), 3)." seconds");
 
