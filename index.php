@@ -1615,7 +1615,7 @@ class Musicco {
 
 
 				function saveGuestPlaylist(path, info, cover) {
-					var user = event.timeStamp;
+					var user = Date.now().toString(36);
 					var cover = cover;
 					$("#shared-album-qr").empty();
 					$("#shared-album-title").text(info);
@@ -3353,7 +3353,7 @@ function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled
 		$update_playlist_query = $db->prepare("REPLACE INTO playlists (userId, name, data) VALUES ($userId, \"$name\", \"$data\")");
 		$update_playlist_query->execute();
 		$playlistId = $db->lastInsertId();
-		$playlistId = NULL;
+		$update_playlist_query = NULL;
 		$db = NULL;
 		logMessage("Saved playlist $name for $user");
 		setCurrentPlaylistId($userId, $playlistId);
