@@ -380,16 +380,17 @@ class AuthManager {
 			return;
 			
 		if(isset($_GET['logout'])) {
-			$_SESSION['musicco_user_name'] = null;
-			$_SESSION['musicco_user_pass'] = null;
+			unset($_SESSION['musicco_user_name']);
+			unset($_SESSION['musicco_user_pass']);
+			unset($_SESSION['musicco_guest_play']);
 		} elseif ((isset($_GET['guestPlay'])) && (isset($_GET['u']))) {
 			$_SESSION['musicco_user_name'] = $_GET['u'];
 			$_SESSION['musicco_guest_play'] = true;
 			logMessage("Guest Play requested for user ".AuthManager::getUserName());
 		} elseif (isset($_GET['creds'])) {
 			$auth_token = $_GET['creds'];
-			$_SESSION['musicco_user_name'] = null;
-			$_SESSION['musicco_user_pass'] = null;
+			unset($_SESSION['musicco_user_name']);
+			unset($_SESSION['musicco_user_pass']);
 			foreach(Musicco::getConfig("users") as $user) {
 				if(hash("md5", $user[0].$user[1].$user[2]) == $auth_token) {
 					logMessage("user $user[0] logged in using an auth token");
@@ -398,7 +399,6 @@ class AuthManager {
 				}
 			}
 		} else {
-			$_SESSION['musicco_guest_play'] = null;
 			if(isset($_POST['user_pass']) && strlen($_POST['user_pass']) > 0) {
 				if(AuthManager::isUser((isset($_POST['user_name'])?$_POST['user_name']:""), $_POST['user_pass'])) {
 					$_SESSION['musicco_user_name'] = isset($_POST['user_name'])?$_POST['user_name']:"";
@@ -493,7 +493,8 @@ class Musicco {
 	const TYPE_FILE = 2;
 	const TYPE_COVER = 3;
 
-	function init() {		
+	function init() {
+		debugMessage(__FUNCTION__);
 		global $_TRANSLATIONS;
 		if(isset($_GET['lang']) && isset($_TRANSLATIONS[$_GET['lang']]))
 			$this->lang = $_GET['lang'];
@@ -543,9 +544,6 @@ class Musicco {
 		Musicco::setError($this->getString($stringName));
 	}
 
-	//
-	// Main function, activating tasks
-	// 
 	function run() {
 		$this->outputHtml();
 	}
@@ -586,9 +584,6 @@ class Musicco {
 		}
 	}
 
-	//
-	// Printing the actual page
-	// 
 	function outputHtml() {
 		global $_ERROR;
 ?>
@@ -2853,13 +2848,9 @@ class Musicco {
 	<body id="viewer">
 	<div id="loading"></div>
 <?php 
-//
-// Print the error (if there is something to print)
-//
 if(isset($_ERROR) && strlen($_ERROR) > 0) {
 	print "<div id=\"error\">".$_ERROR."</div>";
 }
-// Checking if the user is allowed to access the page, otherwise showing the login box
 if(!AuthManager::isAccessAllowed()) {
 	$this->printLoginBox();
 } else {
@@ -3080,8 +3071,20 @@ if(!AuthManager::isAccessAllowed()) {
 }
 
 //
-// This is where the system is activated.
+// This is where the magic happens...
+	debugMessage("-----------------------------------");
+	$musicco = new Musicco();
+	AuthManager::init();
+	$musicco->init();
+	debugMessage("REQUEST ".print_r($_REQUEST, TRUE));
+	debugMessage("SESSION ".print_r($_SESSION, TRUE));
+
 	if(isset($_POST['loadPlaylist'])) {
+			if (AuthManager::isGuestPlay()) {
+				if (isUser($_POST['u'])) {
+					exit;
+				}
+			}
 			return print_r(loadPlaylist($_POST['u'], $_POST['n']));
 			exit;
 	} elseif(isset($_POST['renamePlaylist'])) {
@@ -3201,10 +3204,7 @@ if(!AuthManager::isAccessAllowed()) {
 			quickscan($folder);
 			exit;
 	} else {
-			$musicco = new Musicco();
-			$musicco->init();
-			AuthManager::init();
-			$musicco->run();
+		$musicco->run();
 }
 
 function file_get_contents_utf8($fn) {
@@ -3336,7 +3336,6 @@ function getFavourites($user) {
 }
 
 function buildUL($favourites, $prefix) {
-  debugMessage(__FUNCTION__);
   global $favourites_list;
   $favourites_list .= "\n<ul>\n";
   $slash = ($prefix != "") ? "/" : "";
@@ -3408,7 +3407,6 @@ function isUser($user) {
 		foreach(Musicco::getConfig("users") as $userData) {
 			if (in_array($user, $userData)) {
 				$found = true;
-				debugMessage("found user in config: $user");
 			}
 		}
 	}
@@ -3478,10 +3476,13 @@ function deletePlaylist($user, $name) {
 
 function createUser($user, $force) {
 	debugMessage(__FUNCTION__);
-	//TODO: Restrict user creation to prevent a guestPlay loading from creating a user that matches one from the configuration
-	// No access to AuthManager from here...
 	$id = 0;
-	if (isUser($user) || $force) {
+	$isValidUser = isUser($user);
+	if (AuthManager::isGuestPlay()) {
+		$isValidUser = false;
+		$force = false;
+	}
+	if ($isValidUser || $force) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist) VALUES (\"" . $user . "\", 0);");
 		$create_user_query->execute();
@@ -3510,12 +3511,10 @@ function getId($user) {
 		$db = NULL;
 		$id = createUser($user, false);
 	}
-	debugMessage("DONE!: $id");
 	return $id;
 }
 
 function querydb($query_root, $query_type) {
-	debugMessage(__FUNCTION__);
 	try	{
 		switch ($query_type) {
 		case "browse":
@@ -3610,7 +3609,6 @@ function debugMessage($message) {
 }
 
 function quickscan($folder) {
-	debugMessage(__FUNCTION__);
 	$newMusic = build_library(Musicco::getConfig('musicRoot')."/".$folder, ".mp3");
 	if (sizeof($newMusic) > 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
@@ -3622,13 +3620,11 @@ function quickscan($folder) {
 }
 
 function lockDB() {
-	debugMessage(__FUNCTION__);
 	$lock_file = fopen(Musicco::getConfig('musicRoot').".lock", "w") or die("Unable to create lock file.");
 	fclose($lock_file);
 }
 
 function cleanDB($db) {
-	debugMessage(__FUNCTION__);
 	$db->exec("DELETE FROM item_tmp;");
 	$db->exec("DELETE FROM data;");
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
@@ -3713,7 +3709,6 @@ function insertResults($library, $db, $background) {
 }
 
 function builddb() {
-	debugMessage(__FUNCTION__);
 	if (file_exists(Musicco::getConfig('musicRoot').".lock")) {
 			printf("-1");
 			logMessage("Aborting, another library refresh is already in progress.");
@@ -3856,7 +3851,6 @@ function builddb() {
 		return (preg_match($cover_pattern, $file));
 	 }
 	 
-	 // Finally, the contents of the help and about panels
 	 function getHelp() {
 		$helpString="<div id='helpBox'>";
 		$helpString.="<div class='bold big'><i class='fas fa-keyboard'></i>&nbsp;Keyboard Shortcuts</div>";
