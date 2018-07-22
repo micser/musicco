@@ -124,7 +124,6 @@
 		opacity: 1;
 	}
 
-
 	.playlist-tools:hover,
 	.toggles:hover,
 	.settings:hover,
@@ -212,6 +211,18 @@
 
 	#searchLink:hover {
 		text-decoration: none;
+	}
+
+	#aboutBox li {
+		list-style: none;
+		margin-left: 0;
+		padding-left: 1em;
+		text-indent: -1em;
+	}
+
+	#aboutBox li:before {
+		content: '\266A';
+		padding-right: .5em;
 	}
 
 	body,
