@@ -671,9 +671,9 @@ class Musicco {
 				});
 				var menuOptions = [
 					{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "playRightNow"},
-					{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fas fa-indent", cmd: "playAsNextAlbum"},
+					{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fa-play-next", cmd: "playAsNextAlbum"},
 					//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "fas fa-play", cmd: "playAsNextTrack"},
-					{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fas fa-sort-amount-down", cmd: "queue"},
+					{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fa-play-last", cmd: "queue"},
           {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
           {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
           {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
