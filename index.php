@@ -80,11 +80,17 @@ $_CONFIG['loadLyricsFromFile'] = true;
 // Default: $_CONFIG['downLoadMissingCovers'] = true;
 $_CONFIG['downLoadMissingCovers'] = true;
 
+// The search engine to use to search for more
+// information about artists and lyrics
+// Default: $_CONFIG['searchEngine'] = "https://duckduckgo.com/?q=";
+// You could also try: $_CONFIG['searchEngine'] = "https://google.com/search?q=";
+$_CONFIG['searchEngine'] = "https://duckduckgo.com/?q=";
+
 // The search engine to use to search for covers
 // when none could be found automatically
-// Default: $_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&tbs=imgo:1,isz:l&q=";
-// You could also try: $_CONFIG['searchEngine'] = "https://duckduckgo.com/?t=hf&iar=images&iaf=size%3Aimagesize-wallpaper&iax=images&ia=images&q=";
-$_CONFIG['searchEngine'] = "https://www.google.com/search?tbm=isch&tbs=imgo:1,isz:l&q=";
+// Default: $_CONFIG['imageSearchEngine'] = "https://duckduckgo.com/?t=hf&iar=images&iaf=size%3Aimagesize-wallpaper&iax=images&ia=images&q=";
+// You could also try: $_CONFIG['imageSearchEngine'] = "https://www.google.com/search?tbm=isch&tbs=imgo:1,isz:l&q=";
+$_CONFIG['imageSearchEngine'] = "https://duckduckgo.com/?t=hf&iar=images&iaf=size%3Aimagesize-wallpaper&iax=images&ia=images&q=";
 
 // Folders in your library that should not 
 // be interpreted as artist names.
@@ -215,7 +221,7 @@ $_TRANSLATIONS["en"] = array(
 	"fetchedAlbumArt" => "album art fetched",
 	"fetchingAlbumArt" => "fetching album art...",
 	"genius" => "genius ",
-	"google" => "google",
+	"google" => "the web",
 	"help" => "help",
 	"lastfm" => "last.fm ",
 	"libraryRebuiltIn" => "library updated in ",
@@ -295,7 +301,7 @@ $_TRANSLATIONS["fr"] = array(
 	"fetchedAlbumArt" => "couverture mise à jour",
 	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
 	"genius" => "genius ",
-	"google" => "google",
+	"google" => "le web",
 	"help" => "aide",
 	"lastfm" => "last.fm ",
 	"libraryRebuiltIn" => "discothèque rafraichie en ",
@@ -1367,7 +1373,7 @@ class Musicco {
 						var searchArtistExt = "<?php print $this->getString("search"); ?>";
 						searchArtistExt +=  "<a target=\"blank\" href=\"http://last.fm/search?q=" + "+" + artist +"\">" + "<?php print $this->getString("lastfm"); ?>" + "</a>" ;
 						searchArtistExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
-						searchArtistExt +=  "<a target=\"blank\" href=\"https://google.com/search?q=" + artist + "+band\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
+						searchArtistExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>" + artist + "+band\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
 						$('#wikiPrev').html("");
 						wikiHistoryPos += 1;
 						
@@ -1420,7 +1426,7 @@ class Musicco {
 					var searchLyricsExt = "<?php print $this->getString("search"); ?>";
 					searchLyricsExt +=  "<a target=\"blank\" href=\"http://genius.com/search?q=" + song + "+" + artist +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
 					searchLyricsExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
-					searchLyricsExt +=  "<a target=\"blank\" href=\"https://google.com/search?q=" + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
+					searchLyricsExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>"  + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
 					var LRCurl= encodeURI(nowPlaying('mp3').replace(/.mp3/, ".lrc"));
 					var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
 					var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
@@ -1678,7 +1684,7 @@ class Musicco {
 						}
 						$("#nowPlayingAlbumYear").text(albumYear);
 						flashInfo();
-						$('#searchLink').attr("href", "<?php print $this->getConfig("searchEngine"); ?>" + nowPlaying('artist') + " " + nowPlaying('album'));
+						$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying('artist') + " " + nowPlaying('album'));
 						showNotification();
 						updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"), false, false);
 						updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
@@ -2984,7 +2990,7 @@ if(!AuthManager::isAccessAllowed()) {
 					</div>
 					<div id="updateCoverArt" class="guestPlay">
 						<span id="statusText"><?php print $this->getString("..."); ?></span>
-						<span id="searchOne" class="coveractions"><a id="searchLink" target="_blank" href="<?php print $this->getConfig("searchEngine"); ?>musicco"><?php print $this->getString("searchOne"); ?></a></span>
+						<span id="searchOne" class="coveractions"><a id="searchLink" target="_blank" href="<?php print $this->getConfig("imageSearchEngine"); ?>musicco"><?php print $this->getString("searchOne"); ?></a></span>
 						<span id="uploadIt" class="coveractions"><?php print $this->getString("clickToUploadYourOwn"); ?></a></span>
 						</div>
 					<div class="dummy">&nbsp;</div>
