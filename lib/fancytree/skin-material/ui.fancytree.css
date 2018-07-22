@@ -1,5 +1,5 @@
 /*!
- * Fancytree "XP" skin.
+ * Fancytree "material" skin.
  *
  * DON'T EDIT THE CSS FILE DIRECTLY, since it is automatically generated from
  * the LESS templates.
@@ -19,7 +19,7 @@
   color: #777;
 }
 .fancytree-helper-disabled {
-  color: #c0c0c0;
+  color: silver;
 }
 /* Helper to allow spinning loader icon with glyph-, ligature-, and SVG-icons. */
 .fancytree-helper-spin {
@@ -50,8 +50,8 @@
  * Container and UL / LI
  *----------------------------------------------------------------------------*/
 ul.fancytree-container {
-  font-family: tahoma, arial, helvetica;
-  font-size: 10pt;
+  font-family: "Roboto Regular", tahoma, arial, helvetica;
+  font-size: 24px;
   white-space: nowrap;
   padding: 3px;
   margin: 0;
@@ -61,7 +61,7 @@ ul.fancytree-container {
   position: relative;
 }
 ul.fancytree-container ul {
-  padding: 0 0 0 16px;
+  padding: 0 0 0 24px;
   margin: 0;
 }
 ul.fancytree-container ul > li:before {
@@ -89,7 +89,7 @@ ul.fancytree-container li.fancytree-lastsib {
   background-color: silver;
 }
 ul.fancytree-connectors.fancytree-container li {
-  background-image: url("../skin-xp/vline.gif");
+  background-image: url("../skin-material/vline.gif");
   background-position: 0 0;
 }
 ul.fancytree-container li.fancytree-lastsib,
@@ -109,13 +109,12 @@ span.fancytree-icon,
 span.fancytree-checkbox,
 span.fancytree-drag-helper-img,
 #fancytree-drop-marker {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   display: inline-block;
   vertical-align: top;
   background-repeat: no-repeat;
   background-position: left;
-  background-image: url("../skin-xp/icons.gif");
   background-position: 0px 0px;
 }
 span.fancytree-icon,
@@ -126,16 +125,16 @@ span.fancytree-custom-icon {
 }
 /* Used by icon option: */
 span.fancytree-custom-icon {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   display: inline-block;
   margin-left: 3px;
   background-position: 0px 0px;
 }
 /* Used by 'icon' node option: */
 img.fancytree-icon {
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
   margin-left: 3px;
   margin-top: 0px;
   vertical-align: top;
@@ -162,56 +161,7 @@ span.fancytree-expander {
 }
 .fancytree-connectors .fancytree-exp-n span.fancytree-expander,
 .fancytree-connectors .fancytree-exp-nl span.fancytree-expander {
-  background-image: url("../skin-xp/icons.gif");
   margin-top: 0;
-}
-.fancytree-connectors .fancytree-exp-n span.fancytree-expander,
-.fancytree-connectors .fancytree-exp-n span.fancytree-expander:hover {
-  background-position: 0px -64px;
-}
-.fancytree-connectors .fancytree-exp-nl span.fancytree-expander,
-.fancytree-connectors .fancytree-exp-nl span.fancytree-expander:hover {
-  background-position: -16px -64px;
-}
-.fancytree-exp-c span.fancytree-expander {
-  background-position: 0px -80px;
-}
-.fancytree-exp-c span.fancytree-expander:hover {
-  background-position: -16px -80px;
-}
-.fancytree-exp-cl span.fancytree-expander {
-  background-position: 0px -96px;
-}
-.fancytree-exp-cl span.fancytree-expander:hover {
-  background-position: -16px -96px;
-}
-.fancytree-exp-cd span.fancytree-expander {
-  background-position: -64px -80px;
-}
-.fancytree-exp-cd span.fancytree-expander:hover {
-  background-position: -80px -80px;
-}
-.fancytree-exp-cdl span.fancytree-expander {
-  background-position: -64px -96px;
-}
-.fancytree-exp-cdl span.fancytree-expander:hover {
-  background-position: -80px -96px;
-}
-.fancytree-exp-e span.fancytree-expander,
-.fancytree-exp-ed span.fancytree-expander {
-  background-position: -32px -80px;
-}
-.fancytree-exp-e span.fancytree-expander:hover,
-.fancytree-exp-ed span.fancytree-expander:hover {
-  background-position: -48px -80px;
-}
-.fancytree-exp-el span.fancytree-expander,
-.fancytree-exp-edl span.fancytree-expander {
-  background-position: -32px -96px;
-}
-.fancytree-exp-el span.fancytree-expander:hover,
-.fancytree-exp-edl span.fancytree-expander:hover {
-  background-position: -48px -96px;
 }
 /* Fade out expanders, when container is not hovered or active */
 .fancytree-fade-expander span.fancytree-expander {
@@ -230,53 +180,10 @@ span.fancytree-expander {
  *----------------------------------------------------------------------------*/
 span.fancytree-checkbox {
   margin-left: 3px;
-  background-position: 0px -32px;
-}
-span.fancytree-checkbox:hover {
-  background-position: -16px -32px;
-}
-span.fancytree-checkbox.fancytree-radio {
-  background-position: 0px -48px;
-}
-span.fancytree-checkbox.fancytree-radio:hover {
-  background-position: -16px -48px;
-}
-.fancytree-partsel span.fancytree-checkbox {
-  background-position: -64px -32px;
-}
-.fancytree-partsel span.fancytree-checkbox:hover {
-  background-position: -80px -32px;
-}
-.fancytree-partsel span.fancytree-checkbox.fancytree-radio {
-  background-position: -64px -48px;
-}
-.fancytree-partsel span.fancytree-checkbox.fancytree-radio:hover {
-  background-position: -80px -48px;
-}
-.fancytree-selected span.fancytree-checkbox {
-  background-position: -32px -32px;
-}
-.fancytree-selected span.fancytree-checkbox:hover {
-  background-position: -48px -32px;
-}
-.fancytree-selected span.fancytree-checkbox.fancytree-radio {
-  background-position: -32px -48px;
-}
-.fancytree-selected span.fancytree-checkbox.fancytree-radio:hover {
-  background-position: -48px -48px;
 }
 .fancytree-unselectable span.fancytree-checkbox {
   opacity: 0.4;
   filter: alpha(opacity=40);
-}
-.fancytree-unselectable span.fancytree-checkbox:hover {
-  background-position: 0px -32px;
-}
-.fancytree-unselectable.fancytree-partsel span.fancytree-checkbox:hover {
-  background-position: -64px -32px;
-}
-.fancytree-unselectable.fancytree-selected span.fancytree-checkbox:hover {
-  background-position: -32px -32px;
 }
 /*------------------------------------------------------------------------------
  * Node type icon
@@ -289,55 +196,16 @@ span.fancytree-checkbox.fancytree-radio:hover {
  *----------------------------------------------------------------------------*/
 span.fancytree-icon {
   margin-left: 3px;
-  background-position: 0px 0px;
 }
 /* Documents */
-.fancytree-ico-c span.fancytree-icon:hover {
-  background-position: -16px 0px;
-}
-.fancytree-has-children.fancytree-ico-c span.fancytree-icon {
-  background-position: -32px 0px;
-}
-.fancytree-has-children.fancytree-ico-c span.fancytree-icon:hover {
-  background-position: -48px 0px;
-}
-.fancytree-ico-e span.fancytree-icon {
-  background-position: -64px 0px;
-}
-.fancytree-ico-e span.fancytree-icon:hover {
-  background-position: -80px 0px;
-}
 /* Folders */
-.fancytree-ico-cf span.fancytree-icon {
-  background-position: 0px -16px;
-}
-.fancytree-ico-cf span.fancytree-icon:hover {
-  background-position: -16px -16px;
-}
-.fancytree-has-children.fancytree-ico-cf span.fancytree-icon {
-  background-position: -32px -16px;
-}
-.fancytree-has-children.fancytree-ico-cf span.fancytree-icon:hover {
-  background-position: -48px -16px;
-}
-.fancytree-ico-ef span.fancytree-icon {
-  background-position: -64px -16px;
-}
-.fancytree-ico-ef span.fancytree-icon:hover {
-  background-position: -80px -16px;
-}
 .fancytree-loading span.fancytree-expander,
 .fancytree-loading span.fancytree-expander:hover,
 .fancytree-statusnode-loading span.fancytree-icon,
 .fancytree-statusnode-loading span.fancytree-icon:hover {
-  background-image: url("../skin-xp/loading.gif");
-  background-position: 0px 0px;
+  background-image: none;
 }
 /* Status node icons */
-.fancytree-statusnode-error span.fancytree-icon,
-.fancytree-statusnode-error span.fancytree-icon:hover {
-  background-position: 0px -112px;
-}
 /*------------------------------------------------------------------------------
  * Node titles and highlighting
  *----------------------------------------------------------------------------*/
@@ -346,17 +214,17 @@ span.fancytree-node {
   display: inherit;
   width: 100%;
   margin-top: 1px;
-  min-height: 16px;
+  min-height: 24px;
 }
 span.fancytree-title {
-  color: black;
+  color: #212121;
   cursor: pointer;
   display: inline-block;
   vertical-align: top;
-  min-height: 16px;
+  min-height: 24px;
   padding: 0 3px 0 3px;
   margin: 0px 0 0 3px;
-  border: 0 solid transparent;
+  border: 1px solid transparent;
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
   -ms-border-radius: 0px;
@@ -404,29 +272,15 @@ div.fancytree-drag-helper span.fancytree-dnd-modifier {
   border: none;
   font-weight: bolder;
 }
-div.fancytree-drag-helper.fancytree-drop-accept span.fancytree-drag-helper-img {
-  background-position: -32px -112px;
-}
-div.fancytree-drag-helper.fancytree-drop-reject span.fancytree-drag-helper-img {
-  background-position: -16px -112px;
-}
 /*** Drop marker icon *********************************************************/
 #fancytree-drop-marker {
-  width: 32px;
+  width: 48px;
   position: absolute;
-  background-position: 0px -128px;
   margin: 0;
 }
 #fancytree-drop-marker.fancytree-drop-after,
 #fancytree-drop-marker.fancytree-drop-before {
-  width: 64px;
-  background-position: 0px -144px;
-}
-#fancytree-drop-marker.fancytree-drop-copy {
-  background-position: -64px -128px;
-}
-#fancytree-drop-marker.fancytree-drop-move {
-  background-position: -32px -128px;
+  width: 96px;
 }
 /*** Source node while dragging ***********************************************/
 span.fancytree-drag-source.fancytree-drag-remove {
@@ -440,33 +294,20 @@ span.fancytree-drag-source.fancytree-drag-remove {
   /*unicode-bidi: bidi-override;*/
   /* optional: reverse title letters */
 }
-.fancytree-container.fancytree-rtl span.fancytree-connector,
-.fancytree-container.fancytree-rtl span.fancytree-expander,
-.fancytree-container.fancytree-rtl span.fancytree-icon,
-.fancytree-container.fancytree-rtl span.fancytree-drag-helper-img {
-  background-image: url("../skin-xp/icons-rtl.gif");
-}
 .fancytree-container.fancytree-rtl .fancytree-exp-n span.fancytree-expander,
 .fancytree-container.fancytree-rtl .fancytree-exp-nl span.fancytree-expander {
   background-image: none;
-}
-.fancytree-container.fancytree-rtl.fancytree-connectors .fancytree-exp-n span.fancytree-expander,
-.fancytree-container.fancytree-rtl.fancytree-connectors .fancytree-exp-nl span.fancytree-expander {
-  background-image: url("../skin-xp/icons-rtl.gif");
 }
 ul.fancytree-container.fancytree-rtl ul {
   padding: 0 16px 0 0;
 }
 ul.fancytree-container.fancytree-rtl.fancytree-connectors li {
   background-position: right 0;
-  background-image: url("../skin-xp/vline-rtl.gif");
+  background-image: url("../skin-material/vline-rtl.gif");
 }
 ul.fancytree-container.fancytree-rtl li.fancytree-lastsib,
 ul.fancytree-container.fancytree-rtl.fancytree-no-connector > li {
   background-image: none;
-}
-#fancytree-drop-marker.fancytree-rtl {
-  background-image: url("../skin-xp/icons-rtl.gif");
 }
 /*------------------------------------------------------------------------------
  * 'table' extension
@@ -516,16 +357,12 @@ table.fancytree-ext-columnview span.fancytree-node.fancytree-expanded {
 table.fancytree-ext-columnview .fancytree-has-children span.fancytree-cv-right {
   position: absolute;
   right: 3px;
-  background-position: 0px -80px;
-}
-table.fancytree-ext-columnview .fancytree-has-children span.fancytree-cv-right:hover {
-  background-position: -16px -80px;
 }
 /*------------------------------------------------------------------------------
  * 'filter' extension
  *----------------------------------------------------------------------------*/
 .fancytree-ext-filter-dimm span.fancytree-node span.fancytree-title {
-  color: #c0c0c0;
+  color: silver;
   font-weight: lighter;
 }
 .fancytree-ext-filter-dimm tr.fancytree-submatch span.fancytree-title,
@@ -544,7 +381,7 @@ table.fancytree-ext-columnview .fancytree-has-children span.fancytree-cv-right:h
 }
 .fancytree-ext-filter-hide tr.fancytree-submatch span.fancytree-title,
 .fancytree-ext-filter-hide span.fancytree-node.fancytree-submatch span.fancytree-title {
-  color: #c0c0c0;
+  color: silver;
   font-weight: lighter;
 }
 .fancytree-ext-filter-hide tr.fancytree-match span.fancytree-title,
@@ -651,67 +488,27 @@ ul.fancytree-ext-wide span.fancytree-node span.fancytree-title {
  *
  * This section is automatically generated from the `ui-fancytree.less` template.
  ******************************************************************************/
-/*******************************************************************************
- * Tree container
- */
-ul.fancytree-container li {
-  background-image: url("../skin-xp/vline.gif");
-  background-position: 0 0;
-}
-ul.fancytree-container.fancytree-rtl li {
-  background-position: right 0;
-  background-image: url("../vline-rtl.gif");
-}
-ul.fancytree-container.fancytree-rtl .fancytree-exp-n span.fancytree-expander {
-  background-image: url("../icons-rtl.gif");
-  background-position: 0px -64px;
-}
-ul.fancytree-container.fancytree-rtl .fancytree-exp-nl span.fancytree-expander {
-  background-image: url("../icons-rtl.gif");
-  background-position: -16px -64px;
-}
-ul.fancytree-container li.fancytree-lastsib {
-  background-image: none;
-}
-ul.fancytree-no-connector > li {
-  background-image: none;
-}
-.fancytree-exp-n span.fancytree-expander,
-.fancytree-exp-nl span.fancytree-expander {
-  background-image: url("../skin-xp/icons.gif");
-}
-.fancytree-exp-n span.fancytree-expander,
-.fancytree-exp-n span.fancytree-expander:hover {
-  background-position: 0px -64px;
-}
-.fancytree-exp-nl span.fancytree-expander,
-.fancytree-exp-nl span.fancytree-expander:hover {
-  background-position: -16px -64px;
+/*
+https://material.io/guidelines/components/data-tables.html#data-tables-structure
+*/
+ul.fancytree-container ul {
+  padding: 0.3em 0 0 1em;
+  margin: 0;
+  font-size: 24px;
+  color: #212121;
 }
 /*******************************************************************************
  * Node titles
  */
-span.fancytree-title {
-  border: 0 solid transparent;
+.fancytree-plain span.fancytree-selected span.fancytree-title {
+  background-color: #f5f5f5;
 }
-span.fancytree-title:hover {
-  background-color: #F2F7FD;
-  border-color: #B8D6FB;
+.fancytree-plain span.fancytree-selected span.fancytree-title:hover,
+.fancytree-plain span.fancytree-active span.fancytree-title {
+  background-color: #eeeeee;
 }
-span.fancytree-focused span.fancytree-title {
-  outline: 1px dotted black;
-  background-color: #EFEBDE;
-}
-.fancytree-folder span.fancytree-title {
-  font-weight: bold;
-}
-.fancytree-selected span.fancytree-title {
-  color: green;
-  font-style: italic;
-}
-.fancytree-active span.fancytree-title {
-  background-color: #3169C6 !important;
-  color: white !important;
+.fancytree-container span.fancytree-checkbox {
+  color: #ff4081;
 }
 /*******************************************************************************
  * 'table' extension
@@ -719,12 +516,23 @@ span.fancytree-focused span.fancytree-title {
 table.fancytree-ext-table {
   border-collapse: collapse;
 }
-table.fancytree-ext-table tbody tr.fancytree-focused {
-  background-color: #99DEFD;
-}
-table.fancytree-ext-table tbody tr.fancytree-active {
-  background-color: royalblue;
-}
+table.fancytree-ext-table tbody tr.fancytree-focused,
 table.fancytree-ext-table tbody tr.fancytree-selected {
-  background-color: #99FDDE;
+  background-color: #f5f5f5;
+}
+table.fancytree-ext-table tbody tr.fancytree-active,
+table.fancytree-ext-table tbody tr:hover {
+  background-color: #eeeeee;
+}
+/*******************************************************************************
+ * 'columnview' extension
+ */
+table.fancytree-ext-columnview tbody tr td {
+  border: 1px solid gray;
+}
+table.fancytree-ext-columnview span.fancytree-node.fancytree-expanded {
+  background-color: #ccc;
+}
+table.fancytree-ext-columnview span.fancytree-node.fancytree-active {
+  background-color: royalblue;
 }

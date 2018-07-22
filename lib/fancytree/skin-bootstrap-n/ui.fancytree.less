@@ -17,7 +17,7 @@
 
 
 // local vars
-@fancy-my-icon-size: 16px;
+// @fancy-my-icon-size: 16px;
 
 // Override the variable after the import.
 // NOTE: Variables are always resolved as the last definition, even if it is
@@ -52,32 +52,6 @@ ul.fancytree-container ul {
 // Error status node
 .fancytree-container span.fancytree-statusnode-error span.fancytree-expander  {
 	color: @fancy-font-error-color;
-}
-
-/* Helper to allow spinning loader icon with bootstrap */
-.glyphicon-spin {
-    -webkit-animation: spin 1000ms infinite linear;
-    animation: spin 1000ms infinite linear;
-}
-@-webkit-keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(359deg);
-        transform: rotate(359deg);
-    }
-}
-@keyframes spin {
-    0% {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(359deg);
-        transform: rotate(359deg);
-    }
 }
 
 /////
