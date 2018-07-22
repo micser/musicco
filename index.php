@@ -2428,6 +2428,7 @@ class Musicco {
 
 				function adaptUI(init) {
 				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
+				//console.log(newViewerType);
 				var newWindowWidth = $(window).width();
 				if ((newViewerType != viewerType) && (newWindowWidth != windowWidth) || (init)) {
 					viewerType = newViewerType;

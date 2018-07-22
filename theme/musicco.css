@@ -740,6 +740,10 @@
 		display: none;
 	}
 
+	#playlistPanel > ul {
+		margin-bottom: 7em;
+	}
+	
 	#mini-controls {
 		vertical-align: super;
 	}
@@ -755,10 +759,6 @@
 			height: 1em;
 		}
 
-		#playlistPanel > ul {
-			margin-bottom: 6em;
-		}
-
 		#mini-controls {
 			display: inline !important;
 			vertical-align: unset;
@@ -772,8 +772,6 @@
 		#logout a {
 			font-size: 0.8em;
 		}
-		
-		
 
 		#big-player {
 			position: relative;
