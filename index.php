@@ -3711,8 +3711,8 @@ function insertResults($library, $db, $background) {
 
 		// insert all info in DB
 		$insert_item->execute(array($name, $normalised_name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension));
-		$insert_item = NULL;
 	}
+	$insert_item = NULL;
 }
 
 function builddb() {
@@ -3786,8 +3786,8 @@ function builddb() {
 						$db->exec("UPDATE favourites SET path=\"$alt_parent$file\" where path=\"$parent$file\";");
 					}
 				}
-				$file_check = NULL;
 			}
+			$file_check = NULL;
 			logMessage("Refreshed favourites in ".number_format((microtime(true) - $_START_FAVOURITES), 3)." seconds");
 
 
