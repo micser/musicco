@@ -946,7 +946,7 @@ class Musicco {
 							 type: "GET",
 							 url: "?head&url="+userURL,
 							 complete: function(data){
-							 if (data.responseText < 400) {
+							 if (data.responseText < 300) {
 								 saveCover(userURL, currentPath);
 								 setCoverInfoStatus("<?php print $this->getString("downloadSuccessful"); ?>"); 
 							 } else {
