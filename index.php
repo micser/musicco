@@ -858,7 +858,7 @@ class Musicco {
 										 type: "GET",
 										 url: "?head&url="+coverUrl,
 										 complete: function(data){
-										if (data.responseText < 400) {
+										if (data.responseText < 300) {
 											saveCover(coverUrl, currentPath);
 											setCoverInfoStatus("<?php print $this->getString("fetchedAlbumArt"); ?>");
 										} else {
