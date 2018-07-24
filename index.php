@@ -341,7 +341,7 @@ $_TRANSLATIONS["fr"] = array(
 	"rebuildingLibrary" => "scan en cours...",
 	"reload" => "recharger",
 	"remove_shared_links" => "supprimer les playlists partagées",
-	"remove_temp_files" => "nettoyage en cours...",
+	"remove_temp_files" => "supprimer les fichiers temporaires",
 	"removing_shared_links" => "suppression des playlists partagées...",
 	"removing_temp_files" => "cleaning in progress",
 	"reset_db" => "rafraichir la discothèque",
@@ -501,6 +501,9 @@ class Musicco {
 
 	function init() {
 		debugMessage(__FUNCTION__);
+		if (!file_exists(Musicco::getConfig('musicRoot').".db")) {
+			initDB();
+		}
 		global $_TRANSLATIONS;
 		if(isset($_GET['lang']) && isset($_TRANSLATIONS[$_GET['lang']]))
 			$this->lang = $_GET['lang'];
@@ -2971,9 +2974,9 @@ if(!AuthManager::isAccessAllowed()) {
 				if (AuthManager::isAdmin()) {
 					print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-sync\"></i><span id=\"reset_db\"><a>".$this->getString("reset_db")."</a></span></div>";
 					print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
+					print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
+					print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
 				}
-				print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
-				print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-bath\"></i><span id=\"reload\"><a>".$this->getString("reload")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-question\"></i><span id=\"help\"><a>".$this->getString("help")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-info\"></i><span id=\"about\"><a>".$this->getString("about")."</a></span></div>";
@@ -3631,6 +3634,12 @@ function lockDB() {
 	fclose($lock_file);
 }
 
+function initDB() {
+	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+	cleanDB($db);
+	$db = NULL;
+}
+
 function cleanDB($db) {
 	$db->exec("DELETE FROM item_tmp;");
 	$db->exec("DELETE FROM data;");
@@ -3644,6 +3653,12 @@ function cleanDB($db) {
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('version', '".Musicco::getConfig('dbVersion')."');");
+	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");
+	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx2 ON item (parent, name, type);");
+	$db->exec("CREATE INDEX IF NOT EXISTS item_idx3 ON item (name, type);");
+	$db->exec("CREATE INDEX IF NOT EXISTS item_idx4 ON item (normalised_name, type);");
+	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS users_idx ON users (id, current_playlist);");
+	$db->exec("CREATE INDEX IF NOT EXISTS playlists_idx ON playlists (id, name, userId);");
 }
 
 function insertResults($library, $db, $background) {
@@ -3746,12 +3761,6 @@ function builddb() {
 			$db->exec("DROP INDEX users_idx;");
 			$db->exec("DROP INDEX playlists_idx;");
 			$db->exec("INSERT INTO item (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) SELECT name, normalised_name, type, parent, cover, album, artist, title, year, number, extension FROM item_tmp;");
-			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");
-			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx2 ON item (parent, name, type);");
-			$db->exec("CREATE INDEX IF NOT EXISTS item_idx3 ON item (name, type);");
-			$db->exec("CREATE INDEX IF NOT EXISTS item_idx4 ON item (normalised_name, type);");
-			$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS users_idx ON users (id, current_playlist);");
-			$db->exec("CREATE INDEX IF NOT EXISTS playlists_idx ON playlists (id, name, userId);");
 			$db->exec("REINDEX item_idx;");
 			$db->exec("REINDEX item_idx2;");
 			$db->exec("REINDEX item_idx3;");
