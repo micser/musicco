@@ -196,9 +196,16 @@ $_CONFIG['show_donate_button'] = true;
 
 // You can override any of the settings above by copying them into a config.php
 // file which is about to get loaded. This should simplify upgrades by avoiding 
-// losing your personalised settings
-if(file_exists('config.php'))
-		include 'config.php';
+// losing your personalised settings. If the file does not exist, you'll see a
+// short installation wizard that will create it automatically.
+if(!file_exists('config.php') && !isset($_POST['saveConfig'])) {
+		runSetupWizard();
+		exit;
+} elseif (isset($_POST['saveConfig'])) {
+	debugMessage("REQUEST ".print_r($_REQUEST, TRUE));
+	saveConfig($_POST);
+}
+include 'config.php';
 
 
 /***************************************************************************/
@@ -295,25 +302,25 @@ $_TRANSLATIONS["fr"] = array(
 	"by" => " par ",
 	"clickToUploadYourOwn" => "charger", 
 	"defaultCoverURL" => "http://",
-	"downloadSuccessful" => "Couverture sauvegardée",
-	"favourites_added" => "Favouris ajouté",
-	"favourites_removed" => "Favouris retiré",
-	"fetchedAlbumArt" => "couverture mise à jour",
-	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
+	"downloadSuccessful" => "Couverture sauvegardÃ©e",
+	"favourites_added" => "Favouris ajoutÃ©",
+	"favourites_removed" => "Favouris retirÃ©",
+	"fetchedAlbumArt" => "couverture mise Ã  jour",
+	"fetchingAlbumArt" => "tÃ©lÃ©chargement de la couverture en cours...",
 	"genius" => "genius ",
 	"google" => "le web",
 	"help" => "aide",
 	"lastfm" => "last.fm ",
-	"libraryRebuiltIn" => "discothèque rafraichie en ",
+	"libraryRebuiltIn" => "discothÃ¨que rafraichie en ",
 	"log_in" => "Connexion",
-	"log_out" => "déconnexion",
-	"menu_download" => "Télécharger",
+	"log_out" => "dÃ©connexion",
+	"menu_download" => "TÃ©lÃ©charger",
 	"menu_favourite" => "Favori",
 	"menu_goto_album" => "Trouver l'album",
 	"menu_goto_artist" => "Voir l'artiste",
 	"menu_info" => "Info",
 	"menu_last_album" => "Jouer en dernier",
-	"menu_next_album" => "Jouer après",
+	"menu_next_album" => "Jouer aprÃ¨s",
 	"menu_next_track" => "piste suivante",
 	"menu_remove_favourite" => "Retirer",
 	"menu_right_now" => "Jouer",
@@ -321,18 +328,18 @@ $_TRANSLATIONS["fr"] = array(
 	"my_favourites" => "Mes Favouris",
 	"nexttrack" => "Suivant",
 	"noAlbum" => "album non reconnu",
-	"noAlbumArt" => "Pas de couverture trouvée",
-	"nodata" => "Aucun résultat! :-o",
+	"noAlbumArt" => "Pas de couverture trouvÃ©e",
+	"nodata" => "Aucun rÃ©sultat! :-o",
 	"noInfoFoundFor" => "Pas d'information sur ",
-	"noLyricsFoundFor" => "Aucune paroles trouvées pour ",
-	"noResultsForThisSearch" => "Pas de résultats pour cette recherche",
-	"notDownloaded" => "Couverture non téléchargeable",
+	"noLyricsFoundFor" => "Aucune paroles trouvÃ©es pour ",
+	"noResultsForThisSearch" => "Pas de rÃ©sultats pour cette recherche",
+	"notDownloaded" => "Couverture non tÃ©lÃ©chargeable",
 	"opening" => "Overture de ",
 	"or" => "ou ",
 	"password" => "Mot de passe",
 	"pause" => "Pause", 
 	"play" => "Lecture", 
-	"previoustrack" => "Précédent",
+	"previoustrack" => "PrÃ©cÃ©dent",
 	"promptCoverURL" => "Adresse de la couverture", 
 	"promptPlaylistName" => "Nom de la playlist", 
 	"promptFolderName" => "Nome du dossier", 
@@ -340,28 +347,28 @@ $_TRANSLATIONS["fr"] = array(
 	"quick_scan" => "ajout rapide...",
 	"rebuildingLibrary" => "scan en cours...",
 	"reload" => "recharger",
-	"remove_shared_links" => "supprimer les playlists partagées",
+	"remove_shared_links" => "supprimer les playlists partagÃ©es",
 	"remove_temp_files" => "supprimer les fichiers temporaires",
-	"removing_shared_links" => "suppression des playlists partagées...",
+	"removing_shared_links" => "suppression des playlists partagÃ©es...",
 	"removing_temp_files" => "cleaning in progress",
-	"reset_db" => "rafraichir la discothèque",
+	"reset_db" => "rafraichir la discothÃ¨que",
 	"scanning" => "Scan de ",
-	"scanning_ko" => "échec du scan",
-	"scanning_ok" => "Dossier ajouté",
+	"scanning_ko" => "Ã©chec du scan",
+	"scanning_ok" => "Dossier ajoutÃ©",
 	"search" => "Chercher sur ",
 	"search_placeholder" => "Que cherchez-vous ?",
 	"searchingFor" => "Recherche de ",
 	"searchingLibrary" => "Recherche en cours...",
 	"searchingLyricsFor" => "Recherche de paroles en cours pour ",
 	"searchOne" => "&nbsp;&bull;&nbsp;rechercher&nbsp;&bull;&nbsp;", 
-	"seekbackward" => "Album précédent",
+	"seekbackward" => "Album prÃ©cÃ©dent",
 	"seekforward" => "Album suivant",
 	"show_all" => "anciens",
-	"uncovering" => "Découverte en cours ",
-	"updateCoverArt" => "mettre à jour la couverture",
+	"uncovering" => "DÃ©couverte en cours ",
+	"updateCoverArt" => "mettre Ã  jour la couverture",
 	"updateRequiredLink" => "Flash",
-	"updateRequiredText" => "Pour lire ce contenu, il est nécessaire de faire un upgrade de ",
-	"updateRequiredTitle" => "Upgrade nécessaire",
+	"updateRequiredText" => "Pour lire ce contenu, il est nÃ©cessaire de faire un upgrade de ",
+	"updateRequiredTitle" => "Upgrade nÃ©cessaire",
 	"username" => "Utilisateur",
 	"wrong_pass" => "Utilisateur ou mot de passe invalide."
 );
@@ -491,6 +498,27 @@ class AuthManager {
 			return true;
 		return false;
 	}
+}
+
+function runSetupWizard() {
+	debugMessage(__FUNCTION__);
+	echo getWizardUI();
+}
+
+function saveConfig($params) {
+	debugMessage(__FUNCTION__);
+	$config_file = fopen("config.php", "w");
+	fwrite($config_file, "<?php\n");
+	foreach($params as $key => $value) {
+		$apos= "'";
+		if ($key == "users") {
+			$apos = "";
+		}
+		$config = "\$_CONFIG['".$key."'] = $apos".$value."$apos;\n";
+		fwrite($config_file, $config);
+	}
+	fwrite($config_file, "?>");
+	fclose($config_file);
 }
 
 class Musicco {
@@ -3812,14 +3840,14 @@ function builddb() {
 
 	function normalise($name) {
     $normalised_name = strtolower(utf8_decode($name));
-    $patterns[0] = '/[á|â|à|å|ä]/';
-    $patterns[1] = '/[ð|é|ê|è|ë]/';
-    $patterns[2] = '/[í|î|ì|ï]/';
-    $patterns[3] = '/[ó|ô|ò|ø|õ|ö]/';
-    $patterns[4] = '/[ú|û|ù|ü]/';
-    $patterns[5] = '/æ/';
-    $patterns[6] = '/ç/';
-    $patterns[7] = '/ß/';
+    $patterns[0] = '/[Ã¡|Ã¢|Ã |Ã¥|Ã¤]/';
+    $patterns[1] = '/[Ã°|Ã©|Ãª|Ã¨|Ã«]/';
+    $patterns[2] = '/[Ã­|Ã®|Ã¬|Ã¯]/';
+    $patterns[3] = '/[Ã³|Ã´|Ã²|Ã¸|Ãµ|Ã¶]/';
+    $patterns[4] = '/[Ãº|Ã»|Ã¹|Ã¼]/';
+    $patterns[5] = '/Ã¦/';
+    $patterns[6] = '/Ã§/';
+    $patterns[7] = '/ÃŸ/';
     $replacements[0] = 'a';
     $replacements[1] = 'e';
     $replacements[2] = 'i';
@@ -4034,5 +4062,80 @@ function builddb() {
 			$aboutString.="</ul>";
 		$aboutString.="</div>";
 		return $aboutString;
+	 }
+
+	function printUsers() {
+		$userArray="array(\n";
+		foreach(Musicco::getConfig("users") as $user) {
+			$userArray .= "\t array('";
+			$userArray .= implode("', '", $user);
+			$userArray .= "'),\n";
+		}
+		$userArray .= ")";
+		return $userArray;
+	}
+
+	 function getWizardUI() {
+		$wizard = "<html>";
+		$wizard .= "<body>";
+		$wizard .= "<div>Welcome to musicco!</div>";
+		$wizard .= "<div>Here are a few options for you.</div>";
+		$wizard .= "<div>You can also accept all the defaults and edit config.php later!</div>";
+		$wizard .= "<form method='POST'>";
+		$wizard .= "<input name='saveConfig' type='hidden'>";
+		$wizard .= "<fieldset>";
+		$wizard .= "<legend>Login</legend>";
+		$wizard .= "<div>";
+		$wizard .= "<label for='require_login'>Require login</label>";
+		$wizard .= "<input name='require_login' type='checkbox'>";
+		$wizard .= "</div>";
+		$wizard .= "<div>";
+		$wizard .= "<label for='users'>Users</label>";
+		$wizard .= "<textarea name='users' rows='5' cols='60'>".printUsers()."</textarea>";
+		$wizard .= "</div>";
+		$wizard .= "</fieldset>";
+		$wizard .= "<fieldset>";
+		$wizard .= "<legend>Features</legend>";
+		$wizard .= "<div>";
+		$wizard .= "<label for='lang'>UI language</label>";
+		$wizard .= "<select name='lang'>";
+		$wizard .= "<option value='en'>English</option>";
+		$wizard .= "<option value='fr'>French</option>";
+		$wizard .= "</select>";
+		$wizard .= "</div>";
+		$wizard .= "<div>";
+		$wizard .= "<label for='musicRoot'>Music folder</label>";
+		$wizard .= "<input name='musicRoot' value='".Musicco::getConfig('musicRoot')."'>";
+		$wizard .= "</div>";
+		$wizard .= "<div>";
+		$wizard .= "<label for='coverFileName'>Cover file name</label>";
+		$wizard .= "<input name='coverFileName' value='".Musicco::getConfig('coverFileName')."'>";
+		$wizard .= "<input name='coverExtension' value='".Musicco::getConfig('coverExtension')."'>";
+		$wizard .= "</div>";
+		$wizard .= "<div>";
+		$wizard .= "<label for='loadLyricsFromFile'>Load lyrics from local .lrc files</label>";
+		$wizard .= "<input name='loadLyricsFromFile' type='checkbox'>";
+		$wizard .= "</div>";
+		$wizard .= "<div>";
+		$wizard .= "<label for='downLoadMissingCovers'>Download album art</label>";
+		$wizard .= "<input name='downLoadMissingCovers' type='checkbox'>";
+		$wizard .= "</div>";
+		$wizard .= "</fieldset>";
+		$wizard .= "<fieldset>";
+		$wizard .= "<legend>Search Engine</legend>";
+		$wizard .= "<div>";
+		$wizard .= "<label for='searchEngine'>Search engine</label>";
+		$wizard .= "<input name='searchEngine' size='60' value='".Musicco::getConfig('searchEngine')."'>";
+		$wizard .= "</div>";
+		$wizard .= "<div>";
+		$wizard .= "<label for='imageSearchEngine'>Image search engine</label>";
+		$wizard .= "<textarea name='imageSearchEngine' rows='6' cols='60'>".Musicco::getConfig('imageSearchEngine')."</textarea>";
+		$wizard .= "</div>";
+		$wizard .= "</fieldset>";
+		$wizard .= "<input type='submit'>";
+		$wizard .= "</form>";
+		$wizard .= "</body>";
+		$wizard .= "</html>";
+		return $wizard;
 	 }
 ?>
