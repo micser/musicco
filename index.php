@@ -587,8 +587,8 @@ class Musicco {
 	
 	public function printLoginBox() {
 		?>
-		<div id="login">
-			<div class="login-header">
+		<div class="landing">
+			<div class="landing-header">
 				<img src="theme/images/about.png"/><?php print(Musicco::getConfig("appName")); ?>
 			</div>
 			<form enctype="multipart/form-data" action="?" method="post">
@@ -604,13 +604,13 @@ class Musicco {
 				if($require_username) {
 					?>
 					<div>
-						<input type="text" name="user_name" placeholder="<?php print $this->getString("username"); ?>" value="" id="user_name" class="login-form"/>
+						<input type="text" name="user_name" placeholder="<?php print $this->getString("username"); ?>" value="" id="user_name" class="landing-form"/>
 					</div>
 					<?php 
 				}
 				?>
 				<div>
-					<input type="password" placeholder="<?php print $this->getString("password"); ?>" name="user_pass" id="user_pass" class="login-form" />
+					<input type="password" placeholder="<?php print $this->getString("password"); ?>" name="user_pass" id="user_pass" class="landing-form" />
 				</div>
 				<div>
 					<input type="submit" value="<?php print $this->getString("log_in"); ?>" class="go" />
@@ -675,7 +675,7 @@ class Musicco {
 			var restoreCurrentTime = -1;
 			var restorePlaylistPosition = -1;
 			$(document).ready(function() {
-				if ($("#login").is(":visible")) {
+				if ($(".landing").is(":visible")) {
 					$("#loading").hide()
 				} else {
 					$("#loading").progressbar( {value: false} );
@@ -1178,6 +1178,7 @@ class Musicco {
 								$("#reset_db").html(oldHTML);
 								n();
 							}).fadeIn(500);
+							setTimeout(function() { togglePanel("#browserPanel"); }, 1000);
 						}
 					});
 				});
@@ -4078,19 +4079,33 @@ function builddb() {
 	 function getWizardUI() {
 		$wizard = "<html>";
 		$wizard .= "<body>";
-		$wizard .= "<div>Welcome to musicco!</div>";
-		$wizard .= "<div>Here are a few options for you.</div>";
-		$wizard .= "<div>You can also accept all the defaults and edit config.php later!</div>";
-		$wizard .= "<form method='POST'>";
+		$wizard .= "<head>";
+		$wizard .= "<link rel='stylesheet' type='text/css' href='lib/font-awesome/css/fontawesome-all.min.css'>";
+		$wizard .= "<link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Montserrat' >";
+		$wizard .= "<link rel='stylesheet' type='text/css' href='theme/musicco.css' >";
+		$wizard .= "<script type='text/javascript' src='lib/jquery/jquery-2.2.4.min.js'></script>";
+		$wizard .= "</head>";
+		$wizard .= "<div class='landing'>";
+		$wizard .= "<div class='landing-header'>";
+		$wizard .= "<img src='theme/images/about.png'/>".Musicco::getConfig('appName')." setup wizard";
+		$wizard .= "</div>";
+		$wizard .= "<br/>";
+		$wizard .= "<div class='indent'>Here are a few configuration options before you start listening to your tunes.</div>";
+		$wizard .= "<br/>";
+		$wizard .= "<div class='indent'>You can also accept all the defaults and edit config.php later.</div>";
+		$wizard .= "<form id='config' class='landing-form' method='POST'>";
 		$wizard .= "<input name='saveConfig' type='hidden'>";
 		$wizard .= "<fieldset>";
-		$wizard .= "<legend>Login</legend>";
+		$wizard .= "<legend>Access</legend>";
 		$wizard .= "<div>";
+		$wizard .= "<input name='require_login' type='checkbox' onclick='$(&apos;#users&apos;).toggle();'>";
 		$wizard .= "<label for='require_login'>Require login</label>";
-		$wizard .= "<input name='require_login' type='checkbox'>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you require a login, you can have several users listening to their own playlists. If you want your installation to be completely open and all your user sharing the same playlists, leave this box unchecked.</span></i>";
 		$wizard .= "</div>";
-		$wizard .= "<div>";
+		$wizard .= "<div id='users' style='display:none;'>";
 		$wizard .= "<label for='users'>Users</label>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Type in a list of user/password/isAdmin sets.</span></i>";
+		$wizard .= "<br/>";
 		$wizard .= "<textarea name='users' rows='5' cols='60'>".printUsers()."</textarea>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
@@ -4106,34 +4121,43 @@ function builddb() {
 		$wizard .= "<div>";
 		$wizard .= "<label for='musicRoot'>Music folder</label>";
 		$wizard .= "<input name='musicRoot' value='".Musicco::getConfig('musicRoot')."'>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>The name of the folder containing your music. Create a \"music\" symbolic link to your music root folder to be on the safe side.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<label for='coverFileName'>Cover file name</label>";
-		$wizard .= "<input name='coverFileName' value='".Musicco::getConfig('coverFileName')."'>";
-		$wizard .= "<input name='coverExtension' value='".Musicco::getConfig('coverExtension')."'>";
+		$wizard .= "<input name='coverFileName' size='10' value='".Musicco::getConfig('coverFileName')."'>";
+		$wizard .= "<input name='coverExtension' size='10' value='".Musicco::getConfig('coverExtension')."'>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>The name you give to your covert art files in your music library. This is used to find covers on your disk and also to as a file name to  save covers found by the cover art downloader.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
+		$wizard .= "<input name='loadLyricsFromFile' type='checkbox' checked>";
 		$wizard .= "<label for='loadLyricsFromFile'>Load lyrics from local .lrc files</label>";
-		$wizard .= "<input name='loadLyricsFromFile' type='checkbox'>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to load .lrc lyrics files from disk. If a .lrc file with the same name as the audio  file exists in the same folder, its contents  will be loaded into the lyrics panel before  searching online for it.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
+		$wizard .= "<input name='downLoadMissingCovers' type='checkbox' checked>";
 		$wizard .= "<label for='downLoadMissingCovers'>Download album art</label>";
-		$wizard .= "<input name='downLoadMissingCovers' type='checkbox'>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to automatically download missing covers online. New covers will be saved to disk in the folder containing the song currently playing. Even when turning this off, you can still  trigger cover art search manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
 		$wizard .= "<fieldset>";
-		$wizard .= "<legend>Search Engine</legend>";
+		$wizard .= "<legend>Search</legend>";
 		$wizard .= "<div>";
 		$wizard .= "<label for='searchEngine'>Search engine</label>";
-		$wizard .= "<input name='searchEngine' size='60' value='".Musicco::getConfig('searchEngine')."'>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>The search engine to use to search for more information about artists and lyrics. You could also try: https://google.com/search?q=.</span></i>";
+		$wizard .= "<br/>";
+		$wizard .= "<input name='searchEngine' size='59' value='".Musicco::getConfig('searchEngine')."'>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<label for='imageSearchEngine'>Image search engine</label>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>The search engine to use to search for covers when none could be found automatically. You could also try: https://www.google.com/search?tbm=isch&tbs=imgo:1,isz:l&q=.</span></i>";
+		$wizard .= "<br/>";
 		$wizard .= "<textarea name='imageSearchEngine' rows='6' cols='60'>".Musicco::getConfig('imageSearchEngine')."</textarea>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
-		$wizard .= "<input type='submit'>";
+		$wizard .= "<div><input class='go right' type='submit' value='hey ho let&apos;s go'></div>";
 		$wizard .= "</form>";
+		$wizard .= "</div>";
 		$wizard .= "</body>";
 		$wizard .= "</html>";
 		return $wizard;
