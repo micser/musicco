@@ -1813,7 +1813,6 @@ class Musicco {
 					$('.big-jp-play').show();
 					$('.big-jp-pause').hide();
 					savePlaylist();
-					showNotification("isPaused");
 				});
 
 				$("#musiccoplayer").on($.jPlayer.event.ready, function(event) {
@@ -1864,11 +1863,14 @@ class Musicco {
 				}
 
 				function triggerPlayPause() {
+					var status = "";
 					if($("#jquery_jplayer_2").data("jPlayer").status.paused) { 
 						$('.big-jp-play').trigger('click');
 					} else {
 						$('.big-jp-pause').trigger('click');
+						status = "isPaused";
 					}
+					showNotification(status);
 				}
 
 				function hotkey(e) {
