@@ -2220,6 +2220,12 @@ class Musicco {
 					formatPlaylist();
 				});
 
+				$(document).on("click", ".jp-playlist-item-remove", function(event) {
+					if ($(this).parents("li").has("span.itemHeader").length) {
+						setTimeout(function() { formatPlaylist(); }, 800);
+					}
+				});
+
 				$(document).on("mouseenter mouseleave", ".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove", function(event) {
 					var parent = $(this).parent("div");
 					$(parent).children(".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove").toggleClass("current");
