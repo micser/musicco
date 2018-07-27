@@ -2227,6 +2227,7 @@ class Musicco {
 
 				$(document).on("click taphold", ".remove-album", function(e) {
 					showSpinner();
+					var newPlaylist = [];
 					var shift = (e.type === "taphold")? true : e.shiftKey;
 					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
 					var removeTarget = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
@@ -2244,11 +2245,11 @@ class Musicco {
 						var albumArray = getAlbumArray();
 						for (var i=0; i < repeats; i++) {
 							albumArray.splice(albumIndex, 1)
-							var newPlaylist = [].concat.apply([], albumArray);
-							musiccoPlaylist.setPlaylist(newPlaylist);
-							musiccoPlaylist.select(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current));
-							restorePlaylistPosition = musiccoPlaylist.albums[albumIndex].index;
+							newPlaylist = [].concat.apply([], albumArray);
 						}
+						musiccoPlaylist.setPlaylist(newPlaylist);
+						musiccoPlaylist.select(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current));
+						restorePlaylistPosition = musiccoPlaylist.albums[albumIndex].index;
 						$(this).dequeue; 
 					});
 						refreshPlaylist(current);
