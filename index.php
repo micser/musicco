@@ -1723,11 +1723,12 @@ class Musicco {
 						displayCover();
 						savePlaylist();
 						scrollPlaylist();
-						var tracks = [];
-						for (var i=musiccoPlaylist.current; ((i < (musiccoPlaylist.current + 5)) && (i < musiccoPlaylist.playlist.length + 1)); i++) {
-							tracks.push(musiccoPlaylist.playlist[i].mp3);
-						}
 						// Disable playlist caching for performance reasons. Is it possible to do this async?
+						// Also, don't arbitrarily push 5 tracks, the playlist may be smaller than that...
+						//var tracks = [];
+						//for (var i=musiccoPlaylist.current; ((i < (musiccoPlaylist.current + 5)) && (i < musiccoPlaylist.playlist.length + 1)); i++) {
+							//tracks.push(musiccoPlaylist.playlist[i].mp3);
+						//}
 						//postMessage({command: "playlist", tracks: tracks});
 				});
 
