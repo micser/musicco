@@ -1278,8 +1278,8 @@ class Musicco {
 				}
 
 				function formatPlaylist() {
-					hideSpinner();
-					if (hasPlaylist()) {
+					if (hasPlaylist() && musiccoPlaylist.hasChanged) {
+						musiccoPlaylist.hasChanged = false;
 						$('.itemHeader').remove();
 						$('.jp-playlist-item-free').html("");
 						var firstAlbum = musiccoPlaylist.playlist[0].album;
@@ -1363,18 +1363,18 @@ class Musicco {
 							$('.jp-playlist-item-remove').hide();
 						}
 					musiccoPlaylist.albums = albums;
-					setTimeout(function() { scrollPlaylist(); }, 500);
+					setTimeout(function() { hideSpinner(); scrollPlaylist(); }, 500);
 					}
 			}
 
 			function hideSpinner() {
-				$("#playlistSpinner").toggle();
+				$("#playlistSpinner").hide();
 				$("#playlistPanel ul").fadeTo("fast", 1);
 			}
 
 			function showSpinner() {
 				$("#playlistPanel").scrollTop(0);
-				$("#playlistSpinner").toggle();
+				$("#playlistSpinner").show();
 				$("#playlistPanel ul").fadeTo(0, 0);
 			}
 
@@ -1545,7 +1545,7 @@ class Musicco {
 							}
 					}
 					savePlaylist();
-					setTimeout(function() { formatPlaylist(); if (!isTooLate()) { printCover(imagePath); } }, 4000);
+					setTimeout(function() { if (!isTooLate()) { printCover(imagePath); } }, 4000);
 				}
 
 				function savePlaylist(playlistName) {
@@ -1595,6 +1595,7 @@ class Musicco {
 				}
 
 				function loadPlaylist(name) {
+					showSpinner();
 					if (name == null) {
 						name = "";
 					}
@@ -1627,6 +1628,7 @@ class Musicco {
 										}
 							}, "json");
 							} else {
+								musiccoPlaylist.hasChanged = true;
 								musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
 								musiccoPlaylist.select(parseInt(response.current));
 								restoreCurrentTime = parseInt(response.time)
@@ -1642,6 +1644,7 @@ class Musicco {
 							}
 							$("#loading").hide();
 							setTimeout(function() {
+								hideSpinner();
 								formatPlaylist();
 							}, 1000);
 							if (isGuestPlay()) {
@@ -1687,6 +1690,21 @@ class Musicco {
 					$("#big-info").css('opacity', '1');
 				}
 
+				function checkPlaylistUpdate() {
+					if (musiccoPlaylist.nextPlaylist != null) {
+						showSpinner();
+						var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
+						musiccoPlaylist.option("autoPlay", true);
+						musiccoPlaylist.setPlaylist(musiccoPlaylist.nextPlaylist);
+						musiccoPlaylist.play(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current));
+						//musiccoPlaylist.select(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current) + 1);
+						// TODO: this was used for playlist scrollto after a refresh I think? Is it still needed?
+						//restorePlaylistPosition = musiccoPlaylist.albums[albumIndex].index;
+						musiccoPlaylist.nextPlaylist = null;
+						musiccoPlaylist.hasChanged = true;
+					}
+				}
+
 				$("#shared-album-share").on("click", function(event) { 
 					navigator.share({
 						title: "<?php echo Musicco::getString('album_sharing'); ?>",
@@ -1695,6 +1713,10 @@ class Musicco {
 					})
 						.then(() => console.log('Successful share'))
 						.catch((error) => console.log('Error sharing', error));
+				});
+
+				$("#musiccoplayer").on($.jPlayer.event.ended, function(event) {
+					checkPlaylistUpdate()
 				});
 
 				$("#musiccoplayer").on($.jPlayer.event.play, function(event) {
@@ -1722,12 +1744,12 @@ class Musicco {
 						updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
 						displayCover();
 						savePlaylist();
-						scrollPlaylist();
-						var tracks = [];
-						for (var i=musiccoPlaylist.current; ((i < (musiccoPlaylist.current + 5)) && (i < musiccoPlaylist.playlist.length + 1)); i++) {
-							tracks.push(musiccoPlaylist.playlist[i].mp3);
-						}
+						formatPlaylist()
 						// Disable playlist caching for performance reasons. Is it possible to do this async?
+						//var tracks = [];
+						//for (var i=musiccoPlaylist.current; ((i < (musiccoPlaylist.current + 5)) && (i < musiccoPlaylist.playlist.length + 1)); i++) {
+						//	tracks.push(musiccoPlaylist.playlist[i].mp3);
+						//}
 						//postMessage({command: "playlist", tracks: tracks});
 				});
 
@@ -2225,10 +2247,11 @@ class Musicco {
 				});
 
 				$(document).on("click taphold", ".remove-album", function(e) {
+					//TODO: If nextPlaylist has not been loaded yet, then this will fail miserably!
+					//Check if nextPlaylist exists before removing
 					var shift = (e.type === "taphold")? true : e.shiftKey;
-					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
 					var removeTarget = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
-					restoreCurrentTime = Math.floor(jpData.status.currentTime);
+					var numTracks = musiccoPlaylist.albums[removeTarget].tracks;
 					var repeats = 1;
 					var albumIndex = removeTarget;
 					if (shift) {
@@ -2243,13 +2266,14 @@ class Musicco {
 						for (var i=0; i < repeats; i++) {
 							albumArray.splice(albumIndex, 1)
 							var newPlaylist = [].concat.apply([], albumArray);
-							musiccoPlaylist.setPlaylist(newPlaylist);
-							musiccoPlaylist.select(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current));
-							restorePlaylistPosition = musiccoPlaylist.albums[albumIndex].index;
+							musiccoPlaylist.nextPlaylist = newPlaylist;
 						}
+						for (var i=1; i < numTracks; i++) {
+							$(this).parents("li").next().remove();
+						}
+						$(this).parents("li").remove();
 						$(this).dequeue; 
 					});
-						refreshPlaylist(current);
 				});
 
 				function getCurrentAlbumIndex() {
@@ -2270,7 +2294,6 @@ class Musicco {
 				}
 
 				Array.prototype.move = function (old_index, new_index) {
-					showSpinner();
 					if (new_index >= this.length) {
 						var k = new_index - this.length;
 						while ((k--) + 1) {
@@ -2287,22 +2310,6 @@ class Musicco {
 						albumArray[i] = musiccoPlaylist.playlist.slice(thisAlbum.index, (thisAlbum.index + thisAlbum.tracks));
 					}
 					return albumArray;
-				}
-
-				function refreshPlaylist(currentSong) {
-					var wasPlaying = $('.big-jp-pause').is(':visible');
-					if (restoreCurrentTime < 0) {
-						restoreCurrentTime = Math.floor(jpData.status.currentTime);
-					}
-					var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(currentSong);
-					if (newCurrentIndex < 0) {
-						newCurrentIndex = 0;
-					}
-					musiccoPlaylist.select(newCurrentIndex);
-					musiccoPlaylist.option("autoPlay", wasPlaying);
-					setTimeout(function() {
-						formatPlaylist();
-					 }, 1500);
 				}
 
 				$(document).on("click taphold", ".move", function(e) {
@@ -2327,7 +2334,6 @@ class Musicco {
 					var newPlaylist = [].concat.apply([], albumArray);
 					musiccoPlaylist.setPlaylist(newPlaylist);
 					restorePlaylistPosition = musiccoPlaylist.albums[to].index;
-					refreshPlaylist(current);
 				}
 
 				$(document).on("click", ".share", function() {
