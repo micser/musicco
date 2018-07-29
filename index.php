@@ -672,8 +672,10 @@ class Musicco {
 		<script type="text/javascript">
 			var viewerType = '';
 			var windowWidth = '';
-			var restoreCurrentTime = -1;
-			var restorePlaylistPosition = -1;
+			var g_restoreCurrentTime = -1;
+			var g_restorePlaylistPosition = -1;
+			var g_playlist = null;
+			var g_albums = null;
 			$(document).ready(function() {
 				if ($(".landing").is(":visible")) {
 					$("#loading").hide()
@@ -799,7 +801,7 @@ class Musicco {
 
 				function scrollPlaylist() {
 					if (hasPlaylist()) {
-						var element = restorePlaylistPosition + 1;
+						var element = g_restorePlaylistPosition + 1;
 						if (element > musiccoPlaylist.length) {
 							element = musiccoPlaylist.length;
 						}
@@ -1263,10 +1265,10 @@ class Musicco {
 					displayInfo($(this).attr('title'));
 				});
 
-				function isFirstAlbumTrack(index) {
+				function isFirstAlbumTrack(index, playlist) {
 					if (index == 0) {
 						return true;
-					} else if (musiccoPlaylist.playlist[index].album != musiccoPlaylist.playlist[(index - 1)].album) {
+					} else if (playlist[index].album != playlist[(index - 1)].album) {
 						return true;
 					} else {
 						return false;
@@ -1278,21 +1280,40 @@ class Musicco {
 				}
 
 				function formatPlaylist() {
-					if (hasPlaylist()) {
-						$('.itemHeader').remove();
-						$('.jp-playlist-item-free').html("");
-						var firstAlbum = musiccoPlaylist.playlist[0].album;
-						var lastAlbum = musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album;
+					console.trace()
+					if (hasPlaylist() && musiccoPlaylist.hasChanged) {
+						musiccoPlaylist.hasChanged = false;
+						var playlist = (g_playlist != null)? g_playlist : musiccoPlaylist.playlist;
+						var firstAlbum = playlist[0].album;
+						var lastAlbum = playlist[playlist.length -1].album;
 						var albums = [];
 						var albumIndex = 0;
 						var tracks = 0;
+						$('.itemHeader').remove();
+						$('.jp-playlist-item-free').html("");
+						if (isGuestPlay()) { 
+							$('.guestPlay').hide();
+							$('.jp-playlist-item-remove').hide();
+						}
 						$('#playlistPanel > ul > li >div').each(function(){
 							var index = $(this).parent('li').index();
-							if (isFirstAlbumTrack(index)) {
+							if (isFirstAlbumTrack(index, playlist)) {
 								tracks = 1;
-								var thisAlbum = musiccoPlaylist.playlist[index].album;
+								var thisAlbum = playlist[index].album;
 								albums.push({thisAlbum, albumIndex, index, tracks});
 								var moveUp = "";
+								var moveDown = "";
+								var year = "";
+								var artist = "";
+								var cover = "";
+								var path = "";
+								var parent = "";
+								var parents = "";
+								var albumFolder = "";
+								var download = "";
+								var favourite = "";
+								var share = "";
+								var itemHeader = "";
 								if (thisAlbum != firstAlbum) {
 									moveUp = "<a class=\"move fas fa-arrow-up\""
 												+ "data-from=\"" + albumIndex + "\""
@@ -1301,7 +1322,6 @@ class Musicco {
 												+ "></a>";
 								}
 
-								var moveDown="";
 								if (thisAlbum != lastAlbum) {
 									moveDown = "<a class=\"move fas fa-arrow-down\""
 												+ "data-from=\"" + albumIndex + "\""
@@ -1309,24 +1329,23 @@ class Musicco {
 												+ "data-direction=\"down\""
 												+ "></a>";		
 								}
-								var year = musiccoPlaylist.playlist[index].year
+
+								year = playlist[index].year
 								if (year != "") {
 									year = ", " + year;
 								}
-								var artist = musiccoPlaylist.playlist[index].artist;
-								var cover = musiccoPlaylist.playlist[index].poster;
-								var path = musiccoPlaylist.playlist[index].path;
-								var parent = "";
-								var albumFolder = ""
-								var parents = path.split("/");
+								artist = playlist[index].artist;
+								cover = playlist[index].poster;
+								path = playlist[index].path;
+								parents = path.split("/");
 								for (var i=0; i<parents.length - 2; i++) {
 									parent += parents[i] + "/";
 								}
 								albumFolder = parents[parents.length -2];
-								var download = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay downloadAlbum' data-parent='replacemeParent' data-album='replacemeAlbum'><i class='fas fa-download'></i></a>\"":"\"\""); ?>;
-								var favourite = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay favouriteAlbum' data-path='replacemePath'><i class='fas fa-heart'></i></a>\"":"\"\""); ?>;
-								var share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' data-path='replacemePath' data-info='replacemeInfo'><i class='fas fa-external-link-alt'></i></a>\"":"\"\""); ?>;
-								var itemHeader = 
+								download = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay downloadAlbum' data-parent='replacemeParent' data-album='replacemeAlbum'><i class='fas fa-download'></i></a>\"":"\"\""); ?>;
+								favourite = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay favouriteAlbum' data-path='replacemePath'><i class='fas fa-heart'></i></a>\"":"\"\""); ?>;
+								share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' data-path='replacemePath' data-info='replacemeInfo'><i class='fas fa-external-link-alt'></i></a>\"":"\"\""); ?>;
+								itemHeader = 
 								"<span class=\"itemHeader\">"
 									+ "<table class=\"itemHeaderDetails\">"
 										+ "<tr>"
@@ -1357,11 +1376,7 @@ class Musicco {
 								albums[albumIndex -1].tracks = tracks;
 							}
 						});
-						if (isGuestPlay()) { 
-							$('.guestPlay').hide();
-							$('.jp-playlist-item-remove').hide();
-						}
-					musiccoPlaylist.albums = albums;
+					g_albums = albums;
 					setTimeout(function() { hideSpinner(); scrollPlaylist(); }, 500);
 					}
 			}
@@ -1544,7 +1559,7 @@ class Musicco {
 							}
 					}
 					savePlaylist();
-					setTimeout(function() { formatPlaylist(); if (!isTooLate()) { printCover(imagePath); } }, 4000);
+					setTimeout(function() { if (!isTooLate()) { printCover(imagePath); } }, 4000);
 				}
 
 				function savePlaylist(playlistName) {
@@ -1627,10 +1642,11 @@ class Musicco {
 										}
 							}, "json");
 							} else {
+								musiccoPlaylist.hasChanged = true;
 								musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
 								musiccoPlaylist.select(parseInt(response.current));
-								restoreCurrentTime = parseInt(response.time)
-								restorePlaylistPosition=parseInt(response.current);
+								g_restoreCurrentTime = parseInt(response.time)
+								g_restorePlaylistPosition=parseInt(response.current);
 								musiccoPlaylist.loop = response.loop;
 								musiccoPlaylist.shuffled = response.shuffled;
 								if (musiccoPlaylist.loop == "true") {
@@ -1642,6 +1658,7 @@ class Musicco {
 							}
 							$("#loading").hide();
 							setTimeout(function() {
+								hideSpinner();
 								formatPlaylist();
 							}, 1000);
 							if (isGuestPlay()) {
@@ -1687,6 +1704,20 @@ class Musicco {
 					$("#big-info").css('opacity', '1');
 				}
 
+				function checkPlaylistUpdate() {
+					if (g_playlist != null) {
+						showSpinner();
+						var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
+						musiccoPlaylist.option("autoPlay", true);
+						musiccoPlaylist.setPlaylist(g_playlist);
+						musiccoPlaylist.select(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current));
+						g_playlist = null;
+						musiccoPlaylist.hasChanged = true;
+						// TODO: this was used for playlist scrollto after a refresh I think? Is it still needed?
+						//restorePlaylistPosition = g_albums[albumIndex].index;
+					}
+				}
+
 				$("#shared-album-share").on("click", function(event) { 
 					navigator.share({
 						title: "<?php echo Musicco::getString('album_sharing'); ?>",
@@ -1697,14 +1728,18 @@ class Musicco {
 						.catch((error) => console.log('Error sharing', error));
 				});
 
+				$("#musiccoplayer").on($.jPlayer.event.ended, function(event) {
+					checkPlaylistUpdate();
+				});
+
 				$("#musiccoplayer").on($.jPlayer.event.play, function(event) {
-					 if (restoreCurrentTime != -1) {
+					 if (g_restoreCurrentTime != -1) {
 						 setTimeout(function(){ 
-								 jp.jPlayer( "play", restoreCurrentTime); 
-								 restoreCurrentTime = -1;
+								 jp.jPlayer( "play", g_restoreCurrentTime); 
+								 g_restoreCurrentTime = -1;
 						 }, 100);
 						}
-						restorePlaylistPosition = musiccoPlaylist.current;
+						g_restorePlaylistPosition = musiccoPlaylist.current;
 						$('.big-jp-play').hide();
 						$('.big-jp-pause').show();
 						$("#nowPlayingTitle").text(nowPlaying('title'));
@@ -1722,12 +1757,12 @@ class Musicco {
 						updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
 						displayCover();
 						savePlaylist();
-						scrollPlaylist();
+						formatPlaylist();
 						// Disable playlist caching for performance reasons. Is it possible to do this async?
 						// Also, don't arbitrarily push 5 tracks, the playlist may be smaller than that...
 						//var tracks = [];
 						//for (var i=musiccoPlaylist.current; ((i < (musiccoPlaylist.current + 5)) && (i < musiccoPlaylist.playlist.length + 1)); i++) {
-							//tracks.push(musiccoPlaylist.playlist[i].mp3);
+						//tracks.push(musiccoPlaylist.playlist[i].mp3);
 						//}
 						//postMessage({command: "playlist", tracks: tracks});
 				});
@@ -2200,6 +2235,7 @@ class Musicco {
 				}
 
 				function skip(direction) {
+					//TODO: Check if playlist has been updated before skipping!
 					currentAlbumIndex = getCurrentAlbumIndex();
 					var targetAlbum = 0;
 					if (direction == "forward") {
@@ -2208,15 +2244,15 @@ class Musicco {
 						targetAlbum = currentAlbumIndex - 1;
 					}
 					if (targetAlbum < 0) {
-						targetAlbum = musiccoPlaylist.albums.length - 1;
-					} else if (targetAlbum > musiccoPlaylist.albums.length - 1) {
+						targetAlbum = g_albums.length - 1;
+					} else if (targetAlbum > g_albums.length - 1) {
 						targetAlbum = 0;
 					}
-					musiccoPlaylist.play(musiccoPlaylist.albums[targetAlbum].index);
+					musiccoPlaylist.play(g_albums[targetAlbum].index);
 				}
 
 				$(document).on("click", ".jp-playlist-item", function(event) { 
-					restoreCurrentTime = -1;
+					g_restoreCurrentTime = -1;
 					formatPlaylist();
 				});
 
@@ -2232,19 +2268,17 @@ class Musicco {
 				});
 
 				$(document).on("click taphold", ".remove-album", function(e) {
-					showSpinner();
 					var newPlaylist = [];
 					var shift = (e.type === "taphold")? true : e.shiftKey;
-					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
-					var removeTarget = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
-					restoreCurrentTime = Math.floor(jpData.status.currentTime);
+					var removeTarget = g_albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
+					var numTracks = g_albums[removeTarget].tracks;
 					var repeats = 1;
 					var albumIndex = removeTarget;
 					if (shift) {
 						repeats = albumIndex;
 						albumIndex = 0;
 					} else if (e.ctrlKey) {
-						repeats = musiccoPlaylist.albums.length - removeTarget - 1;
+						repeats = g_albums.length - removeTarget - 1;
 						albumIndex += 1;
 					}
 					$(this).queue(function() {
@@ -2253,19 +2287,22 @@ class Musicco {
 							albumArray.splice(albumIndex, 1)
 							newPlaylist = [].concat.apply([], albumArray);
 						}
-						musiccoPlaylist.setPlaylist(newPlaylist);
-						musiccoPlaylist.select(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current));
-						restorePlaylistPosition = musiccoPlaylist.albums[albumIndex].index;
+						for (var i=1; i < numTracks; i++) {
+							$(this).parents("li").next().remove();
+						}
+						$(this).parents("li").remove();
+						g_playlist = newPlaylist;
+						musiccoPlaylist.hasChanged = true;
+						formatPlaylist();
 						$(this).dequeue; 
 					});
-						refreshPlaylist(current);
 				});
 
 				function getCurrentAlbumIndex() {
 					var current = musiccoPlaylist.current;
-					var albumStartPos = musiccoPlaylist.albums.map(function(d) { return d['index']; });
+					var albumStartPos = g_albums.map(function(d) { return d['index']; });
 					var albumIndex = 0;
-					var i = musiccoPlaylist.albums.length - 1;
+					var i = g_albums.length - 1;
 					var found = false;
 					while ((i >= 0) && (!found)) {
 						if (albumStartPos[i] > current) {
@@ -2279,7 +2316,6 @@ class Musicco {
 				}
 
 				Array.prototype.move = function (old_index, new_index) {
-					showSpinner();
 					if (new_index >= this.length) {
 						var k = new_index - this.length;
 						while ((k--) + 1) {
@@ -2291,28 +2327,12 @@ class Musicco {
 
 				function getAlbumArray() {
 					var albumArray = [];
-					for (var i=0; i < musiccoPlaylist.albums.length; i++) {
-						var thisAlbum = musiccoPlaylist.albums[i];
-						albumArray[i] = musiccoPlaylist.playlist.slice(thisAlbum.index, (thisAlbum.index + thisAlbum.tracks));
+					var playlist = (g_playlist != null)? g_playlist : musiccoPlaylist.playlist;
+					for (var i=0; i < g_albums.length; i++) {
+						var thisAlbum = g_albums[i];
+						albumArray[i] = playlist.slice(thisAlbum.index, (thisAlbum.index + thisAlbum.tracks));
 					}
 					return albumArray;
-				}
-
-				function refreshPlaylist(currentSong) {
-					showSpinner();
-					var wasPlaying = $('.big-jp-pause').is(':visible');
-					if (restoreCurrentTime < 0) {
-						restoreCurrentTime = Math.floor(jpData.status.currentTime);
-					}
-					var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(currentSong);
-					if (newCurrentIndex < 0) {
-						newCurrentIndex = 0;
-					}
-					musiccoPlaylist.select(newCurrentIndex);
-					musiccoPlaylist.option("autoPlay", wasPlaying);
-					setTimeout(function() {
-						formatPlaylist();
-					 }, 1500);
 				}
 
 				$(document).on("click taphold", ".move", function(e) {
@@ -2324,7 +2344,7 @@ class Musicco {
 						if (direction == "up") {
 							to = 0;
 					} else {
-						to = musiccoPlaylist.albums.length -1;
+						to = g_albums.length -1;
 					}
 				}
 					moveAlbum(from, to);
@@ -2336,8 +2356,7 @@ class Musicco {
 					albumArray.move(from, to);
 					var newPlaylist = [].concat.apply([], albumArray);
 					musiccoPlaylist.setPlaylist(newPlaylist);
-					restorePlaylistPosition = musiccoPlaylist.albums[to].index;
-					refreshPlaylist(current);
+					g_restorePlaylistPosition = g_albums[to].index;
 				}
 
 				$(document).on("click", ".share", function() {
@@ -3145,7 +3164,7 @@ if(!AuthManager::isAccessAllowed()) {
 			deletePlaylist($_POST['u'], $_POST['n']);
 			exit;
 	} elseif (isset($_POST['savePlaylist'])) {
-			savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t'], $_POST['l'], $_POST['s']);
+			//savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t'], $_POST['l'], $_POST['s']);
 			exit;
 	} elseif (isset($_POST['saveGuestPlaylist'])) {
 			$user = $_POST['u'];
