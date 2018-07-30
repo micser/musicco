@@ -1710,9 +1710,15 @@ class Musicco {
 						var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
 						musiccoPlaylist.option("autoPlay", true);
 						musiccoPlaylist.setPlaylist(g_playlist);
-						musiccoPlaylist.select(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current));
+						var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current);
+						if (newCurrentIndex < 0) {
+							newCurrentIndex = 0
+						}
+						musiccoPlaylist.select(newCurrentIndex);
 						g_playlist = null;
 						musiccoPlaylist.hasChanged = true;
+						//TODO: remove next album, pause, play => g_restoreCurrentTime should be Math.floor(jpData.status.currentTime);, not 0...
+						//Track caller??
 						// TODO: this was used for playlist scrollto after a refresh I think? Is it still needed?
 						//restorePlaylistPosition = g_albums[albumIndex].index;
 					}
@@ -1848,6 +1854,7 @@ class Musicco {
 				$("#musiccoplayer").on($.jPlayer.event.pause, function(event) {
 					$('.big-jp-play').show();
 					$('.big-jp-pause').hide();
+					checkPlaylistUpdate();
 					savePlaylist();
 				});
 
@@ -2271,6 +2278,7 @@ class Musicco {
 					var newPlaylist = [];
 					var shift = (e.type === "taphold")? true : e.shiftKey;
 					var removeTarget = g_albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
+					var targetIsPlaying = (removeTarget == getCurrentAlbumIndex())? true : false;
 					var numTracks = g_albums[removeTarget].tracks;
 					var repeats = 1;
 					var albumIndex = removeTarget;
@@ -2294,6 +2302,9 @@ class Musicco {
 						g_playlist = newPlaylist;
 						musiccoPlaylist.hasChanged = true;
 						formatPlaylist();
+						if (targetIsPlaying) { 
+							musiccoPlaylist.pause();
+							}
 						$(this).dequeue; 
 					});
 				});
