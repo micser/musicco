@@ -1,0 +1,73 @@
+<html>
+	<head>
+		<script type="text/javascript" src="lib/jquery/jquery-2.2.4.min.js"></script>
+		<script>
+			$(document).ready(function() {
+				
+				
+				var playlist = $('#playlist').find('ul').map(function() {
+					var album = { };
+					album.tracks = $(this).find('li').map(function() {
+						var song = { };
+						song.artist = $(this).data("artist");
+						song.album = $(this).data("album");
+						song.title = $(this).data("title");
+						song.year = $(this).data("year");
+						song.parent = $(this).data("parent");
+						song.name = $(this).data("name");
+						song.poster = $(this).data("poster");
+						return song;
+					}).get();
+					return album;
+				}).get();
+
+				var playlistJSON = JSON.stringify(playlist);
+				console.log(playlist);
+				console.log(playlistJSON);
+				var playlistFromString = JSON.parse(playlistJSON);
+				$.each(playlistFromString, function (i, album) {
+					var html = "<ul>"
+						if (album.tracks) {
+							$.each(album.tracks, function (j, track) {
+								html += "<li";
+								$.each(track, function(k,v) {
+									html += ' data-' + k + '="' + v + '"';
+								});
+								html += ">" + track.title;
+								html += "</li>";
+							});
+						}
+					html += "</ul>";
+				$("#playlist_copy").append(html);
+				});
+				
+				$("#playlist li, #playlist_copy li").on("click", function() {
+					document.getElementById("song").src = $(this).data("parent") + $(this).data("name");
+					document.getElementById("player").load()
+					document.getElementById("player").play();
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<audio id="player" controls>
+			<source id="song" src="">
+		</audio>
+		<div id="playlist_container">
+			<ul id="playlist">
+				<ul>
+					<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="Intro" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="00_Intro.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">Intro</li>
+					<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="Vegas" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="01_Vegas.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">Vegas</li>
+					<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="September" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="02_September.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">September</li>
+				</ul>
+				<ul>
+					<li data-artist="Breton" data-album="Other People's Problems" data-title="Pacemaker" data-year="2002" data-parent="music/Breton__/Other People's Problems/" data-name="01_Pacemaker.mp3" data-poster="music/Breton__/Other People's Problems/cover.png">Pacemaker</li>
+				</ul>
+				<ul>
+					<li data-artist="65daysofstatic" data-album="The Fall of Math" data-title="The Fall of Math" data-year="2004" data-parent="music/65daysofstatic/[2004] The Fall of Math/" data-name="02_Install A Beak In The Heart That Clucks Time In Arabic.mp3" data-poster="music/65daysofstatic/[2004] The Fall of Math/cover.png">The Fall of Math</li>
+				</ul>
+			</ul>
+			<ul id="playlist_copy"></ul>
+		</div>
+	</body>
+</html>
