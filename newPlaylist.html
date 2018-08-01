@@ -1,20 +1,27 @@
 <html>
 	<head>
 		<style>
-			.selected { color: orange; font-weight: bold; }
-			.nextTrack { color: yellow; }
-			.nextAlbum { color: blue; }
+			.previousAlbum { border: 1px red dotted; }
+			.previousTrack { color: red; }
+			.selected { color: orange; }
+			.nextTrack { color: green; }
+			.nextAlbum { border: 1px green dotted; }
 		</style>
 		<script type="text/javascript" src="lib/jquery/jquery-2.2.4.min.js"></script>
 		<script>
 			$(document).ready(function() {
+				// ////////////////////
+				// Global variables //
+				// //////////////////
+
+				var previousTrack = null;
 				var nextTrack = null;
+				var previousAlbum = null;
 				var nextAlbum = null;
 				var player = new Audio();
 				player.autoplay = false;
-				player.onended = function() { playNextTrack(); };
-				
-				
+
+
 				var playlist = $("#playlist").find("ul").map(function() {
 					var album = { };
 					album.tracks = $(this).find("li").map(function() {
@@ -50,35 +57,87 @@
 					html += "</ul></li>";
 				$("#playlist_copy").append(html);
 				});
+
+				/////////////
+				// Events //
+				///////////
+
+				player.onended = function() { 
+					// TODO: handle random here
+					playTrack(nextTrack); 
+				};
+				
 				
 				$("#playlist > li > ul > li").on("click", function() {
 					playTrack($(this));
 				});
 
+				$(".previous_album").on("click", function() {
+					$(previousAlbum).find("li").first().trigger("click");
+				});
+
+				$(".previous_track").on("click", function() {
+					$(previousTrack).trigger("click");
+				});
+
+				$(".play").on("click", function() {
+					player.play();
+				});
+
+				$(".pause").on("click", function() {
+					player.pause();
+				});
+
+				$(".next_track").on("click", function() {
+					$(nextTrack).trigger("click");
+				});
+
+				$(".next_album").on("click", function() {
+					$(nextAlbum).find("li").first().trigger("click");
+				});
+
+				////////////////
+				// Functions //
+				//////////////
+
 				function playTrack(track) {
-					$("#playlist li").removeClass("selected nextAlbum nextTrack");
+					$("#playlist li").removeClass("selected previousAlbum previousTrack nextTrack nextAlbum ");
 					$(track).addClass("selected");
 					player.src = $(track).data("parent") + $(track).data("name");
-					nextTrack = $("li[class=selected]").next("li");
-					nextAlbum = $("li[class=selected]").parents("li").next();
+					previousAlbum = $(track).parents("li").prev();
+					previousTrack = $(track).prev("li");
+					nextTrack = $(track).next("li");
+					nextAlbum = $(track).parents("li").next();
+					if (nextAlbum.length == 0) {
+						nextAlbum = $("#playlist > li").first();
+					}
+					if (previousAlbum.length == 0) {
+						previousAlbum = $("#playlist > li").last();
+					}
+					if (nextTrack.length == 0) {
+						nextTrack = $(nextAlbum).find("li").first();
+					}
+					if (previousTrack.length == 0) {
+						previousTrack = $(previousAlbum).find("li").last();
+					}
+					$(previousAlbum).addClass("previousAlbum");
+					$(previousTrack).addClass("previousTrack");
 					$(nextTrack).addClass("nextTrack");
 					$(nextAlbum).addClass("nextAlbum");
-					console.log($(nextTrack));
-					console.log($(nextAlbum));
 					player.play();
-				}
-				
-				function playNextTrack() {
-					if (nextTrack != null) {
-						playTrack(nextTrack);
-					} else {
-						playTrack($("#playlist > li > ul > li").first());
-					}
 				}
 			});
 		</script>
 	</head>
 	<body>
+		<div id="controls">
+			<span class="previous_album"><<--</span>
+			<span class="previous_track"><--</span>
+			<span class="play">play</span>
+			<span class="pause">pause</span>
+			<span class="next_track">--></span>
+			<span class="next_album">-->></span>
+		</div>
 		<div id="playlist_container">
 			<ul id="playlist">
 				<li>
@@ -86,15 +145,20 @@
 						<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="Intro" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="00_Intro.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">Intro</li>
 						<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="Vegas" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="01_Vegas.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">Vegas</li>
 						<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="September" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="02_September.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">September</li>
+						<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="Intro" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="00_Intro.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">Intro</li>
 					</ul>
 				</li>
 				<li>
 					<ul>
+						<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="Intro" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="00_Intro.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">Intro</li>
 						<li data-artist="Breton" data-album="Other People's Problems" data-title="Pacemaker" data-year="2002" data-parent="music/Breton__/[2012] Other People's Problems/" data-name="01_Pacemaker.mp3" data-poster="music/Breton__/Other People's Problems/cover.png">Pacemaker</li>
+						<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="Intro" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="00_Intro.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">Intro</li>
 					</ul>
 				</li>
 				<li>
 					<ul>
+						<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="Intro" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="00_Intro.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">Intro</li>
+						<li data-artist="1973" data-album="Bye Bye Cellphone" data-title="Intro" data-year="2001" data-parent="music/1973/Bye Bye Cellphone/" data-name="00_Intro.mp3" data-poster="music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png">Intro</li>
 						<li data-artist="65daysofstatic" data-album="The Fall of Math" data-title="The Fall of Math" data-year="2004" data-parent="music/65daysofstatic/[2004] The Fall of Math/" data-name="02_Install A Beak In The Heart That Clucks Time In Arabic.mp3" data-poster="music/65daysofstatic/[2004] The Fall of Math/cover.png">The Fall of Math</li>
 					</ul>
 				</li>
