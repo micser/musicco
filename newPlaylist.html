@@ -6,6 +6,12 @@
 			.selected { color: orange; }
 			.nextTrack { color: green; }
 			.nextAlbum { border: 1px green dotted; }
+			.left { float: left; }
+			.right { float: right; }
+			#player_container { width: 300px; }
+			#album_art { height: 300px; background-size: contain; }
+			#seek_bar { width: 300px; }
+			#volume_bar { width: 50px; transform: rotate(270deg); }
 		</style>
 		<script type="text/javascript" src="lib/jquery/jquery-2.2.4.min.js"></script>
 		<script>
@@ -14,6 +20,7 @@
 				// Global variables //
 				// //////////////////
 
+				var nowPlaying = {};
 				var previousTrack = null;
 				var nextTrack = null;
 				var previousAlbum = null;
@@ -23,9 +30,9 @@
 
 
 				var playlist = $("#playlist").find("ul").map(function() {
-					var album = { };
+					var album = {};
 					album.tracks = $(this).find("li").map(function() {
-						var song = { };
+						var song = {};
 						song.artist = $(this).data("artist");
 						song.album = $(this).data("album");
 						song.title = $(this).data("title");
@@ -66,8 +73,31 @@
 					// TODO: handle random here
 					playTrack(nextTrack); 
 				};
-				
-				
+
+				player.onplay = function() {
+					updatePlayerUI();
+				}
+
+				player.ondurationchange = function() {
+					var duration = player.duration;
+					$("#duration").html(getDuration(duration));
+					$("#seek_bar").attr("max", parseInt(duration));
+				}
+
+				player.ontimeupdate = function() {
+					var currentTime = player.currentTime;
+					$("#current_time").html(getDuration(currentTime));
+					$("#seek_bar").val(parseInt(currentTime));
+				}
+
+				$("#volume_bar").on("change", function() {
+					player.volume = $(this).val() / 100;
+				});
+
+				$("#seek_bar").on("change", function() {
+					player.currentTime = $(this).val();
+				});
+
 				$("#playlist > li > ul > li").on("click", function() {
 					playTrack($(this));
 				});
@@ -96,6 +126,14 @@
 					$(nextAlbum).find("li").first().trigger("click");
 				});
 
+				$(".mute").on("click", function() {
+					player.volume = 0;
+				});
+
+				$(".unmute").on("click", function() {
+					player.volume = 1;
+				});
+
 				////////////////
 				// Functions //
 				//////////////
@@ -103,7 +141,9 @@
 				function playTrack(track) {
 					$("#playlist li").removeClass("selected previousAlbum previousTrack nextTrack nextAlbum ");
 					$(track).addClass("selected");
+					$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
 					player.src = $(track).data("parent") + $(track).data("name");
+					player.play();
 					previousAlbum = $(track).parents("li").prev();
 					previousTrack = $(track).prev("li");
 					nextTrack = $(track).next("li");
@@ -124,7 +164,6 @@
 					$(previousTrack).addClass("previousTrack");
 					$(nextTrack).addClass("nextTrack");
 					$(nextAlbum).addClass("nextAlbum");
-					player.play();
 					preload($(previousTrack));
 					preload($(nextTrack));
 				}
@@ -133,17 +172,52 @@
 					var altAudio = new Audio();
 					altAudio.src = $(track).data("parent") + $(track).data("name");
 				}
+
+				function updatePlayerUI() {
+					$("#album_art").css("background-image", 'url("' + nowPlaying["poster"] + '")'); 
+					var textData = ["title", "artist", "album", "year"];
+					textData.forEach(function(info) {
+						$("#"+info).html(nowPlaying[info]); 
+					});
+				}
+
+				function getDuration(seconds) {
+					var date = new Date(null);
+					date.setSeconds(seconds);
+					var timeString = date.toISOString().substr(11, 8);
+					if (timeString.substr(0, 2) == "00") {
+						timeString = timeString.substr(3);
+					}
+					return timeString;
+				}
 			});
 		</script>
 	</head>
 	<body>
-		<div id="controls">
-			<span class="previous_album"><<--</span>
-			<span class="previous_track"><--</span>
-			<span class="play">play</span>
-			<span class="pause">pause</span>
-			<span class="next_track">--></span>
-			<span class="next_album">-->></span>
+		<div id="player_container">
+			<div id="album_art"></div>
+			<div id="progress_container">
+				<input type="range" id="seek_bar" value="0" min="0" max=""/>
+				<span id="current_time" class="left"></span>
+				<span id="duration" class="right"></span>
+			</div>
+			<br/>
+			<div id="controls">
+				<span class="previous_album"><<--</span>
+				<span class="previous_track"><--</span>
+				<span class="play">play</span>
+				<span class="pause">pause</span>
+				<span class="next_track">--></span>
+				<span class="next_album">-->></span>
+				<br/>
+				<span class="mute">mute</span>
+				<span class="unmute">unmute</span>
+				<input type="range" class="right" id="volume_bar" value="100" min ="0" max="100"/>
+			</div>
+			<div id="title"></div>
+			<div id="artist"></div>
+			<div id="album"></div>
+			<div id="year"></div>
 		</div>
 		<div id="playlist_container">
 			<ul id="playlist">
