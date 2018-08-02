@@ -125,6 +125,13 @@
 					$(nextTrack).addClass("nextTrack");
 					$(nextAlbum).addClass("nextAlbum");
 					player.play();
+					preload($(previousTrack));
+					preload($(nextTrack));
+				}
+
+				function preload(track) {
+					var altAudio = new Audio();
+					altAudio.src = $(track).data("parent") + $(track).data("name");
 				}
 			});
 		</script>
