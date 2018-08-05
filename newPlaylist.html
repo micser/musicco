@@ -78,30 +78,32 @@
 				//TODO: Move the refresh to the onDomChanged event?
 				$("#playlist li").removeClass("previousAlbum previousTrack currentAlbum nextTrack nextAlbum ");
 				var track = $("#playlist li.selected");
-				previousAlbum = $(track).parents("li").prev();
-				previousTrack = $(track).prev("li");
-				currentAlbum =  $(track).parents("li");
-				nextTrack = $(track).next("li");
-				nextAlbum = $(track).parents("li").next();
-				if (nextAlbum.length == 0) {
-					nextAlbum = $("#playlist > li").first();
+				if (track.length) {
+					previousAlbum = $(track).parents("li").prev();
+					previousTrack = $(track).prev("li");
+					currentAlbum =  $(track).parents("li");
+					nextTrack = $(track).next("li");
+					nextAlbum = $(track).parents("li").next();
+					if (nextAlbum.length == 0) {
+						nextAlbum = $("#playlist > li").first();
+					}
+					if (previousAlbum.length == 0) {
+						previousAlbum = $("#playlist > li").last();
+					}
+					if (nextTrack.length == 0) {
+						nextTrack = $(nextAlbum).find("li").first();
+					}
+					if (previousTrack.length == 0) {
+						previousTrack = $(previousAlbum).find("li").last();
+					}
+					$(previousAlbum).addClass("previousAlbum");
+					$(previousTrack).addClass("previousTrack");
+					$(currentAlbum).addClass("currentAlbum");
+					$(nextTrack).addClass("nextTrack");
+					$(nextAlbum).addClass("nextAlbum");
+					preload($(previousTrack));
+					preload($(nextTrack));
 				}
-				if (previousAlbum.length == 0) {
-					previousAlbum = $("#playlist > li").last();
-				}
-				if (nextTrack.length == 0) {
-					nextTrack = $(nextAlbum).find("li").first();
-				}
-				if (previousTrack.length == 0) {
-					previousTrack = $(previousAlbum).find("li").last();
-				}
-				$(previousAlbum).addClass("previousAlbum");
-				$(previousTrack).addClass("previousTrack");
-				$(currentAlbum).addClass("currentAlbum");
-				$(nextTrack).addClass("nextTrack");
-				$(nextAlbum).addClass("nextAlbum");
-				preload($(previousTrack));
-				preload($(nextTrack));			
 			}
 
 			function preload(track) {
