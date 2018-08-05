@@ -8,12 +8,13 @@
 			.nextTrack { color: green; }
 			.nextAlbum { border: 1px green dashed; }
 			.left { float: left; }
-			.right { float: right; }
+			.right, .remove { float: right; }
 			#player_container { width: 300px; }
 			#album_art { height: 300px; background-size: contain; }
 			.playlist-poster { height: 100px; }
 			#seek_bar { width: 300px; }
 			#volume_bar { width: 50px; transform: rotate(270deg); }
+			#playlist > li > ul > li:hover { color: #ffffff; background: grey; }
 		</style>
 		<script type="text/javascript" src="lib/jquery/jquery-2.2.4.min.js"></script>
 		<script>
@@ -143,6 +144,7 @@
 				$.each(playlist, function (i, album) {
 					$thisAlbum = $("<li></li>");
 					$thisAlbum.append("<img class=\"playlist-poster\" draggable=\"false\" src=\"\"/>");
+					$thisAlbum.append("<div class=\"remove\">X</div>");
 					$thisAlbum.append("<div class=\"artist\"></div>");
 					$thisAlbum.append("<div class=\"album\"></div>");
 					$thisAlbum.append("<div class=\"year\"></div>");
@@ -162,6 +164,7 @@
 									albumTracks += ' data-' + k + '="' + v + '"';
 								});
 								albumTracks += ">" + track.title;
+								albumTracks += "<div class=\"remove\">X</div>";
 								albumTracks += "</li>";
 							});
 						}
@@ -333,8 +336,16 @@
 					insertLast(newAlbum);
 				});
 
+				$(".remove").on("click", function(e) {
+					//TODO: Handle situations when the current album/track is removed
+					e.stopPropagation();
+					$(this).parent("li").remove();
+					refreshPlaylist();
+				});
+
+
 				$("#playlist").on("DOMSubtreeModified",function(){
-					//TODO: Move refreshplaylist here or just call it?
+					//TODO: Move refreshPlaylist here or just call it?
 					refreshPlaylist();
 					$("#playlist").find("li").each(function() {
 						$(this).on("dragstart", function() { dragStart(event) });
