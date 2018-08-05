@@ -11,6 +11,7 @@
 			.right { float: right; }
 			#player_container { width: 300px; }
 			#album_art { height: 300px; background-size: contain; }
+			.playlist-poster { height: 100px; }
 			#seek_bar { width: 300px; }
 			#volume_bar { width: 50px; transform: rotate(270deg); }
 		</style>
@@ -136,20 +137,38 @@
 
 			function parsePlaylist(playlistString) {
 				var playlist = JSON.parse(playlistString);
-				var html = "";
+				var html = [];
 				$.each(playlist, function (i, album) {
-					html += "<li data-type=\"album\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\"><ul>"
+					$thisAlbum = $("<li></li>");
+					$thisAlbum.append("<img class=\"playlist-poster\" draggable=\"false\" src=\"\"/>");
+					$thisAlbum.append("<div class=\"artist\"></div>");
+					$thisAlbum.append("<div class=\"album\"></div>");
+					$thisAlbum.append("<div class=\"year\"></div>");
+					$thisAlbum.data["type"] = "album";
+					$thisAlbum.attr("draggable", "true");
+					$thisAlbum.attr("ondragstart", "dragStart(event)");
+					$thisAlbum.attr("ondragover", "dragOver(event)");
+					$thisAlbum.attr("ondragend", "dragEnd(event)");
+					var albumTracks = "";
 						if (album.tracks) {
 							$.each(album.tracks, function (j, track) {
-								html += "<li data-type=\"track\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\"";
+								albumTracks += "<li data-type=\"track\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\"";
 								$.each(track, function(k,v) {
-									html += ' data-' + k + '="' + v + '"';
+									if (j == 0) {
+										$thisAlbum.data[k] = v;
+									}
+									albumTracks += ' data-' + k + '="' + v + '"';
 								});
-								html += ">" + track.title;
-								html += "</li>";
+								albumTracks += ">" + track.title;
+								albumTracks += "</li>";
 							});
 						}
-					html += "</ul></li>";
+					$thisAlbum.find(".playlist-poster").attr("src", $thisAlbum.data["poster"]);
+					$thisAlbum.find(".artist").html($thisAlbum.data["artist"]);
+					$thisAlbum.find(".album").html($thisAlbum.data["album"]);
+					$thisAlbum.find(".year").html($thisAlbum.data["year"]);
+					$thisAlbum.append("<ul>" + albumTracks + "</ul>");
+					html.push($thisAlbum);
 				});
 				return html;
 			}
