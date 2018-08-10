@@ -628,7 +628,6 @@ class Musicco {
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $this->getConfig('lang'); ?>" lang="<?php print $this->getConfig('lang'); ?>">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/fontawesome-all.min.css">
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
 		<link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.min.css">
 		<link rel="stylesheet" type="text/css" href="lib/fancytree/skin-awesome/ui.fancytree.min.css">
@@ -657,18 +656,16 @@ class Musicco {
 		<meta name="msapplication-TileColor" content="#a7a97f">
 		<meta name="msapplication-TileImage" content="app/mstile-310x310.png">
 		<meta name="theme-color" content="#a7a97f">
-		<script type="text/javascript" src="lib/jquery/jquery-2.2.4.min.js"></script>
-		<script type="text/javascript" src="lib/jquery/jquery.mobile.custom.min.js"></script>
-		<script type="text/javascript" src="lib/jquery-ui/jquery-ui.min.js"></script>
-		<script type="text/javascript" src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
-		<script type="text/javascript" src="lib/js-cookie/js.cookie-2.2.0.min.js"></script>
-		<script type="text/javascript" src="lib/fancytree/jquery.fancytree-all.min.js"></script>
-		<script type="text/javascript" src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
-		<script type="text/javascript" src="lib/clipboard.js/clipboard.min.js"></script>
-		<script type="text/javascript" src="lib/swipe/swipe.js"></script>
-		<script type="text/javascript" src="lib/normalise/normalise.js"></script>
-		<script type="text/javascript" src="lib/jplayer/jquery.jplayer.min.js"></script>
-		<script type="text/javascript" src="lib/jplayer/jplayer.playlist.min.js"></script>
+		<script type="text/javascript" src="lib/jquery/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
+		<script type="text/javascript" defer src="lib/js-cookie/js.cookie-2.2.0.min.js"></script>
+		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
+		<script type="text/javascript" defer src="lib/clipboard.js/clipboard.min.js"></script>
+		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
+		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
+		<script type="text/javascript" defer src="lib/font-awesome/js/all.min.js"></script>
 		<script type="text/javascript">
 			var viewerType = '';
 			var windowWidth = '';
