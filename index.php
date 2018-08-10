@@ -666,103 +666,103 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/font-awesome/js/all.min.js"></script>
-		<!--
+		<!-- -->
 		<script type="text/javascript" src="lib/jplayer/jquery.jplayer.min.js"></script>
 		<script type="text/javascript" src="lib/jplayer/jplayer.playlist.min.js"></script>
-		-->
+		<!-- -->
 		<script type="text/javascript">
+				///////////////
+			 // VARIABLES //
+			///////////////
 			var viewerType = '';
 			var windowWidth = '';
 			var g_restoreCurrentTime = -1;
 			var g_restorePlaylistPosition = -1;
 			var g_playlist = null;
 			var g_albums = null;
-			$(document).ready(function() {
-				  ///////////////
-				 // VARIABLES //
-				///////////////
 
-				//var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
-				//var options = { playlistOptions: {
-				//	autoPlay: false,
-				//	loopOnPrevious: true,
-				//	shuffleOnLoop: false,
-				//	enableRemoveControls: true,
-				//	displayTime: 'slow',
-				//	addTime: 'fast',
-				//	removeTime: 'fast',
-				//	shuffleTime: 'slow'
-				//}, solution:"html,flash" , swfPath: "lib", supplied: "mp3" };
-
-				//var musiccoPlaylist = new jPlayerPlaylist(cssSelector, "", options);
-				//var jp = $(musiccoPlaylist.cssSelector.jPlayer), jpData = jp.data('jPlayer');
-
-				//ServiceWorker
-				var musiccoService;
-				if ('serviceWorker' in navigator) {
-					window.addEventListener('load', function() {
-						 navigator.serviceWorker.register('musicco.js').then(function(registration) {
-							// Registration was successful
-							//console.log('ServiceWorker registration successful with scope: ', registration.scope);
-							musiccoService = registration;
-						}, function(err) {
-							// registration failed :(
-							musiccoService = null;
-							//console.log('ServiceWorker registration failed: ', err);
-						});
+			var musiccoService;
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', function() {
+					 navigator.serviceWorker.register('musicco.js').then(function(registration) {
+						// Registration was successful
+						//console.log('ServiceWorker registration successful with scope: ', registration.scope);
+						musiccoService = registration;
+					}, function(err) {
+						// registration failed :(
+						musiccoService = null;
+						//console.log('ServiceWorker registration failed: ', err);
 					});
-					navigator.serviceWorker.onmessage = function (e) {
-						switch (e.data) {
-								case "play":
-									triggerPlayPause();
-								break;
-								case "pause":
-									triggerPlayPause();
-								break;
-								case "nexttrack":
-									nextTrack();
-								break;
-						}
-					};
-				}
-
-				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
-				windowWidth = $(window).width();
-				var userIsStillTyping = false;
-				var menuOptions = [
-					{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "playRightNow"},
-					{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fa-play-next", cmd: "playAsNextAlbum"},
-					//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "fas fa-play", cmd: "playAsNextTrack"},
-					{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fa-play-last", cmd: "queue"},
-					{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
-					{title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
-					{title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
-					{title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "fas fa-download"},
-					{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
-					{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"},
-					{title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fas fa-times"}
-				];
-
-				var customTreeIcons = { 
-					preset: "awesome5",
-					map: {
-						doc: "fas fa-music",
-						docOpen: "fas fa-music",
-						expanderClosed: "fas fa-angle-right",
-						expanderOpen: "fas fa-angle-down"
+				});
+				navigator.serviceWorker.onmessage = function (e) {
+					switch (e.data) {
+							case "play":
+								triggerPlayPause();
+							break;
+							case "pause":
+								triggerPlayPause();
+							break;
+							case "nexttrack":
+								nextTrack();
+							break;
 					}
 				};
+			}
 
-				var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
-				var wikiHistory = [];
-				var wikiHistoryPos = -1;
-				new Clipboard('.clip');
-				var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
+			var userIsStillTyping = false;
+			var menuOptions = [
+				{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "playRightNow"},
+				{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fa-play-next", cmd: "playAsNextAlbum"},
+				//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "fas fa-play", cmd: "playAsNextTrack"},
+				{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fa-play-last", cmd: "queue"},
+				{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
+				{title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
+				{title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
+				{title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "fas fa-download"},
+				{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
+				{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"},
+				{title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fas fa-times"}
+			];
+
+			var customTreeIcons = { 
+				preset: "awesome5",
+				map: {
+					doc: "fas fa-music",
+					docOpen: "fas fa-music",
+					expanderClosed: "fas fa-angle-right",
+					expanderOpen: "fas fa-angle-down"
+				}
+			};
+
+			var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
+			var wikiHistory = [];
+			var wikiHistoryPos = -1;
+			var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
+
+			$(document).ready(function() {
 
 				  /////////////
 				 // ACTIONS //
 				/////////////
 
+				var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
+				var options = { playlistOptions: {
+					autoPlay: false,
+					loopOnPrevious: true,
+					shuffleOnLoop: false,
+					enableRemoveControls: true,
+					displayTime: 'slow',
+					addTime: 'fast',
+					removeTime: 'fast',
+					shuffleTime: 'slow'
+				}, solution:"html,flash" , swfPath: "lib", supplied: "mp3" };
+
+				var musiccoPlaylist = new jPlayerPlaylist(cssSelector, "", options);
+				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
+				windowWidth = $(window).width();
+				new Clipboard(".clip");
+
+				var jp = $(musiccoPlaylist.cssSelector.jPlayer), jpData = jp.data('jPlayer');
 				if ($(".landing").is(":visible")) {
 					$("#loading").hide()
 				} else {
@@ -834,12 +834,12 @@ class Musicco {
 
 				function resetCheckbox() {
 					$('#includeOldAlbums').prop("checked", true);
-					$("label[for='includeOldAlbums'] i").removeClass("fa-square");
-					$("label[for='includeOldAlbums'] i").addClass("fa-check-square ");
+					$("label[for='includeOldAlbums'] svg").removeClass("fa-square");
+					$("label[for='includeOldAlbums'] svg").addClass("fa-check-square ");
 				}
 
 				function toggleCheckbox() {
-					$("label[for='includeOldAlbums'] i").toggleClass("fa-check-square fa-square");
+					$("label[for='includeOldAlbums'] svg").toggleClass("fa-check-square fa-square");
 				}
 
 				function clearPlaylist() {
@@ -1075,7 +1075,6 @@ class Musicco {
 				}
 
 				function formatPlaylist() {
-					console.trace()
 					if (hasPlaylist() && musiccoPlaylist.hasChanged) {
 						musiccoPlaylist.hasChanged = false;
 						var playlist = (g_playlist != null)? g_playlist : musiccoPlaylist.playlist;
