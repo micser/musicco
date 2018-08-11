@@ -171,7 +171,7 @@
 	}
 
 	.toggles,
-	div.jp-seek-bar, 
+	#big-jp-progress, 
 	.go,
 	a,
 	#controls > span > i {
@@ -393,7 +393,7 @@
 	}
 
 	span.itemHeaderAlbum,
-	#nowPlayingTitle {
+	#nowPlaying_title {
 		font-size: 1.2em;
 	}
 
@@ -404,14 +404,14 @@
 
 	#lyricsPanel,
 	#infoPanel,
-	#nowPlayingArtist,
-	div.jp-current-time,
+	#nowPlaying_artist,
+	#current_time,
 	span.itemHeaderArtist,
 	span.itemHeaderYear,
 	.download,
-	#nowPlayingAlbum,
-	#nowPlayingAlbumYear,
-	div.jp-duration {
+	#nowPlaying_album,
+	#nowPlaying_year,
+	#duration {
 		font-size: .8em;
 	}
 
@@ -464,10 +464,7 @@
 		overflow-x: hidden;
 	}
 
-	#big-jp-progress,
-	.jp-progress,
-	.jp-seek-bar,
-	.jp-play-bar {
+	#big-jp-progress {
 		height: .2em;
 	}
 
@@ -591,14 +588,6 @@
 		left: -1em;
 		top: 0;
 		position: relative;
-	}
-
-	div.jp-playlist ul {
-		list-style: none;
-	}
-
-	.jp-artist {
-	display: none;
 	}
 
 	#big-volume-bar,
@@ -843,10 +832,6 @@
 	#searchText::-webkit-input-placeholder {
 		color: #A7A97F;
 	}
-
-	a.jp-playlist-current:before {
-		border-color: transparent #E3E5BB;
-	}
 	
 	.ui-icon[class*=" fa-"] {
 		background: none repeat scroll 0 0 transparent;
@@ -924,10 +909,10 @@
 			opacity: 1;
 		}
 		
-		#nowPlayingAlbum,
-		#nowPlayingAlbumYear,
-		#nowPlayingArtist,
-		#nowPlayingTitle {
+		#nowPlaying_album,
+		#nowPlaying_year,
+		#nowPlaying_artist,
+		#nowPlaying_title {
 			padding-left: 2px;
 		}
 	}
