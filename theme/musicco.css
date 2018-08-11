@@ -92,6 +92,10 @@
 		</svg>");
 	}
 
+	.small {
+		font-size: 0.7em;
+	}
+
 	#playlist-tools {
 		position: fixed;
 		bottom: 0;
@@ -166,6 +170,7 @@
 		width: 150px;
 	}
 
+	#playlist > li > ul > li:hover,
 	a:hover {
 		color: #E3E5BB;
 	}
@@ -174,19 +179,19 @@
 	#big-jp-progress, 
 	.go,
 	a,
-	#controls > span > i {
+	#controls > span > svg {
 		cursor: pointer;
 	}
 
 	.playlist-tools,
-	.jp-playlist-item-remove,
-	.itemHeaderDetails a {
+	.remove,
+	.album-action {
 		opacity: 0.5;
 	}
 
 	.playlist-tools:hover,
-	.jp-playlist-item-remove:hover,
-	.itemHeaderDetails a:hover {
+	.remove:hover,
+	.album-action:hover {
 		opacity: 1;
 	}
 
@@ -195,7 +200,6 @@
 	.settings:hover,
 	.current,
 	a.current,
-	.jp-free-media.current a i:before,
 	.current .fancytree-title,
 	.fancytree-title:hover,
 	.searchResult a,
@@ -206,13 +210,11 @@
 	#clear,
 	#findIt,
 	#updateCoverArt,
-	.itemHeaderAlbum,
-	a.jp-playlist-item-remove:hover,
+	.album,
+	.remove:hover,
 	.download:hover,
 	.jp-playlist a:hover,
-	a.jp-playlist-current,
-	.jp-playlist-current div a,
-	.jp-playlist-current:before,
+	.selected:before,
 	#searchLink,
 	#logout a,
 	#loadingInfo,
@@ -234,7 +236,7 @@
 	#aboutBox,
 	#helpBox,
 	#clear,
-	.remove-album,
+	.remove,
 	#filterButton,
 	#includeOldAlbums,
 	#findIt,
@@ -348,9 +350,10 @@
 		z-index: 3;
 	}
 
-	.album-cover {
+	.playlist-poster {
 		max-width: 100px;
 		max-height: 100px;
+		margin-left: -0.5em;
 	}
 
 	#shared-album-cover,
@@ -392,7 +395,7 @@
 		font-size: 1em;
 	}
 
-	span.itemHeaderAlbum,
+	.album,
 	#nowPlaying_title {
 		font-size: 1.2em;
 	}
@@ -406,8 +409,8 @@
 	#infoPanel,
 	#nowPlaying_artist,
 	#current_time,
-	span.itemHeaderArtist,
-	span.itemHeaderYear,
+	.artist,
+	.year,
 	.download,
 	#nowPlaying_album,
 	#nowPlaying_year,
@@ -465,15 +468,34 @@
 	}
 
 	#big-jp-progress {
+		margin-left: 0;
 		height: .2em;
+		width: 100%;
 	}
 
 	#filter {
 		border: 0;
 	}
 
+	#playlist > li > ul > li {
+		margin-left: -3em;
+	}
+
+	#playlist > li > ul > li:first-child {
+		margin-top: 0.5em;
+	}
+
+
+	#playlist > li > ul > li:last-child {
+		margin-bottom: 2em;
+	}
+
 	.left {
 		float: left;
+	}
+
+	.align-right {
+		text-align: right;
 	}
 
 	.right {
@@ -542,56 +564,34 @@
 		width:0;
 		border-radius: 1.5em;
 	}
-
-	table.itemHeaderDetails {
-		width: 100%;
-		margin: 0;
-		padding-top: 3em;
-	}
 	
-	td.itemHeaderDetails {
-		vertical-align: bottom;
-		text-align: right;
-	}
-
-	td.itemHeaderRemove {
-		vertical-align: top;
-		text-align: right;
-		line-height: 1.5em;
-	}
-
-	.itemHeaderRemove a,
+	.album-action,
 	.playlist-tools {
 		padding-left: 1em;
 	}
 
-	span.jp-free-media,
-	a.jp-playlist-item-remove {
+	.remove {
 		float: right;
-		display: inline;
-		text-align: right;
-		padding-left: .3em;
 		font-weight: bold;
 	}
 	
-	a.jp-playlist-current {
+	.selected {
 		margin-left: -0.5em;
 	}
 
-	a.jp-playlist-current:before {
-		content: "";
-		border-style: solid;
-		border-width: 0.35em 0 0.35em 0.45em;
+	.selected:before {
+		content: "\25B6";
 		display: inline-block;
 		height: 0;
 		width: 0;
-		left: -1em;
-		top: 0;
+		left: -1.3em;
 		position: relative;
 	}
 
 	#big-volume-bar,
 	#volume-value {
+		width: 50px;
+		transform: rotate(270deg);
 		width: .2em;
 	}
 
@@ -641,7 +641,7 @@
 		margin-bottom: 1em;
 	}
 
-	#config i {
+	#config svg {
 		margin-left: 1em;
 		float: right;
 	}
@@ -766,6 +766,11 @@
 		box-shadow: 0 6px 6px 0 rgba(0, 0, 0, 0.2);
 	}
 
+	#playlist,
+	#playlist ul{
+		list-style: none;
+	}
+
 	#playlist-controls {
 		padding-left: 10%;
 		padding-right: 10%;
@@ -873,11 +878,11 @@
 			vertical-align: unset;
 		}
 
-		#mini-controls i {
+		#mini-controls svg {
 			font-size: .8em;
 		}
 
-		#ham i,
+		#ham svg,
 		#logout a {
 			font-size: 0.8em;
 		}
