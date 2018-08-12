@@ -628,6 +628,7 @@ class Musicco {
 			.nextAlbum { border-right: 1px green dashed; }
 		</style>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/all.min.css">
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
 		<link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.min.css">
 		<link rel="stylesheet" type="text/css" href="lib/fancytree/skin-awesome/ui.fancytree.min.css">
@@ -666,7 +667,6 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/dragdroptouch/DragDropTouch.js"></script>
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
-		<script type="text/javascript" defer src="lib/font-awesome/js/all.min.js"></script>
 		<script type="text/javascript">
 				///////////////
 			 // VARIABLES //
@@ -1783,12 +1783,12 @@ class Musicco {
 
 				function resetCheckbox() {
 					$('#includeOldAlbums').prop("checked", true);
-					$("label[for='includeOldAlbums'] svg").removeClass("fa-square");
-					$("label[for='includeOldAlbums'] svg").addClass("fa-check-square ");
+					$("label[for='includeOldAlbums'] i").removeClass("fa-square");
+					$("label[for='includeOldAlbums'] i").addClass("fa-check-square ");
 				}
 
 				function toggleCheckbox() {
-					$("label[for='includeOldAlbums'] svg").toggleClass("fa-check-square fa-square");
+					$("label[for='includeOldAlbums'] i").toggleClass("fa-check-square fa-square");
 				}
 
 				function clearPlaylist() {

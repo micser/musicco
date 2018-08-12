@@ -179,7 +179,7 @@
 	#big-jp-progress, 
 	.go,
 	a,
-	#controls > span > svg {
+	#controls > span > i {
 		cursor: pointer;
 	}
 
@@ -645,7 +645,7 @@
 		margin-bottom: 1em;
 	}
 
-	#config svg {
+	#config i {
 		margin-left: 1em;
 		float: right;
 	}
@@ -882,11 +882,11 @@
 			vertical-align: unset;
 		}
 
-		#mini-controls svg {
+		#mini-controls i {
 			font-size: .8em;
 		}
 
-		#ham svg,
+		#ham i,
 		#logout a {
 			font-size: 0.8em;
 		}
