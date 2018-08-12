@@ -183,6 +183,10 @@
 		cursor: pointer;
 	}
 
+	.is-admin-0 {
+		display:none;
+	}
+
 	.playlist-tools,
 	.remove,
 	.album-action {

@@ -794,6 +794,37 @@ class Musicco {
 				return (viewerType === '"widescreen"');
 			}
 
+			function dragStart(e) {
+				e.dataTransfer.effectAllowed = "move";
+				e.dataTransfer.setData("text/plain", null);
+				draggedElement = e.target;
+			}
+
+			function dragOver(e) {
+				if ( draggedElement.parentNode.isSameNode(e.target.parentNode) ) {
+					if (isBefore(draggedElement, e.target)) {
+						e.target.parentNode.insertBefore(draggedElement, e.target);
+					} else {
+						e.target.parentNode.insertBefore(draggedElement, e.target.nextSibling);
+					}
+					refreshPlaylist();
+				}
+			}
+
+			function dragEnd() {
+				draggedElement = null;
+			}
+
+			function isBefore(el1, el2) {
+				if (el2.parentNode === el1.parentNode) {
+					for (var cur = el1.previousSibling; cur; cur = cur.previousSibling)
+						if (cur === el2) {
+							return true;
+						}
+					return false;
+				}
+			}
+
 			function hasPlaylist() {
 				return ($("#playlist li").length > 0)
 			}
@@ -2046,8 +2077,10 @@ class Musicco {
 										+ "<img class=\"playlist-poster\" align=\"left\" draggable=\"false\" src=\"\"/>"
 										+ "<br/>"
 										+ "<br/>"
-//REDO may not need to pass both parent and album anymore,  parent may be ebough, test after loading a real playlist
-										+ "<span class=\"album-action fas fa-heart\"></span><span class=\"album-action guestPlay downloadAlbum fas fa-download\"></span><span class=\"album-action fas fa-external-link-alt\"></span>"
+//REDO may not need to pass both parent and album anymore,  parent may be enough, test after loading a real playlist
+										+ "<span class=\"guestPlay favouriteAlbum album-action fas fa-heart\"></span>"
+										+ "<span class=\"is-admin-" + <?php print (AuthManager::isAdmin());?> + " album-action guestPlay downloadAlbum fas fa-download\"></span>"
+										+ "<span class=\"is-admin-" + <?php print (AuthManager::isAdmin());?> + " album-action guestPlay share fas fa-external-link-alt\"></span>"
 										+ "<br/>"
 										+ "<span class=\"album\"></span>"
 										+ "<br/>"
@@ -2178,9 +2211,10 @@ class Musicco {
 					checkLibraryRefresh($("#reset_db").html());
 				}
 
-				$("#playlistPanel").contextmenu({
+				$("#playlist").contextmenu({
+					//REDO: should be able to download and share albums via the context menu, so adapt menu entries based on target
 					autoTrigger: 'false',
-					delegate: ".jp-playlist-item",
+					delegate: "li",
 					autoFocus: true,
 					menu: [
 						{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
@@ -2190,26 +2224,29 @@ class Musicco {
 						{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"}
 					],
 					select: function(event, ui) {
-						target = musiccoPlaylist.playlist[$(ui.target).parents("li").index()];
+						var target = ui.target;
+						if (!$(ui.target).is("li")) {
+							target = $(ui.target).parents("li");
+						}
 						switch (ui.cmd) {
 							case "goto_artist":
-								goToArtist(target.artist);
+								goToArtist(target.data("artist"));
 								break;
 							case "goto_album":
-								goToAlbum(target.title);
+								goToAlbum(target.data("title"));
 							break;
 							case "download":
-								downloadTrack(target.path, target.filename);
+								downloadTrack(target.data("parent"), target.data("name"));
 							break;
 							case "share": 
-								var path = target.path;
+								var path = target.data("parent");
 								var separator = " - ";
-								var info = target.artist + separator + target.title;
-								var image = target.poster;
+								var info = target.data("artist") + separator + target.data("album");
+								var image = target.data("poster");
 								saveGuestPlaylist(path, info, image);
 							break;
 							case "favourite":
-								addFavourite(target.path + target.filename);
+								addFavourite(target.data("parent") + target.data("name"));
 							break;
 						}
 					}
@@ -2380,8 +2417,6 @@ class Musicco {
 						$(this).on("dragstart", function() { dragStart(event) });
 					});
 				});
-
-
 
 				$("#reload").on("click", function() {
 					$.ajax({
@@ -2558,7 +2593,7 @@ class Musicco {
 					});
 
 					$(document).on("click", ".favouriteAlbum", function(event) {
-						var albumPath = $(this).data("path").substr(0, $(this).data("path").length -1);
+						var albumPath = $(this).parents("li").data("parent").substr(0, $(this).parents("li").data("parent").length -1);
 						addFavourite(albumPath);
 					});
 
@@ -2801,26 +2836,11 @@ class Musicco {
 					});
 				});
 
-				$(document).on("click taphold", ".move", function(e) {
-					var shift = (e.type === "taphold")? true : e.shiftKey;
-					var from = parseInt($(this).data('from'));
-					var to = parseInt($(this).data('to'));
-					if (shift) {
-						direction = $(this).data('direction');
-						if (direction == "up") {
-							to = 0;
-						} else {
-							to = g_albums.length -1;
-						}
-					}
-					moveAlbum(from, to);
-				});
-
 				$(document).on("click", ".share", function() {
 					saveGuestPlaylist(
-						$(this).data('path'),
-						$(this).data('info'),
-						$(this).closest(".itemHeaderDetails").find("img.album-cover").attr("src")
+						$(this).parents("li").data("parent"),
+						$(this).parents("li").data("album") + " <?php print $this->getString("by"); ?> " + $(this).parents("li").data("artist"),
+						$(this).parents("li").find("img.playlist-poster").attr("src")
 					);
 				});
 
