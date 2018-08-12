@@ -25,6 +25,8 @@
 
 			var defaultPlaylist = [{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Vegas","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"01_Vegas.mp3","poster":"music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"September","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"02_September.mp3","poster":"music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png"}]},{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"},{"artist":"Breton","album":"Other People's Problems","title":"Pacemaker","year":2002,"parent":"music/Breton__/[2012] Other People's Problems/","name":"01_Pacemaker.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"}]},{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"},{"artist":"65daysofstatic","album":"The Fall of Math","title":"The Fall of Math","year":2004,"parent":"music/65daysofstatic/[2004] The Fall of Math/","name":"02_Install A Beak In The Heart That Clucks Time In Arabic.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"}]}];
 
+			var shortPlaylist = [{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"},{"artist":"Breton","album":"Other People's Problems","title":"Pacemaker","year":2002,"parent":"music/Breton__/[2012] Other People's Problems/","name":"01_Pacemaker.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"}]},{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"},{"artist":"65daysofstatic","album":"The Fall of Math","title":"The Fall of Math","year":2004,"parent":"music/65daysofstatic/[2004] The Fall of Math/","name":"02_Install A Beak In The Heart That Clucks Time In Arabic.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"}]}];
+
 			var newAlbum = '[{"tracks":[{"artist":"MisterGang","album":"Libert&acute; Ill&acute;gale","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Mister Gang/Mister Gang/cover.png"},{"artist":"MisterGang","album":"Libert&acute; Ill&acute;gale","title":"Intro2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Mister Gang/Mister Gang/cover.png"},{"artist":"Mister Gang","album":"Libert&acute; Ill&acute;gale","title":"Liberte Illegale","year":2004,"parent":"music/65daysofstatic/[2004] The Fall of Math/","name":"02_Install A Beak In The Heart That Clucks Time In Arabic.mp3","poster":"music/Mister Gang/Mister Gang/cover.png"}]}]';
 
 			var draggedElement;
@@ -143,13 +145,12 @@
 				var playlist = JSON.parse(playlistString);
 				var html = [];
 				$.each(playlist, function (i, album) {
-					$thisAlbum = $("<li></li>");
+					$thisAlbum = $("<li data-type=\"album\"></li>");
 					$thisAlbum.append("<img class=\"playlist-poster\" draggable=\"false\" src=\"\"/>");
 					$thisAlbum.append("<div class=\"remove\">X</div>");
 					$thisAlbum.append("<div class=\"artist\"></div>");
 					$thisAlbum.append("<div class=\"album\"></div>");
 					$thisAlbum.append("<div class=\"year\"></div>");
-					$thisAlbum.data["type"] = "album";
 					$thisAlbum.attr("draggable", "true");
 					$thisAlbum.attr("ondragstart", "dragStart(event)");
 					$thisAlbum.attr("ondragover", "dragOver(event)");
@@ -181,26 +182,32 @@
 
 			function savePlaylist() {
 				//TODO: save current track, restoreTime
-				var playlist = $("#playlist").find("ul").map(function() {
+
+				var playlist = $("#playlist").find("li[data-type=album]").map(function() {
 					var album = {};
-					album.tracks = $(this).find("li").map(function() {
+					album = $(this).find("li[data-type=track]").map(function() {
 						var song = {};
-						song.artist = $(this).data("artist");
-						song.album = $(this).data("album");
-						song.title = $(this).data("title");
-						song.year = $(this).data("year");
-						song.parent = $(this).data("parent");
-						song.name = $(this).data("name");
-						song.poster = $(this).data("poster");
+							$.each($(this).data(), function(k,v) {
+								song[k] = v;
+							});
 						return song;
 					}).get();
 					return album;
 				}).get();
+				console.log(JSON.stringify(playlist));
 				$("#debug").text(JSON.stringify(playlist));
+
+			//	var playlist = $("#playlist").find("li[data-type=track]").map(function() {
+			//			var song = {};
+			//				$.each($(this).data(), function(k,v) {
+			//					song[k] = v;
+			//				});
+			//			return song;
+			//	}).get();
 			}
 
 			function resetPlaylist() {
-				$("#debug").text(JSON.stringify(defaultPlaylist));
+				$("#debug").text(JSON.stringify(shortPlaylist));
 				loadPlaylist();
 			}
 
@@ -329,6 +336,7 @@
 				$("#insert_before").on("click", function() {
 					insertBefore(newAlbum);
 				});
+
 				$("#insert_after").on("click", function() {
 					insertAfter(newAlbum);
 				});
