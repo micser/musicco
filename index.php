@@ -1180,7 +1180,7 @@ class Musicco {
 						case 105: //9
 							if (e.shiftKey || e.ctrlKey) {
 							} else {
-								jump(e.keyCode - 96);
+								jump((e.keyCode - 96) / 10);
 							}
 						break;
 
@@ -1195,7 +1195,7 @@ class Musicco {
 			}
 
 			function jump(percent) {
-				$("#jquery_jplayer_2").jPlayer("playHead", (percent * 10));
+				player.currentTime = (player.duration * percent);
 			}
 
 			function toggleAndUpdate(toggle, classes) {
@@ -2218,10 +2218,6 @@ class Musicco {
 				} else {
 					$("#loading").progressbar( {value: false} );
 				}
-
-				$('.jp-current-time').appendTo('#big-timer');
-				$('.jp-duration').appendTo('#big-timer');
-				$('.jp-progress').appendTo('#big-jp-progress');
 
 				$( "#leftPanel" ).tabs({
 					beforeActivate: function( event, ui ) {
