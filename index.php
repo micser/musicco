@@ -839,11 +839,18 @@ class Musicco {
 				return ($("#playlist li").length > 0)
 			}
 
-			function playTrack(track) {
-				$("#playlist li").removeClass("selected currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
-				$(track).addClass("selected");
+			function loadTrack(trackNumber) {
+				var track = $("#playlist li[data-nature=track]:eq(" + Math.max(trackNumber, 0) + ")");
+				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
+				$(track).addClass("currentTrack");
 				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
 				player.src = $(track).data("parent") + $(track).data("path");
+			}
+
+
+			function playTrack(track) {
+				var trackNumber = $(track).index("#playlist li[data-nature=track]");
+				loadTrack(trackNumber);
 				player.play();
 				refreshPlaylist();
 			}
@@ -862,7 +869,7 @@ class Musicco {
 			function refreshPlaylist() {
 				//TODO: Move the refresh to the onDomChanged event?
 				$("#playlist li").removeClass("previousAlbum previousTrack currentAlbum nextTrack nextAlbum ");
-				var track = $("#playlist li.selected");
+				var track = $("#playlist li.currentTrack");
 				if (track.length) {
 					previousAlbum = $(track).parents("li").prev();
 					previousTrack = $(track).prev("li");
@@ -1522,7 +1529,7 @@ class Musicco {
 				//	});
 				//	return song;
 				//}).get();
-				var current = $(".selected").index("#playlist li[data-nature=track]")
+				var current = $(".currentTrack").index("#playlist li[data-nature=track]")
 				var time = Math.floor(player.currentTime);
 				var loop = false;
 				var shuffled = false;
@@ -1614,10 +1621,9 @@ class Musicco {
 						} else {
 								var tracksArray = groupBy(JSON.parse(response.playlist), "album");
 								insertFirst(tracksArray);
-							//REDO: set current and time, and other options
-							//musiccoPlaylist.select(parseInt(response.current));
-							//g_restoreCurrentTime = parseInt(response.time)
-							//g_restorePlaylistPosition=parseInt(response.current);
+								loadTrack(parseInt(response.current, 0));
+								player.currentTime = parseInt(response.time)
+							//REDO: set loop and shuffle mode
 							//musiccoPlaylist.loop = response.loop;
 							//musiccoPlaylist.shuffled = response.shuffled;
 							//if (musiccoPlaylist.loop == "true") {
@@ -1809,7 +1815,7 @@ class Musicco {
 						if (isPortrait()) {
 							target = $('#panelContainer');
 						}
-						var y = $(".selected").offset().top - $("#playlist").offset().top - 200 + $(".selected").scrollTop();
+						var y = $(".currentTrack").offset().top - $("#playlist").offset().top - 200 + $(".currentTrack").scrollTop();
 						target.animate({scrollTop:y});
 					}
 				}
@@ -2100,7 +2106,6 @@ class Musicco {
 			}
 
 			function parsePlaylist(tracksArray) {
-				console.log(tracksArray);
 				var html = [];
 				var header = ""
 										+ "<li data-nature=\"album\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\">"
@@ -2125,7 +2130,7 @@ class Musicco {
 						$.each(album, function (j, track) {
 							albumTracks += "<li data-nature=\"track\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\"";
 							$.each(track, function(k,v) {
-								if (j == 0) {
+								if ((j == 0) && (k != "nature")) {
 									$($thisAlbum).attr("data-" + k, v);
 								}
 								albumTracks += ' data-' + k + '="' + v + '"';

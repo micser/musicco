@@ -218,7 +218,7 @@
 	.remove:hover,
 	.download:hover,
 	.jp-playlist a:hover,
-	.selected:before,
+	.currentTrack:before,
 	#searchLink,
 	#logout a,
 	#loadingInfo,
@@ -579,11 +579,11 @@
 		font-weight: bold;
 	}
 	
-	.selected {
+	.currentTrack {
 		margin-left: -0.5em;
 	}
 
-	.selected:before {
+	.currentTrack:before {
 		content: "\25B6";
 		display: inline-block;
 		height: 0;
