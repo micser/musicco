@@ -217,7 +217,7 @@
 	.album,
 	.remove:hover,
 	.download:hover,
-	.jp-playlist a:hover,
+	.currentTrack,
 	.currentTrack:before,
 	#searchLink,
 	#logout a,
@@ -389,10 +389,6 @@
 		height: 2em;
 	}
 
-	span.jp-free-media {
-		color: #121314;
-	}
-
 	.move,
 	.share, 
 	ul.fancytree-container {
@@ -559,16 +555,6 @@
 		border-radius: 1.5em;
 	}
 
-	div.jp-seek-bar {
-		width:0;
-		border-radius: 1.5em;
-	}
-
-	div.jp-play-bar {
-		width:0;
-		border-radius: 1.5em;
-	}
-	
 	.album-action,
 	.playlist-tools {
 		padding-left: 1em;
@@ -822,10 +808,6 @@
 	#mini-controls {
 		display: none;
 		margin-left: 2em;
-	}
-
-	div.jp-play-bar {
-		background-color: #E3E5BB;
 	}
 
 	#big-volume-bar {

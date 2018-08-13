@@ -2759,22 +2759,6 @@ class Musicco {
 					scrollPlaylist();
 				});
 
-				$(document).on("click", ".jp-playlist-item", function(event) { 
-					g_restoreCurrentTime = -1;
-					formatPlaylist();
-				});
-
-				$(document).on("click", ".jp-playlist-item-remove", function(event) {
-					if ($(this).parents("li").has("span.itemHeader").length) {
-						setTimeout(function() { formatPlaylist(); }, 800);
-					}
-				});
-
-				$(document).on("mouseenter mouseleave", ".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove", function(event) {
-					var parent = $(this).parent("div");
-					$(parent).children(".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove").toggleClass("current");
-				});
-
 				$(document).on("click", ".share", function() {
 					saveGuestPlaylist(
 						$(this).parents("li").data("parent"),
@@ -2825,10 +2809,12 @@ class Musicco {
 				}
 
 				$('#big-shuffle').click(function() {
+					//REDO: shuffle activation
 					$(toggleAndUpdate($(this), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
 				});
 
 				$('#big-repeat').click(function() {
+					//REDO: repeat activation
 					$(toggleAndUpdate($(this), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
 				});
 
@@ -2944,7 +2930,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="searchResults">&nbsp;</div>
 				</div>
 				<!-- //REDO: Spinner seems completely unnecessary now? -->
-				<div id="playlistPanel" class="panel jp-playlist my-playlist">
+				<div id="playlistPanel" class="panel">
 					<div id="playlistSpinner">
 						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
 					</div>
