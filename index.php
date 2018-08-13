@@ -950,6 +950,7 @@ class Musicco {
 					if (playAfter) {
 						playTrack($("#playlist").find("li[data-nature=track]").first());
 					}
+					savePlaylist();
 				}, "json");
 			}
 
@@ -2071,8 +2072,9 @@ class Musicco {
 			}
 
 			function preload(track) {
-				var altAudio = new Audio();
-				altAudio.src = $(track).data("parent") + $(track).data("path");
+				//REDO: this needs to happen in the background instead of blocking the main thread
+				//var altAudio = new Audio();
+				//altAudio.src = $(track).data("parent") + $(track).data("path");
 			}
 
 			function updatePlayerUI() {
@@ -2162,6 +2164,7 @@ class Musicco {
 
 			function dragEnd() {
 				draggedElement = null;
+				savePlaylist();
 			}
 
 			function isBefore(el1, el2) {
@@ -2379,8 +2382,7 @@ class Musicco {
 					player.volume = 1;
 				});
 
-				$(".remove").on("click", function(e) {
-					//TODO: Handle situations when the current album/track is removed
+				$("#playlist").on("click", ".remove", function(e) {
 					e.stopPropagation();
 					$(this).parent("li").remove();
 					refreshPlaylist();
