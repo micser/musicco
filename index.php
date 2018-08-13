@@ -1539,7 +1539,7 @@ class Musicco {
 			}
 
 			function createNewPlaylist(name) {
-				savePlaylist();
+				player.pause();
 				$("#playlist_select").append('<option value="' + name + '">' + name  + '</option>');
 				$("#playlist_select").val(name);
 				clearPlaylist();
