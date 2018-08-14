@@ -847,6 +847,11 @@ class Musicco {
 				player.src = $(track).data("parent") + $(track).data("path");
 			}
 
+			function resetPlayer() {
+				player.pause();
+				$("#big-cover").css("background-image", "url(theme/images/about.png)");
+				player.src = "";
+			}
 
 			function playTrack(track) {
 				var trackNumber = $(track).index("#playlist li[data-nature=track]");
@@ -1604,7 +1609,7 @@ class Musicco {
 			}
 
 			function loadPlaylist(name) {
-				player.pause();
+				resetPlayer();
 				player.currentTime = 0;
 				$("#playlist").empty();
 				showSpinner();
@@ -1799,6 +1804,7 @@ class Musicco {
 				}
 
 				function clearPlaylist() {
+					resetPlayer();
 					$("#playlist li").remove();
 					savePlaylist();
 				}
