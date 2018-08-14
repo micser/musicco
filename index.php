@@ -2386,8 +2386,35 @@ class Musicco {
 
 				$("#playlist").on("click", ".remove", function(e) {
 					e.stopPropagation();
-					$(this).parent("li").remove();
+					var target = $(this).parent("li");
+					if ($(target).data("nature") == "track") {
+						numSiblings = target.siblings();
+						if (numSiblings.length) {
+							target.remove();
+						} else {
+							$(target).parents("li").remove();
+						}
+					} else {
+						var albumIndex = $(target).index("#playlist > li");
+						var shift = (e.type === "taphold")? true : e.shiftKey;
+						var alt = (e.type === "taphold")? false : e.altKey;
+						var ctrl = (e.type === "taphold")? false : e.ctrlKey;
+						if (shift) {
+							for (i=0; i < albumIndex; i++) {
+								$("#playlist > li:eq(0)").remove();
+							}
+						} else if (ctrl) {
+							for (i=albumIndex; i < $("#playlist > li").length; i++) {
+								$("#playlist > li:eq(" + (albumIndex + 1) + ")").remove();
+							}
+						} else if (alt) {
+							$("#playlist > li").not(":eq(" + albumIndex + ")").remove();
+						} else {
+							target.remove();
+						}
+					}
 					refreshPlaylist();
+					savePlaylist();
 				});
 
 				$("#playlist").on("DOMSubtreeModified",function(){
@@ -3855,6 +3882,7 @@ function builddb() {
 		$helpString.="<div>shift + <i class='fas fa-arrow-up'></i>/<i class='fas fa-arrow-down'></i>: move album to top/bottom</div>";
 		$helpString.="<div class='guestPlay'>shift + <i class='fas fa-times'></i>: remove all previous albums</div>";
 		$helpString.="<div class='guestPlay'>ctrl + <i class='fas fa-times'></i>: remove all following albums</div>";
+		$helpString.="<div class='guestPlay'>alt + <i class='fas fa-times'></i>: remove all other albums</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='bold big'><i class='fas fa-mobile-alt'></i>&nbsp;Mobile</div>";
 		$helpString.="<div class='yellow bold'>Swipe Album Art</div>";
