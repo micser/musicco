@@ -109,7 +109,12 @@
 	#includeOldAlbums {
 		display: none;
 	}
-	
+
+	.move-up,
+	.move-down {
+		margin-right: 0.5em;
+	}
+
 	.space-after {
 		margin-right: 0.8em;
 	}
@@ -189,12 +194,16 @@
 
 	.playlist-tools,
 	.remove,
+	.move-up,
+	.move-down,
 	.album-action {
 		opacity: 0.5;
 	}
 
 	.playlist-tools:hover,
 	.remove:hover,
+	.move-up:hover,
+	.move-down:hover,
 	.album-action:hover {
 		opacity: 1;
 	}

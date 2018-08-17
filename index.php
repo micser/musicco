@@ -657,7 +657,6 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
 		<script type="text/javascript" defer src="lib/clipboard.js/clipboard.min.js"></script>
-		<script type="text/javascript" defer src="lib/dragdroptouch/DragDropTouch.js"></script>
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript">
@@ -2093,6 +2092,8 @@ class Musicco {
 										+ "<li data-nature=\"album\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\">"
 										+ "<div class=\"remove fas fa-times\"></div>"
 										+ "<div class=\"align-right\">"
+										+ "<span class=\"move-up fas fa-arrow-up\"></span>"
+										+ "<span class=\"move-down fas fa-arrow-down\"></span>"
 										+ "<img class=\"playlist-poster\" align=\"left\" draggable=\"false\" src=\"\"/>"
 										+ "<br/>"
 										+ "<br/>"
@@ -2308,6 +2309,24 @@ class Musicco {
 				  ////////////
 				 // EVENTS //
 				////////////
+
+				$("#playlist").on("click taphold", ".move-down", function(e) {
+					var target = $(this).parents("li").next();
+					var shift = (e.type === "taphold")? true : e.shiftKey;
+					if (shift) {
+						target = $("#playlist > li").last();
+					}
+					target.after($(this).parents("li"));
+				});
+
+				$("#playlist").on("click taphold", ".move-up", function(e) {
+					var target = $(this).parents("li").prev();
+					var shift = (e.type === "taphold")? true : e.shiftKey;
+					if (shift) {
+						target = $("#playlist > li").first();
+					}
+					target.before($(this).parents("li"));
+				});
 
 				$("#big-volume-bar").on("change", function() {
 					player.volume = $(this).val() / 100;
