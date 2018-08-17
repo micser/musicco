@@ -620,13 +620,6 @@ class Musicco {
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $this->getConfig('lang'); ?>" lang="<?php print $this->getConfig('lang'); ?>">
 	<head>
-		<style>
-			.previousAlbum { border-right: 1px red dashed; }
-			.previousTrack { color: red; }
-			.currentAlbum { border-right: 1px #E3E5BB dashed; }
-			.nextTrack { color: green; }
-			.nextAlbum { border-right: 1px green dashed; }
-		</style>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/all.min.css">
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
