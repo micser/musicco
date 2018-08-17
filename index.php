@@ -793,23 +793,6 @@ class Musicco {
 				return (viewerType === '"widescreen"');
 			}
 
-			function dragStart(e) {
-				e.dataTransfer.effectAllowed = "move";
-				e.dataTransfer.setData("text/plain", null);
-				draggedElement = e.target;
-			}
-
-			function dragOver(e) {
-				if ( draggedElement.parentNode.isSameNode(e.target.parentNode) ) {
-					if (isBefore(draggedElement, e.target)) {
-						e.target.parentNode.insertBefore(draggedElement, e.target);
-					} else {
-						e.target.parentNode.insertBefore(draggedElement, e.target.nextSibling);
-					}
-					refreshPlaylist();
-				}
-			}
-
 			function hideSpinner() {
 				$("#playlistSpinner").hide();
 				$("#playlist").fadeTo("fast", 1);
@@ -819,10 +802,6 @@ class Musicco {
 				$("#playlistPanel").scrollTop(0);
 				$("#playlistSpinner").show();
 				$("#playlist").fadeTo(0, 0);
-			}
-
-			function dragEnd() {
-				draggedElement = null;
 			}
 
 			function isBefore(el1, el2) {
@@ -2159,6 +2138,14 @@ class Musicco {
 				return html;
 			}
 
+			function dragStart(e) {
+				e.dataTransfer.effectAllowed = "move";
+				e.dataTransfer.setData("text/plain", null);
+				draggedElement = e.target;
+				$(draggedElement).siblings().css("opacity", "0.5");
+				$(draggedElement).css("border", "1px dotted");
+			}
+
 			function dragOver(e) {
 				if ( draggedElement.parentNode.isSameNode(e.target.parentNode) ) {
 					if (isBefore(draggedElement, e.target)) {
@@ -2171,6 +2158,8 @@ class Musicco {
 			}
 
 			function dragEnd() {
+				$(draggedElement).siblings().css("opacity", "1");
+				$(draggedElement).css("border", "0");
 				draggedElement = null;
 				savePlaylist();
 			}
