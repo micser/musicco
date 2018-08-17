@@ -844,7 +844,7 @@ class Musicco {
 				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
 				$(track).addClass("currentTrack");
 				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
-				player.src = $(track).data("parent") + $(track).data("path");
+				player.src = encodeURIComponent($(track).data("parent") + $(track).data("path"));
 			}
 
 			function resetPlayer() {
@@ -1672,7 +1672,7 @@ class Musicco {
 			}
 
 				function displayCover() {
-					var coverurl = nowPlaying["cover"];
+					var coverurl = nowPlaying["cover"].replace(/#/g, "%23");
 					var searchAutomatically = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
 					resetFetchingStatus();
 					printCover(coverurl);
@@ -2147,7 +2147,7 @@ class Musicco {
 							albumTracks += "<div class=\"remove fas fa-times small\"></div>";
 							albumTracks += "</li>";
 						});
-					$thisAlbum.find(".playlist-poster").attr("src", $thisAlbum.data("cover"));
+					$thisAlbum.find(".playlist-poster").attr("src", $thisAlbum.data("cover").replace(/#/g, "%23"));
 					$thisAlbum.find(".artist").html($thisAlbum.data("artist"));
 					$thisAlbum.find(".album").html($thisAlbum.data("album"));
 					$thisAlbum.find(".year").html($thisAlbum.data("year"));
