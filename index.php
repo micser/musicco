@@ -849,8 +849,10 @@ class Musicco {
 
 			function resetPlayer() {
 				player.pause();
-				$("#big-cover").css("background-image", "url(theme/images/about.png)");
 				player.src = "";
+				$("#big-cover").css("background-image", "url(theme/images/about.png)");
+				$("#nowPlaying_songtitle, #nowPlaying_artist, #nowPlaying_album, #nowPlaying_year").html("");
+				$("#duration, #current_time").html("00:00");
 			}
 
 			function playTrack(track) {
@@ -2068,7 +2070,7 @@ class Musicco {
 
 			function triggerPlayPause() {
 				var status = "";
-				if(player.paused) { 
+				if (player.paused) { 
 					$('.big-jp-play').trigger('click');
 				} else {
 					$('.big-jp-pause').trigger('click');
