@@ -676,6 +676,7 @@ class Musicco {
 
 			var viewerType = '';
 			var windowWidth = '';
+			var timeUpdates = true;
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
@@ -769,13 +770,15 @@ class Musicco {
 			player.ondurationchange = function() {
 				var duration = player.duration;
 				$("#duration").html(getDuration(duration));
-				$("#big-jp-progress").attr("max", parseInt(duration));
+				$("#big-jp-progress").slider( "option", "max", parseInt(duration) );
 			}
 
 			player.ontimeupdate = function() {
 				var currentTime = player.currentTime;
 				$("#current_time").html(getDuration(currentTime));
-				$("#big-jp-progress").val(parseInt(currentTime));
+				if (timeUpdates) {
+					$("#big-jp-progress").slider( "option", "value", parseInt(currentTime) );
+				}
 			}
 
 			////////////////
@@ -792,6 +795,10 @@ class Musicco {
 
 			function isWidescreen() {
 				return (viewerType === '"widescreen"');
+			}
+
+			function setCurrentTime(time) {
+				player.currentTime = time;
 			}
 
 			function hideSpinner() {
@@ -1186,7 +1193,7 @@ class Musicco {
 			}
 
 			function jump(percent) {
-				player.currentTime = (player.duration * percent);
+				setCurrentTime(player.duration * percent);
 			}
 
 			function toggleAndUpdate(toggle, classes) {
@@ -2212,10 +2219,10 @@ class Musicco {
 				 // ACTIONS //
 				/////////////
 
-			var watcherTarget = document.getElementById('playlist');
-			var watcherConfig = { attributes: false, childList: true, characterData: false, subtree: true };
-			var watcher = new MutationObserver(refreshPlaylist);
-			watcher.observe(watcherTarget, watcherConfig);
+				var watcherTarget = document.getElementById('playlist');
+				var watcherConfig = { attributes: false, childList: true, characterData: false, subtree: true };
+				var watcher = new MutationObserver(refreshPlaylist);
+				watcher.observe(watcherTarget, watcherConfig);
 
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
@@ -2243,6 +2250,16 @@ class Musicco {
 					initContextMenus();
 					checkLibraryRefresh($("#reset_db").html());
 				}
+
+				$("#big-jp-progress").slider({
+					range: "min",
+					min: 1,
+					max: 100,
+					value: 0,
+					start: function(event, ui) { timeUpdates = false; },
+					stop: function(event, ui) { setCurrentTime(ui.value); timeUpdates = true; }
+				});
+				$("#big-volume-bar").slider();
 
 				$("#playlist").contextmenu({
 					//REDO: should be able to download and share albums via the context menu, so adapt menu entries based on target
@@ -2347,10 +2364,6 @@ class Musicco {
 
 				$("#big-volume-bar").on("change", function() {
 					player.volume = $(this).val() / 100;
-				});
-
-				$("#big-jp-progress").on("change", function() {
-					player.currentTime = $(this).val();
 				});
 
 				$("#playlist").on("click", " > li > ul > li", function() {
@@ -3013,14 +3026,14 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="big-player">
 			<div id="playerPanel">
 				<div id="big-cover">
-					<input type="range" class="right" id="big-volume-bar" value="100" min="0" max="100"/>
+					<div class="right" id="big-volume-bar"></div>
 					<div id="updateCoverArt" class="guestPlay">
 						<span id="statusText"><?php print $this->getString("..."); ?></span>
 						<span id="searchOne" class="coveractions"><a id="searchLink" target="_blank" href="<?php print $this->getConfig("imageSearchEngine"); ?>musicco"><?php print $this->getString("searchOne"); ?></a></span>
 						<span id="uploadIt" class="coveractions"><?php print $this->getString("clickToUploadYourOwn"); ?></a></span>
 						</div>
 					<div class="dummy">&nbsp;</div>
-					<div><input type="range" id="big-jp-progress" value="0" min="0" max=""/></div>
+					<div id="big-jp-progress"></div>
 				</div>
 				<div id="big-timer" class="spread">
 					<span id="current_time" class="left"></span>
