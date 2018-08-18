@@ -620,6 +620,16 @@ class Musicco {
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $this->getConfig('lang'); ?>" lang="<?php print $this->getConfig('lang'); ?>">
 	<head>
+		<!-- styles for playlist debugging -->
+		<!--
+		<style>
+			.previousAlbum { border-right: 1px red dashed; }
+			.previousTrack { color: red; }
+			.currentAlbum { border-right: 1px #E3E5BB dashed; }
+			.nextTrack { color: green; }
+			.nextAlbum { border-right: 1px green dashed; }
+		</style>
+		-->
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/all.min.css">
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
@@ -663,6 +673,7 @@ class Musicco {
 				///////////////
 			 // VARIABLES //
 			///////////////
+
 			var viewerType = '';
 			var windowWidth = '';
 
@@ -705,8 +716,6 @@ class Musicco {
 			var nextAlbum = null;
 			var player = new Audio();
 			player.autoplay = false;
-
-// fin test
 
 			var userIsStillTyping = false;
 			var menuOptions = [
@@ -810,14 +819,6 @@ class Musicco {
 				return ($("#playlist li").length > 0)
 			}
 
-			function loadTrack(trackNumber) {
-				var track = $("#playlist li[data-nature=track]:eq(" + Math.max(trackNumber, 0) + ")");
-				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
-				$(track).addClass("currentTrack");
-				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
-				player.src = encodeURIComponent($(track).data("parent") + $(track).data("path"));
-			}
-
 			function resetPlayer() {
 				player.pause();
 				player.src = "";
@@ -826,11 +827,19 @@ class Musicco {
 				$("#duration, #current_time").html("00:00");
 			}
 
+			function loadTrack(trackNumber) {
+				var track = $("#playlist li[data-nature=track]:eq(" + Math.max(trackNumber, 0) + ")");
+				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
+				$(track).addClass("currentTrack");
+				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
+				player.src = encodeURIComponent($(track).data("parent") + $(track).data("path"));
+				refreshPlaylist();
+			}
+
 			function playTrack(track) {
 				var trackNumber = $(track).index("#playlist li[data-nature=track]");
 				loadTrack(trackNumber);
 				player.play();
-				refreshPlaylist();
 			}
 
 			function playRandomAlbum() {
@@ -844,9 +853,13 @@ class Musicco {
 				}
 			}
 
-			function refreshPlaylist() {
-				//TODO: Move the refresh to the onDomChanged event?
+			var refreshPlaylist = function(mutationsList) {
 				$("#playlist li").removeClass("previousAlbum previousTrack currentAlbum nextTrack nextAlbum ");
+				$(".move-up, .move-down").show();
+				$("#playlist > li:first .move-up, #playlist > li:last .move-down").hide();
+				$("#playlist").find("li").each(function() {
+					$(this).on("dragstart", function() { dragStart(event) });
+				});
 				var track = $("#playlist li.currentTrack");
 				if (track.length) {
 					previousAlbum = $(track).parents("li").prev();
@@ -2147,7 +2160,6 @@ class Musicco {
 					} else {
 						e.target.parentNode.insertBefore(draggedElement, e.target.nextSibling);
 					}
-					refreshPlaylist();
 				}
 			}
 
@@ -2199,6 +2211,11 @@ class Musicco {
 				  /////////////
 				 // ACTIONS //
 				/////////////
+
+			var watcherTarget = document.getElementById('playlist');
+			var watcherConfig = { attributes: false, childList: true, characterData: false, subtree: true };
+			var watcher = new MutationObserver(refreshPlaylist);
+			watcher.observe(watcherTarget, watcherConfig);
 
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
@@ -2416,16 +2433,7 @@ class Musicco {
 							target.remove();
 						}
 					}
-					refreshPlaylist();
 					savePlaylist();
-				});
-
-				$("#playlist").on("DOMSubtreeModified",function(){
-					//TODO: Move refreshPlaylist here or just call it?
-					refreshPlaylist();
-					$("#playlist").find("li").each(function() {
-						$(this).on("dragstart", function() { dragStart(event) });
-					});
 				});
 
 				$("#reload").on("click", function() {
