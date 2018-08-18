@@ -801,6 +801,19 @@ class Musicco {
 				player.currentTime = time;
 			}
 
+			function volumeUp() {
+			$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") + 10);
+			}
+
+			function volumeDown() {
+			$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") - 10);
+			}
+
+			function setVolume(volume) {
+				$("#big-volume-bar").addClass("hovered").delay(1000).queue(function(n) { $("#big-volume-bar").removeClass("hovered"); n();});
+				player.volume = volume;
+			}
+
 			function hideSpinner() {
 				$("#playlistSpinner").hide();
 				$("#playlist").fadeTo("fast", 1);
@@ -1054,14 +1067,12 @@ class Musicco {
 						
 						case 38: //up arrow
 						case 175: //media volume up
-							//REDO change volume
-						 //ChangeVolume("+");
+							volumeUp();
 						break;
 						
 						case 40: //down arrow
 						case 174: //media volume down
-							//REDO change volume
-							//ChangeVolume("-");
+							volumeDown();
 						break;
 					
 						case 37: //left arrow
@@ -1891,7 +1902,6 @@ class Musicco {
 						actions.push({ "action": "seekforward", "title": "<?php print $this->getString("seekforward"); ?>", "icon": "theme/images/seekforward.png" });
 						actions.push({ "action": "seekbackward", "title": "<?php print $this->getString("seekbackward"); ?>", "icon": "theme/images/seekbackward.png" });
 
-
 						var options = {
 							"body": artist + " - " + album + albumYear,
 							"icon": poster,
@@ -2253,13 +2263,21 @@ class Musicco {
 
 				$("#big-jp-progress").slider({
 					range: "min",
-					min: 1,
+					min: 0,
 					max: 100,
 					value: 0,
 					start: function(event, ui) { timeUpdates = false; },
 					stop: function(event, ui) { setCurrentTime(ui.value); timeUpdates = true; }
 				});
-				$("#big-volume-bar").slider();
+				$("#big-volume-bar").slider({
+					orientation: "vertical",
+					range: "min",
+					min: 0,
+					max: 100,
+					value: 100,
+					change: function(event, ui) { setVolume(ui.value / 100) },
+					stop: function(event, ui) { setVolume(ui.value / 100) }
+				});
 
 				$("#playlist").contextmenu({
 					//REDO: should be able to download and share albums via the context menu, so adapt menu entries based on target
@@ -2836,13 +2854,11 @@ class Musicco {
 				});
 
 				$('#big-cover').on( "swipeup", function() {
-					//REDO change volume
-					//ChangeVolume("+");
+					volumeUp();
 				});
 
 				$('#big-cover').on( "swipedown", function() {
-					//REDO change volume
-					//ChangeVolume("-");
+					volumeDown();
 				});
 
 				$('#big-cover').on( "swipeleft", function() {
@@ -2876,13 +2892,11 @@ class Musicco {
 				});
 
 				$('#big-volume-down').click(function() {
-					//REDO change volume
-					//ChangeVolume("-");
+					volumeDown();
 				});
 
 				$('#big-volume-up').click(function() {
-					//REDO change volume
-					//ChangeVolume("+");
+					volumeUp();
 				});
 
 			$(window).resize(function(){

@@ -132,15 +132,16 @@
 	}
 
 	span.ui-slider-handle.ui-state-default {
+		top: -.2em;
 		opacity: 0;
 		height: .5em;
-		top: -.2em;
 		width: .5em;
 		background: #E3E5BB;
 		border: 1px solid #A7A97F;
 	}
 
-	#big-cover:hover span.ui-slider-handle.ui-state-default,
+	#big-cover:hover #big-jp-progress > .ui-slider-handle.ui-state-default,
+	#big-cover:hover #big-volume-bar,
 	#big-jp-progress:hover > span.ui-slider-handle.ui-state-default {
 	opacity: 1;
 	}
@@ -594,11 +595,6 @@
 		position: relative;
 	}
 
-	#big-volume-bar,
-	#big-jp-progress {
-		background-color: #E3E5BB;
-	}
-
 	#big-jp-progress {
 		width: 100%;
 		margin: 0;
@@ -607,17 +603,26 @@
 		height: .2em;
 		border: 0;
 		border-radius: 0;
+		transition: 0.4s;
+	}
+
+	.hovered,
+	#big-volume-bar:hover {
+		opacity: 1!important;
 	}
 
 	#big-volume-bar {
+		opacity: 0;
 		border-radius: .5em;
 		border: 1px solid white;
 		width: .2em;
-		height: 90%;
+		height: 97%;
 		position: absolute;
-		bottom: 5%;
+		bottom: 1%;
 		left: 97%;
 		z-index: 2;
+		background: transparent;
+		transition: 1.2s;
 	}
 
 	.spread {
