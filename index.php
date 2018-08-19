@@ -3973,7 +3973,7 @@ function builddb() {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div>It'll basically work wherever you can run php with sqlite and lighttpd or nginx</div>";
 			$aboutString.="<div><br/></div>";
-			$aboutString.="<div>Modern desktop and mobile browsers love it!.</div>";
+			$aboutString.="<div>Modern desktop and mobile browsers love it!</div>";
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div>musicco is inspired by</div>";
 			$aboutString.="<ul>";
@@ -3983,7 +3983,6 @@ function builddb() {
 			$aboutString.="</ul>";
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div>musicco scans your music folder and builds a database of your music collection, retrieving missing cover art from <a tabindex='-1' target='_blank' href='//www.coverartarchive.org'>coverartarchive.org</a>, artist information from <a tabindex='-1' target='_blank' href='//".Musicco::getConfig('lang').".wikipedia.org/'>wikipedia.org</a>  and song lyrics from <a tabindex='-1' target='_blank' href='http://www.chartlyrics.com'>chartlyrics.com</a>. </div>";
-			$aboutString.="<div>The audio player component uses <a tabindex='-1' target='_blank' href='//jplayer.org/'>jPlayer</a>.</div>";
 			if (Musicco::getConfig('show_donate_button')) {
 				$aboutString.="<div><br/></div>";
 				$aboutString.="<div>Like musicco? Wanna buy me a beer?</div>";
@@ -3996,6 +3995,7 @@ function builddb() {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>2.0 (unreleased)</div>";
+				$aboutString.="<li>use native html audio instead of jplayer / jplayerPlaylist</li>";
 				$aboutString.="<li>Refreshed UI</li>";
 				$aboutString.="<li>Added support for multiple playlists per user</li>";
 				$aboutString.="<li>Added support for marking albums and tracks as favourites</li>";
@@ -4005,7 +4005,7 @@ function builddb() {
 				$aboutString.="<li>Added support for quickly adding an album without scanning the entire library</li>";
 				$aboutString.="<li>Handle accent-insensitive search</li>";
 				$aboutString.="<li>Improved webapp manifest so you can add musicco to your Android home screen</li>";
-				$aboutString.="<li>Fixed many things!</li>";
+				$aboutString.="<li>Fixed many other things!</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>1.3 (24th September 2016)</div>";
