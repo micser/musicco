@@ -1,0 +1,418 @@
+<html>
+	<head>
+		<style>
+			.previousAlbum { border: 1px red dashed; }
+			.previousTrack { color: red; }
+			.currentAlbum { border: 1px orange dashed; }
+			.selected { color: orange; }
+			.nextTrack { color: green; }
+			.nextAlbum { border: 1px green dashed; }
+			.left { float: left; }
+			.right, .remove { float: right; }
+			#player_container { width: 300px; }
+			#album_art { height: 300px; background-size: contain; }
+			.playlist-poster { height: 100px; }
+			#seek_bar { width: 300px; }
+			#volume_bar { width: 50px; transform: rotate(270deg); }
+			#playlist > li > ul > li:hover { color: #ffffff; background: grey; }
+		</style>
+		<script type="text/javascript" src="lib/jquery/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="lib/dragdroptouch/DragDropTouch.js"></script>
+		<script>
+			// ////////////////////
+			// Global variables //
+			// //////////////////
+
+			var defaultPlaylist = [{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Vegas","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"01_Vegas.mp3","poster":"music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"September","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"02_September.mp3","poster":"music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/1973/Bye Bye Cellphone/1973_Bye Bye Cellphone_Cover.png"}]},{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"},{"artist":"Breton","album":"Other People's Problems","title":"Pacemaker","year":2002,"parent":"music/Breton__/[2012] Other People's Problems/","name":"01_Pacemaker.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"}]},{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"},{"artist":"65daysofstatic","album":"The Fall of Math","title":"The Fall of Math","year":2004,"parent":"music/65daysofstatic/[2004] The Fall of Math/","name":"02_Install A Beak In The Heart That Clucks Time In Arabic.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"}]}];
+
+			var shortPlaylist = [{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"},{"artist":"Breton","album":"Other People's Problems","title":"Pacemaker","year":2002,"parent":"music/Breton__/[2012] Other People's Problems/","name":"01_Pacemaker.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Breton__/[2012] Other People's Problems/cover.png"}]},{"tracks":[{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"},{"artist":1973,"album":"Bye Bye Cellphone","title":"Intro2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"},{"artist":"65daysofstatic","album":"The Fall of Math","title":"The Fall of Math","year":2004,"parent":"music/65daysofstatic/[2004] The Fall of Math/","name":"02_Install A Beak In The Heart That Clucks Time In Arabic.mp3","poster":"music/65daysofstatic/[2004] The Fall of Math/cover.png"}]}];
+
+			var newAlbum = '[{"tracks":[{"artist":"MisterGang","album":"Libert&acute; Ill&acute;gale","title":"Intro 1","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Mister Gang/Mister Gang/cover.png"},{"artist":"MisterGang","album":"Libert&acute; Ill&acute;gale","title":"Intro2","year":2001,"parent":"music/1973/Bye Bye Cellphone/","name":"00_Intro.mp3","poster":"music/Mister Gang/Mister Gang/cover.png"},{"artist":"Mister Gang","album":"Libert&acute; Ill&acute;gale","title":"Liberte Illegale","year":2004,"parent":"music/65daysofstatic/[2004] The Fall of Math/","name":"02_Install A Beak In The Heart That Clucks Time In Arabic.mp3","poster":"music/Mister Gang/Mister Gang/cover.png"}]}]';
+
+			var draggedElement;
+			var nowPlaying = {};
+			var previousTrack = null;
+			var nextTrack = null;
+			var currentAlbum = null;
+			var previousAlbum = null;
+			var nextAlbum = null;
+			var player = new Audio();
+			player.autoplay = false;
+
+			/////////////
+			// Events //
+			///////////
+
+			player.onplay = function() {
+				updatePlayerUI();
+			}
+
+			player.onended = function() { 
+				// TODO: handle random here
+				playTrack(nextTrack); 
+			};
+
+			player.ondurationchange = function() {
+				var duration = player.duration;
+				$("#duration").html(getDuration(duration));
+				$("#seek_bar").attr("max", parseInt(duration));
+			}
+
+			player.ontimeupdate = function() {
+				var currentTime = player.currentTime;
+				$("#current_time").html(getDuration(currentTime));
+				$("#seek_bar").val(parseInt(currentTime));
+			}
+
+
+			////////////////
+			// Functions //
+			//////////////
+
+			function playTrack(track) {
+				$("#playlist li").removeClass("selected currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
+				$(track).addClass("selected");
+				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
+				player.src = $(track).data("parent") + $(track).data("name");
+				player.play();
+				refreshPlaylist();
+			}
+
+			function refreshPlaylist() {
+				//TODO: Move the refresh to the onDomChanged event?
+				$("#playlist li").removeClass("previousAlbum previousTrack currentAlbum nextTrack nextAlbum ");
+				var track = $("#playlist li.selected");
+				if (track.length) {
+					previousAlbum = $(track).parents("li").prev();
+					previousTrack = $(track).prev("li");
+					currentAlbum =  $(track).parents("li");
+					nextTrack = $(track).next("li");
+					nextAlbum = $(track).parents("li").next();
+					if (nextAlbum.length == 0) {
+						nextAlbum = $("#playlist > li").first();
+					}
+					if (previousAlbum.length == 0) {
+						previousAlbum = $("#playlist > li").last();
+					}
+					if (nextTrack.length == 0) {
+						nextTrack = $(nextAlbum).find("li").first();
+					}
+					if (previousTrack.length == 0) {
+						previousTrack = $(previousAlbum).find("li").last();
+					}
+					$(previousAlbum).addClass("previousAlbum");
+					$(previousTrack).addClass("previousTrack");
+					$(currentAlbum).addClass("currentAlbum");
+					$(nextTrack).addClass("nextTrack");
+					$(nextAlbum).addClass("nextAlbum");
+					preload($(previousTrack));
+					preload($(nextTrack));
+				}
+			}
+
+			function preload(track) {
+				var altAudio = new Audio();
+				altAudio.src = $(track).data("parent") + $(track).data("name");
+			}
+
+			function updatePlayerUI() {
+				$("#album_art").css("background-image", 'url("' + nowPlaying["poster"] + '")'); 
+				var textData = ["title", "artist", "album", "year"];
+				textData.forEach(function(info) {
+					$("#"+info).html(nowPlaying[info]); 
+				});
+			}
+
+			function getDuration(seconds) {
+				var date = new Date(null);
+				date.setSeconds(seconds);
+				var timeString = date.toISOString().substr(11, 8);
+				if (timeString.substr(0, 2) == "00") {
+					timeString = timeString.substr(3);
+				}
+				return timeString;
+			}
+
+			function loadPlaylist() {
+				//TODO: set current track, restoreTime
+				player.pause();
+				player.currentTime = 0;
+				$("#playlist").empty();
+				insertLast($("#debug").text());
+			}
+
+			function parsePlaylist(playlistString) {
+				var playlist = JSON.parse(playlistString);
+				var html = [];
+				$.each(playlist, function (i, album) {
+					$thisAlbum = $("<li data-type=\"album\"></li>");
+					$thisAlbum.append("<img class=\"playlist-poster\" draggable=\"false\" src=\"\"/>");
+					$thisAlbum.append("<div class=\"remove\">X</div>");
+					$thisAlbum.append("<div class=\"artist\"></div>");
+					$thisAlbum.append("<div class=\"album\"></div>");
+					$thisAlbum.append("<div class=\"year\"></div>");
+					$thisAlbum.attr("draggable", "true");
+					$thisAlbum.attr("ondragstart", "dragStart(event)");
+					$thisAlbum.attr("ondragover", "dragOver(event)");
+					$thisAlbum.attr("ondragend", "dragEnd(event)");
+					var albumTracks = "";
+						if (album.tracks) {
+							$.each(album.tracks, function (j, track) {
+								albumTracks += "<li data-type=\"track\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\"";
+								$.each(track, function(k,v) {
+									if (j == 0) {
+										$thisAlbum.data[k] = v;
+									}
+									albumTracks += ' data-' + k + '="' + v + '"';
+								});
+								albumTracks += ">" + track.title;
+								albumTracks += "<div class=\"remove\">X</div>";
+								albumTracks += "</li>";
+							});
+						}
+					$thisAlbum.find(".playlist-poster").attr("src", $thisAlbum.data["poster"]);
+					$thisAlbum.find(".artist").html($thisAlbum.data["artist"]);
+					$thisAlbum.find(".album").html($thisAlbum.data["album"]);
+					$thisAlbum.find(".year").html($thisAlbum.data["year"]);
+					$thisAlbum.append("<ul>" + albumTracks + "</ul>");
+					html.push($thisAlbum);
+				});
+				return html;
+			}
+
+			function savePlaylist() {
+				//TODO: save current track, restoreTime
+
+				var playlist = $("#playlist").find("li[data-type=album]").map(function() {
+					var album = {};
+					album = $(this).find("li[data-type=track]").map(function() {
+						var song = {};
+							$.each($(this).data(), function(k,v) {
+								song[k] = v;
+							});
+						return song;
+					}).get();
+					return album;
+				}).get();
+				console.log(JSON.stringify(playlist));
+				$("#debug").text(JSON.stringify(playlist));
+
+			//	var playlist = $("#playlist").find("li[data-type=track]").map(function() {
+			//			var song = {};
+			//				$.each($(this).data(), function(k,v) {
+			//					song[k] = v;
+			//				});
+			//			return song;
+			//	}).get();
+			}
+
+			function resetPlaylist() {
+				$("#debug").text(JSON.stringify(shortPlaylist));
+				loadPlaylist();
+			}
+
+			function dragStart(e) {
+				e.dataTransfer.effectAllowed = "move";
+				e.dataTransfer.setData("text/plain", null);
+				draggedElement = e.target;
+			}
+
+			function dragOver(e) {
+				if ( draggedElement.parentNode.isSameNode(e.target.parentNode) ) {
+					if (isBefore(draggedElement, e.target)) {
+						e.target.parentNode.insertBefore(draggedElement, e.target);
+					} else {
+						e.target.parentNode.insertBefore(draggedElement, e.target.nextSibling);
+					}
+					refreshPlaylist();
+				}
+			}
+
+			function dragEnd() {
+				draggedElement = null;
+			}
+
+			function isBefore(el1, el2) {
+				if (el2.parentNode === el1.parentNode) {
+					for (var cur = el1.previousSibling; cur; cur = cur.previousSibling)
+						if (cur === el2) {
+							return true;
+						}
+					return false;
+				}
+			}
+
+			function insertFirst(contentString) {
+				var html = parsePlaylist(contentString);
+				$("#playlist").prepend(html);
+			}
+
+			function insertLast(contentString) {
+				var html = parsePlaylist(contentString);
+				$("#playlist").append(html);
+			}
+
+			function insertBefore(contentString) {
+				var index = $(currentAlbum).index() -1;
+				insertAt(contentString, index);
+			}
+
+			function insertAfter(contentString) {
+				var index = $(currentAlbum).index();
+				insertAt(contentString, index);
+			}
+
+			function insertAt(contentString, index) {
+				var html = parsePlaylist(contentString);
+				$("#playlist > li:eq(" + index + ")").after(html);
+			}
+
+			// ////////////////////
+			// JQuery //
+			// //////////////////
+
+			$(document).ready(function() {
+				resetPlaylist();
+				$("#volume_bar").on("change", function() {
+					player.volume = $(this).val() / 100;
+				});
+
+				$("#seek_bar").on("change", function() {
+					player.currentTime = $(this).val();
+				});
+
+				$("#playlist").on("click", " > li > ul > li", function() {
+					playTrack($(this));
+				});
+
+				$(".previous_album").on("click", function() {
+					$(previousAlbum).find("li").first().trigger("click");
+				});
+
+				$(".previous_track").on("click", function() {
+					$(previousTrack).trigger("click");
+				});
+
+				$(".play").on("click", function() {
+					player.play();
+				});
+
+				$(".pause").on("click", function() {
+					player.pause();
+				});
+
+				$(".next_track").on("click", function() {
+					$(nextTrack).trigger("click");
+				});
+
+				$(".next_album").on("click", function() {
+					$(nextAlbum).find("li").first().trigger("click");
+				});
+
+				$(".mute").on("click", function() {
+					player.volume = 0;
+				});
+
+				$(".unmute").on("click", function() {
+					player.volume = 1;
+				});
+
+				$("#load_playlist").on("click", function() {
+					loadPlaylist();
+				});
+
+				$("#save_playlist").on("click", function() {
+					savePlaylist();
+				});
+
+				$("#reset_playlist").on("click", function() {
+					resetPlaylist();
+				});
+
+				$("#insert_first").on("click", function() {
+					insertFirst(newAlbum);
+				});
+
+				$("#insert_before").on("click", function() {
+					insertBefore(newAlbum);
+				});
+
+				$("#insert_after").on("click", function() {
+					insertAfter(newAlbum);
+				});
+
+				$("#insert_last").on("click", function() {
+					insertLast(newAlbum);
+				});
+
+				$(".remove").on("click", function(e) {
+					//TODO: Handle situations when the current album/track is removed
+					e.stopPropagation();
+					$(this).parent("li").remove();
+					refreshPlaylist();
+				});
+
+
+				$("#playlist").on("DOMSubtreeModified",function(){
+					//TODO: Move refreshPlaylist here or just call it?
+					refreshPlaylist();
+					$("#playlist").find("li").each(function() {
+						$(this).on("dragstart", function() { dragStart(event) });
+					});
+				});
+
+			});
+		</script>
+	</head>
+	<body>
+		<div id="player_container">
+			<div id="album_art"></div>
+			<div id="progress_container">
+				<input type="range" id="seek_bar" value="0" min="0" max=""/>
+				<span id="current_time" class="left"></span>
+				<span id="duration" class="right"></span>
+			</div>
+			<br/>
+			<div id="controls">
+				<span class="previous_album"><<--</span>
+				<span class="previous_track"><--</span>
+				<span class="play">play</span>
+				<span class="pause">pause</span>
+				<span class="next_track">--></span>
+				<span class="next_album">-->></span>
+				<br/>
+				<span class="mute">mute</span>
+				<span class="unmute">unmute</span>
+				<input type="range" class="right" id="volume_bar" value="100" min ="0" max="100"/>
+			</div>
+			<div id="title"></div>
+			<div id="artist"></div>
+			<div id="album"></div>
+			<div id="year"></div>
+		</div>
+		<div id="playlist_container">
+			<ul id="playlist">
+				<li>
+				<ul>
+				<li draggable="true" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondragend="dragEnd()">one</li>
+				<li draggable="true" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondragend="dragEnd()">two</li>
+				</ul>
+				</li>
+			</ul>
+		</div>
+		<div id="debug_container">
+			Playlist:
+			<input id="load_playlist" type="button" value="Load"/>
+			<input id="save_playlist" type="button" value="Save"/>
+			<input id="reset_playlist" type="button" value="Reset"/>
+			<br/>
+			Album: 
+			<input id="insert_first" type="button" value="add first"/>
+			<input id="insert_before" type="button" value="add before"/>
+			<input id="insert_after" type="button" value="add aftert"/>
+			<input id="insert_last" type="button" value="add last"/>
+			<br/>
+			<textarea id="debug" cols="50" rows="20"></textarea>
+		</div>
+	</body>
+</html>

@@ -79,13 +79,15 @@ self.addEventListener('activate', event => {
 self.addEventListener('message', function(event){
 		self.clients.claim();
 		switch (event.data.command) {
-			case "playlist":
+			case "preload":
+				console.log("preloading");
 				caches.open("playlist")
 					.then(cache => cache.addAll(event.data.tracks)
 						.catch(error => {
 								console.log("While caching playlist, got: " + error);
 							})
 					);
+				// Why is deletion active?
 				caches.open("playlist")
 					.then(function(cache) {
 						cache.keys().then(function(keys) {

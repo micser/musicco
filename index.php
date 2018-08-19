@@ -45,7 +45,6 @@ $_CONFIG['musicRoot'] = "music";
 // Default: $_CONFIG['tempFolder'] = "temp";
 $_CONFIG['tempFolder'] = "temp";
 
-
 // The name to use for a user's default playlist
 // Default: $_CONFIG['defaultPlaylist'] = "Now Playing";
 $_CONFIG['defaultPlaylist'] = "Now Playing";
@@ -286,9 +285,6 @@ $_TRANSLATIONS["en"] = array(
 	"show_all" => "show old",
 	"uncovering" => "Uncovering gems ",
 	"updateCoverArt" => "update album art",
-	"updateRequiredLink" => "Flash",
-	"updateRequiredText" => "To play the media you will need to either update your browser to a recent version or update your ",
-	"updateRequiredTitle" => "Upgrade Required",
 	"username" => "Username",
 	"wrong_pass" => "Wrong username or password",
 );
@@ -366,9 +362,6 @@ $_TRANSLATIONS["fr"] = array(
 	"show_all" => "anciens",
 	"uncovering" => "Découverte en cours ",
 	"updateCoverArt" => "mettre à jour la couverture",
-	"updateRequiredLink" => "Flash",
-	"updateRequiredText" => "Pour lire ce contenu, il est nécessaire de faire un upgrade de ",
-	"updateRequiredTitle" => "Upgrade nécessaire",
 	"username" => "Utilisateur",
 	"wrong_pass" => "Utilisateur ou mot de passe invalide."
 );
@@ -627,8 +620,18 @@ class Musicco {
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $this->getConfig('lang'); ?>" lang="<?php print $this->getConfig('lang'); ?>">
 	<head>
+		<!-- styles for playlist debugging -->
+		<!--
+		<style>
+			.previousAlbum { border-right: 1px red dashed; }
+			.previousTrack { color: red; }
+			.currentAlbum { border-right: 1px #E3E5BB dashed; }
+			.nextTrack { color: green; }
+			.nextAlbum { border-right: 1px green dashed; }
+		</style>
+		-->
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/fontawesome-all.min.css">
+		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/all.min.css">
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
 		<link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.min.css">
 		<link rel="stylesheet" type="text/css" href="lib/fancytree/skin-awesome/ui.fancytree.min.css">
@@ -657,84 +660,1134 @@ class Musicco {
 		<meta name="msapplication-TileColor" content="#a7a97f">
 		<meta name="msapplication-TileImage" content="app/mstile-310x310.png">
 		<meta name="theme-color" content="#a7a97f">
-		<script type="text/javascript" src="lib/jquery/jquery-2.2.4.min.js"></script>
-		<script type="text/javascript" src="lib/jquery/jquery.mobile.custom.min.js"></script>
-		<script type="text/javascript" src="lib/jquery-ui/jquery-ui.min.js"></script>
-		<script type="text/javascript" src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
-		<script type="text/javascript" src="lib/js-cookie/js.cookie-2.2.0.min.js"></script>
-		<script type="text/javascript" src="lib/fancytree/jquery.fancytree-all.min.js"></script>
-		<script type="text/javascript" src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
-		<script type="text/javascript" src="lib/clipboard.js/clipboard.min.js"></script>
-		<script type="text/javascript" src="lib/swipe/swipe.js"></script>
-		<script type="text/javascript" src="lib/normalise/normalise.js"></script>
-		<script type="text/javascript" src="lib/jplayer/jquery.jplayer.min.js"></script>
-		<script type="text/javascript" src="lib/jplayer/jplayer.playlist.min.js"></script>
+		<script type="text/javascript" src="lib/jquery/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
+		<script type="text/javascript" defer src="lib/js-cookie/js.cookie-2.2.0.min.js"></script>
+		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
+		<script type="text/javascript" defer src="lib/clipboard.js/clipboard.min.js"></script>
+		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
+		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript">
+				///////////////
+			 // VARIABLES //
+			///////////////
+
 			var viewerType = '';
 			var windowWidth = '';
-			var restoreCurrentTime = -1;
-			var restorePlaylistPosition = -1;
-			$(document).ready(function() {
-				if ($(".landing").is(":visible")) {
-					$("#loading").hide()
-				} else {
-					$("#loading").progressbar( {value: false} );
-				}
-				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
-				windowWidth = $(window).width();
-				var userIsStillTyping = false;
+			var timeUpdates = true;
 
-				$("#reload").on("click", function() {
-					$.ajax({
-						url: window.location.href,
-						headers: {
-							"Pragma": "no-cache",
-							"Expires": -1,
-							"Cache-Control": "no-cache"
-					}
-					}).done(function () {
-						window.location.reload(true);
+			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
+
+			var musiccoService;
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', function() {
+					 navigator.serviceWorker.register('musicco.js').then(function(registration) {
+						// Registration was successful
+						//console.log('ServiceWorker registration successful with scope: ', registration.scope);
+						musiccoService = registration;
+					}, function(err) {
+						// registration failed :(
+						musiccoService = null;
+						//console.log('ServiceWorker registration failed: ', err);
 					});
 				});
+				navigator.serviceWorker.onmessage = function (e) {
+					switch (e.data) {
+							case "play":
+								triggerPlayPause();
+							break;
+							case "pause":
+								triggerPlayPause();
+							break;
+							case "nexttrack":
+								playTrack(nextTrack);
+							break;
+					}
+				};
+			}
 
-				$(window).focus(function() {
-					flashInfo();
+			var draggedElement;
+			var nowPlaying = {};
+			var previousTrack = null;
+			var nextTrack = null;
+			var currentAlbum = null;
+			var previousAlbum = null;
+			var nextAlbum = null;
+			var player = new Audio();
+			player.autoplay = false;
+
+			var userIsStillTyping = false;
+			var menuOptions = [
+				{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "playRightNow"},
+				{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fa-play-next", cmd: "playAsNextAlbum"},
+				//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "fas fa-play", cmd: "playAsNextTrack"},
+				{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fa-play-last", cmd: "queue"},
+				{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
+				{title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
+				{title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
+				{title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "fas fa-download"},
+				{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
+				{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"},
+				{title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fas fa-times"}
+			];
+
+			var customTreeIcons = { 
+				preset: "awesome5",
+				map: {
+					doc: "fas fa-music",
+					docOpen: "fas fa-music",
+					expanderClosed: "fas fa-angle-right",
+					expanderOpen: "fas fa-angle-down"
+				}
+			};
+
+			var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
+			var wikiHistory = [];
+			var wikiHistoryPos = -1;
+			var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
+
+			  ////////////
+			 // Events //
+			///////////
+
+			player.onplay = function() {
+				updatePlayerUI();
+			}
+
+			player.onpause =  function() {
+				$('.big-jp-play').show();
+				$('.big-jp-pause').hide();
+				savePlaylist();
+			}
+
+			player.onended = function() { 
+				// TODO: handle random here
+				playTrack(nextTrack);
+			};
+
+			player.ondurationchange = function() {
+				var duration = player.duration;
+				$("#duration").html(getDuration(duration));
+				$("#big-jp-progress").slider( "option", "max", parseInt(duration) );
+			}
+
+			player.ontimeupdate = function() {
+				var currentTime = player.currentTime;
+				$("#current_time").html(getDuration(currentTime));
+				if (timeUpdates) {
+					$("#big-jp-progress").slider( "option", "value", parseInt(currentTime) );
+				}
+			}
+
+			////////////////
+			// Functions //
+			//////////////
+
+			function isPortrait() {
+				return (viewerType === '"tall"') || (viewerType === '"square"');
+			}
+
+			function isMedium() {
+				return (viewerType === '"medium"');
+			}
+
+			function isWidescreen() {
+				return (viewerType === '"widescreen"');
+			}
+
+			function setCurrentTime(time) {
+				player.currentTime = time;
+			}
+
+			function volumeUp() {
+			$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") + 10);
+			}
+
+			function volumeDown() {
+			$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") - 10);
+			}
+
+			function setVolume(volume) {
+				$("#big-volume-bar").addClass("hovered").delay(1000).queue(function(n) { $("#big-volume-bar").removeClass("hovered"); n();});
+				player.volume = volume;
+			}
+
+			function hideSpinner() {
+				$("#playlistSpinner").hide();
+				$("#playlist").fadeTo("fast", 1);
+			}
+
+			function showSpinner() {
+				$("#playlistPanel").scrollTop(0);
+				$("#playlistSpinner").show();
+				$("#playlist").fadeTo(0, 0);
+			}
+
+			function isBefore(el1, el2) {
+				if (el2.parentNode === el1.parentNode) {
+					for (var cur = el1.previousSibling; cur; cur = cur.previousSibling)
+						if (cur === el2) {
+							return true;
+						}
+					return false;
+				}
+			}
+
+			function hasPlaylist() {
+				return ($("#playlist li").length > 0)
+			}
+
+			function resetPlayer() {
+				player.pause();
+				player.src = "";
+				$("#big-cover").css("background-image", "url(theme/images/about.png)");
+				$("#nowPlaying_songtitle, #nowPlaying_artist, #nowPlaying_album, #nowPlaying_year").html("");
+				$("#duration, #current_time").html("00:00");
+			}
+
+			function loadTrack(trackNumber) {
+				var track = $("#playlist li[data-nature=track]:eq(" + Math.max(trackNumber, 0) + ")");
+				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
+				$(track).addClass("currentTrack");
+				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
+				player.src = encodeURIComponent($(track).data("parent") + $(track).data("path"));
+				refreshPlaylist();
+			}
+
+			function playTrack(track) {
+				var trackNumber = $(track).index("#playlist li[data-nature=track]");
+				loadTrack(trackNumber);
+				player.play();
+			}
+
+			function playRandomAlbum() {
+				if ($('#playlist > li').length) {
+					var currentAlbum = Math.max($("#playlist > li.currentAlbum").index(), 0);
+					var randomAlbum = currentAlbum;
+					while (randomAlbum == currentAlbum) {
+						randomAlbum = Math.floor(Math.random() * $('#playlist > li').length);
+					}
+					playTrack($('#playlist > li:eq(' + randomAlbum + ')').find("li").first());
+				}
+			}
+
+			var refreshPlaylist = function(mutationsList) {
+				$("#playlist li").removeClass("previousAlbum previousTrack currentAlbum nextTrack nextAlbum ");
+				$(".move-up, .move-down").show();
+				$("#playlist > li:first .move-up, #playlist > li:last .move-down").hide();
+				$("#playlist").find("li").each(function() {
+					$(this).on("dragstart", function() { dragStart(event) });
 				});
-				var menuOptions = [
-					{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "playRightNow"},
-					{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fa-play-next", cmd: "playAsNextAlbum"},
-					//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "fas fa-play", cmd: "playAsNextTrack"},
-					{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fa-play-last", cmd: "queue"},
-          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
-          {title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "fas fa-download"},
-          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
-          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"},
-          {title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fas fa-times"}
-          ];
-				var fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
-				var cssSelector = { jPlayer: "#jquery_jplayer_2", cssSelectorAncestor: "#musiccoplayer" };
-				var options = { playlistOptions: {
-					autoPlay: false,
-					loopOnPrevious: true,
-					shuffleOnLoop: false,
-					enableRemoveControls: true,
-					displayTime: 'slow',
-					addTime: 'fast',
-					removeTime: 'fast',
-					shuffleTime: 'slow'
-				}, solution:"html,flash" , swfPath: "lib", supplied: "mp3" };
+				var track = $("#playlist li.currentTrack");
+				if (track.length) {
+					previousAlbum = $(track).parents("li").prev();
+					previousTrack = $(track).prev("li");
+					currentAlbum =  $(track).parents("li");
+					nextTrack = $(track).next("li");
+					nextAlbum = $(track).parents("li").next();
+					if (nextAlbum.length == 0) {
+						nextAlbum = $("#playlist > li").first();
+					}
+					if (previousAlbum.length == 0) {
+						previousAlbum = $("#playlist > li").last();
+					}
+					if (nextTrack.length == 0) {
+						nextTrack = $(nextAlbum).find("li").first();
+					}
+					if (previousTrack.length == 0) {
+						previousTrack = $(previousAlbum).find("li").last();
+					}
+					$(previousAlbum).addClass("previousAlbum");
+					$(previousTrack).addClass("previousTrack");
+					$(currentAlbum).addClass("currentAlbum");
+					$(nextTrack).addClass("nextTrack");
+					$(nextAlbum).addClass("nextAlbum");
+					//TODO: preloading tracks is blocking the client
+					//var tracks = [ $(previousTrack).data("parent") + $(previousTrack).data("path"),  $(nextTrack).data("parent") + $(nextTrack).data("path") ];
+					//postMessage({command: "preload", tracks: tracks});
+				}
+			}
 
-				var musiccoPlaylist = new jPlayerPlaylist(cssSelector, "", options);
-				var jp = $(musiccoPlaylist.cssSelector.jPlayer), jpData = jp.data('jPlayer');
-				var wikiHistory = [];
-				var wikiHistoryPos = -1;
+			function restorePanel() {
+				var panel = ($(".panel[class~='shown']").not("[class*='default']"));
+				if (panel.length) {
+					$("#leftPanel").show();
+					$(".panelToggle[href='" + "#" + panel + "']").trigger("click");
+					if (isPortrait()) {
+						$(".default").removeClass("default");
+					}
+				} else {
+					if (!isPortrait()) {
+						forcePanel("#playlistPanel");
+					}
+					if (isWidescreen()) {
+						forcePanel("#browserPanel");
+						var activeTab = isGuestPlay()? 3 : 0;
+						$("#leftPanel").tabs("option", "active", activeTab);
+					}
+					if (isMedium()) {
+						showPanel("#playlistPanel");
+					} 
+				}
+			}
 
-				$("#includeOldAlbums").click(function () {
-					toggleCheckbox();
-					filterTree();
+			function groupBy(xs, key) {
+				return xs.reduce(function(rv, x) {
+					(rv[x[key]] = rv[x[key]] || []).push(x);
+					return rv;
+				}, {});
+			};
+
+			function queueMusic(query, loadingInfo, insert) {
+				var playAfter = !hasPlaylist();
+				showLoadingInfo("<?php print $this->getString("queueing"); ?>" + loadingInfo.replace("/",""));
+				$.post('?', {querydb: '', root: query, type: "queue"}, function (response) {
+						if (response != null) {
+							var tracksArray = groupBy(response, "album");
+							switch (insert) {
+								case Insert.top:
+									insertFirst(tracksArray);
+								break;
+								case Insert.last:
+									insertLast(tracksArray);
+								break;
+								case Insert.next:
+									insertAfter(tracksArray);
+								break;
+							}
+						}
+					if (playAfter) {
+						playTrack($("#playlist").find("li[data-nature=track]").first());
+					}
+					savePlaylist();
+				}, "json");
+			}
+
+			function filterTree() {
+				//var start = Date.now();
+				var filterText = normalise($("#filterText").val().toLowerCase());
+				var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
+				var isMatching = new RegExp(filterText, "i");
+				var tree = $("#library").fancytree("getTree");
+				if ($("#includeOldAlbums").is(':checked')) {
+					tree.filterBranches(function(node) {
+						return isMatching.test(normalise(node.data.path));
+					});
+				} else {
+					tree.filterBranches(function(node) {
+						return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
+					});
+				}
+				//console.log(Date.now() - start);
+			}
+
+			function hotkey(e) {
+				// Key codes:
+				// 13: enter
+				// 32: space
+				// 178: media pause
+				// 179: media play
+				// 223: grave
+				// 27: Esc
+				// 191: /
+				// 38: arrow up
+				// 175: media volume up
+				// 40: arrow down
+				// 174: media volume down
+				// 174: media volume down
+				// 37: arrow left
+				// 177: media previous
+				// 39: arrow right
+				// 177: media next
+				// 65: a
+				// 66: b
+				// 83: s
+				// 80: p
+				// 84: t
+				// 72: h
+				// 73: i
+				// 76: l
+				// 71: g
+				// 48: 0
+				// 49: 1
+				// 50: 2
+				// 51: 3
+				// 52: 4
+				// 53: 5
+				// 54: 6
+				// 55: 7
+				// 56: 8
+				// 57: 9
+				// 96: 0
+				// 97: 1
+				// 98: 2
+				// 99: 3
+				// 100: 4
+				// 101: 5
+				// 102: 6
+				// 103: 7
+				// 104: 8
+				// 105: 9
+				var inputIsFocused = $("input").is(":focus");
+				var treeIsFocused = (($("#library,#favourites").find(":focus")).length > 0) && $(".fancytree-container").hasClass("fancytree-treefocus");
+				var tabIsFocused = $(document.activeElement).hasClass("ui-tabs-tab");
+				var menuIsFocused = $(".ui-contextmenu").is(":focus");
+				var node = treeIsFocused? $("#library").fancytree("getActiveNode") : null;
+				var customKeyEvents = [];
+				if (inputIsFocused) {
+					customKeyEvents.push(27);
+				} else if (treeIsFocused) {
+					customKeyEvents.push(27, 191, 65, 73);
+				} else if (menuIsFocused || tabIsFocused) {
+					//no keys intercepted on context menu
+				} else {
+					customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 71, 72, 73, 76, 80, 83, 84, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
+				}
+				
+				if (customKeyEvents.indexOf(e.keyCode) > -1) {
+					switch (e.keyCode) {
+						case 13: //enter
+							if ($(".hits a").is(':focus')) {
+								$(".hits a:focus").trigger('mouseup');
+							}
+						break;
+						case 32: //space
+						case 179: //media play
+						case 178: //media pause
+							triggerPlayPause();
+						break;
+						
+						case 223: //grave
+							if (e.ctrlKey) {
+								triggerPlayPause();
+							}
+						break;
+						
+						case 38: //up arrow
+						case 175: //media volume up
+							volumeUp();
+						break;
+						
+						case 40: //down arrow
+						case 174: //media volume down
+							volumeDown();
+						break;
+					
+						case 37: //left arrow
+						case 177: //media previous
+							if (e.shiftKey) {
+								playTrack($(previousAlbum).find("li").first())
+							} else {
+								playTrack(previousTrack);
+							}
+						break;
+					
+						case 39: //right arrow
+						case 176: //media next
+						 if (e.shiftKey) {
+								playTrack($(nextAlbum).find("li").first())
+						 } else {
+							playTrack(nextTrack);
+						 }
+						break;
+
+						case 66: //b
+							if (!isGuestPlay()){	
+								 togglePanel("#browserPanel");
+								$("#library").fancytree("getTree").getFirstChild().setActive();
+							}
+						break;
+
+						case	72: // h
+							showHelp();
+						break;
+
+						case	191: // /
+							if (!isGuestPlay()) {
+								 togglePanel("#browserPanel");
+								 $('#filterText').select();
+								 $('#filterText').focus();
+							}
+						break;
+
+						case 65: //a
+							if (treeIsFocused) {
+								var slash = node.isFolder()? "/": "" ;
+								queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.last);
+							}
+						break;
+
+						case 84: //t
+							$(".ui-tabs-active").focus();
+						break;
+
+						case 83: //s
+							if (!isGuestPlay()){
+								 if ($('#searchPanel').is(':hidden')) {
+									togglePanel("#searchPanel");
+								 }
+								 $('#searchText').select();
+								 $('#searchText').focus();
+							} 
+						break;
+							
+						case 80: //p
+							 if (!isWidescreen()) {
+								togglePanel("#playlistPanel");
+							 }
+						break;
+
+						case 73: //i
+						 if (e.ctrlKey && e.altKey) {
+						 } else {
+							if (treeIsFocused) { 
+								displayInfo(node.data.songtitle);
+							} else {
+								togglePanel("#infoPanel");
+							}
+						 }
+						break;
+
+						case 76: //l
+						 togglePanel("#lyricsPanel");
+						break;
+						
+						case 71: //g
+						 if (e.ctrlKey) {
+						 } else {
+							togglePanel("#settingsPanel");
+						 }
+						break;
+						
+						case 48: //0
+						case 49: //1
+						case 50: //2
+						case 51: //3
+						case 52: //4
+						case 53: //5
+						case 54: //6
+						case 55: //7
+						case 56: //8
+						case 57: //9
+							if (e.shiftKey || e.ctrlKey) {
+							} else {
+								jump(e.keyCode - 48);
+							}
+						break;
+						
+						case 96: //0
+						case 97: //1
+						case 98: //2
+						case 99: //3
+						case 100: //4
+						case 101: //5
+						case 102: //6
+						case 103: //7
+						case 104: //8
+						case 105: //9
+							if (e.shiftKey || e.ctrlKey) {
+							} else {
+								jump((e.keyCode - 96) / 10);
+							}
+						break;
+
+						case 27: //Esc
+							if ($(".modal").is(":visible")) {
+							} else {
+								closeLeftPanel();
+							}
+						break;
+					}
+				}
+			}
+
+			function jump(percent) {
+				setCurrentTime(player.duration * percent);
+			}
+
+			function toggleAndUpdate(toggle, classes) {
+				var target = "#musiccoplayer ."+ $(toggle).attr('class').replace(/selected /, "").replace(/toggles /, "").replace(/touch-/, "");
+				$(toggle).toggleClass(classes);
+				return target;
+			}
+
+			function displayInfo(query) {
+				updateInfoPanel(wikiLink(query), query, true, true);
+			}
+
+			function setMenuEntries(isFolder, target) {
+				 $(target).contextmenu("replaceMenu", menuOptions);
+				 var playRightNow = !hasPlaylist();
+				 var queue = hasPlaylist();
+				 var playAsNextAlbum = hasPlaylist();
+				 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
+				 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
+				 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
+				 var removeFavourite = ($(target).get(0) === $("#favourites").get(0));
+				 var favourite = !removeFavourite;
+				 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
+				 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
+				 $(target).contextmenu("updateEntry", "playAsNextAlbum", {setClass: playAsNextAlbum.toString()});
+				 $(target).contextmenu("updateEntry", "goto_artist", {setClass: goto_artist.toString()});
+				 $(target).contextmenu("updateEntry", "download", {setClass: download.toString()});
+				 $(target).contextmenu("updateEntry", "downloadAlbum", {setClass: downloadAlbum.toString()});
+				 $(target).contextmenu("updateEntry", "favourite", {setClass: favourite.toString()});
+				 $(target).contextmenu("updateEntry", "removeFavourite", {setClass: removeFavourite.toString()});
+				 $(".ui-menu .false").remove();
+			}
+
+			function handleMenuSelection(node, command) {
+				switch (command) {
+					case "info":
+						var query = node.data.songtitle;
+						displayInfo(query);
+					break;
+					case "queue":
+						var slash = node.isFolder()? "/": "" ;
+						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.last);
+					break;
+					case "playRightNow":
+						var slash = node.isFolder()? "/": "" ;
+						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.top);
+					break;
+					case "playAsNextAlbum":
+						var slash = node.isFolder()? "/": "" ;
+						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.next);
+					break;
+					case "goto_artist":
+						goToArtist(node.data.artist);
+					break;
+					case "share": 
+						var path = node.data.parent + node.data.path;
+						var separator = (node.data.artist == '')? "" : " - ";
+						var info = node.data.artist + separator + node.title;
+						var image = node.data.cover;
+						saveGuestPlaylist(path, info, image);
+					break;
+					case "download":
+						downloadTrack(node.data.parent, node.data.path)
+					break;
+					case "downloadAlbum":
+						downloadAlbum(node.data.parent, node.data.path);
+					break;
+					case "favourite":
+						addFavourite(node.data.parent + node.data.path);
+					break;
+					case "removeFavourite":
+						deleteFavourite(node.data.parent + node.data.path);
+					break;
+				}
+			}
+
+			function initLibraryTree() {
+				$("#library").fancytree({
+					extensions: ["glyph", "filter", "persist"],	
+					glyph: customTreeIcons,
+					filter: {
+						mode: "hide",
+						fuzzy: true,
+						hideExpanders: false,
+						nodata: function() { 
+							setTimeout(function() {
+								$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
+							}, 50);
+							if (!$("#includeOldAlbums").is(':checked')) {
+								resetCheckbox();
+								filterTree();
+								setTimeout(function() {
+									$(".fancytree-statusnode-nodata").hide();
+								}, 50);
+							}
+						}
+					},
+					autoScroll: true,
+					clickFolderMode: 3,
+					keyboard: true,
+					tabindex: "0",
+					titlesTabbable: true,
+					tooltip: true,
+					selectMode: 1,
+					source: {
+							url: "?",
+							type: "POST",
+							data: {querydb: '', root: decodeURI(musicRoot), type: 'browse'},
+							cache: true
+					},
+					beforeExpand: function(event, data) {
+						if (event.which === 3) {
+							return false;
+						}
+					},
+					lazyLoad: function(event, data) {
+						var node = data.node;
+						var root = node.data.parent + node.data.path + "/";
+						data.result = {
+							url: "?",
+							type: "POST",
+							data: {querydb: '', root: decodeURI(root), type: 'browse'},
+							cache: true
+						}
+					}
 				});
+			}
+
+			function initContextMenus() {
+				$("#searchPanel").contextmenu({
+					autoTrigger: 'false',
+					delegate: ".searchResult,.searchResultParent",
+					autoFocus: true,
+					menu: menuOptions,
+					select: function(event, ui) {
+						var node = {
+							folder: ui.target.data("folder"),
+							title: ui.target.data("title").replace("/", ""),
+							data: {
+								album: ui.target.data("album"),
+								artist: (ui.target.data("artist").length > 0 ? ui.target.data("artist") : ui.target.data("path")),
+								cover: ui.target.data("cover"),
+								parent: ui.target.data("parent"),
+								path: ui.target.data("path").replace(/^(.*)\/$/, "$1"),
+								songtitle: ui.target.data("songtitle"),
+								type: ui.target.data("type"),
+								year: ui.target.data("year")
+							},
+							'isFolder': function() { return ui.target.data("folder"); }
+						};
+						handleMenuSelection(node, ui.cmd);
+					}
+				});
+
+				$("#favourites").contextmenu({
+					delegate: "span.fancytree-title",
+					autoFocus: true,
+					menu: menuOptions,
+					beforeOpen: function(event, ui) {
+						var node = $.ui.fancytree.getNode(ui.target);
+						if (node.title=="<?php print Musicco::getString('my_favourites'); ?>" ) {
+							event.preventDefault();
+							} else {
+							setMenuEntries(node.isFolder(), $("#favourites"));
+							node.setActive();
+						}
+					},
+					select: function(event, ui) {
+						var node = $.ui.fancytree.getNode(ui.target);
+						handleMenuSelection(node, ui.cmd);
+					}
+				});
+
+				$("#library").contextmenu({
+					delegate: "span.fancytree-title",
+					autoFocus: true,
+					menu: menuOptions,
+					beforeOpen: function(event, ui) {
+						var node = $.ui.fancytree.getNode(ui.target);
+						 setMenuEntries(node.isFolder(), $("#library"));
+						 //Activate node on right-click
+						node.setActive();
+						 //Disable tree keyboard handling
+						ui.menu.prevKeyboard = node.tree.options.keyboard;
+						node.tree.options.keyboard = false;
+					},
+					close: function(event, ui) {
+						 //Restore tree keyboard handling
+						var node = $.ui.fancytree.getNode(ui.target);
+						if (node != null) {
+							node.tree.options.keyboard = ui.menu.prevKeyboard;
+							node.setFocus();
+						} else {
+							console.log("Node was null, unsure what the status of keyboard support is in that case");
+						}
+					},
+					select: function(event, ui) {
+						var node = $.ui.fancytree.getNode(ui.target);
+						handleMenuSelection(node, ui.cmd);
+					}
+				});
+			}
+
+			function downloadTrack(parent, track) {
+				window.open("?getTrack&album=" + parent + "&track=" + track);
+			}
+
+			function downloadAlbum(parent, album) {
+				window.open("?getAlbum&parent=" + encodeURIComponent(parent) + "&album=" + encodeURIComponent(album));
+			}
+
+			function initFavouriteTree() {
+				$("#favourites").fancytree({
+					extensions: ["glyph", "persist"],	
+					persist: { cookiePrefix: "favourites", expandOpts: {noAnimation: true, noEvents: true}},
+					glyph: customTreeIcons,
+					autoScroll: true,
+					clickFolderMode: 3,
+					keyboard: true,
+					tabindex: "0",
+					titlesTabbable: true,
+					tooltip: true,
+					selectMode: 1,
+					postProcess: function(event, data) {
+						if (data.response.length != 0 ) {
+							data.response[0].title = "<?php print Musicco::getString('my_favourites'); ?>";
+							data.response[0].icon = "fas fa-heart";
+						}
+					}
+				});
+				$("#favourites").fancytree("getTree").getPersistData();
+			}
+
+			function addFavourite(path) {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				showLoadingInfo("<?php print $this->getString("favourites_added"); ?>");
+				$.post('?', {addFavourite: '', u: user, p: path}, function (response) {
+					updateFavourites();
+				});
+			}
+
+			function deleteFavourite(path) {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				showLoadingInfo("<?php print $this->getString("favourites_removed"); ?>");
+				$.post('?', {deleteFavourite: '', u: user, p: path}, function (response) {
+						updateFavourites();
+				});
+			}
+
+			function updateFavourites() {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				$.post('?', {getFavourites: '', u: user}, function (response) {
+						$("#favourites").fancytree("destroy");
+						$("#favourites").empty();
+						$("#favourites").append(response);
+						initFavouriteTree();
+				});
+			}
+
+			function proxyImage(URL) {
+				var path = "<?php print $this->getConfig('tempFolder'); ?>" + "/" + Math.floor(Date.now());
+				var imagePath = path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig('coverExtension'); ?>" + "?" + Math.floor(Date.now());
+				$.post('?', {saveCover: '', u: URL, p: path}, function (response) {
+				});
+				setTimeout(function() { $("#lyricCoverArt").attr("src", imagePath); $("#lyricCoverArt").fadeIn(); }, 3000);
+				return path;
+			}
+
+			function saveCover(coverURL, path) {
+				$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
+				});
+				var imagePath = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
+				setTimeout(function() { if (!isTooLate()) { printCover(imagePath); } }, 4000);
+			}
+
+			function showHelp() {
+				$("#help").trigger("click");
+			}
+
+			function closeLeftPanel() {
+				if ($("#leftPanel").is(":visible") && isPortrait()) {
+					$("#ham").trigger("click");
+					$("#mini-controls").hide();
+					$(".panel").removeClass("shown");
+				}
+			}
+
+			function togglePanel(panel) {
+				if ($(panel).hasClass("shown") && isPortrait()) {
+					$("#ham").trigger("click");
+				} else {
+					if ($("#leftPanel").is(":hidden")) {
+						$("#ham").trigger("click");
+					}
+					showPanel(panel);
+				}
+			}
+
+			function forcePanel(panel) {
+				$(panel).addClass("default");
+				if (($(".panel[class~='shown']").not("[class*='default']")).length = 0) {
+					showPanel(panel);
+				}
+			}
+
+			function isGuestPlay() {
+				return ("<?php print AuthManager::isGuestPlay(); ?>");
+			}
+
+			function savePlaylist(playlistName) {
+				var name = playlistName;
+				if (name == null) {
+					name = isGuestPlay()? "guestPlay" : $("#playlist_select").find(":selected").text();
+				}
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				var playlist = $("#playlist").find("li[data-nature=album]").map(function() {
+					var album = {};
+					album = $(this).find("li[data-nature=track]").map(function() {
+						var song = {};
+							$.each($(this).data(), function(k,v) {
+								song[k] = v;
+							});
+						return song;
+					}).get();
+					return album;
+				}).get();
+				var current = $(".currentTrack").index("#playlist li[data-nature=track]")
+				var time = Math.floor(player.currentTime);
+				var loop = false;
+				var shuffled = false;
+				$.post('?', {savePlaylist: '', u: user, n: name, p: JSON.stringify(playlist), c: current, t: time, l: loop, s: shuffled}, function (response) {
+				});
+			}
+
+			function createNewPlaylist(name) {
+				player.pause();
+				$("#playlist_select").append('<option value="' + name + '">' + name  + '</option>');
+				$("#playlist_select").val(name);
+				clearPlaylist();
+			}
+
+			function deletePlaylist(name) {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				$.post('?', {deletePlaylist: '', u: user, n: name}, function (response) {
+				});
+			}
+
+			function renamePlaylist(oldName, newName) {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				$.post('?', {renamePlaylist: '', u: user, o: oldName, n: newName}, function (response) {
+				});
+			}
+
+			function getPlaylists() {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				if (user!="") {
+					$.post('?', {getPlaylists: '', u: user}, function(response) {
+						var playlists = JSON.parse(response);
+						$.each(playlists, function (i, name) {
+							$("#playlist_select").append('<option value="' + i + '">' + name  + '</option>');
+						});
+					});
+				}
+			}
+
+			function goToArtist(artist) {
+				togglePanel("#browserPanel");
+				$('#filterText').val(artist);
+				setTimeout(function() { filterTree(); }, 200);
+			}
+
+			function goToAlbum(album) {
+				$('#searchText').val(album);
+				toggleSearch();
+				$("#findIt").trigger("click");
+			}
+
+			function checkLibraryRefresh(oldHTML) {
+				(function worker() {
+					$.ajax({
+						url: "<?php print Musicco::getConfig("musicRoot") ?>.lock", 
+						success: function(data) {
+							tempHTML = ("<?php print $this->getString("rebuildingLibrary"); ?>");
+							$("#reset_db").html(tempHTML);
+							setTimeout(worker, 10000);
+						},
+						error: function(data) {
+							tempHTML = oldHTML;
+							$("#reset_db").html(tempHTML);
+							var library = $("#library").fancytree("getTree");
+							if (library.length > 0) {
+								library.reload();
+							}
+							updateFavourites();
+						}
+					});
+				})();
+			}
+
+			function loadPlaylist(name) {
+				resetPlayer();
+				player.currentTime = 0;
+				$("#playlist").empty();
+				showSpinner();
+				if (name == null) {
+					name = "";
+				}
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				if (user!="") {
+					$.post('?', {loadPlaylist: '', u: user, n: name}, function(response) {
+						var data = JSON.parse(response.playlist)[0];
+						var needsBuilding = (data !=null)? data.build: false;
+						if (needsBuilding) {
+							var root = data.path;
+							queueMusic(root, "", Insert.top);
+						} else {
+								var tracksArray = groupBy(JSON.parse(response.playlist), "album");
+								insertFirst(tracksArray);
+								loadTrack(parseInt(response.current, 0));
+								player.currentTime = parseInt(response.time)
+							//REDO: set loop and shuffle mode
+							//musiccoPlaylist.loop = response.loop;
+							//musiccoPlaylist.shuffled = response.shuffled;
+							//if (musiccoPlaylist.loop == "true") {
+								//$(toggleAndUpdate($('#big-repeat'), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
+							//}
+							//if (musiccoPlaylist.shuffled == "true") {
+								//$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
+							//}
+						}
+						$("#loading").hide();
+						hideSpinner();
+						if (isGuestPlay()) {
+							setTimeout(function() {
+								togglePanel("#playlistPanel");
+							}, 3000);
+						}
+					}, "json");
+				}
+			}
+
+			function saveGuestPlaylist(path, info, cover) {
+				var user = Date.now().toString(36);
+				var cover = cover;
+				$("#shared-album-qr").empty();
+				$("#shared-album-title").text(info);
+				$("#shared-album-cover").attr("src", cover);
+				$("#sharing-banner").dialog("open");
+				var link = getBaseURL() + "?guestPlay&u=" + user;
+				var qrW = $("#shared-album-cover").width();
+				var qrH = $("#shared-album-cover").height();
+				$("#shared-album-link").val(link).select().attr('size', link.length);
+				$("#shared-album-qr").qrcode({width: qrW, height: qrH, text: link});
+				if (navigator.share) {
+					$("#shared-album-share").show();
+				} else {
+					$("#shared-album-share").hide();
+				}
+				$.post('?', {saveGuestPlaylist: '', u: user, p: path}, function (response) {
+				});
+			}
+
+				function displayCover() {
+					var coverurl = nowPlaying["cover"].replace(/#/g, "%23");
+					var searchAutomatically = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
+					resetFetchingStatus();
+					printCover(coverurl);
+					if ((coverurl == "theme/images/cover.png") && (searchAutomatically)) {
+						fetchCover();
+					}
+				}
+
+				function resetFetchingStatus() {
+					fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
+					$('#updateCoverArt').show();
+					$('.hasFetched').addClass('coveractions');
+					$('.hasFetched').removeClass('hasFetched');
+					$('#statusText').addClass('canFetch');
+					$('.coveractions').hide();
+				}
+
+				function printCover(coverUrl) {
+					$(".currentAlbum img").attr("src", coverUrl);
+					$(".currentAlbum li").data("cover", coverUrl);
+					$('#big-cover').css('background-image', 'url("' + coverUrl + '")'); 
+					savePlaylist();
+				}
+
+				function getBaseURL() {
+					return window.location.href.substr(0, window.location.href.lastIndexOf("/") + 1);
+				}
+
+				function showLoadingInfo(info) {
+					$('#loadingInfo').stop(true);
+					$("#toast_text").text(info);
+					$('#loadingInfo').fadeTo(100, 1, function() {
+						$('#loadingInfo').fadeTo(2000, 0, function() {
+							$("#toast_text").text(""); 
+						});
+					});
+				}
+
+				function fetchCover() {
+					var currentAlbum = nowPlaying["album"];
+					var currentArtist = nowPlaying["artist"];
+					var currentPath = nowPlaying["parent"];
+					var currentCover = nowPlaying["cover"];
+					$('#statusText').removeClass('canFetch');
+					var releaseUrl = "https://musicbrainz.org/ws/2/release/?query=release:\""+currentAlbum+"\"%20AND%20artist:\""+currentArtist+"\"&limit=1"
+					$.ajax({
+						type: "GET",
+						url: releaseUrl,
+						dataType: "xml",
+						success: function(xml) {
+							var albumFound = $(xml).find('release-list').attr('count');
+							if (albumFound != 0) {
+								var releaseId=$(xml).find('release').attr('id');
+								var coverUrl = "https://coverartarchive.org/release/"+releaseId+"/front";
+								setCoverInfoStatus("<?php print $this->getString("fetchingAlbumArt"); ?>");
+								$.ajax({
+										 type: "GET",
+										 url: "?head&url="+coverUrl,
+										 complete: function(data){
+										if (data.responseText < 400) {
+											saveCover(coverUrl, currentPath);
+											setCoverInfoStatus("<?php print $this->getString("fetchedAlbumArt"); ?>");
+										} else {
+											setCoverInfoStatus("<?php print $this->getString("noAlbumArt"); ?>"); 
+											if (!isTooLate()) {
+												printCover(currentCover);
+											}
+										}
+									}
+									});
+							} else {
+								setCoverInfoStatus("<?php print $this->getString("noAlbum"); ?>");
+							}
+						}, 
+						error: function() {
+							setCoverInfoStatus("<?php print $this->getString("noAlbum"); ?>");
+						}
+					});
+				}
+
+				function isTooLate() {
+					return $('#statusText').hasClass('canFetch');
+				}
+
+				function setCoverInfoStatus(statusText) {
+					if (!isTooLate()) {
+						$('#uploadIt').addClass('canUpload');
+						$('.coveractions').addClass('hasFetched');
+						fetchStatus = statusText;
+						$('.hasFetched').show();
+						$("#statusText").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
+							$("#updateCoverArt").mouseleave();
+							n();
+							}).fadeTo("fast", 0.8, function() {
+										$("#updateCoverArt").fadeTo(2000, 0.1);
+									});
+					}
+				}
+
+				function uploadCover() {
+					var currentPath = nowPlaying["parent"];
+					var isValidURL =/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
+					var isValidImage =/^(.)*\.(png|gif|bmp|jpg|jpeg)$/i;
+					var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>").replace("https", "http");
+					if ((isValidURL.test(userURL)) && (isValidImage.test(userURL))) {
+						$.ajax({
+							 type: "GET",
+							 url: "?head&url="+userURL,
+							 complete: function(data){
+							 if (data.responseText < 300) {
+								 saveCover(userURL, currentPath);
+								 setCoverInfoStatus("<?php print $this->getString("downloadSuccessful"); ?>"); 
+							 } else {
+								 setCoverInfoStatus("<?php print $this->getString("notDownloaded"); ?>"); 
+							 }
+						 }
+						});
+					}
+				}
 
 				function resetCheckbox() {
 					$('#includeOldAlbums').prop("checked", true);
@@ -745,6 +1798,696 @@ class Musicco {
 				function toggleCheckbox() {
 					$("label[for='includeOldAlbums'] i").toggleClass("fa-check-square fa-square");
 				}
+
+				function clearPlaylist() {
+					resetPlayer();
+					$("#playlist li").remove();
+					savePlaylist();
+				}
+
+				function toggleSearch() {
+					togglePanel("#searchPanel");
+						$('.hits').remove();
+						$('#searchText').select();
+						$('#searchText').focus();
+				}
+
+				function scrollPlaylist() {
+					if (hasPlaylist()) {
+						var target = $('#playlistPanel');
+						if (isPortrait()) {
+							target = $('#panelContainer');
+						}
+						var y = $(".currentTrack").offset().top - $("#playlist").offset().top - 200 + $(".currentTrack").scrollTop();
+						target.animate({scrollTop:y});
+					}
+				}
+
+			function flashInfo() {
+				setTimeout(function(){ 
+					$("#big-info").css('opacity', '');
+				 }, 3000);
+				$("#big-info").css('opacity', '1');
+			}
+
+			function showPanel(panel) {
+				$(".panel").removeClass("shown");
+				$(panel).addClass("shown");
+				$(".panelToggle[href='" + panel + "']").trigger("click");
+			}
+
+			function notificationSupported() {
+				if (!(/Android/i.test(navigator.userAgent)) && ('Notification' in window)) {
+					return true;
+				}
+				return false;
+					}
+
+			function notificationAllowed() {
+				if (notificationSupported() && Notification.permission === 'granted') {
+					return true;
+			}
+				return false;
+			}
+
+			function showNotification(status) {
+				if ((notificationSupported()) && (!notificationAllowed())) {
+					Notification.requestPermission().then(function() {
+							if (notificationAllowed()) {
+								showNotification(status);
+							}
+						});
+					}
+					var albumYear = "";
+					if (nowPlaying["year"] != "") {
+						albumYear = " (" + nowPlaying["year"] + ")";
+					}
+					var title = nowPlaying["songtitle"];
+					var artist = nowPlaying["artist"];
+					var poster = nowPlaying["cover"];
+					var album = nowPlaying["album"];
+						
+					if ('mediaSession' in navigator) {
+						navigator.mediaSession.metadata = new MediaMetadata({
+								title: title,
+								artist: artist,
+								album: album + albumYear,
+								artwork: [
+									{ src: poster, sizes: '256x256', type: 'image/png' },
+									{ src: poster, sizes: '512x512', type: 'image/png' },
+								]
+							});
+						navigator.mediaSession.setActionHandler('previoustrack', function() { playTrack(previousTrack);});
+						navigator.mediaSession.setActionHandler('nexttrack', function() { playTrack(nextTrack);});
+						navigator.mediaSession.setActionHandler('seekbackward', function() { playTrack($(previousAlbum).find("li").first()) });
+						navigator.mediaSession.setActionHandler('seekforward', function() { playTrack($(nextAlbum).find("li").first()) });
+					} else if (musiccoService != null) {
+						var actions = [];
+						if (status == "isPaused") {
+							actions.push({ "action": "play", "title": "<?php print $this->getString("play"); ?>", "icon": "theme/images/play.png" });
+						} else {
+							actions.push({ "action": "pause", "title": "<?php print $this->getString("pause"); ?>", "icon": "theme/images/pause.png" });
+						}
+						actions.push({ "action": "nexttrack", "title": "<?php print $this->getString("nexttrack"); ?>", "icon": "theme/images/nexttrack.png" });
+						actions.push({ "action": "previoustrack", "title": "<?php print $this->getString("previoustrack"); ?>", "icon": "theme/images/previoustrack.png" });
+						actions.push({ "action": "seekforward", "title": "<?php print $this->getString("seekforward"); ?>", "icon": "theme/images/seekforward.png" });
+						actions.push({ "action": "seekbackward", "title": "<?php print $this->getString("seekbackward"); ?>", "icon": "theme/images/seekbackward.png" });
+
+						var options = {
+							"body": artist + " - " + album + albumYear,
+							"icon": poster,
+							"tag": "musicconowplayingnotification",
+							"persistent": true,
+							"replaceable": true,
+							"actions": actions
+						};
+						musiccoService.showNotification(title, options);
+					} else {
+							notif = new Notification(title + " - " + artist,
+																				{'icon': poster,
+																				 'body': album + albumYear,
+																				 'tag' : 'musicconowplayingnotification'});
+							notif.onclick = function(x) { window.focus(); this.close(); };
+							setTimeout(function(){
+								notif.close();}, 5000);
+					}
+			}
+
+			function postMessage(message) {
+				if (navigator.serviceWorker.controller != null) {
+					navigator.serviceWorker.controller.postMessage(message);
+				}
+			}
+
+			function wikiLink(page) {
+				return '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
+			}
+
+			function updateInfoPanel(url, artist, show) {
+				updateInfoPanel(url, artist, show, false);
+			}
+
+			function updateInfoPanel(url, artist, show, force) {
+				var resyncText = "&nbsp;&#8226;&nbsp;" + nowPlaying["artist"] + "&nbsp;&#9654;";
+				$("#resync").html(resyncText);
+				if (show) {
+					showPanel("#infoPanel");
+				}
+				if (force) {
+						$("#resync").show();
+				}
+				if (force || $("#resync").is(":hidden")) {
+					var searchArtistExt = "<?php print $this->getString("search"); ?>";
+					searchArtistExt +=  "<a target=\"blank\" href=\"http://last.fm/search?q=" + "+" + artist +"\">" + "<?php print $this->getString("lastfm"); ?>" + "</a>" ;
+					searchArtistExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
+					searchArtistExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>" + artist + "+band\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
+					$('#wikiPrev').html("");
+					wikiHistoryPos += 1;
+					
+					var hasHistory = ((wikiHistoryPos > 0)) ? true : false;
+					var prevUrl = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].href : "";
+					var prevTitle = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].title : "";
+					var isCurrentArtist = (artist ===  nowPlaying["artist"]);
+
+					if ((url != "") && (url != prevUrl)) {
+						wikiHistory.push({seq: wikiHistoryPos, title: artist, href: url})
+					} else {
+						wikiHistoryPos -= 1;
+					}
+					
+					if ((hasHistory) && (wikiHistoryPos >= 0)) {
+						$('#wikiPrev').html("<a href=\"" + prevUrl + "\" class=\"historyLink\" title=\"" + prevTitle + "\">&#9664;&nbsp;" + prevTitle + "</a>");
+					} else if (isCurrentArtist) {
+						$("#resync").hide();
+					} else if (!isCurrentArtist) {
+						$("#resync").show();
+					}
+
+					$('#infoPanelTitle').html(artist);
+					$('#infoPanelText').html("");
+					$.ajax({
+						type: "GET",
+						dataType: "jsonP",
+						url: url,
+						success: function(json) {
+							if (json.parse) {
+								$('#infoPanelText').html(searchArtistExt + json.parse.text['*']);
+								$("#infoPanelText").find("*").removeAttr("style"); 
+								$("#infoPanelText").find(".mw-editsection").hide(); 
+								$("#infoPanelText").find('.image').removeAttr("href", ""); 
+								$("#infoPanelText").find('.new').removeAttr("href", ""); 
+								$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
+								$("#infoPanelText").find('a').removeClass("new"); 
+								$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
+							} else {
+								$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist + " - " + searchArtistExt);
+							}
+						}
+					});
+				}
+			}
+
+			function updateLyricsPanel(artist, song) {
+				var artist=nowPlaying["artist"];
+				var song=nowPlaying["songtitle"];
+				var searchLyricsExt = "<?php print $this->getString("search"); ?>";
+				searchLyricsExt +=  "<a target=\"blank\" href=\"http://genius.com/search?q=" + song + "+" + artist +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
+				searchLyricsExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
+				searchLyricsExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>"  + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
+				var LRCurl= encodeURI(nowPlaying["path"].replace(/.mp3/, ".lrc"));
+				var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
+				var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
+				var searchOnline = true;
+
+				if (loadLrc) {
+					$.ajax({
+						type: "GET",
+						url: "?head&url="+ LRCurl,
+						dataType: "text",
+						complete: function(text) {
+							if (text.responseText < 400) {
+								searchOnline = false;
+								$.ajax({
+									type: "GET",
+									url: "?fetch&url=" + LRCurl,
+									dataType: "text",
+									success: function(lyrics) {
+										$('#lyricsPanel').html(searchLyricsExt + "<br/>" + lyrics.replace(/\[.*\]/g, "<br/>"));
+									}
+								});
+							}
+						}
+					});
+				}
+				if (searchOnline) {
+					$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
+					$.ajax({
+						type: "GET",
+						url: "?fetch&url=" + APIurl,
+						dataType: "xml",
+						success: function(xml) {
+							var lyrics="";
+							$(xml).find('GetLyricResult').each(function(){
+								var lyricArtist=$(this).find('LyricArtist').text();
+								var lyricSong=$(this).find('LyricSong').text();
+								var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
+								var lyricImage = "";
+								var lyricCovertArtUrl = $(this).find('LyricCovertArtUrl').text();
+								if (lyricCovertArtUrl != "") {
+									proxyImage(lyricCovertArtUrl)
+									lyricImage = "<img class=\"hidden\" id=\"lyricCoverArt\" src=\"\"/><br/>";
+								}
+								var lyricInfo="<a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a> - " + searchLyricsExt + "<br/><br/>";
+								//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.
+								lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
+								$('#lyricsPanel').html(lyricImage + lyricInfo + lyrics);
+							});
+							if (lyrics=="") {
+								noLyricsFound(song, artist, searchLyricsExt);
+							}
+						},
+						error: function() {
+								noLyricsFound(song, artist, searchLyricsExt);
+						}
+					});
+				}
+			}
+
+			function noLyricsFound(song, artist, searchLyricsExt) {
+				var noLyricsText = "<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist;
+				noLyricsText += "<br/>";
+				noLyricsText += searchLyricsExt;
+				$('#lyricsPanel').html(noLyricsText);
+			}
+
+			function triggerPlayPause() {
+				var status = "";
+				if (player.paused) { 
+					$('.big-jp-play').trigger('click');
+				} else {
+					$('.big-jp-pause').trigger('click');
+					status = "isPaused";
+				}
+				showNotification(status);
+			}
+
+			function updatePlayerUI() {
+				$('.big-jp-play').hide();
+				$('.big-jp-pause').show();
+				$("#big-cover").css("background-image", 'url("' + nowPlaying["cover"] + '")');
+				var textData = ["songtitle", "artist", "album", "year"];
+				textData.forEach(function(info) {
+					$("#nowPlaying_"+info).html(nowPlaying[info]); 
+				});
+				$("#nowPlaying_year").prepend("(");
+				$("#nowPlaying_year").append(")");
+				flashInfo();
+				showNotification();
+				$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying["artist"] + " " + nowPlaying["album"]);
+				updateInfoPanel(wikiLink(nowPlaying["artist"]), nowPlaying["artist"], false, false);
+				updateLyricsPanel(nowPlaying["artist"], nowPlaying["songtitle"]);
+				displayCover();
+				scrollPlaylist();
+				savePlaylist();
+			}
+
+			function getDuration(seconds) {
+				var date = new Date(null);
+				date.setSeconds(seconds);
+				var timeString = date.toISOString().substr(11, 8);
+				if (timeString.substr(0, 2) == "00") {
+					timeString = timeString.substr(3);
+				}
+				return timeString;
+			}
+
+			function parsePlaylist(tracksArray) {
+				var html = [];
+				var header = ""
+										+ "<li data-nature=\"album\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\">"
+										+ "<div class=\"remove fas fa-times\"></div>"
+										+ "<div class=\"align-right\">"
+										+ "<span class=\"move-up fas fa-arrow-up\"></span>"
+										+ "<span class=\"move-down fas fa-arrow-down\"></span>"
+										+ "<img class=\"playlist-poster\" align=\"left\" draggable=\"false\" src=\"\"/>"
+										+ "<br/>"
+										+ "<br/>"
+//REDO may not need to pass both parent and album anymore,  parent may be enough, test after loading a real playlist
+										+ "<span class=\"guestPlay favouriteAlbum album-action fas fa-heart\"></span>"
+										+ "<span class=\"is-admin-" + <?php print (AuthManager::isAdmin());?> + " album-action guestPlay downloadAlbum fas fa-download\"></span>"
+										+ "<span class=\"is-admin-" + <?php print (AuthManager::isAdmin());?> + " album-action guestPlay share fas fa-external-link-alt\"></span>"
+										+ "<br/>"
+										+ "<span class=\"album\"></span>"
+										+ "<br/>"
+										+ "<span class=\"artist\"></span><span>, </span><span class=\"year\"></span>"
+										+ "</div>"
+										+ "</li>";
+				$.each(tracksArray, function (i, album) {
+					var $thisAlbum = $(header);
+					var albumTracks = "";
+						$.each(album, function (j, track) {
+							albumTracks += "<li data-nature=\"track\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\"";
+							$.each(track, function(k,v) {
+								if ((j == 0) && (k != "nature")) {
+									$($thisAlbum).attr("data-" + k, v);
+								}
+								albumTracks += ' data-' + k + '="' + v + '"';
+							});
+							albumTracks += ">" + track.songtitle;
+							albumTracks += "<div class=\"remove fas fa-times small\"></div>";
+							albumTracks += "</li>";
+						});
+					$thisAlbum.find(".playlist-poster").attr("src", $thisAlbum.data("cover").replace(/#/g, "%23"));
+					$thisAlbum.find(".artist").html($thisAlbum.data("artist"));
+					$thisAlbum.find(".album").html($thisAlbum.data("album"));
+					$thisAlbum.find(".year").html($thisAlbum.data("year"));
+					$thisAlbum.append("<ul>" + albumTracks + "</ul>");
+					html.push($thisAlbum);
+				});
+				return html;
+			}
+
+			function dragStart(e) {
+				e.dataTransfer.effectAllowed = "move";
+				e.dataTransfer.setData("text/plain", null);
+				draggedElement = e.target;
+				$(draggedElement).siblings().css("opacity", "0.5");
+				$(draggedElement).css("border", "1px dotted");
+			}
+
+			function dragOver(e) {
+				if ( draggedElement.parentNode.isSameNode(e.target.parentNode) ) {
+					if (isBefore(draggedElement, e.target)) {
+						e.target.parentNode.insertBefore(draggedElement, e.target);
+					} else {
+						e.target.parentNode.insertBefore(draggedElement, e.target.nextSibling);
+					}
+				}
+			}
+
+			function dragEnd() {
+				$(draggedElement).siblings().css("opacity", "1");
+				$(draggedElement).css("border", "0");
+				draggedElement = null;
+				savePlaylist();
+			}
+
+			function isBefore(el1, el2) {
+				if (el2.parentNode === el1.parentNode) {
+					for (var cur = el1.previousSibling; cur; cur = cur.previousSibling)
+						if (cur === el2) {
+							return true;
+						}
+					return false;
+				}
+			}
+
+			function insertFirst(tracksArray) {
+				var html = parsePlaylist(tracksArray);
+				$("#playlist").prepend(html);
+			}
+
+			function insertLast(tracksArray) {
+				var html = parsePlaylist(tracksArray);
+				$("#playlist").append(html);
+			}
+
+			function insertBefore(tracksArray) {
+				var index = $(currentAlbum).index() -1;
+				insertAt(tracksArray, index);
+			}
+
+			function insertAfter(tracksArray) {
+				var index = $(currentAlbum).index();
+				insertAt(tracksArray, index);
+			}
+
+			function insertAt(tracksArray, index) {
+				var html = parsePlaylist(tracksArray);
+				$("#playlist > li:eq(" + index + ")").after(html);
+			}
+
+			$(document).ready(function() {
+
+
+				  /////////////
+				 // ACTIONS //
+				/////////////
+
+				var watcherTarget = document.getElementById('playlist');
+				var watcherConfig = { attributes: false, childList: true, characterData: false, subtree: true };
+				var watcher = new MutationObserver(refreshPlaylist);
+				watcher.observe(watcherTarget, watcherConfig);
+
+				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
+				windowWidth = $(window).width();
+				new Clipboard(".clip");
+
+				if ($(".landing").is(":visible")) {
+					$("#loading").hide()
+				} else {
+					$("#loading").progressbar( {value: false} );
+				}
+
+				$( "#leftPanel" ).tabs({
+					beforeActivate: function( event, ui ) {
+						ui.oldPanel.removeClass("shown");
+						ui.newPanel.addClass("shown");
+					}
+				});
+
+				if (isGuestPlay()) {
+					$('.guestPlay').hide();
+				} else {
+					getPlaylists();
+					initFavouriteTree();
+					initLibraryTree();
+					initContextMenus();
+					checkLibraryRefresh($("#reset_db").html());
+				}
+
+				$("#big-jp-progress").slider({
+					range: "min",
+					min: 0,
+					max: 100,
+					value: 0,
+					start: function(event, ui) { timeUpdates = false; },
+					stop: function(event, ui) { setCurrentTime(ui.value); timeUpdates = true; }
+				});
+				$("#big-volume-bar").slider({
+					orientation: "vertical",
+					range: "min",
+					min: 0,
+					max: 100,
+					value: 100,
+					change: function(event, ui) { setVolume(ui.value / 100) },
+					stop: function(event, ui) { setVolume(ui.value / 100) }
+				});
+
+				$("#playlist").contextmenu({
+					//REDO: should be able to download and share albums via the context menu, so adapt menu entries based on target
+					autoTrigger: 'false',
+					delegate: "li",
+					autoFocus: true,
+					menu: [
+						{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
+						{title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fas fa-search"},
+						{title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
+						{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
+						{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"}
+					],
+					select: function(event, ui) {
+						var target = ui.target;
+						if (!$(ui.target).is("li")) {
+							target = $(ui.target).parents("li");
+						}
+						switch (ui.cmd) {
+							case "goto_artist":
+								goToArtist(target.data("artist"));
+								break;
+							case "goto_album":
+								goToAlbum(target.data("title"));
+							break;
+							case "download":
+								downloadTrack(target.data("parent"), target.data("path"));
+							break;
+							case "share": 
+								var path = target.data("parent");
+								var separator = " - ";
+								var info = target.data("artist") + separator + target.data("album");
+								var image = target.data("cover");
+								saveGuestPlaylist(path, info, image);
+							break;
+							case "favourite":
+								addFavourite(target.data("parent") + target.data("path"));
+							break;
+						}
+					}
+				});
+
+				loadPlaylist();
+				adaptUI(true);
+
+				  ///////////////
+				 // FUNCTIONS //
+				///////////////
+
+				function adaptUI(init) {
+				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
+				//console.log(newViewerType);
+				var newWindowWidth = $(window).width();
+				if ((newViewerType != viewerType) && (newWindowWidth != windowWidth) || (init)) {
+					viewerType = newViewerType;
+					windowWidth = newWindowWidth;
+					if (!isWidescreen()) {
+						$("#playlistToggle").show();
+						$("#leftPanel").tabs("enable", 2 );
+							if (isPortrait()) {
+								$("#leftPanel").hide();
+							} else {
+							}
+					} else {
+						$("#playlistToggle").hide();
+						$("#leftPanel").tabs("disable", 2 );
+					}
+					$("#leftPanel").tabs("refresh");
+				}
+				restorePanel();
+				$( ".modal" ).dialog({
+					modal: true,
+					autoOpen: false,
+					width: isPortrait() ? "100%": "40%",
+					height: $(window).height(),
+					show: { effect: "fade", duration: 400 },
+					hide: { effect: "fold", duration: 200 }
+				});
+			}
+
+				  ////////////
+				 // EVENTS //
+				////////////
+
+				$("#playlist").on("click taphold", ".move-down", function(e) {
+					var target = $(this).parents("li").next();
+					var shift = (e.type === "taphold")? true : e.shiftKey;
+					if (shift) {
+						target = $("#playlist > li").last();
+					}
+					target.after($(this).parents("li"));
+				});
+
+				$("#playlist").on("click taphold", ".move-up", function(e) {
+					var target = $(this).parents("li").prev();
+					var shift = (e.type === "taphold")? true : e.shiftKey;
+					if (shift) {
+						target = $("#playlist > li").first();
+					}
+					target.before($(this).parents("li"));
+				});
+
+				$("#big-volume-bar").on("change", function() {
+					player.volume = $(this).val() / 100;
+				});
+
+				$("#playlist").on("click", " > li > ul > li", function() {
+					playTrack($(this));
+				});
+
+				$(".previous_album").on("click", function() {
+				});
+
+				$(".previous_track").on("click", function() {
+				});
+
+				$(".big-jp-play").on("click", function() {
+					player.play();
+				});
+
+				$(".big-jp-pause").on("click", function() {
+					player.pause();
+				});
+
+				$("#shared-album-show-qr, #shared-album-show-cover").on("click", function() {
+					$("#shared-album-cover, #shared-album-qr, #shared-album-show-qr, #shared-album-show-cover").toggle();
+					$("#shared-album-qr canvas").addClass("boxed");
+				});
+
+				$(document).on("click taphold", ".big-jp-previous", function(e) {
+					var shift = (e.type === "taphold")? true : e.shiftKey;
+					if (shift) {
+						$(previousAlbum).find("li").first().trigger("click");
+					} else {
+						$(previousTrack).trigger("click");
+					}
+				});
+
+				$(".big-jp-next").on("click taphold", function(e) {
+					var shift = (e.type === "taphold")? true : e.shiftKey;
+					if (shift) {
+						$(nextAlbum).find("li").first().trigger("click");
+					} else {
+						$(nextTrack).trigger("click");
+					}
+				});
+
+				$("#big-mute").on("click", function() {
+				$("#big-mute, #big-unmute").toggle();
+					player.volume = 0;
+				});
+
+				$("#big-unmute").on("click", function() {
+				$("#big-mute, #big-unmute").toggle();
+					player.volume = 1;
+				});
+
+				$("#playlist").on("click", ".remove", function(e) {
+					e.stopPropagation();
+					var target = $(this).parent("li");
+					if ($(target).data("nature") == "track") {
+						numSiblings = target.siblings();
+						if (numSiblings.length) {
+							if ($(target).hasClass("currentTrack")) {
+								playTrack(nextTrack);
+							}
+							target.remove();
+						} else {
+							$(target).parents("li").find(".remove").trigger("click");
+						}
+					} else {
+						var albumIndex = $(target).index("#playlist > li");
+						var fallbackTrack = $("#playlist > li:eq(" + albumIndex + ")").find("li[data-nature=track]:first");
+						var currentAlbumIndex = $(".currentAlbum").index("#playlist > li");
+						var isCurrentAlbum = (currentAlbumIndex == albumIndex);
+						var shift = (e.type === "taphold")? true : e.shiftKey;
+						var alt = (e.type === "taphold")? false : e.altKey;
+						var ctrl = (e.type === "taphold")? false : e.ctrlKey;
+						if (shift) {
+							if (currentAlbumIndex < albumIndex) {
+								playTrack(fallbackTrack);
+							}
+							for (i=0; i < albumIndex; i++) {
+								$("#playlist > li:eq(0)").remove();
+							}
+						} else if (ctrl) {
+							if (currentAlbumIndex > albumIndex) {
+								playTrack(fallbackTrack);
+							}
+							for (i=albumIndex; i < $("#playlist > li").length; i++) {
+								$("#playlist > li:eq(" + (albumIndex + 1) + ")").remove();
+							}
+						} else if (alt) {
+							if (!isCurrentAlbum) {
+								playTrack($(target).find("li[data-nature=track]:first"));
+							}
+							$("#playlist > li").not(":eq(" + albumIndex + ")").remove();
+						} else {
+							target.remove();
+						}
+					}
+					savePlaylist();
+				});
+
+				$("#reload").on("click", function() {
+					$.ajax({
+						url: window.location.href,
+						headers: {
+							"Pragma": "no-cache",
+							"Expires": -1,
+							"Cache-Control": "no-cache"
+						}
+					}).done(function () {
+						window.location.reload(true);
+					});
+				});
+
+				$(window).focus(function() {
+					flashInfo();
+				});
+
+				$("#includeOldAlbums").click(function () {
+					toggleCheckbox();
+					filterTree();
+				});
 
 				$("#filterText").keyup(function() {
 					setTimeout( function() {
@@ -785,150 +2528,6 @@ class Musicco {
 					clearPlaylist();
 				});
 
-				function clearPlaylist() {
-					musiccoPlaylist.remove();
-					savePlaylist();
-				}
-
-				function toggleSearch() {
-					togglePanel("#searchPanel");
-						$('.hits').remove();
-						$('#searchText').select();
-						$('#searchText').focus();
-				}
-
-				function scrollPlaylist() {
-					if (hasPlaylist()) {
-						var element = restorePlaylistPosition + 1;
-						if (element > musiccoPlaylist.length) {
-							element = musiccoPlaylist.length;
-						}
-						var target = $('#playlistPanel');
-						if (isPortrait()) {
-							target = $('#panelContainer');
-						}
-						var y = $('.my-playlist ul li:nth-child(' + element + ')').offset().top - $('.my-playlist').offset().top - 200 + $('.my-playlist').scrollTop();
-						target.animate({scrollTop:y});
-					}
-				}
-
-				function displayCover() {
-					var coverurl = nowPlaying("poster");
-					var searchAutomatically = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
-					resetFetchingStatus();
-					printCover(getBaseURL() + coverurl);
-					if ((coverurl == "theme/images/cover.png") && (searchAutomatically)) {
-						fetchCover();
-					}
-				}
-
-				function resetFetchingStatus() {
-					fetchStatus = "<?php print $this->getString("updateCoverArt"); ?>"
-					$('#updateCoverArt').show();
-					$('.hasFetched').addClass('coveractions');
-					$('.hasFetched').removeClass('hasFetched');
-					$('#statusText').addClass('canFetch');
-					$('.coveractions').hide();
-
-				}
-
-				function nowPlaying(key) {
-					var artist = musiccoPlaylist.playlist[musiccoPlaylist.current].artist;
-					var album = musiccoPlaylist.playlist[musiccoPlaylist.current].album;
-					var year = musiccoPlaylist.playlist[musiccoPlaylist.current].year;
-					var title = musiccoPlaylist.playlist[musiccoPlaylist.current].title;
-					var mp3 = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3;
-					var path = musiccoPlaylist.playlist[musiccoPlaylist.current].path;
-					var poster = musiccoPlaylist.playlist[musiccoPlaylist.current].poster;
-
-					var trackInfo = new Array();
-					trackInfo['artist'] = artist;
-					trackInfo['album'] = album;
-					trackInfo['year'] = year;
-					trackInfo['title'] = title;
-					trackInfo['mp3'] = mp3;
-					trackInfo['path'] = path;
-					trackInfo['poster'] = poster;
-					return trackInfo[key];
-				}
-
-				function printCover(coverurl) {
-					$('#big-cover').css('background-image', 'url("' + coverurl + '")'); 
-				}
-
-				function getBaseURL() {
-					return window.location.href.substr(0, window.location.href.lastIndexOf("/") + 1);
-				}
-
-				function showLoadingInfo(info) {
-					$('#loadingInfo').stop(true);
-					$("#toast_text").text(info);
-					$('#loadingInfo').fadeTo(100, 1, function() {
-																						$('#loadingInfo').fadeTo(2000, 0, function() { $("#toast_text").text(""); });
-																					});
-				}
-
-				function fetchCover() {
-					var currentAlbum = nowPlaying("album");
-					var currentArtist = nowPlaying("artist");
-					var currentPath = nowPlaying("path");
-					var currentCover = nowPlaying("poster");
-					$('#statusText').removeClass('canFetch');
-					var releaseUrl = "https://musicbrainz.org/ws/2/release/?query=release:\""+currentAlbum+"\"%20AND%20artist:\""+currentArtist+"\"&limit=1"
-					$.ajax({
-						type: "GET",
-						url: releaseUrl,
-						dataType: "xml",
-						success: function(xml) {
-							var albumFound = $(xml).find('release-list').attr('count');
-							if (albumFound != 0) {
-								var releaseId=$(xml).find('release').attr('id');
-								var coverUrl = "https://coverartarchive.org/release/"+releaseId+"/front";
-								setCoverInfoStatus("<?php print $this->getString("fetchingAlbumArt"); ?>");
-								$.ajax({
-										 type: "GET",
-										 url: "?head&url="+coverUrl,
-										 complete: function(data){
-										if (data.responseText < 300) {
-											saveCover(coverUrl, currentPath);
-											setCoverInfoStatus("<?php print $this->getString("fetchedAlbumArt"); ?>");
-										} else {
-											setCoverInfoStatus("<?php print $this->getString("noAlbumArt"); ?>"); 
-											if (!isTooLate()) {
-												printCover(currentCover);
-											}
-										}
-									}
-									});
-							} else {
-								setCoverInfoStatus("<?php print $this->getString("noAlbum"); ?>");
-							}
-						}, 
-						error: function() {
-							setCoverInfoStatus("<?php print $this->getString("noAlbum"); ?>");
-						}
-					});
-				}
-
-				function isTooLate() {
-					return $('#statusText').hasClass('canFetch');
-				}
-
-				function setCoverInfoStatus(statusText) {
-					if (!isTooLate()) {
-						$('#uploadIt').addClass('canUpload');
-						$('.coveractions').addClass('hasFetched');
-						fetchStatus = statusText;
-						$('.hasFetched').show();
-						$("#statusText").text(fetchStatus).mouseenter().delay(1000).queue(function(n) {
-							$("#updateCoverArt").mouseleave();
-							n();	
-							}).fadeTo("fast", 0.8, function() {
-										$("#updateCoverArt").fadeTo(2000, 0.1);
-									});
-					}
-				}
-
 				$('#uploadIt').click(function () {
 						if ($(this).hasClass('canUpload')) {
 							uploadCover();
@@ -966,45 +2565,6 @@ class Musicco {
 						fetchCover();
 					}
 				});
-
-				function uploadCover() {
-					var currentPath = nowPlaying("path");
-					var isValidURL =/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
-					var isValidImage =/^(.)*\.(png|gif|bmp|jpg|jpeg)$/i;
-					var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>").replace("https", "http");
-					if ((isValidURL.test(userURL)) && (isValidImage.test(userURL))) {
-						$.ajax({
-							 type: "GET",
-							 url: "?head&url="+userURL,
-							 complete: function(data){
-							 if (data.responseText < 300) {
-								 saveCover(userURL, currentPath);
-								 setCoverInfoStatus("<?php print $this->getString("downloadSuccessful"); ?>"); 
-							 } else {
-								 setCoverInfoStatus("<?php print $this->getString("notDownloaded"); ?>"); 
-							 }
-						 }
-						});
-					}
-				}
-
-				function filterTree() {
-					//var start = Date.now();
-					var filterText = normalise($("#filterText").val().toLowerCase());
-					var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
-					var isMatching = new RegExp(filterText, "i");
-					var tree = $("#library").fancytree("getTree");
-					if ($("#includeOldAlbums").is(':checked')) {
-						tree.filterBranches(function(node) {
-							return isMatching.test(normalise(node.data.path));
-						});
-					} else {
-						tree.filterBranches(function(node) {
-							return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
-						});
-					}
-					//console.log(Date.now() - start);
-				}
 
 				$("#findIt").on("click", function(event) {
 					event.preventDefault();
@@ -1068,57 +2628,23 @@ class Musicco {
 					toggleSearch();
 				});
 
-				function goToArtist(artist) {
-					togglePanel("#browserPanel");
-					$('#filterText').val(artist);
-					setTimeout(function() { filterTree(); }, 200);
-				}
-
-				function goToAlbum(album) {
-					$('#searchText').val(album);
-					toggleSearch();
-					$("#findIt").trigger("click");
-				}
-
-					$(document).on("dblclick", ".itemHeaderArtist, #nowPlayingArtist", function() {
+					$(document).on("dblclick", ".artist, #nowPlaying_artist", function() {
 						goToArtist($(this).text());
 					});
 
-					$(document).on("dblclick", ".itemHeaderAlbum, #nowPlayingAlbum, #nowPlayingAlbumYear, #nowPlayingTitle", function() {
+					$(document).on("dblclick", ".album, .year, .songtitle, #nowPlaying_album, #nowPlaying_year, #nowPlaying_songtitle", function() {
 						goToAlbum($(this).text().replace("(", "").replace(")", ""));
 					});
 
 					$(document).on("click", ".downloadAlbum", function(event) {
 						event.preventDefault();
-						downloadAlbum($(this).data("parent"), $(this).data("album"))
+						downloadAlbum($(this).parents("li").data("parent"), $(this).parents("li").data("album"))
 					});
 
 					$(document).on("click", ".favouriteAlbum", function(event) {
-						var albumPath = $(this).data("path").substr(0, $(this).data("path").length -1);
+						var albumPath = $(this).parents("li").data("parent").substr(0, $(this).parents("li").data("parent").length -1);
 						addFavourite(albumPath);
 					});
-
-				function checkLibraryRefresh(oldHTML) {
-					(function worker() {
-						$.ajax({
-							url: "<?php print Musicco::getConfig("musicRoot") ?>.lock", 
-							success: function(data) {
-								tempHTML = ("<?php print $this->getString("rebuildingLibrary"); ?>");
-								$("#reset_db").html(tempHTML);
-								setTimeout(worker, 10000);
-							},
-							error: function(data) {
-								tempHTML = oldHTML;
-								$("#reset_db").html(tempHTML);
-								var library = $("#library").fancytree("getTree");
-								if (library.length > 0) {
-									library.reload();
-								}
-								updateFavourites();
-							}
-						});
-					})();
-				}
 
 				$(document).on("click", "#remove_shared_links", function() {
 						showLoadingInfo("<?php print $this->getString("removing_shared_links"); ?>");
@@ -1183,20 +2709,6 @@ class Musicco {
 					});
 				});
 
-				function playRandomAlbum() {
-					if ($('.move').length) {
-						var currentAlbum = musiccoPlaylist.playlist[musiccoPlaylist.current].album;
-						var currentAlbumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(currentAlbum);
-						var randomAlbumStart = currentAlbumStart;
-						while (randomAlbumStart == currentAlbumStart) {
-							var randomTrack = Math.floor(Math.random() * musiccoPlaylist.playlist.length);
-							var randomAlbum = musiccoPlaylist.playlist[randomTrack].album;
-							randomAlbumStart = musiccoPlaylist.playlist.map(function(d) { return d['album']; }).indexOf(randomAlbum);
-						}
-						musiccoPlaylist.play(randomAlbumStart);
-					}
-				}
-
 				$(document).on("taphold", "#big-cover, .big-jp-play, .big-jp-pause", function(e) {
 					playRandomAlbum();
 				});
@@ -1230,7 +2742,7 @@ class Musicco {
 										hitLink+="<a class=\"searchResult uncoverLink\" id=\"" + i +"\" data-parent=\""+ levelUp +"\" data-title=\"" + parentItem + "\" data-path=\"" + parentItem + "\">"+ parentItemName +"</a>";
 									$("#searchResults").before(hitLink);
 									var thisHit = "#"+i;
-									queueMusic($(thisHit).data("parent") + $(thisHit).data("path"), $(thisHit).data("title"), false);
+									queueMusic($(thisHit).data("parent") + $(thisHit).data("path"), $(thisHit).data("title"), Insert.last);
 									});
 								}
 							$(".uncoverLink").remove(); 
@@ -1263,430 +2775,6 @@ class Musicco {
 					displayInfo($(this).attr('title'));
 				});
 
-				function isFirstAlbumTrack(index) {
-					if (index == 0) {
-						return true;
-					} else if (musiccoPlaylist.playlist[index].album != musiccoPlaylist.playlist[(index - 1)].album) {
-						return true;
-					} else {
-						return false;
-					}
-				}
-
-				function hasPlaylist() {
-					return (musiccoPlaylist.playlist.length > 0)
-				}
-
-				function formatPlaylist() {
-					if (hasPlaylist()) {
-						$('.itemHeader').remove();
-						$('.jp-playlist-item-free').html("");
-						var firstAlbum = musiccoPlaylist.playlist[0].album;
-						var lastAlbum = musiccoPlaylist.playlist[musiccoPlaylist.playlist.length -1].album;
-						var albums = [];
-						var albumIndex = 0;
-						var tracks = 0;
-						$('#playlistPanel > ul > li >div').each(function(){
-							var index = $(this).parent('li').index();
-							if (isFirstAlbumTrack(index)) {
-								tracks = 1;
-								var thisAlbum = musiccoPlaylist.playlist[index].album;
-								albums.push({thisAlbum, albumIndex, index, tracks});
-								var moveUp = "";
-								if (thisAlbum != firstAlbum) {
-									moveUp = "<a class=\"move fas fa-arrow-up\""
-												+ "data-from=\"" + albumIndex + "\""
-												+ "data-to=\"" + (albumIndex - 1) + "\""
-												+ "data-direction=\"up\""
-												+ "></a>";
-								}
-
-								var moveDown="";
-								if (thisAlbum != lastAlbum) {
-									moveDown = "<a class=\"move fas fa-arrow-down\""
-												+ "data-from=\"" + albumIndex + "\""
-												+ "data-to=\"" + (albumIndex + 1) + "\""
-												+ "data-direction=\"down\""
-												+ "></a>";		
-								}
-								var year = musiccoPlaylist.playlist[index].year
-								if (year != "") {
-									year = ", " + year;
-								}
-								var artist = musiccoPlaylist.playlist[index].artist;
-								var cover = musiccoPlaylist.playlist[index].poster;
-								var path = musiccoPlaylist.playlist[index].path;
-								var parent = "";
-								var albumFolder = ""
-								var parents = path.split("/");
-								for (var i=0; i<parents.length - 2; i++) {
-									parent += parents[i] + "/";
-								}
-								albumFolder = parents[parents.length -2];
-								var download = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay downloadAlbum' data-parent='replacemeParent' data-album='replacemeAlbum'><i class='fas fa-download'></i></a>\"":"\"\""); ?>;
-								var favourite = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay favouriteAlbum' data-path='replacemePath'><i class='fas fa-heart'></i></a>\"":"\"\""); ?>;
-								var share = <?php print (AuthManager::isAdmin()?"\"<a class='guestPlay share' data-path='replacemePath' data-info='replacemeInfo'><i class='fas fa-external-link-alt'></i></a>\"":"\"\""); ?>;
-								var itemHeader = 
-								"<span class=\"itemHeader\">"
-									+ "<table class=\"itemHeaderDetails\">"
-										+ "<tr>"
-											+ "<td rowspan=\"2\"><img class=\"album-cover\" src=\"" + cover + "\"/></td>"
-											+ "<td class=\"itemHeaderRemove\">"
-												+ "<a class=\"guestPlay remove-album fas fa-times\" data-album=\"" + thisAlbum + "\"></a>"
-												+ "<br/>"
-												+ moveUp
-												+ moveDown
-												+ favourite.replace(/replacemePath/, path)
-												+ download.replace(/replacemeParent/, parent).replace(/replacemeAlbum/, albumFolder)
-												+ share.replace(/replacemePath/, path).replace(/replacemeInfo/, artist + " - " + thisAlbum)
-											+ "</td>"
-										+ "</tr>"
-										+ "<tr>"
-											+ "<td class=\"itemHeaderDetails\">"
-												+ "<span class=\"itemHeaderAlbum\">" + thisAlbum.replace(/<?php print $this->getConfig('new_marker'); ?>/, "") + "</span><br/>"
-												+ "<span class=\"itemHeaderArtist\">" + artist + "</span>"
-												+ "<span class=\"itemHeaderYear\">" +	 year + "</span>"
-											+ "</td>"
-										+ "</tr>"
-									+ "</table>"
-								+ "</span>";
-								$(this).before(itemHeader);
-								albumIndex += 1;
-							} else {
-								tracks +=1;
-								albums[albumIndex -1].tracks = tracks;
-							}
-						});
-						if (isGuestPlay()) { 
-							$('.guestPlay').hide();
-							$('.jp-playlist-item-remove').hide();
-						}
-					musiccoPlaylist.albums = albums;
-					setTimeout(function() { hideSpinner(); scrollPlaylist(); }, 500);
-					}
-			}
-
-			function hideSpinner() {
-				$("#playlistSpinner").hide();
-				$("#playlistPanel ul").fadeTo("fast", 1);
-			}
-
-			function showSpinner() {
-				$("#playlistPanel").scrollTop(0);
-				$("#playlistSpinner").show();
-				$("#playlistPanel ul").fadeTo(0, 0);
-			}
-
-				function postMessage(message) {
-					if (navigator.serviceWorker.controller != null) {
-						navigator.serviceWorker.controller.postMessage(message);
-					}
-				}
-
-				function wikiLink(page) {
-					return '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
-				}
-
-				function updateInfoPanel(url, artist, show) {
-					updateInfoPanel(url, artist, show, false);
-				}
-
-				function updateInfoPanel(url, artist, show, force) {
-					var resyncText = "&nbsp;&#8226;&nbsp;" + nowPlaying("artist") + "&nbsp;&#9654;";
-					$("#resync").html(resyncText);
-					if (show) {
-						showPanel("#infoPanel");
-					}
-					if (force) {
-							$("#resync").show();
-					}
-					if (force || $("#resync").is(":hidden")) {
-						var searchArtistExt = "<?php print $this->getString("search"); ?>";
-						searchArtistExt +=  "<a target=\"blank\" href=\"http://last.fm/search?q=" + "+" + artist +"\">" + "<?php print $this->getString("lastfm"); ?>" + "</a>" ;
-						searchArtistExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
-						searchArtistExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>" + artist + "+band\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
-						$('#wikiPrev').html("");
-						wikiHistoryPos += 1;
-						
-						var hasHistory = ((wikiHistoryPos > 0)) ? true : false;
-						var prevUrl = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].href : "";
-						var prevTitle = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].title : "";
-						var isCurrentArtist = (artist ===  nowPlaying("artist"));
-
-						if ((url != "") && (url != prevUrl)) {
-							wikiHistory.push({seq: wikiHistoryPos, title: artist, href: url})
-						} else {
-							wikiHistoryPos -= 1;
-						}
-						
-						if ((hasHistory) && (wikiHistoryPos >= 0)) {
-							$('#wikiPrev').html("<a href=\"" + prevUrl + "\" class=\"historyLink\" title=\"" + prevTitle + "\">&#9664;&nbsp;" + prevTitle + "</a>");
-						} else if (isCurrentArtist) {
-							$("#resync").hide();
-						} else if (!isCurrentArtist) {
-							$("#resync").show();
-						}
-
-						$('#infoPanelTitle').html(artist);
-						$('#infoPanelText').html("");
-						$.ajax({
-							type: "GET",
-							dataType: "jsonP",
-							url: url,
-							success: function(json) {
-								if (json.parse) {
-									$('#infoPanelText').html(searchArtistExt + json.parse.text['*']);
-									$("#infoPanelText").find("*").removeAttr("style"); 
-									$("#infoPanelText").find(".mw-editsection").hide(); 
-									$("#infoPanelText").find('.image').removeAttr("href", ""); 
-									$("#infoPanelText").find('.new').removeAttr("href", ""); 
-									$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
-									$("#infoPanelText").find('a').removeClass("new"); 
-									$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
-								} else {
-									$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist + " - " + searchArtistExt);
-								}
-							}
-						});
-					}
-				}
-
-				function updateLyricsPanel(artist, song) {
-					var artist=nowPlaying("artist");
-					var song=nowPlaying("title");
-					var searchLyricsExt = "<?php print $this->getString("search"); ?>";
-					searchLyricsExt +=  "<a target=\"blank\" href=\"http://genius.com/search?q=" + song + "+" + artist +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
-					searchLyricsExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
-					searchLyricsExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>"  + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
-					var LRCurl= encodeURI(nowPlaying('mp3').replace(/.mp3/, ".lrc"));
-					var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
-					var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
-					var searchOnline = true;
-
-					if (loadLrc) {
-						$.ajax({
-							type: "GET",
-							url: "?head&url="+ LRCurl,
-							dataType: "text",
-							complete: function(text) {
-								if (text.responseText < 400) {
-									searchOnline = false;
-									$.ajax({
-										type: "GET",
-										url: "?fetch&url=" + LRCurl,
-										dataType: "text",
-										success: function(lyrics) {
-											$('#lyricsPanel').html(searchLyricsExt + "<br/>" + lyrics.replace(/\[.*\]/g, "<br/>"));
-										}
-									});
-								}
-							}
-						});
-					}
-
-					if (searchOnline) {
-						$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
-						$.ajax({
-							type: "GET",
-							url: "?fetch&url=" + APIurl,
-							dataType: "xml",
-							success: function(xml) {
-								var lyrics="";
-								$(xml).find('GetLyricResult').each(function(){
-									var lyricArtist=$(this).find('LyricArtist').text();
-									var lyricSong=$(this).find('LyricSong').text();
-									var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
-									var lyricImage = "";
-									var lyricCovertArtUrl = $(this).find('LyricCovertArtUrl').text();
-									if (lyricCovertArtUrl != "") {
-										proxyImage(lyricCovertArtUrl)
-										lyricImage = "<img class=\"hidden\" id=\"lyricCoverArt\" src=\"\"/><br/>";
-									}
-									var lyricInfo="<a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a> - " + searchLyricsExt + "<br/><br/>";
-									//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.
-									lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
-									$('#lyricsPanel').html(lyricImage + lyricInfo + lyrics);
-								});
-								if (lyrics=="") {
-									noLyricsFound(song, artist, searchLyricsExt);
-								}
-							},
-							error: function() {
-									noLyricsFound(song, artist, searchLyricsExt);
-							}
-						});
-					}
-				}
-
-				function noLyricsFound(song, artist, searchLyricsExt) {
-					var noLyricsText = "<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist;
-					noLyricsText += "<br/>";
-					noLyricsText += searchLyricsExt;
-					$('#lyricsPanel').html(noLyricsText);
-				}
-
-				function proxyImage(URL) {
-					var path = "<?php print $this->getConfig('tempFolder'); ?>" + "/" + Math.floor(Date.now());
-					var imagePath = path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig('coverExtension'); ?>" + "?" + Math.floor(Date.now());
-					$.post('?', {saveCover: '', u: URL, p: path}, function (response) {
-					});
-					setTimeout(function() { $("#lyricCoverArt").attr("src", imagePath); $("#lyricCoverArt").fadeIn(); }, 3000);
-					return path;
-				}
-
-				function saveCover(coverURL, path) {
-					$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
-					});
-					var imagePath = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
-					for (var i=0; i<musiccoPlaylist.playlist.length; i++) {
-							if (musiccoPlaylist.playlist[i].path == path) {
-								musiccoPlaylist.playlist[i].poster = imagePath;
-							}
-					}
-					savePlaylist();
-					setTimeout(function() { formatPlaylist(); if (!isTooLate()) { printCover(imagePath); } }, 4000);
-				}
-
-				function savePlaylist(playlistName) {
-					var name = playlistName;
-					if (name == null) {
-						name = isGuestPlay()? "guestPlay" : $("#playlist_select").find(":selected").text();
-					}
-					var user = "<?php echo AuthManager::getUserName(); ?>";
-					var playlist = JSON.stringify(musiccoPlaylist.original);
-					var current = musiccoPlaylist.current;
-					var time = Math.floor(jpData.status.currentTime);
-					var loop = musiccoPlaylist.loop;
-					var shuffled = musiccoPlaylist.shuffled;
-					$.post('?', {savePlaylist: '', u: user, n: name, p: playlist, c: current, t: time, l: loop, s: shuffled}, function (response) {
-					});
-				}
-
-				function createNewPlaylist(name) {
-					savePlaylist();
-					$("#playlist_select").append('<option value="' + name + '">' + name  + '</option>');
-					$("#playlist_select").val(name);
-					clearPlaylist();
-				}
-
-				function deletePlaylist(name) {
-					var user = "<?php echo AuthManager::getUserName(); ?>";
-					$.post('?', {deletePlaylist: '', u: user, n: name}, function (response) {
-					});
-				}
-
-				function renamePlaylist(oldName, newName) {
-					var user = "<?php echo AuthManager::getUserName(); ?>";
-					$.post('?', {renamePlaylist: '', u: user, o: oldName, n: newName}, function (response) {
-					});
-				}
-
-				function getPlaylists() {
-					var user = "<?php echo AuthManager::getUserName(); ?>";
-					if (user!="") {
-						$.post('?', {getPlaylists: '', u: user}, function(response) {
-							var playlists = JSON.parse(response);
-							$.each(playlists, function (i, name) {
-								$("#playlist_select").append('<option value="' + i + '">' + name  + '</option>');
-							});
-						});
-					}
-				}
-
-				function loadPlaylist(name) {
-					showSpinner();
-					if (name == null) {
-						name = "";
-					}
-					var user = "<?php echo AuthManager::getUserName(); ?>";
-					if (user!="") {
-						$.post('?', {loadPlaylist: '', u: user, n: name}, function(response) {
-							var data = JSON.parse(response.playlist)[0];
-							var needsBuilding = (data !=null)? data.build: false;
-							if (needsBuilding) {
-								var root = data.path;
-								$.post('?', {querydb: '', root: root, type: 'queue'}, function (results) {
-										var files=results;
-										if (files != null) {
-										$.each(files, function (i, elem) {
-											musiccoPlaylist.add({
-												title: files[i].songtitle,
-												artist: files[i].artist,
-												year: files[i].year,
-												album: files[i].album,
-												free: false,
-												path: files[i].parent.replace(/\"/g,""),
-												mp3: encodeURI((files[i].parent+files[i].title).replace(/\"/g,"")),
-												filename: files[i].title,
-												extension: files[i].extension,
-												poster: files[i].cover,
-												number: files[i].number
-											});
-											musiccoPlaylist.play();
-											});
-										}
-							}, "json");
-							} else {
-								musiccoPlaylist.setPlaylist(jQuery.parseJSON(response.playlist));
-								musiccoPlaylist.select(parseInt(response.current));
-								restoreCurrentTime = parseInt(response.time)
-								restorePlaylistPosition=parseInt(response.current);
-								musiccoPlaylist.loop = response.loop;
-								musiccoPlaylist.shuffled = response.shuffled;
-								if (musiccoPlaylist.loop == "true") {
-									$(toggleAndUpdate($('#big-repeat'), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
-								}
-								if (musiccoPlaylist.shuffled == "true") {
-									$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
-								}
-							}
-							$("#loading").hide();
-							setTimeout(function() {
-								formatPlaylist();
-							}, 1000);
-							if (isGuestPlay()) {
-								setTimeout(function() {
-									togglePanel("#playlistPanel");
-								}, 3000);
-							}
-						}, "json");	
-					}
-				}
-
-
-				function saveGuestPlaylist(path, info, cover) {
-					var user = Date.now().toString(36);
-					var cover = cover;
-					$("#shared-album-qr").empty();
-					$("#shared-album-title").text(info);
-					$("#shared-album-cover").attr("src", cover);
-					$("#sharing-banner").dialog("open");
-					var link = getBaseURL() + "?guestPlay&u=" + user;
-					var qrW = $("#shared-album-cover").width();
-					var qrH = $("#shared-album-cover").height();
-					$("#shared-album-link").val(link).select().attr('size', link.length);
-					$("#shared-album-qr").qrcode({width: qrW, height: qrH, text: link});
-					if (navigator.share) {
-						$("#shared-album-share").show();
-					} else {
-						$("#shared-album-share").hide();
-					}
-					$.post('?', {saveGuestPlaylist: '', u: user, p: path}, function (response) {
-					});
-				}
-
-				$("#shared-album-show-qr, #shared-album-show-cover").on("click", function() {
-					$("#shared-album-cover, #shared-album-qr, #shared-album-show-qr, #shared-album-show-cover").toggle();
-					$("#shared-album-qr canvas").addClass("boxed");
-				});
-
-				function flashInfo() {
-					setTimeout(function(){ 
-						$("#big-info").css('opacity', '');
-					 }, 3000);
-					$("#big-info").css('opacity', '1');
-				}
-
 				$("#shared-album-share").on("click", function(event) { 
 					navigator.share({
 						title: "<?php echo Musicco::getString('album_sharing'); ?>",
@@ -1697,438 +2785,10 @@ class Musicco {
 						.catch((error) => console.log('Error sharing', error));
 				});
 
-				$("#musiccoplayer").on($.jPlayer.event.play, function(event) {
-					 if (restoreCurrentTime != -1) {
-						 setTimeout(function(){ 
-								 jp.jPlayer( "play", restoreCurrentTime); 
-								 restoreCurrentTime = -1;
-						 }, 100);
-						}
-						restorePlaylistPosition = musiccoPlaylist.current;
-						$('.big-jp-play').hide();
-						$('.big-jp-pause').show();
-						$("#nowPlayingTitle").text(nowPlaying('title'));
-						$("#nowPlayingArtist").text(nowPlaying('artist'));
-						$("#nowPlayingAlbum").text(nowPlaying('album'));
-						var albumYear = "";
-						if (nowPlaying('year') != "") {
-							albumYear = "(" + nowPlaying('year') + ")";
-						}
-						$("#nowPlayingAlbumYear").text(albumYear);
-						flashInfo();
-						$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying('artist') + " " + nowPlaying('album'));
-						showNotification();
-						updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"), false, false);
-						updateLyricsPanel(nowPlaying("artist"), nowPlaying("title"));
-						displayCover();
-						savePlaylist();
-						scrollPlaylist();
-						// Disable playlist caching for performance reasons. Is it possible to do this async?
-						// Also, don't arbitrarily push 5 tracks, the playlist may be smaller than that...
-						//var tracks = [];
-						//for (var i=musiccoPlaylist.current; ((i < (musiccoPlaylist.current + 5)) && (i < musiccoPlaylist.playlist.length + 1)); i++) {
-							//tracks.push(musiccoPlaylist.playlist[i].mp3);
-						//}
-						//postMessage({command: "playlist", tracks: tracks});
-				});
-
-				function notificationSupported() {
-					if (!(/Android/i.test(navigator.userAgent)) && ('Notification' in window)) {
-						return true;
-					}
-					return false;
-						}
-
-				function notificationAllowed() {
-					if (notificationSupported() && Notification.permission === 'granted') {
-						return true;
-				}
-					return false;
-				}
-
-				function showNotification(status) {
-					if ((notificationSupported()) && (!notificationAllowed())) {
-						Notification.requestPermission().then(function() {
-								if (notificationAllowed()) {
-									showNotification(status);
-								}
-							});
-						}
-						var albumYear = "";
-						if (nowPlaying("year") != "") {
-							albumYear = " (" + nowPlaying("year") + ")";
-						}
-						var title = nowPlaying("title");
-						var artist = nowPlaying("artist");
-						var poster = nowPlaying("poster");
-						var album = nowPlaying("album");
-							
-						if ('mediaSession' in navigator) {
-							navigator.mediaSession.metadata = new MediaMetadata({
-									title: title,
-									artist: artist,
-									album: album + albumYear,
-									artwork: [
-										{ src: poster, sizes: '256x256', type: 'image/png' },
-										{ src: poster, sizes: '512x512', type: 'image/png' },
-									]
-								});
-							navigator.mediaSession.setActionHandler('previoustrack', function() { previousTrack() });
-							navigator.mediaSession.setActionHandler('nexttrack', function() { nextTrack() });
-							navigator.mediaSession.setActionHandler('seekbackward', function() { skip("backward"); });
-							navigator.mediaSession.setActionHandler('seekforward', function() { skip("forward"); });
-						} else if (musiccoService != null) {
-							var actions = [];
-							if (status == "isPaused") {
-								actions.push({ "action": "play", "title": "<?php print $this->getString("play"); ?>", "icon": "theme/images/play.png" });
-							} else {
-								actions.push({ "action": "pause", "title": "<?php print $this->getString("pause"); ?>", "icon": "theme/images/pause.png" });
-							}
-							actions.push({ "action": "nexttrack", "title": "<?php print $this->getString("nexttrack"); ?>", "icon": "theme/images/nexttrack.png" });
-							actions.push({ "action": "previoustrack", "title": "<?php print $this->getString("previoustrack"); ?>", "icon": "theme/images/previoustrack.png" });
-							actions.push({ "action": "seekforward", "title": "<?php print $this->getString("seekforward"); ?>", "icon": "theme/images/seekforward.png" });
-							actions.push({ "action": "seekbackward", "title": "<?php print $this->getString("seekbackward"); ?>", "icon": "theme/images/seekbackward.png" });
-
-
-							var options = {
-								"body": artist + " - " + album + albumYear,
-								"icon": poster,
-								"tag": "musicconowplayingnotification",
-								"persistent": true,
-								"replaceable": true,
-								"actions": actions
-							};
-							musiccoService.showNotification(title, options);
-						} else {
-								notif = new Notification(title + " - " + artist,
-																					{'icon': poster,
-																					 'body': album + albumYear,
-																					 'tag' : 'musicconowplayingnotification'});
-								notif.onclick = function(x) { window.focus(); this.close(); };
-								setTimeout(function(){
-									notif.close();}, 5000);
-						}
-				}
-
-				$("#musiccoplayer").on($.jPlayer.event.pause, function(event) {
-					$('.big-jp-play').show();
-					$('.big-jp-pause').hide();
-					savePlaylist();
-				});
-
-				$("#musiccoplayer").on($.jPlayer.event.ready, function(event) {
-					loadPlaylist();
-					if (!isGuestPlay()) {
-						getPlaylists();
-					}
-					updateVolumeValue();
-				});
-
 				$('a.fader:has(img)').hover(
 						function() { $('img', this).fadeOut(100);},
 						function() { $('img', this).fadeIn(3000);}
 				);
-				$('.jp-current-time').appendTo('#big-timer');
-				$('.jp-duration').appendTo('#big-timer');
-				$('.jp-progress').appendTo('#big-jp-progress');
-
-				function updateVolumeValue() {
-					var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;
-					$('#big-volume-bar').stop(true, true);
-					$('#big-volume-bar').show();
-					$('#volume-value').height((100 - (volume * 100))+"%");
-					$('#big-volume-bar').delay(800).fadeOut(1600, "linear");
-				}
-
-				function ChangeVolume(direction) {
-					var volume = $("#jquery_jplayer_2").data("jPlayer").options.volume;				
-					var changedVol = 0;
-					
-					if (direction == "-")		{
-						changedVol = volume - 0.10;
-						if (changedVol <= 0)	{
-							changedVol = 0;
-						}
-					}				
-					else if (direction == "+")	{
-						changedVol = volume + 0.10;
-						if (changedVol >= 1) {
-							changedVol = 1;
-						}
-					}				
-
-					jp.jPlayer({
-						volume:changedVol
-					});		
-					updateVolumeValue();
-				}
-
-				function triggerPlayPause() {
-					var status = "";
-					if($("#jquery_jplayer_2").data("jPlayer").status.paused) { 
-						$('.big-jp-play').trigger('click');
-					} else {
-						$('.big-jp-pause').trigger('click');
-						status = "isPaused";
-					}
-					showNotification(status);
-				}
-
-				function hotkey(e) {
-					// Key codes:
-					// 13: enter
-					// 32: space
-					// 178: media pause
-					// 179: media play
-					// 223: grave
-					// 27: Esc
-					// 191: /
-					// 38: arrow up
-					// 175: media volume up
-					// 40: arrow down
-					// 174: media volume down
-					// 174: media volume down
-					// 37: arrow left
-					// 177: media previous
-					// 39: arrow right
-					// 177: media next
-					// 65: a
-					// 66: b
-					// 83: s
-					// 80: p
-					// 84: t
-					// 72: h
-					// 73: i
-					// 76: l
-					// 71: g
-					// 48: 0
-					// 49: 1
-					// 50: 2
-					// 51: 3
-					// 52: 4
-					// 53: 5
-					// 54: 6
-					// 55: 7
-					// 56: 8
-					// 57: 9
-					// 96: 0
-					// 97: 1
-					// 98: 2
-					// 99: 3
-					// 100: 4
-					// 101: 5
-					// 102: 6
-					// 103: 7
-					// 104: 8
-					// 105: 9
-					var inputIsFocused = $("input").is(":focus");
-					var treeIsFocused = (($("#library,#favourites").find(":focus")).length > 0) && $(".fancytree-container").hasClass("fancytree-treefocus");
-					var tabIsFocused = $(document.activeElement).hasClass("ui-tabs-tab");
-					var menuIsFocused = $(".ui-contextmenu").is(":focus");
-					var node = treeIsFocused? $("#library").fancytree("getActiveNode") : null;
-					var customKeyEvents = [];
-					if (inputIsFocused) {
-						customKeyEvents.push(27);
-					} else if (treeIsFocused) {
-						customKeyEvents.push(27, 191, 65, 73);
-					} else if (menuIsFocused || tabIsFocused) {
-						//no keys intercepted on context menu
-					} else {
-						customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 71, 72, 73, 76, 80, 83, 84, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
-					}
-					
-					if (customKeyEvents.indexOf(e.keyCode) > -1) {
-						switch (e.keyCode) {
-							case 13: //enter
-								if ($(".hits a").is(':focus')) {
-									$(".hits a:focus").trigger('mouseup');
-								}
-							break;
-							case 32: //space
-							case 179: //media play
-							case 178: //media pause
-								triggerPlayPause();
-							break;
-							
-							case 223: //grave
-								if (e.ctrlKey) {
-									triggerPlayPause();
-								}
-							break;
-							
-							case 38: //up arrow
-							case 175: //media volume up
-							 ChangeVolume("+");
-							break;
-							
-							case 40: //down arrow
-							case 174: //media volume down
-								ChangeVolume("-");
-							break;
-						
-							case 37: //left arrow
-							case 177: //media previous
-								if (e.shiftKey) {
-									skip("backward");
-								} else {
-									previousTrack();
-								}
-							break;
-						
-							case 39: //right arrow
-							case 176: //media next
-							 if (e.shiftKey) {
-								skip("forward");
-							 } else {
-								nextTrack();
-							 }
-							break;
-
-							case 66: //b
-								if (!isGuestPlay()){	
-									 togglePanel("#browserPanel");
-									$("#library").fancytree("getTree").getFirstChild().setActive();
-								}
-							break;
-
-							case	72: // h
-								showHelp();
-							break;
-
-							case	191: // /
-								if (!isGuestPlay()) {
-									 togglePanel("#browserPanel");
-									 $('#filterText').select();
-									 $('#filterText').focus();
-								}
-							break;
-
-							case 65: //a
-								if (treeIsFocused) {
-									var slash = node.isFolder()? "/": "" ;
-									queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, false);
-								}
-							break;
-
-							case 84: //t
-								$(".ui-tabs-active").focus();
-							break;
-
-							case 83: //s
-								if (!isGuestPlay()){
-									 if ($('#searchPanel').is(':hidden')) {
-										togglePanel("#searchPanel");
-									 }
-									 $('#searchText').select();
-									 $('#searchText').focus();
-								} 
-							break;
-								
-							case 80: //p
-								 if (!isWidescreen()) {
-									togglePanel("#playlistPanel");
-								 }
-							break;
-
-							case 73: //i
-							 if (e.ctrlKey && e.altKey) {
-							 } else {
-								if (treeIsFocused) { 
-									displayInfo(node.data.songtitle);
-								} else {
-									togglePanel("#infoPanel");
-								}
-							 }
-							break;
-
-							case 76: //l
-							 togglePanel("#lyricsPanel");
-							break;
-							
-							case 71: //g
-							 if (e.ctrlKey) {
-							 } else {
-								togglePanel("#settingsPanel");
-							 }
-							break;
-							
-							case 48: //0
-							case 49: //1
-							case 50: //2
-							case 51: //3
-							case 52: //4
-							case 53: //5
-							case 54: //6
-							case 55: //7
-							case 56: //8
-							case 57: //9
-								if (e.shiftKey || e.ctrlKey) {
-								} else {
-									jump(e.keyCode - 48);
-								}
-							break;
-							
-							case 96: //0
-							case 97: //1
-							case 98: //2
-							case 99: //3
-							case 100: //4
-							case 101: //5
-							case 102: //6
-							case 103: //7
-							case 104: //8
-							case 105: //9
-								if (e.shiftKey || e.ctrlKey) {
-								} else {
-									jump(e.keyCode - 96);
-								}
-							break;
-
-							case 27: //Esc
-								if ($(".modal").is(":visible")) {
-								} else {
-									closeLeftPanel();
-								}
-							break;
-						}
-					}
-				}
-
-				function showHelp() {
-					$("#help").trigger("click");
-				}
-
-				function closeLeftPanel() {
-					if ($("#leftPanel").is(":visible") && isPortrait()) {
-						$("#ham").trigger("click");
-						$("#mini-controls").hide();
-						$(".panel").removeClass("shown");
-					}
-				}
-
-				function togglePanel(panel) {
-					if ($(panel).hasClass("shown") && isPortrait()) {
-						$("#ham").trigger("click");
-					} else {
-						if ($("#leftPanel").is(":hidden")) {
-							$("#ham").trigger("click");
-						}
-						showPanel(panel);
-					}
-				}
-
-				function forcePanel(panel) {
-					$(panel).addClass("default");
-					if (($(".panel[class~='shown']").not("[class*='default']")).length = 0) {
-						showPanel(panel);
-					}
-				}
-
-				function showPanel(panel) {
-					$(".panel").removeClass("shown");
-					$(panel).addClass("shown");
-					$(".panelToggle[href='" + panel + "']").trigger("click");
-				}
 
 				$(document).on("click", "#newPlaylist", function() {
 					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>");
@@ -2167,184 +2827,18 @@ class Musicco {
 				$(document).on("click", "#resync", function(event) { 
 					event.preventDefault();
 					$("#resync").hide();
-					updateInfoPanel(wikiLink(nowPlaying("artist")), nowPlaying("artist"), false, false);
+					updateInfoPanel(wikiLink(nowPlaying["artist"]), nowPlaying["artist"], false, false);
 				});
 
 				$(document).on("click", "#playlistToggle", function(event) { 
 					scrollPlaylist();
 				});
 
-				function jump(percent) {
-					$("#jquery_jplayer_2").jPlayer("playHead", (percent * 10));
-				}
-
-				function isGuestPlay() {
-					return ("<?php print AuthManager::isGuestPlay(); ?>");
-				}
-
-				$(document).on("click taphold", ".big-jp-previous", function(e) {
-					var shift = (e.type === "taphold")? true : e.shiftKey;
-					if (shift) {
-						skip("backward");
-					} else {
-						previousTrack();
-					}
-				});
-
-				function previousTrack() {
-					$('.jp-previous').trigger('click');
-				}
-
-				function nextTrack() {
-					$('.jp-next').trigger('click');
-				}
-
-				function skip(direction) {
-					currentAlbumIndex = getCurrentAlbumIndex();
-					var targetAlbum = 0;
-					if (direction == "forward") {
-						targetAlbum = currentAlbumIndex + 1;
-					} else {
-						targetAlbum = currentAlbumIndex - 1;
-					}
-					if (targetAlbum < 0) {
-						targetAlbum = musiccoPlaylist.albums.length - 1;
-					} else if (targetAlbum > musiccoPlaylist.albums.length - 1) {
-						targetAlbum = 0;
-					}
-					musiccoPlaylist.play(musiccoPlaylist.albums[targetAlbum].index);
-				}
-
-				$(document).on("click", ".jp-playlist-item", function(event) { 
-					restoreCurrentTime = -1;
-					formatPlaylist();
-				});
-
-				$(document).on("click", ".jp-playlist-item-remove", function(event) {
-					if ($(this).parents("li").has("span.itemHeader").length) {
-						setTimeout(function() { formatPlaylist(); }, 800);
-					}
-				});
-
-				$(document).on("mouseenter mouseleave", ".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove", function(event) {
-					var parent = $(this).parent("div");
-					$(parent).children(".jp-playlist-item, .jp-free-media, .jp-playlist-item-remove").toggleClass("current");
-				});
-
-				$(document).on("click taphold", ".remove-album", function(e) {
-					showSpinner();
-					var newPlaylist = [];
-					var shift = (e.type === "taphold")? true : e.shiftKey;
-					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
-					var removeTarget = musiccoPlaylist.albums.map(function(d) { return d['index']; }).indexOf($(this).parents('li').index());
-					restoreCurrentTime = Math.floor(jpData.status.currentTime);
-					var repeats = 1;
-					var albumIndex = removeTarget;
-					if (shift) {
-						repeats = albumIndex;
-						albumIndex = 0;
-					} else if (e.ctrlKey) {
-						repeats = musiccoPlaylist.albums.length - removeTarget - 1;
-						albumIndex += 1;
-					}
-					$(this).queue(function() {
-						var albumArray = getAlbumArray();
-						for (var i=0; i < repeats; i++) {
-							albumArray.splice(albumIndex, 1)
-							newPlaylist = [].concat.apply([], albumArray);
-						}
-						musiccoPlaylist.setPlaylist(newPlaylist);
-						musiccoPlaylist.select(musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(current));
-						restorePlaylistPosition = musiccoPlaylist.albums[albumIndex].index;
-						$(this).dequeue; 
-					});
-						refreshPlaylist(current);
-				});
-
-				function getCurrentAlbumIndex() {
-					var current = musiccoPlaylist.current;
-					var albumStartPos = musiccoPlaylist.albums.map(function(d) { return d['index']; });
-					var albumIndex = 0;
-					var i = musiccoPlaylist.albums.length - 1;
-					var found = false;
-					while ((i >= 0) && (!found)) {
-						if (albumStartPos[i] > current) {
-							i--;
-						} else {
-							albumIndex = i;
-							found = true;
-						}
-					}
-					return albumIndex;
-				}
-
-				Array.prototype.move = function (old_index, new_index) {
-					showSpinner();
-					if (new_index >= this.length) {
-						var k = new_index - this.length;
-						while ((k--) + 1) {
-							this.push(undefined);
-						}
-					}
-					this.splice(new_index, 0, this.splice(old_index, 1)[0]);
-				};
-
-				function getAlbumArray() {
-					var albumArray = [];
-					for (var i=0; i < musiccoPlaylist.albums.length; i++) {
-						var thisAlbum = musiccoPlaylist.albums[i];
-						albumArray[i] = musiccoPlaylist.playlist.slice(thisAlbum.index, (thisAlbum.index + thisAlbum.tracks));
-					}
-					return albumArray;
-				}
-
-				function refreshPlaylist(currentSong) {
-					showSpinner();
-					var wasPlaying = $('.big-jp-pause').is(':visible');
-					if (restoreCurrentTime < 0) {
-						restoreCurrentTime = Math.floor(jpData.status.currentTime);
-					}
-					var newCurrentIndex = musiccoPlaylist.playlist.map(function(d) { return d['mp3']; }).indexOf(currentSong);
-					if (newCurrentIndex < 0) {
-						newCurrentIndex = 0;
-					}
-					musiccoPlaylist.select(newCurrentIndex);
-					musiccoPlaylist.option("autoPlay", wasPlaying);
-					setTimeout(function() {
-						formatPlaylist();
-					 }, 1500);
-				}
-
-				$(document).on("click taphold", ".move", function(e) {
-					var shift = (e.type === "taphold")? true : e.shiftKey;
-					var from = parseInt($(this).data('from'));
-					var to = parseInt($(this).data('to'));
-					if (shift) {
-						direction = $(this).data('direction');
-						if (direction == "up") {
-							to = 0;
-					} else {
-						to = musiccoPlaylist.albums.length -1;
-					}
-				}
-					moveAlbum(from, to);
-				});
-
-				function moveAlbum(from, to) {
-					var current = musiccoPlaylist.playlist[musiccoPlaylist.current].mp3
-					var albumArray = getAlbumArray();
-					albumArray.move(from, to);
-					var newPlaylist = [].concat.apply([], albumArray);
-					musiccoPlaylist.setPlaylist(newPlaylist);
-					restorePlaylistPosition = musiccoPlaylist.albums[to].index;
-					refreshPlaylist(current);
-				}
-
 				$(document).on("click", ".share", function() {
 					saveGuestPlaylist(
-						$(this).data('path'),
-						$(this).data('info'),
-						$(this).closest(".itemHeaderDetails").find("img.album-cover").attr("src")
+						$(this).parents("li").data("parent"),
+						$(this).parents("li").data("album") + " <?php print $this->getString("by"); ?> " + $(this).parents("li").data("artist"),
+						$(this).parents("li").find("img.playlist-poster").attr("src")
 					);
 				});
 
@@ -2360,36 +2854,19 @@ class Musicco {
 				});
 
 				$('#big-cover').on( "swipeup", function() {
-					ChangeVolume("+");
+					volumeUp();
 				});
 
 				$('#big-cover').on( "swipedown", function() {
-					ChangeVolume("-");
+					volumeDown();
 				});
 
 				$('#big-cover').on( "swipeleft", function() {
-					nextTrack();
+					playTrack(nextTrack);
 				});
 
 				$('#big-cover').on( "swiperight", function() {
-					previousTrack();
-				});
-
-				$('.big-jp-play').click(function() {
-					$('.jp-play').trigger('click');
-				});
-
-				$('.big-jp-pause').click(function() {
-					$('.jp-pause').trigger('click');
-				});
-
-				$(document).on("click taphold", ".big-jp-next", function(e) {
-					var shift = (e.type === "taphold")? true : e.shiftKey;
-					if (shift) {
-						skip("forward");
-					} else {
-						nextTrack();
-					}
+					playTrack(previousTrack);
 				});
 
 				$('body').on("keyup", function(e) {
@@ -2399,498 +2876,32 @@ class Musicco {
 						hotkey(e);
 					}
 				});
-				
-				
 
 				if ($("#user_name").is('*')) {
 					$("#user_name").focus();
 				}
 
 				$('#big-shuffle').click(function() {
+					//REDO: shuffle activation
 					$(toggleAndUpdate($(this), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
 				});
 
 				$('#big-repeat').click(function() {
+					//REDO: repeat activation
 					$(toggleAndUpdate($(this), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
 				});
 
-				function toggleAndUpdate(toggle, classes) {
-					var target = "#musiccoplayer ."+ $(toggle).attr('class').replace(/selected /, "").replace(/toggles /, "").replace(/touch-/, "");
-					$(toggle).toggleClass(classes);
-					return target;
-				}
-
-				function displayInfo(query) {
-					updateInfoPanel(wikiLink(query), query, true, true);
-				}
-
-				function queueMusic(query, loadingInfo, custom) {
-					var playAfter = !hasPlaylist();
-					if (custom) {
-						var previousAlbums = getAlbumArray().length;
-					}
-					showLoadingInfo("<?php print $this->getString("queueing"); ?>" + loadingInfo.replace("/",""));
-					$.post('?', {querydb: '', root: query, type: "queue"}, function (response) {
-							var files=response;
-							if (files != null) {
-								$.each(files, function (i, elem) {
-									musiccoPlaylist.add({
-										title: files[i].songtitle,
-										artist: files[i].artist,
-										year: files[i].year,
-										album: files[i].album,
-										free:<?php print (AuthManager::isAdmin()?"true":"false"); ?>,
-										path: files[i].parent.replace(/\"/g,""),
-										mp3: encodeURI((files[i].parent + files[i].path).replace(/\"/g,"")).replace(/#/g, "%23"),
-										filename: files[i].path,
-										extension: files[i].extension,
-										poster: files[i].cover.replace(/#/g, "%23"),
-										number: files[i].number
-									});
-								});
-							}
-					formatPlaylist();
-					if (custom) {
-					var addedAlbums = getAlbumArray().length - previousAlbums;
-							for (var i=0; i < addedAlbums; i++) {
-								var from = previousAlbums + i;
-								var to = getCurrentAlbumIndex() + 1 + i;
-								moveAlbum(from, to);
-							}
-						}
-					if (playAfter) musiccoPlaylist.play();
-					}, "json");
-				}
-
 				$('#big-volume-down').click(function() {
-					ChangeVolume("-");
+					volumeDown();
 				});
 
 				$('#big-volume-up').click(function() {
-					ChangeVolume("+");
+					volumeUp();
 				});
-
-				function adaptUI(init) {
-				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
-				//console.log(newViewerType);
-				var newWindowWidth = $(window).width();
-				if ((newViewerType != viewerType) && (newWindowWidth != windowWidth) || (init)) {
-					viewerType = newViewerType;
-					windowWidth = newWindowWidth;
-					if (!isWidescreen()) {
-						$("#playlistToggle").show();
-						$("#leftPanel").tabs("enable", 2 );
-							if (isPortrait()) {
-								$("#leftPanel").hide();
-							} else {
-							}
-					} else {
-						$("#playlistToggle").hide();
-						$("#leftPanel").tabs("disable", 2 );
-					}
-					$("#leftPanel").tabs("refresh");
-				}
-				restorePanel();
-				$( ".modal" ).dialog({
-					modal: true,
-					autoOpen: false,
-					width: isPortrait() ? "100%": "40%",
-					height: $(window).height(),
-					show: { effect: "fade", duration: 400 },
-					hide: { effect: "fold", duration: 200 }
-				});
-			}
-
-			function restorePanel() {
-				var panel = ($(".panel[class~='shown']").not("[class*='default']"));
-				if (panel.length) {
-					$("#leftPanel").show();
-					$(".panelToggle[href='" + "#" + panel + "']").trigger("click");
-					if (isPortrait()) {
-						$(".default").removeClass("default");
-					}
-				} else {
-					if (!isPortrait()) {
-						forcePanel("#playlistPanel");
-					}
-					if (isWidescreen()) {
-						forcePanel("#browserPanel");
-						var activeTab = isGuestPlay()? 3 : 0;
-						$("#leftPanel").tabs("option", "active", activeTab);
-					}
-					if (isMedium()) {
-						showPanel("#playlistPanel");
-					} 
-				}
-			}
 
 			$(window).resize(function(){
 				adaptUI();
 			});
-
-			//ServiceWorker
-			var musiccoService;
-			if ('serviceWorker' in navigator) {
-				window.addEventListener('load', function() {
-					 navigator.serviceWorker.register('musicco.js').then(function(registration) {
-						// Registration was successful
-						//console.log('ServiceWorker registration successful with scope: ', registration.scope);
-						musiccoService = registration;
-					}, function(err) {
-						// registration failed :(
-						musiccoService = null;
-						//console.log('ServiceWorker registration failed: ', err);
-					});
-				});
-				navigator.serviceWorker.onmessage = function (e) {
-					switch (e.data) {
-							case "play":
-								triggerPlayPause();
-							break;
-							case "pause":
-								triggerPlayPause();
-							break;
-							case "nexttrack":
-								nextTrack();
-							break;
-					}
-				};
-			}
-
-			function isPortrait() {
-				return (viewerType === '"tall"') || (viewerType === '"square"');
-			}
-
-			function isMedium() {
-				return (viewerType === '"medium"');
-			}
-
-			function isWidescreen() {
-				return (viewerType === '"widescreen"');
-			}
-
-			// JQuery UI and other UI stuff
-			
-			$( "#leftPanel" ).tabs({
-				beforeActivate: function( event, ui ) {
-					ui.oldPanel.removeClass("shown");
-					ui.newPanel.addClass("shown");
-				}
-			});
-			adaptUI(true);
-		
-		if (isGuestPlay()) {
-			$('.guestPlay').hide();
-		} 
-
-
-		new Clipboard('.clip');
-		
-		var musicRoot = "<?php print Musicco::getConfig('musicRoot'); ?>/";
-		
-		var customTreeIcons = { 
-			preset: "awesome5",
-			map: {
-				doc: "fas fa-music",
-				docOpen: "fas fa-music",
-				expanderClosed: "fas fa-angle-right",
-				expanderOpen: "fas fa-angle-down"
-			}
-		};
-
-		function downloadTrack(parent, track) {
-			window.open("?getTrack&album=" + parent + "&track=" + track);
-		}
-
-		function downloadAlbum(parent, album) {
-			window.open("?getAlbum&parent=" + encodeURIComponent(parent) + "&album=" + encodeURIComponent(album));
-		}
-
-		function addFavourite(path) {
-			var user = "<?php echo AuthManager::getUserName(); ?>";
-			showLoadingInfo("<?php print $this->getString("favourites_added"); ?>");
-			$.post('?', {addFavourite: '', u: user, p: path}, function (response) {
-				updateFavourites();
-			});
-		}
-
-
-		function deleteFavourite(path) {
-			var user = "<?php echo AuthManager::getUserName(); ?>";
-			showLoadingInfo("<?php print $this->getString("favourites_removed"); ?>");
-			$.post('?', {deleteFavourite: '', u: user, p: path}, function (response) {
-					updateFavourites();
-			});
-		}
-
-
-		function updateFavourites() {
-			var user = "<?php echo AuthManager::getUserName(); ?>";
-			$.post('?', {getFavourites: '', u: user}, function (response) {
-					$("#favourites").fancytree("destroy");
-					$("#favourites").empty();
-					$("#favourites").append(response);
-					initFavouriteTree();
-			});
-		}
-
-		function initFavouriteTree() {
-			$("#favourites").fancytree({
-				extensions: ["glyph", "persist"],	
-				persist: { cookiePrefix: "favourites", expandOpts: {noAnimation: true, noEvents: true}},
-				glyph: customTreeIcons,
-				autoScroll: true,
-				clickFolderMode: 3,
-				keyboard: true,
-				tabindex: "0",
-				titlesTabbable: true,
-				tooltip: true,
-				selectMode: 1,
-				postProcess: function(event, data) {
-					if (data.response.length != 0 ) {
-						data.response[0].title = "<?php print Musicco::getString('my_favourites'); ?>";
-						data.response[0].icon = "fas fa-heart";
-					}
-				}
-			});
-			$("#favourites").fancytree("getTree").getPersistData();
-		}
-
-		function initLibraryTree() {
-			$("#library").fancytree({
-				extensions: ["glyph", "filter", "persist"],	
-				glyph: customTreeIcons,
-				filter: {
-					mode: "hide",
-					fuzzy: true,
-					hideExpanders: false,
-					nodata: function() { 
-						setTimeout(function() {
-							$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
-						}, 50);
-						if (!$("#includeOldAlbums").is(':checked')) {
-							resetCheckbox();
-							filterTree();
-							setTimeout(function() {
-								$(".fancytree-statusnode-nodata").hide();
-							}, 50);
-						}
-					}
-				},
-				autoScroll: true,
-				clickFolderMode: 3,
-				keyboard: true,
-				tabindex: "0",
-				titlesTabbable: true,
-				tooltip: true,
-				selectMode: 1,
-				source: {
-						url: "?",
-						type: "POST",
-						data: {querydb: '', root: decodeURI(musicRoot), type: 'browse'},
-						cache: true
-				},
-				beforeExpand: function(event, data) {
-					if (event.which === 3) {
-						return false;
-					}
-				},
-				lazyLoad: function(event, data) {
-					var node = data.node;
-					var root = node.data.parent + node.data.path + "/";
-					data.result = {
-						url: "?",
-						type: "POST",
-						data: {querydb: '', root: decodeURI(root), type: 'browse'},
-						cache: true
-					}
-				}
-			});
-		}
-
-
-		if (!isGuestPlay()) {
-			initFavouriteTree();
-			initLibraryTree();
-			initContextMenus();
-		}
-
-		function setMenuEntries(isFolder, target) {
-			 $(target).contextmenu("replaceMenu", menuOptions);
-			 var playRightNow = !hasPlaylist();
-			 var queue = hasPlaylist();
-			 var playAsNextAlbum = hasPlaylist();
-			 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
-			 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
-			 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
-			 var removeFavourite = ($(target).get(0) === $("#favourites").get(0));
-			 var favourite = !removeFavourite;
-			 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
-			 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
-			 $(target).contextmenu("updateEntry", "playAsNextAlbum", {setClass: playAsNextAlbum.toString()});
-			 $(target).contextmenu("updateEntry", "goto_artist", {setClass: goto_artist.toString()});
-			 $(target).contextmenu("updateEntry", "download", {setClass: download.toString()});
-			 $(target).contextmenu("updateEntry", "downloadAlbum", {setClass: downloadAlbum.toString()});
-			 $(target).contextmenu("updateEntry", "favourite", {setClass: favourite.toString()});
-			 $(target).contextmenu("updateEntry", "removeFavourite", {setClass: removeFavourite.toString()});
-			 $(".ui-menu .false").remove();
-		}
-
-		function handleMenuSelection(node, command) {
-			switch (command) {
-				case "info":
-					var query = node.data.songtitle;
-					displayInfo(query);
-				break;
-				case "queue":
-				case "playRightNow":
-					var slash = node.isFolder()? "/": "" ;
-					queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, false);
-				break;
-				case "playAsNextAlbum":
-					var slash = node.isFolder()? "/": "" ;
-					queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, true);
-				break;
-				case "goto_artist":
-					goToArtist(node.data.artist);
-				break;
-				case "share": 
-					var path = node.data.parent + node.data.path;
-					var separator = (node.data.artist == '')? "" : " - ";
-					var info = node.data.artist + separator + node.title;
-					var image = node.data.cover;
-					saveGuestPlaylist(path, info, image);
-				break;
-				case "download":
-					downloadTrack(node.data.parent, node.data.path)
-				break;
-				case "downloadAlbum":
-					downloadAlbum(node.data.parent, node.data.path);
-				break;
-				case "favourite":
-					addFavourite(node.data.parent + node.data.path);
-				break;
-				case "removeFavourite":
-					deleteFavourite(node.data.parent + node.data.path);
-				break;
-			}
-		}
-
-		$("#playlistPanel").contextmenu({
-			autoTrigger: 'false',
-			delegate: ".jp-playlist-item",
-			autoFocus: true,
-			menu: [
-          {title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
-          {title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fas fa-search"},
-          {title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
-          {title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
-          {title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"}
-          ],
-			select: function(event, ui) {
-				target = musiccoPlaylist.playlist[$(ui.target).parents("li").index()];
-				switch (ui.cmd) {
-					case "goto_artist":
-						goToArtist(target.artist);
-						break;
-					case "goto_album":
-						goToAlbum(target.title);
-					break;
-					case "download":
-						downloadTrack(target.path, target.filename);
-					break;
-					case "share": 
-						var path = target.path;
-						var separator = " - ";
-						var info = target.artist + separator + target.title;
-						var image = target.poster;
-						saveGuestPlaylist(path, info, image);
-					break;
-					case "favourite":
-						addFavourite(target.path + target.filename);
-					break;
-				}
-			}
-		});
-
-		function initContextMenus() {
-			$("#searchPanel").contextmenu({
-				autoTrigger: 'false',
-				delegate: ".searchResult,.searchResultParent",
-				autoFocus: true,
-				menu: menuOptions,
-				select: function(event, ui) {
-					var node = {
-						folder: ui.target.data("folder"),
-						title: ui.target.data("title").replace("/", ""),
-						data: {
-							album: ui.target.data("album"),
-							artist: (ui.target.data("artist").length > 0 ? ui.target.data("artist") : ui.target.data("path")),
-							cover: ui.target.data("cover"),
-							parent: ui.target.data("parent"),
-							path: ui.target.data("path").replace(/^(.*)\/$/, "$1"),
-							songtitle: ui.target.data("songtitle"),
-							type: ui.target.data("type"),
-							year: ui.target.data("year")
-						},
-						'isFolder': function() { return ui.target.data("folder"); }
-					};
-					handleMenuSelection(node, ui.cmd);
-				}
-			});
-
-			$("#favourites").contextmenu({
-				delegate: "span.fancytree-title",
-				autoFocus: true,
-				menu: menuOptions,
-				beforeOpen: function(event, ui) {
-					var node = $.ui.fancytree.getNode(ui.target);
-					if (node.title=="<?php print Musicco::getString('my_favourites'); ?>" ) {
-						event.preventDefault();
-						} else {
-						setMenuEntries(node.isFolder(), $("#favourites"));
-						node.setActive();
-					}
-				},
-				select: function(event, ui) {
-					var node = $.ui.fancytree.getNode(ui.target);
-					handleMenuSelection(node, ui.cmd);
-				}
-			});
-
-			$("#library").contextmenu({
-				delegate: "span.fancytree-title",
-				autoFocus: true,
-				menu: menuOptions,
-				beforeOpen: function(event, ui) {
-					var node = $.ui.fancytree.getNode(ui.target);
-					 setMenuEntries(node.isFolder(), $("#library"));
-					 //Activate node on right-click
-					node.setActive();
-					 //Disable tree keyboard handling
-					ui.menu.prevKeyboard = node.tree.options.keyboard;
-					node.tree.options.keyboard = false;
-				},
-				close: function(event, ui) {
-					 //Restore tree keyboard handling
-					var node = $.ui.fancytree.getNode(ui.target);
-					if (node != null) {
-						node.tree.options.keyboard = ui.menu.prevKeyboard;
-						node.setFocus();
-					} else {
-						console.log("Node was null, unsure what the status of keyboard support is in that case");
-					}
-				},
-				select: function(event, ui) {
-					var node = $.ui.fancytree.getNode(ui.target);
-					handleMenuSelection(node, ui.cmd);
-				}
-			});
-    }
-
-    if (!isGuestPlay()) {
-			checkLibraryRefresh($("#reset_db").html());
-		}
 	});
 //]]>
 		</script>
@@ -2906,8 +2917,8 @@ if(!AuthManager::isAccessAllowed()) {
 	$this->printLoginBox();
 } else {
 ?>
-	<!-- START: JPlayer -->
-	<div id="musiccoplayer" class="jp-audio">
+	<!-- START: musiccoplayer -->
+	<div id="musiccoplayer">
 		<!-- START: Modal Dialogues -->
 		<div id="helpPanel" class="modal"><?php print getHelp(); ?></div>
 		<div id="aboutPanel" class="modal"><?php print getAbout(); ?></div>
@@ -2945,7 +2956,7 @@ if(!AuthManager::isAccessAllowed()) {
 			</span>
 			</span>
 			<span id="loadingInfo">
-				<i class="fas fa-spin fa-circle-notch"></i>&nbsp;<i class="fas fa-music"></i>&nbsp;<span id="toast_text"></span>
+				<span class="blink1">&#9834;</span><span class="blink2">&#9834;</span><span class="blink3">&#9834;</span>&nbsp;<span id="toast_text"></span>
 			</span>
 			<?php
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
@@ -2989,13 +3000,11 @@ if(!AuthManager::isAccessAllowed()) {
 					</form>
 					<div id="searchResults">&nbsp;</div>
 				</div>
-				<div id="playlistPanel" class="panel jp-playlist my-playlist">
+				<div id="playlistPanel" class="panel">
 					<div id="playlistSpinner">
 						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
 					</div>
-					<ul>
-						<li></li>
-					</ul>
+					<ul id="playlist"></ul>
 					<div id="playlist-tools" class="guestPlay">
 						<select id="playlist_select"></select>
 						<span id="renamePlaylist" class="playlist-tools"><i class="fa fa-edit"></i></span>
@@ -3030,9 +3039,7 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="big-player">
 			<div id="playerPanel">
 				<div id="big-cover">
-					<div id="big-volume-bar">
-						<div id="volume-value"></div>
-					</div>
+					<div class="right" id="big-volume-bar"></div>
 					<div id="updateCoverArt" class="guestPlay">
 						<span id="statusText"><?php print $this->getString("..."); ?></span>
 						<span id="searchOne" class="coveractions"><a id="searchLink" target="_blank" href="<?php print $this->getConfig("imageSearchEngine"); ?>musicco"><?php print $this->getString("searchOne"); ?></a></span>
@@ -3041,18 +3048,21 @@ if(!AuthManager::isAccessAllowed()) {
 					<div class="dummy">&nbsp;</div>
 					<div id="big-jp-progress"></div>
 				</div>
-				<div id="big-timer" class="spread"></div>
+				<div id="big-timer" class="spread">
+					<span id="current_time" class="left"></span>
+					<span id="duration" class="right"></span>
+				</div>
 				<div id="big-info">
-					<div id="nowPlayingTitle" class="nowrap">&nbsp;</div>
-					<div id="nowPlayingArtist" class="nowrap">&nbsp;</div>
+					<div id="nowPlaying_songtitle" class="nowrap">&nbsp;</div>
+					<div id="nowPlaying_artist" class="nowrap">&nbsp;</div>
 					<div>
-						<span id="nowPlayingAlbum" class="nowrap">&nbsp;</span>
-						<span id="nowPlayingAlbumYear" class="nowrap">&nbsp;</span>
+						<span id="nowPlaying_album" class="nowrap">&nbsp;</span>
+						<span id="nowPlaying_year" class="nowrap">&nbsp;</span>
 					</div>
 				</div>
 				<div id="playlist-controls" class="spread">
-					<span id="big-unmute" class="toggles selected jp-unmute"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
-					<span id="big-mute" class="toggles jp-mute"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
+					<span id="big-unmute" class="toggles selected hidden"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
+					<span id="big-mute" class="toggles"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 					<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
 					<span class="guestPlay uncover toggles"><i class="fas fa-magic fa-2x fa-fw"></i></span>
 					<span id="big-shuffle" class="toggles touch-jp-shuffle"><i class="fas fa-random fa-2x fa-fw"></i></span>
@@ -3071,46 +3081,8 @@ if(!AuthManager::isAccessAllowed()) {
 			</div>
 		</div>
 		<!-- END: big player -->
-		<!-- START: JPlayerPlaylist -->
-		<div class="jp-type-playlist" style="display: none;">
-			<div id="jquery_jplayer_2" class="jp-jplayer"></div>
-			<div class="jp-gui">
-				<div class="jp-interface">
-					<ul class="jp-controls">
-						<li>
-							<div id="track-cover">
-								<a id="jp-play" class="fader jp-play" tabindex="1"><img class="cover"/></a>
-								<a id="jp-pause" class="fader jp-pause" tabindex="1"><img class="cover"/></a>
-								<div class="jp-progress">
-									<div class="jp-seek-bar">
-										<div class="jp-play-bar"></div>
-									</div>
-								</div>
-							</div>
-						</li>
-						<li><a class="jp-previous" tabindex="1"></a></li>
-						<li><a class="jp-next" tabindex="1"></a></li>
-					</ul>
-					<ul class="jp-toggles">
-						<li id="volume"><div class="jp-volume-bar"><div class="jp-volume-bar-value"></div></div></li>
-						<li><div class="jp-current-time"></div><div class="jp-duration"></div></li>
-						<li><a class="jp-mute" tabindex="1"></a></li>
-						<li><a class="jp-unmute" tabindex="1"></a></li>
-						<li><a class="jp-shuffle" tabindex="1"></a></li>
-						<li><a class="jp-shuffle-off" tabindex="1"></a></li>
-						<li><a class="jp-repeat" tabindex="1"></a></li>
-						<li><a class="jp-repeat-off" tabindex="1"></a></li>
-					</ul>
-				</div>
-			</div>
-			<div class="jp-no-solution">
-				<span><?php print $this->getString("updateRequiredTitle"); ?></span>
-				<?php print $this->getString("updateRequiredText"); ?><a href="//get.adobe.com/flashplayer/" target="_blank"><?php print $this->getString("updateRequiredLink"); ?></a>.
-			</div>
-		</div>
-		<!-- END: JPlayerPlaylist -->
 	</div>
-	<!-- END: JPlayer -->
+	<!-- END: musiccoplayer -->
 	<?php 
 	}
 	?>
@@ -3280,7 +3252,7 @@ function addFavourite($user, $path) {
 			$query = "SELECT parent, name FROM item WHERE parent LIKE \"$path/%\" AND type IN (".Musicco::TYPE_FILE.");";
 			$children = $db->query($query);
 			foreach($children as $row) {
-				array_push($tracks, $row["parent"] . $row["name"]);
+				array_push($tracks, $row["parent"] . $row["path"]);
 			}
 		}
 		foreach($tracks as $track) {
@@ -3947,6 +3919,7 @@ function builddb() {
 		$helpString.="<div>shift + <i class='fas fa-arrow-up'></i>/<i class='fas fa-arrow-down'></i>: move album to top/bottom</div>";
 		$helpString.="<div class='guestPlay'>shift + <i class='fas fa-times'></i>: remove all previous albums</div>";
 		$helpString.="<div class='guestPlay'>ctrl + <i class='fas fa-times'></i>: remove all following albums</div>";
+		$helpString.="<div class='guestPlay'>alt + <i class='fas fa-times'></i>: remove all other albums</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='bold big'><i class='fas fa-mobile-alt'></i>&nbsp;Mobile</div>";
 		$helpString.="<div class='yellow bold'>Swipe Album Art</div>";
@@ -3984,7 +3957,7 @@ function builddb() {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div>It'll basically work wherever you can run php with sqlite and lighttpd or nginx</div>";
 			$aboutString.="<div><br/></div>";
-			$aboutString.="<div>Modern desktop and mobile browsers love it!.</div>";
+			$aboutString.="<div>Modern desktop and mobile browsers love it!</div>";
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div>musicco is inspired by</div>";
 			$aboutString.="<ul>";
@@ -3994,7 +3967,6 @@ function builddb() {
 			$aboutString.="</ul>";
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div>musicco scans your music folder and builds a database of your music collection, retrieving missing cover art from <a tabindex='-1' target='_blank' href='//www.coverartarchive.org'>coverartarchive.org</a>, artist information from <a tabindex='-1' target='_blank' href='//".Musicco::getConfig('lang').".wikipedia.org/'>wikipedia.org</a>  and song lyrics from <a tabindex='-1' target='_blank' href='http://www.chartlyrics.com'>chartlyrics.com</a>. </div>";
-			$aboutString.="<div>The audio player component uses <a tabindex='-1' target='_blank' href='//jplayer.org/'>jPlayer</a>.</div>";
 			if (Musicco::getConfig('show_donate_button')) {
 				$aboutString.="<div><br/></div>";
 				$aboutString.="<div>Like musicco? Wanna buy me a beer?</div>";
@@ -4007,6 +3979,7 @@ function builddb() {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>2.0 (unreleased)</div>";
+				$aboutString.="<li>use native html audio instead of jplayer / jplayerPlaylist</li>";
 				$aboutString.="<li>Refreshed UI</li>";
 				$aboutString.="<li>Added support for multiple playlists per user</li>";
 				$aboutString.="<li>Added support for marking albums and tracks as favourites</li>";
@@ -4016,7 +3989,7 @@ function builddb() {
 				$aboutString.="<li>Added support for quickly adding an album without scanning the entire library</li>";
 				$aboutString.="<li>Handle accent-insensitive search</li>";
 				$aboutString.="<li>Improved webapp manifest so you can add musicco to your Android home screen</li>";
-				$aboutString.="<li>Fixed many things!</li>";
+				$aboutString.="<li>Fixed many other things!</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>1.3 (24th September 2016)</div>";
