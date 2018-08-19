@@ -712,6 +712,7 @@ class Musicco {
 
 			var draggedElement;
 			var nowPlaying = {};
+			var playerConfig = {loop: false, shuffled: false};
 			var previousTrack = null;
 			var nextTrack = null;
 			var currentAlbum = null;
@@ -765,8 +766,13 @@ class Musicco {
 			}
 
 			player.onended = function() { 
-				// TODO: handle random here
-				playTrack(nextTrack);
+				if (playerConfig["shuffled"]) {
+					playRandomTrack();
+				} else if ( (playerConfig["loop"] == false) && ($(nextTrack).index("#playlist li[data-nature=track]") == 0) ){
+					resetPlayer();
+				} else {
+					playTrack(nextTrack);
+				}
 			};
 
 			player.ondurationchange = function() {
@@ -862,6 +868,15 @@ class Musicco {
 				var trackNumber = $(track).index("#playlist li[data-nature=track]");
 				loadTrack(trackNumber);
 				player.play();
+			}
+
+			function playRandomTrack() {
+				var currentTrack = Math.max($(".currentTrack").index("#playlist li[data-nature=track]"), 0);
+				var randomTrack = currentTrack;
+				while (randomTrack == currentTrack) {
+					randomTrack = Math.floor(Math.random() * $('#playlist li[data-nature=track]').length);
+				}
+				playTrack($('#playlist li[data-nature=track]:eq(' + randomTrack + ')'));
 			}
 
 			function playRandomAlbum() {
@@ -1082,19 +1097,27 @@ class Musicco {
 					
 						case 37: //left arrow
 						case 177: //media previous
-							if (e.shiftKey) {
-								playTrack($(previousAlbum).find("li").first())
+							if (playerConfig["shuffled"]) {
+								playRandomTrack();
 							} else {
-								playTrack(previousTrack);
+								if (e.shiftKey) {
+									playTrack($(previousAlbum).find("li").first())
+								} else {
+									playTrack(previousTrack);
+								}
 							}
 						break;
 					
 						case 39: //right arrow
 						case 176: //media next
-						 if (e.shiftKey) {
-								playTrack($(nextAlbum).find("li").first())
-						 } else {
-							playTrack(nextTrack);
+							if (playerConfig["shuffled"]) {
+								playRandomTrack();
+							} else {
+							 if (e.shiftKey) {
+									playTrack($(nextAlbum).find("li").first())
+							 } else {
+								playTrack(nextTrack);
+							 }
 						 }
 						break;
 
@@ -1210,12 +1233,6 @@ class Musicco {
 
 			function jump(percent) {
 				setCurrentTime(player.duration * percent);
-			}
-
-			function toggleAndUpdate(toggle, classes) {
-				var target = "#musiccoplayer ."+ $(toggle).attr('class').replace(/selected /, "").replace(/toggles /, "").replace(/touch-/, "");
-				$(toggle).toggleClass(classes);
-				return target;
 			}
 
 			function displayInfo(query) {
@@ -1542,10 +1559,10 @@ class Musicco {
 					}).get();
 					return album;
 				}).get();
-				var current = $(".currentTrack").index("#playlist li[data-nature=track]")
+				var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 				var time = Math.floor(player.currentTime);
-				var loop = false;
-				var shuffled = false;
+				var loop = playerConfig["loop"];
+				var shuffled = playerConfig["shuffled"];
 				$.post('?', {savePlaylist: '', u: user, n: name, p: JSON.stringify(playlist), c: current, t: time, l: loop, s: shuffled}, function (response) {
 				});
 			}
@@ -1632,19 +1649,16 @@ class Musicco {
 							var root = data.path;
 							queueMusic(root, "", Insert.top);
 						} else {
-								var tracksArray = groupBy(JSON.parse(response.playlist), "album");
-								insertFirst(tracksArray);
-								loadTrack(parseInt(response.current, 0));
-								player.currentTime = parseInt(response.time)
-							//REDO: set loop and shuffle mode
-							//musiccoPlaylist.loop = response.loop;
-							//musiccoPlaylist.shuffled = response.shuffled;
-							//if (musiccoPlaylist.loop == "true") {
-								//$(toggleAndUpdate($('#big-repeat'), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
-							//}
-							//if (musiccoPlaylist.shuffled == "true") {
-								//$(toggleAndUpdate($('#big-shuffle'), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
-							//}
+							var tracksArray = groupBy(JSON.parse(response.playlist), "album");
+							insertFirst(tracksArray);
+							loadTrack(parseInt(response.current, 0));
+							player.currentTime = parseInt(response.time)
+							if (response.loop == "true") {
+								$('#big-repeat').trigger("click");
+							}
+							if (response.shuffled == "true") {
+								$('#big-shuffle').trigger('click');
+							}
 						}
 						$("#loading").hide();
 						hideSpinner();
@@ -2405,20 +2419,28 @@ class Musicco {
 				});
 
 				$(document).on("click taphold", ".big-jp-previous", function(e) {
-					var shift = (e.type === "taphold")? true : e.shiftKey;
-					if (shift) {
-						$(previousAlbum).find("li").first().trigger("click");
+					if (playerConfig["shuffled"]) {
+						playRandomTrack();
 					} else {
-						$(previousTrack).trigger("click");
+						var shift = (e.type === "taphold")? true : e.shiftKey;
+						if (shift) {
+							$(previousAlbum).find("li").first().trigger("click");
+						} else {
+							$(previousTrack).trigger("click");
+						}
 					}
 				});
 
 				$(".big-jp-next").on("click taphold", function(e) {
-					var shift = (e.type === "taphold")? true : e.shiftKey;
-					if (shift) {
-						$(nextAlbum).find("li").first().trigger("click");
+					if (playerConfig["shuffled"]) {
+						playRandomTrack();
 					} else {
-						$(nextTrack).trigger("click");
+						var shift = (e.type === "taphold")? true : e.shiftKey;
+						if (shift) {
+							$(nextAlbum).find("li").first().trigger("click");
+						} else {
+							$(nextTrack).trigger("click");
+						}
 					}
 				});
 
@@ -2859,29 +2881,37 @@ class Musicco {
 					$("#searchPanel").contextmenu("open", $(this));
 				});
 
-				$('#big-cover').click(function(e) {
+				$("#big-cover").click(function(e) {
 					if (e.target !== this) 
 					return;
 					triggerPlayPause();
 				});
 
-				$('#big-cover').on( "swipeup", function() {
+				$("#big-cover").on( "swipeup", function() {
 					volumeUp();
 				});
 
-				$('#big-cover').on( "swipedown", function() {
+				$("#big-cover").on( "swipedown", function() {
 					volumeDown();
 				});
 
-				$('#big-cover').on( "swipeleft", function() {
-					playTrack(nextTrack);
+				$("#big-cover").on( "swipeleft", function() {
+					if (playerConfig["shuffled"]) {
+						playRandomTrack();
+					} else {
+						playTrack(nextTrack);
+					}
 				});
 
-				$('#big-cover').on( "swiperight", function() {
-					playTrack(previousTrack);
+				$("#big-cover").on( "swiperight", function() {
+					if (playerConfig["shuffled"]) {
+						playRandomTrack();
+					} else {
+						playTrack(previousTrack);
+					}
 				});
 
-				$('body').on("keyup", function(e) {
+				$("body").on("keyup", function(e) {
 					// Uncomment the following line to debug the received keycode
 					// console.log("key: " + e.keyCode + " shift: " + e.shiftKey + " ctrl: " + e.ctrlKey + " super: " + e.metaKey);
 					if (!e.metaKey) {
@@ -2893,21 +2923,21 @@ class Musicco {
 					$("#user_name").focus();
 				}
 
-				$('#big-shuffle').click(function() {
-					//REDO: shuffle activation
-					$(toggleAndUpdate($(this), 'selected touch-jp-shuffle touch-jp-shuffle-off')).trigger('click');
+				$("#big-shuffle").click(function() {
+					playerConfig["shuffled"] = !playerConfig["shuffled"];
+					$(this).toggleClass("selected");
 				});
 
-				$('#big-repeat').click(function() {
-					//REDO: repeat activation
-					$(toggleAndUpdate($(this), 'selected touch-jp-repeat touch-jp-repeat-off')).trigger('click');
+				$("#big-repeat").click(function() {
+					playerConfig["loop"] = !playerConfig["loop"];
+					$(this).toggleClass("selected");
 				});
 
-				$('#big-volume-down').click(function() {
+				$("#big-volume-down").click(function() {
 					volumeDown();
 				});
 
-				$('#big-volume-up').click(function() {
+				$("#big-volume-up").click(function() {
 					volumeUp();
 				});
 
@@ -3452,7 +3482,7 @@ function loadPlaylist($user, $name) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	//TODO: Setting a default value should no longer be needed since we create a playlist if none is found. In practice, that's not the case yet.
-	$playlist = '{"song": "0" , "time": 0, "repeat": "false" ,"shuffle": "false" , "playlist": "[]"}';
+	$playlist = '{"current": "0" , "time": 0, "loop": "false" ,"shuffled": "false" , "playlist": "[]"}';
 	if ($userId != 0) {
 		if ($name == "") {
 			$currentPlaylist = getCurrentPlaylistId($userId);
