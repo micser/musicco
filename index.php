@@ -2441,24 +2441,39 @@ class Musicco {
 					if ($(target).data("nature") == "track") {
 						numSiblings = target.siblings();
 						if (numSiblings.length) {
+							if ($(target).hasClass("currentTrack")) {
+								playTrack(nextTrack);
+							}
 							target.remove();
 						} else {
-							$(target).parents("li").remove();
+							$(target).parents("li").find(".remove").trigger("click");
 						}
 					} else {
 						var albumIndex = $(target).index("#playlist > li");
+						var fallbackTrack = $("#playlist > li:eq(" + albumIndex + ")").find("li[data-nature=track]:first");
+						var currentAlbumIndex = $(".currentAlbum").index("#playlist > li");
+						var isCurrentAlbum = (currentAlbumIndex == albumIndex);
 						var shift = (e.type === "taphold")? true : e.shiftKey;
 						var alt = (e.type === "taphold")? false : e.altKey;
 						var ctrl = (e.type === "taphold")? false : e.ctrlKey;
 						if (shift) {
+							if (currentAlbumIndex < albumIndex) {
+								playTrack(fallbackTrack);
+							}
 							for (i=0; i < albumIndex; i++) {
 								$("#playlist > li:eq(0)").remove();
 							}
 						} else if (ctrl) {
+							if (currentAlbumIndex > albumIndex) {
+								playTrack(fallbackTrack);
+							}
 							for (i=albumIndex; i < $("#playlist > li").length; i++) {
 								$("#playlist > li:eq(" + (albumIndex + 1) + ")").remove();
 							}
 						} else if (alt) {
+							if (!isCurrentAlbum) {
+								playTrack($(target).find("li[data-nature=track]:first"));
+							}
 							$("#playlist > li").not(":eq(" + albumIndex + ")").remove();
 						} else {
 							target.remove();
