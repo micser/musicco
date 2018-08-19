@@ -860,6 +860,10 @@
 		display: none;
 	}
 
+	#playlist-tools {
+		left: .5em;
+	}
+
 	#playlistPanel > ul {
 		margin-bottom: 7em;
 	}
