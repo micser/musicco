@@ -2074,10 +2074,11 @@ class Musicco {
 			function triggerPlayPause() {
 				var status = "";
 				if (player.paused) { 
-					$('.big-jp-play').trigger('click');
+					$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
+					$(".big-jp-play").trigger("click");
 				} else {
-					$('.big-jp-pause').trigger('click');
-					status = "isPaused";
+					$(player).animate({volume: 0}, 200);
+					setTimeout(function() { $(".big-jp-pause").trigger("click"); status = "isPaused";}, 200);
 				}
 				showNotification(status);
 			}
