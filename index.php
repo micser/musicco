@@ -1709,7 +1709,7 @@ class Musicco {
 					$('#loadingInfo').stop(true);
 					$("#toast_text").text(info);
 					$('#loadingInfo').fadeTo(100, 1, function() {
-						$('#loadingInfo').fadeTo(2000, 0, function() { 
+						$('#loadingInfo').fadeTo(2000, 0, function() {
 							$("#toast_text").text(""); 
 						});
 					});
@@ -2971,7 +2971,7 @@ if(!AuthManager::isAccessAllowed()) {
 			</span>
 			</span>
 			<span id="loadingInfo">
-				<i class="fas fa-spin fa-circle-notch"></i>&nbsp;<i class="fas fa-music"></i>&nbsp;<span id="toast_text"></span>
+				<span class="blink1">&#9834;</span><span class="blink2">&#9834;</span><span class="blink3">&#9834;</span>&nbsp;<span id="toast_text"></span>
 			</span>
 			<?php
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {

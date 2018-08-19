@@ -1,5 +1,38 @@
 @media all {
 
+	@keyframes blink1 {
+		 0% { opacity: 0; }
+		 33% { opacity: 1; }
+		 66% { opacity: 0; }
+		 100% { opacity: 0; }
+	}
+
+	@keyframes blink2 {
+		 0% { opacity: 0; }
+		 33% { opacity: 0; }
+		 66% { opacity: 1; }
+		 100% { opacity: 0; }
+	}
+
+	@keyframes blink3 {
+		 0% { opacity: 0; }
+		 33% { opacity: 0; }
+		 66% { opacity: 0; }
+		 100% { opacity: 1; }
+	}
+
+	.blink1 {
+	 animation: blink1 1s linear infinite;
+	}
+
+	.blink2 {
+	 animation: blink2 1s linear infinite;
+	}
+
+	.blink3 {
+	 animation: blink3 1s linear infinite;
+	}
+
 	::-webkit-scrollbar {
 		width: .3em;
 		height: .3em;
@@ -407,6 +440,7 @@
 		background: #121314;
 		padding-top: 1em;
 		z-index: 3;
+		max-width: 35%;
 	}
 
 	.big {
@@ -870,6 +904,11 @@
 	
 	#mini-controls {
 		vertical-align: super;
+	}
+
+	#loadingInfo {
+		max-width: 100%;
+		padding-top: 0;
 	}
 
 	@media (min-aspect-ratio: 9/10) and (max-aspect-ratio: 11/10) {
