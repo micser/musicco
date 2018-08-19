@@ -240,6 +240,7 @@ $_TRANSLATIONS["en"] = array(
 	"menu_info" => "Info",
 	"menu_last_album" => "Play last",
 	"menu_next_album" => "Play next",
+	"menu_play_before" => "Play before",
 	"menu_next_track" => "next track",
 	"menu_remove_favourite" => "Remove",
 	"menu_right_now" => "Play",
@@ -317,6 +318,7 @@ $_TRANSLATIONS["fr"] = array(
 	"menu_info" => "Info",
 	"menu_last_album" => "Jouer en dernier",
 	"menu_next_album" => "Jouer après",
+	"menu_play_before" => "Jouer avant",
 	"menu_next_track" => "piste suivante",
 	"menu_remove_favourite" => "Retirer",
 	"menu_right_now" => "Jouer",
@@ -722,7 +724,7 @@ class Musicco {
 			var menuOptions = [
 				{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "playRightNow"},
 				{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fa-play-next", cmd: "playAsNextAlbum"},
-				//{title: "<?php print $this->getString("menu_next_track"); ?>", uiIcon: "fas fa-play", cmd: "playAsNextTrack"},
+				{title: "<?php print $this->getString("menu_play_before"); ?>", uiIcon: "fa-play-before", cmd: "playBefore"},
 				{title: "<?php print $this->getString("menu_last_album"); ?>", uiIcon: "fa-play-last", cmd: "queue"},
 				{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
 				{title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
@@ -955,6 +957,9 @@ class Musicco {
 								break;
 								case Insert.next:
 									insertAfter(tracksArray);
+								break;
+								case Insert.before:
+									insertBefore(tracksArray);
 								break;
 							}
 						}
@@ -1222,6 +1227,7 @@ class Musicco {
 				 var playRightNow = !hasPlaylist();
 				 var queue = hasPlaylist();
 				 var playAsNextAlbum = hasPlaylist();
+				 var playBefore = hasPlaylist();
 				 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
 				 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 				 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
@@ -1230,6 +1236,7 @@ class Musicco {
 				 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
 				 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
 				 $(target).contextmenu("updateEntry", "playAsNextAlbum", {setClass: playAsNextAlbum.toString()});
+				 $(target).contextmenu("updateEntry", "playBefore", {setClass: playBefore.toString()});
 				 $(target).contextmenu("updateEntry", "goto_artist", {setClass: goto_artist.toString()});
 				 $(target).contextmenu("updateEntry", "download", {setClass: download.toString()});
 				 $(target).contextmenu("updateEntry", "downloadAlbum", {setClass: downloadAlbum.toString()});
@@ -1255,6 +1262,10 @@ class Musicco {
 					case "playAsNextAlbum":
 						var slash = node.isFolder()? "/": "" ;
 						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.next);
+					break;
+					case "playBefore":
+						var slash = node.isFolder()? "/": "" ;
+						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.before);
 					break;
 					case "goto_artist":
 						goToArtist(node.data.artist);
