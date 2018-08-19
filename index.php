@@ -904,8 +904,9 @@ class Musicco {
 					$(currentAlbum).addClass("currentAlbum");
 					$(nextTrack).addClass("nextTrack");
 					$(nextAlbum).addClass("nextAlbum");
-					preload($(previousTrack));
-					preload($(nextTrack));
+					//TODO: preloading tracks is blocking the client
+					//var tracks = [ $(previousTrack).data("parent") + $(previousTrack).data("path"),  $(nextTrack).data("parent") + $(nextTrack).data("path") ];
+					//postMessage({command: "preload", tracks: tracks});
 				}
 			}
 
@@ -940,7 +941,6 @@ class Musicco {
 			};
 
 			function queueMusic(query, loadingInfo, insert) {
-				//REDO: insert in the right place!
 				var playAfter = !hasPlaylist();
 				showLoadingInfo("<?php print $this->getString("queueing"); ?>" + loadingInfo.replace("/",""));
 				$.post('?', {querydb: '', root: query, type: "queue"}, function (response) {
@@ -1515,7 +1515,6 @@ class Musicco {
 			}
 
 			function savePlaylist(playlistName) {
-				//REDO: loop and shuffle
 				var name = playlistName;
 				if (name == null) {
 					name = isGuestPlay()? "guestPlay" : $("#playlist_select").find(":selected").text();
@@ -1532,13 +1531,6 @@ class Musicco {
 					}).get();
 					return album;
 				}).get();
-				//var playlist = $("#playlist").find("li[data-nature=track]").map(function() {
-				//	var song = {};
-				//	$.each($(this).data(), function(k,v) {
-				//		song[k] = v;
-				//	});
-				//	return song;
-				//}).get();
 				var current = $(".currentTrack").index("#playlist li[data-nature=track]")
 				var time = Math.floor(player.currentTime);
 				var loop = false;
@@ -1887,7 +1879,6 @@ class Musicco {
 							});
 						navigator.mediaSession.setActionHandler('previoustrack', function() { playTrack(previousTrack);});
 						navigator.mediaSession.setActionHandler('nexttrack', function() { playTrack(nextTrack);});
-						//REDO: next/previous album track selection
 						navigator.mediaSession.setActionHandler('seekbackward', function() { playTrack($(previousAlbum).find("li").first()) });
 						navigator.mediaSession.setActionHandler('seekforward', function() { playTrack($(nextAlbum).find("li").first()) });
 					} else if (musiccoService != null) {
@@ -2078,12 +2069,6 @@ class Musicco {
 					status = "isPaused";
 				}
 				showNotification(status);
-			}
-
-			function preload(track) {
-				//REDO: this needs to happen in the background instead of blocking the main thread
-				//var altAudio = new Audio();
-				//altAudio.src = $(track).data("parent") + $(track).data("path");
 			}
 
 			function updatePlayerUI() {
@@ -3015,7 +3000,6 @@ if(!AuthManager::isAccessAllowed()) {
 					</form>
 					<div id="searchResults">&nbsp;</div>
 				</div>
-				<!-- //REDO: Spinner seems completely unnecessary now? -->
 				<div id="playlistPanel" class="panel">
 					<div id="playlistSpinner">
 						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
