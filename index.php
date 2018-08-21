@@ -721,6 +721,8 @@ class Musicco {
 			var player = new Audio();
 			player.autoplay = false;
 
+			var albumProps = ["cover", "year", "artist", "album", "parent"];
+
 			var userIsStillTyping = false;
 			var menuOptions = [
 				{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "playRightNow"},
@@ -1298,7 +1300,7 @@ class Musicco {
 						downloadTrack(node.data.parent, node.data.path)
 					break;
 					case "downloadAlbum":
-						downloadAlbum(node.data.parent, node.data.path);
+						downloadAlbum(node.data.parent + node.data.album, node.data.album);
 					break;
 					case "favourite":
 						addFavourite(node.data.parent + node.data.path);
@@ -2154,7 +2156,7 @@ class Musicco {
 						$.each(album, function (j, track) {
 							albumTracks += "<li data-nature=\"track\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\"";
 							$.each(track, function(k,v) {
-								if ((j == 0) && (k != "nature")) {
+								if ((j == 0) && (albumProps.includes(k))) {
 									$($thisAlbum).attr("data-" + k, v);
 								}
 								albumTracks += ' data-' + k + '="' + v + '"';
@@ -2291,7 +2293,6 @@ class Musicco {
 				});
 
 				$("#playlist").contextmenu({
-					//REDO: should be able to download and share albums via the context menu, so adapt menu entries based on target
 					autoTrigger: 'false',
 					delegate: "li",
 					autoFocus: true,
@@ -2315,7 +2316,11 @@ class Musicco {
 								goToAlbum(target.data("title"));
 							break;
 							case "download":
-								downloadTrack(target.data("parent"), target.data("path"));
+								if (target.data("nature") == "album") {
+									downloadAlbum(target.data("parent"), target.data("album"));
+								} else {
+									downloadTrack(target.data("parent"), target.data("path"));
+								}
 							break;
 							case "share": 
 								var path = target.data("parent");
@@ -3211,7 +3216,7 @@ if(!AuthManager::isAccessAllowed()) {
 	} elseif (isset($_GET['getAlbum'])) {
 			$parent = $_GET['parent'];
 			$album = $_GET['album'];
-			$rootPath = realpath($parent.$album);
+			$rootPath = realpath($parent);
 			$zip = new ZipArchive();
 			$zip->open('./'.Musicco::getConfig('tempFolder').'/'.$album.'.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
 			
