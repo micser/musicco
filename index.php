@@ -2322,10 +2322,15 @@ class Musicco {
 									downloadTrack(target.data("parent"), target.data("path"));
 								}
 							break;
-							case "share": 
+							case "share":
 								var path = target.data("parent");
+								var detail = target.data("album");
+								if (target.data("nature") == "track") {
+									path = path + target.data("path");
+									detail = target.data("songtitle");
+								}
 								var separator = " - ";
-								var info = target.data("artist") + separator + target.data("album");
+								var info = target.data("artist") + separator + detail;
 								var image = target.data("cover");
 								saveGuestPlaylist(path, info, image);
 							break;
