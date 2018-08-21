@@ -665,6 +665,8 @@
 		color: #E3E5BB;
 		height: .2em;
 		border: 1px solid transparent;
+		border-left: 0;
+		border-right: 0;
 		border-radius: 0;
 		position: relative;
 		bottom: .1em;
