@@ -2107,8 +2107,10 @@ class Musicco {
 				textData.forEach(function(info) {
 					$("#nowPlaying_"+info).html(nowPlaying[info]); 
 				});
-				$("#nowPlaying_year").prepend("(");
-				$("#nowPlaying_year").append(")");
+				if ($("#nowPlaying_year").html() != "") {
+					$("#nowPlaying_year").prepend("(");
+					$("#nowPlaying_year").append(")");
+				}
 				flashInfo();
 				showNotification();
 				$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying["artist"] + " " + nowPlaying["album"]);
@@ -2147,7 +2149,7 @@ class Musicco {
 										+ "<br/>"
 										+ "<span class=\"album\"></span>"
 										+ "<br/>"
-										+ "<span class=\"artist\"></span><span>, </span><span class=\"year\"></span>"
+										+ "<span class=\"artist\"></span><span class=\"year\"></span>"
 										+ "</div>"
 										+ "</li>";
 				$.each(tracksArray, function (i, album) {
@@ -2168,7 +2170,9 @@ class Musicco {
 					$thisAlbum.find(".playlist-poster").attr("src", $thisAlbum.data("cover").replace(/#/g, "%23"));
 					$thisAlbum.find(".artist").html($thisAlbum.data("artist"));
 					$thisAlbum.find(".album").html($thisAlbum.data("album"));
-					$thisAlbum.find(".year").html($thisAlbum.data("year"));
+					if ($thisAlbum.data("year") != "") {
+						$thisAlbum.find(".year").html(", " + $thisAlbum.data("year"));
+					}
 					$thisAlbum.append("<ul>" + albumTracks + "</ul>");
 					html.push($thisAlbum);
 				});
