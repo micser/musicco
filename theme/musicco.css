@@ -199,10 +199,13 @@
 		border: 1px solid #A7A97F;
 	}
 
-	#big-cover:hover #big-jp-progress > .ui-slider-handle.ui-state-default,
-	#big-cover:hover #big-volume-bar,
-	#big-jp-progress:hover > span.ui-slider-handle.ui-state-default {
+	#big-cover:hover #big-jp-progress,
+	#big-cover:hover #big-volume-bar {
 	opacity: 1;
+	border: 1px solid #E3E5BB;
+	transition: border 4s ease;
+	transition: opacity 4s ease, border 1s ease;
+	
 	}
 
 	.ui-tabs .ui-tabs-nav {
@@ -658,12 +661,13 @@
 	#big-jp-progress {
 		width: 100%;
 		margin: 0;
-		background: #A7A97F;
+		background: transparent;
 		color: #E3E5BB;
 		height: .2em;
-		border: 0;
+		border: 1px solid transparent;
 		border-radius: 0;
-		transition: 0.4s;
+		position: relative;
+		bottom: .1em;
 	}
 
 	.hovered,
@@ -682,7 +686,6 @@
 		right: 3%;
 		z-index: 2;
 		background: transparent;
-		transition: 1.2s;
 		box-shadow: 20px -20px 50px 50px #2222221f
 	}
 
@@ -797,8 +800,7 @@
 		border: none;
 		padding: 1em 0;
 		border-bottom: solid 1px #A7A97F;
-		-webkit-transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
-						transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+		transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
 		background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 96%, #A7A97F 4%);
 		background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #A7A97F 4%);
 		background-position: -200px 0;
@@ -980,16 +982,16 @@
 			bottom: 3px;
 			left: -3px;
 			width: 100%;
-			transition: opacity 2s;
 			text-align: left;
 			opacity: 0;
+			padding: .5em 0 .5em .5em;
 		}
 
 		#big-info:hover {
-			transition: opacity 0.2s;
+			transition: opacity 1s ease-out;
 			opacity: 1;
 		}
-		
+
 		#nowPlaying_album,
 		#nowPlaying_year,
 		#nowPlaying_artist,
