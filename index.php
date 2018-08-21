@@ -3322,8 +3322,12 @@ function deleteFavourite($user, $path) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
+		if (preg_match("/.*\.mp3$/", $path)) {
+			$path_parts = explode("/", $path);
+			$path = $path_parts[sizeOf($path_parts)-1];
+		}
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$favourites_query = $db->prepare("DELETE FROM favourites WHERE path LIKE \"$path/%\" AND userId=$userId;");
+		$favourites_query = $db->prepare("DELETE FROM favourites WHERE path LIKE \"%$path%\" AND userId=$userId;");
 		$favourites_query->execute();
 		$children = $favourites_query->fetchAll();
 		$favourites_query = NULL;
@@ -3399,7 +3403,7 @@ function getFavourites($user) {
 		$favourites_query = NULL;
 		$db = NULL;
 		foreach($result as $favourite) {
-			$list = explode('/', $favourite["path"]);
+			$list = explode("/", $favourite["path"]);
 			$n = count($list);
 
 			$arrayRef = &$favourites; // start from the root
