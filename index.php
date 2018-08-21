@@ -2330,7 +2330,11 @@ class Musicco {
 								saveGuestPlaylist(path, info, image);
 							break;
 							case "favourite":
-								addFavourite(target.data("parent") + target.data("path"));
+								if (target.data("nature") == "album") {
+									addFavourite(target.data("parent"));
+								} else {
+									addFavourite(target.data("parent") + target.data("path"));
+								}
 							break;
 						}
 					}
@@ -2681,8 +2685,7 @@ class Musicco {
 					});
 
 					$(document).on("click", ".favouriteAlbum", function(event) {
-						var albumPath = $(this).parents("li").data("parent").substr(0, $(this).parents("li").data("parent").length -1);
-						addFavourite(albumPath);
+						addFavourite($(this).parents("li").data("parent"));
 					});
 
 				$(document).on("click", "#remove_shared_links", function() {
@@ -3296,10 +3299,10 @@ function addFavourite($user, $path) {
 		if (preg_match("/.*\.mp3$/", $path)) {
 			array_push($tracks, $path);
 		} else {
-			$query = "SELECT parent, name FROM item WHERE parent LIKE \"$path/%\" AND type IN (".Musicco::TYPE_FILE.");";
+			$query = "SELECT parent, name FROM item WHERE parent LIKE \"$path%\" AND type IN (".Musicco::TYPE_FILE.");";
 			$children = $db->query($query);
 			foreach($children as $row) {
-				array_push($tracks, $row["parent"] . $row["path"]);
+				array_push($tracks, $row["parent"] . $row["name"]);
 			}
 		}
 		foreach($tracks as $track) {
