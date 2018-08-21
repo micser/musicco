@@ -676,13 +676,14 @@
 		border-radius: .5em;
 		border: 1px solid white;
 		width: .2em;
-		height: 97%;
+		height: 75%;
 		position: absolute;
-		bottom: 1%;
-		left: 97%;
+		bottom: 10%;
+		right: 3%;
 		z-index: 2;
 		background: transparent;
 		transition: 1.2s;
+		box-shadow: 20px -20px 50px 50px #2222221f
 	}
 
 	.spread {
