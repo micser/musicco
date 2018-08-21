@@ -1074,10 +1074,6 @@
 	#header {
 		height: 1em;
 	}
-	
-	#big-player {
-		top: 1em;
-	}
 }
 
 @media (max-width: 480px) {
