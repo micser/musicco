@@ -2319,7 +2319,11 @@ class Musicco {
 									goToArtist(target.data("artist"));
 									break;
 								case "goto_album":
-									goToAlbum(target.data("title"));
+									if (target.data("nature") == "album") {
+										goToAlbum(target.data("album"));
+									} else {
+										goToAlbum(target.data("title"));
+									}
 								break;
 								case "download":
 									if (target.data("nature") == "album") {
