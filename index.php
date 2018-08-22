@@ -584,7 +584,7 @@ class Musicco {
 		?>
 		<div class="landing">
 			<div class="landing-header">
-				<img src="theme/images/about.png"/><?php print(Musicco::getConfig("appName")); ?>
+				<img src="theme/images/about.svg"/><?php print(Musicco::getConfig("appName")); ?>
 			</div>
 			<form enctype="multipart/form-data" action="?" method="post">
 			<?php 
@@ -852,7 +852,7 @@ class Musicco {
 			function resetPlayer() {
 				player.pause();
 				player.src = "";
-				$("#big-cover").css("background-image", "url(theme/images/about.png)");
+				$("#big-cover").css("background-image", "url(theme/images/about.svg)");
 				$("#nowPlaying_songtitle, #nowPlaying_artist, #nowPlaying_album, #nowPlaying_year").html("");
 				$("#duration, #current_time").html("00:00");
 			}
@@ -4017,7 +4017,7 @@ function builddb() {
 	 
 		function getAbout() {
 		$aboutString="<div id='aboutBox'>";
-			$aboutString.="<div class='bold'><a tabindex='-1' target='_blank' href='//musicco.org'><img width='310px' height='310px' src='theme/images/about.png'/></a></div>";
+			$aboutString.="<div class='bold'><a tabindex='-1' target='_blank' href='//musicco.org'><img width='310px' height='310px' src='theme/images/about.svg'/></a></div>";
 			$aboutString.="<div class='bold big'><a tabindex='-1' target='_blank' href='//musicco.org'>musicco</a></div>";
 			$aboutString.="<div class='bold'>A web based player for your music collection</div>";
 			$aboutString.="<div><br/></div>";
@@ -4142,7 +4142,7 @@ function builddb() {
 		$wizard .= "</head>";
 		$wizard .= "<div class='landing'>";
 		$wizard .= "<div class='landing-header'>";
-		$wizard .= "<img src='theme/images/about.png'/>".Musicco::getConfig('appName')." setup wizard";
+		$wizard .= "<img src='theme/images/about.svg'/>".Musicco::getConfig('appName')." setup wizard";
 		$wizard .= "</div>";
 		$wizard .= "<br/>";
 		$wizard .= "<div class='indent'>Here are a few configuration options before you start listening to your tunes.</div>";

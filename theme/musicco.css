@@ -632,8 +632,9 @@
 		position: relative;
 		padding-top: 100%;
 		background-size: contain;
-		background-image: url(images/about.png);
+		background-image: url(images/about.svg);
 		background-repeat: no-repeat;
+		background-color: #a7a97f;
 		background-position: center;
 		transition: background-image .5s ease;
 	}
