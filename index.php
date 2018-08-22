@@ -1505,9 +1505,9 @@ class Musicco {
 
 			function saveCover(coverURL, path) {
 				$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
+					var imagePath = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
+					setTimeout(function() { if (!isTooLate()) { printCover(imagePath); } }, 4000);
 				});
-				var imagePath = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
-				setTimeout(function() { if (!isTooLate()) { printCover(imagePath); } }, 4000);
 			}
 
 			function showHelp() {
