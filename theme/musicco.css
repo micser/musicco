@@ -1093,6 +1093,11 @@
 		padding-right: 0;
 	}
 
+	.big-volume-down, 
+	.big-volume-up {
+		display: none;
+	}
+
 	#big-volume-up:before,
 	#big-volume-down:before,
 	#big-mute:before {
