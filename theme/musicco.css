@@ -66,6 +66,15 @@
 		background-color: transparent;
 	}
 
+	legend {
+		border-style: none;
+		background-color: #A7A97F;
+		font-weight: bold;
+		Color: #E3E5BB;
+		width: 30%;
+		padding-left: 10px;
+	}
+
 /*
 	.fancytree-treefocus span.fancytree-active span.fancytree-title:after,
 	 .fancytree-treefocus span.fancytree-selected span.fancytree-title:after {
@@ -269,7 +278,7 @@
 		cursor: pointer;
 	}
 
-	.is-admin-0 {
+	.is-admin- {
 		display:none;
 	}
 
@@ -715,6 +724,7 @@
 	
 	#config fieldset {
 		border: 1px solid #A7A97F;
+		border-top-width: 2px;
 	}
 	
 	fieldset {

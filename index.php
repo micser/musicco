@@ -2142,10 +2142,9 @@ class Musicco {
 										+ "<img class=\"playlist-poster\" align=\"left\" draggable=\"false\" src=\"\"/>"
 										+ "<br/>"
 										+ "<br/>"
-//REDO may not need to pass both parent and album anymore,  parent may be enough, test after loading a real playlist
 										+ "<span class=\"guestPlay favouriteAlbum album-action fas fa-heart\"></span>"
-										+ "<span class=\"is-admin-" + <?php print (AuthManager::isAdmin());?> + " album-action guestPlay downloadAlbum fas fa-download\"></span>"
-										+ "<span class=\"is-admin-" + <?php print (AuthManager::isAdmin());?> + " album-action guestPlay share fas fa-external-link-alt\"></span>"
+										+ "<span class=\"is-admin-" + "<?php print AuthManager::isAdmin();?>" + " album-action guestPlay downloadAlbum fas fa-download\"></span>"
+										+ "<span class=\"is-admin-" + "<?php print AuthManager::isAdmin();?>" + " album-action guestPlay share fas fa-external-link-alt\"></span>"
 										+ "<br/>"
 										+ "<span class=\"album\"></span>"
 										+ "<br/>"
@@ -2247,9 +2246,11 @@ class Musicco {
 				/////////////
 
 				var watcherTarget = document.getElementById('playlist');
-				var watcherConfig = { attributes: false, childList: true, characterData: false, subtree: true };
-				var watcher = new MutationObserver(refreshPlaylist);
-				watcher.observe(watcherTarget, watcherConfig);
+				if (watcherTarget) {
+					var watcherConfig = { attributes: false, childList: true, characterData: false, subtree: true };
+					var watcher = new MutationObserver(refreshPlaylist);
+					watcher.observe(watcherTarget, watcherConfig);
+				}
 
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
@@ -2268,89 +2269,91 @@ class Musicco {
 					}
 				});
 
-				if (isGuestPlay()) {
-					$('.guestPlay').hide();
-				} else {
-					getPlaylists();
-					initFavouriteTree();
-					initLibraryTree();
-					initContextMenus();
-					checkLibraryRefresh($("#reset_db").html());
-				}
-
-				$("#big-jp-progress").slider({
-					range: "min",
-					min: 0,
-					max: 100,
-					value: 0,
-					start: function(event, ui) { timeUpdates = false; },
-					stop: function(event, ui) { setCurrentTime(ui.value); timeUpdates = true; }
-				});
-				$("#big-volume-bar").slider({
-					orientation: "vertical",
-					range: "min",
-					min: 0,
-					max: 100,
-					value: 100,
-					change: function(event, ui) { setVolume(ui.value / 100) },
-					stop: function(event, ui) { setVolume(ui.value / 100) }
-				});
-
-				$("#playlist").contextmenu({
-					autoTrigger: 'false',
-					delegate: "li",
-					autoFocus: true,
-					menu: [
-						{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
-						{title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fas fa-search"},
-						{title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
-						{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
-						{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"}
-					],
-					select: function(event, ui) {
-						var target = ui.target;
-						if (!$(ui.target).is("li")) {
-							target = $(ui.target).parents("li");
-						}
-						switch (ui.cmd) {
-							case "goto_artist":
-								goToArtist(target.data("artist"));
-								break;
-							case "goto_album":
-								goToAlbum(target.data("title"));
-							break;
-							case "download":
-								if (target.data("nature") == "album") {
-									downloadAlbum(target.data("parent"), target.data("album"));
-								} else {
-									downloadTrack(target.data("parent"), target.data("path"));
-								}
-							break;
-							case "share":
-								var path = target.data("parent");
-								var detail = target.data("album");
-								if (target.data("nature") == "track") {
-									path = path + target.data("path");
-									detail = target.data("songtitle");
-								}
-								var separator = " - ";
-								var info = target.data("artist") + separator + detail;
-								var image = target.data("cover");
-								saveGuestPlaylist(path, info, image);
-							break;
-							case "favourite":
-								if (target.data("nature") == "album") {
-									addFavourite(target.data("parent"));
-								} else {
-									addFavourite(target.data("parent") + target.data("path"));
-								}
-							break;
-						}
+				if (!document.getElementsByClassName("landing").length) {
+					if (isGuestPlay()) {
+						$('.guestPlay').hide();
+					} else {
+						getPlaylists();
+						initFavouriteTree();
+						initLibraryTree();
+						initContextMenus();
+						checkLibraryRefresh($("#reset_db").html());
 					}
-				});
 
-				loadPlaylist();
-				adaptUI(true);
+					$("#big-jp-progress").slider({
+						range: "min",
+						min: 0,
+						max: 100,
+						value: 0,
+						start: function(event, ui) { timeUpdates = false; },
+						stop: function(event, ui) { setCurrentTime(ui.value); timeUpdates = true; }
+					});
+					$("#big-volume-bar").slider({
+						orientation: "vertical",
+						range: "min",
+						min: 0,
+						max: 100,
+						value: 100,
+						change: function(event, ui) { setVolume(ui.value / 100) },
+						stop: function(event, ui) { setVolume(ui.value / 100) }
+					});
+
+					$("#playlist").contextmenu({
+						autoTrigger: 'false',
+						delegate: "li",
+						autoFocus: true,
+						menu: [
+							{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
+							{title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fas fa-search"},
+							{title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
+							{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
+							{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"}
+						],
+						select: function(event, ui) {
+							var target = ui.target;
+							if (!$(ui.target).is("li")) {
+								target = $(ui.target).parents("li");
+							}
+							switch (ui.cmd) {
+								case "goto_artist":
+									goToArtist(target.data("artist"));
+									break;
+								case "goto_album":
+									goToAlbum(target.data("title"));
+								break;
+								case "download":
+									if (target.data("nature") == "album") {
+										downloadAlbum(target.data("parent"), target.data("album"));
+									} else {
+										downloadTrack(target.data("parent"), target.data("path"));
+									}
+								break;
+								case "share":
+									var path = target.data("parent");
+									var detail = target.data("album");
+									if (target.data("nature") == "track") {
+										path = path + target.data("path");
+										detail = target.data("songtitle");
+									}
+									var separator = " - ";
+									var info = target.data("artist") + separator + detail;
+									var image = target.data("cover");
+									saveGuestPlaylist(path, info, image);
+								break;
+								case "favourite":
+									if (target.data("nature") == "album") {
+										addFavourite(target.data("parent"));
+									} else {
+										addFavourite(target.data("parent") + target.data("path"));
+									}
+								break;
+							}
+						}
+					});
+
+					loadPlaylist();
+					adaptUI(true);
+				}
 
 				  ///////////////
 				 // FUNCTIONS //
@@ -4128,10 +4131,10 @@ function builddb() {
 		$wizard = "<html>";
 		$wizard .= "<body>";
 		$wizard .= "<head>";
-		$wizard .= "<link rel='stylesheet' type='text/css' href='lib/font-awesome/css/fontawesome-all.min.css'>";
+		$wizard .= "<link rel='stylesheet' type='text/css' href='lib/font-awesome/css/all.min.css'>";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Montserrat' >";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='theme/musicco.css' >";
-		$wizard .= "<script type='text/javascript' src='lib/jquery/jquery-2.2.4.min.js'></script>";
+		$wizard .= "<script type='text/javascript' src='lib/jquery/jquery-3.3.1.min.js'></script>";
 		$wizard .= "</head>";
 		$wizard .= "<div class='landing'>";
 		$wizard .= "<div class='landing-header'>";
