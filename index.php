@@ -1841,7 +1841,7 @@ class Musicco {
 				}
 
 				function scrollPlaylist() {
-					if (hasPlaylist()) {
+					if (hasPlaylist() && $("#playlist").is(":visible")) {
 						var target = $('#playlistPanel');
 						if (isPortrait()) {
 							target = $('#panelContainer');
