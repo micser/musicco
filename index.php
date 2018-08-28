@@ -2001,6 +2001,7 @@ class Musicco {
 							if (json.parse) {
 								$('#infoPanelText').html(searchArtistExt + json.parse.text['*']);
 								$("#infoPanelText").find("*").removeAttr("style"); 
+								$("#infoPanelText").find("#toctogglecheckbox").hide(); 
 								$("#infoPanelText").find(".mw-editsection").hide(); 
 								$("#infoPanelText").find('.image').removeAttr("href", ""); 
 								$("#infoPanelText").find('.new').removeAttr("href", ""); 
