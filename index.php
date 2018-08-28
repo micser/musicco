@@ -26,7 +26,6 @@ $_CONFIG['dbVersion'] = "2";
 // Default: $_CONFIG['appInfo'] = "(//musicco.org)";
 $_CONFIG['appInfo'] = "(//musicco.org)";
 
-
 // Choose a language. See bel ow in the language section for options.
 // Default: $_CONFIG['lang'] = "en";
 $_CONFIG['lang'] = "en";
@@ -1562,10 +1561,11 @@ class Musicco {
 					return album;
 				}).get();
 				var current = $(".currentTrack").index("#playlist li[data-nature=track]");
+				var volume = $("#big-volume-bar").slider("option", "value");
 				var time = Math.floor(player.currentTime);
 				var loop = playerConfig["loop"];
 				var shuffled = playerConfig["shuffled"];
-				$.post('?', {savePlaylist: '', u: user, n: name, p: JSON.stringify(playlist), c: current, t: time, l: loop, s: shuffled}, function (response) {
+				$.post('?', {savePlaylist: '', u: user, n: name, p: JSON.stringify(playlist), c: current, t: time, v: volume, l: loop, s: shuffled}, function (response) {
 				});
 			}
 
@@ -1654,7 +1654,8 @@ class Musicco {
 							var tracksArray = groupBy(JSON.parse(response.playlist), "album");
 							insertFirst(tracksArray);
 							loadTrack(parseInt(response.current, 0));
-							player.currentTime = parseInt(response.time)
+							player.currentTime = parseInt(response.time);
+							$("#big-volume-bar").slider("option", "value",parseInt(response.volume));
 							if (response.loop == "true") {
 								$('#big-repeat').trigger("click");
 							}
@@ -3183,7 +3184,7 @@ if(!AuthManager::isAccessAllowed()) {
 			deletePlaylist($_POST['u'], $_POST['n']);
 			exit;
 	} elseif (isset($_POST['savePlaylist'])) {
-			savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t'], $_POST['l'], $_POST['s']);
+			savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t'], $_POST['v'], $_POST['l'], $_POST['s']);
 			exit;
 	} elseif (isset($_POST['saveGuestPlaylist'])) {
 			$user = $_POST['u'];
@@ -3477,12 +3478,12 @@ function getCurrentPlaylistName($userId) {
 		return $name;
 }
 
-function savePlaylist($user, $name, $playlist, $current, $time, $loop, $shuffled) {
+function savePlaylist($user, $name, $playlist, $current, $time, $volume, $loop, $shuffled) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$data = preg_replace('/"/', '\\\'', "{\"current\": \"$current\" , \"time\": \"$time\" , \"loop\": \"$loop\" , \"shuffled\": \"$shuffled\" , \"playlist\": \"".preg_replace('/"/', '\\"', $playlist)."\"}");
+		$data = preg_replace('/"/', '\\\'', "{\"current\": \"$current\" , \"time\": \"$time\" , \"volume\": \"$volume\" , \"loop\": \"$loop\" , \"shuffled\": \"$shuffled\" , \"playlist\": \"".preg_replace('/"/', '\\"', $playlist)."\"}");
 		$update_playlist_query = $db->prepare("REPLACE INTO playlists (userId, name, data) VALUES ($userId, \"$name\", \"$data\")");
 		$update_playlist_query->execute();
 		$playlistId = $db->lastInsertId();
@@ -3510,7 +3511,7 @@ function loadPlaylist($user, $name) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	//TODO: Setting a default value should no longer be needed since we create a playlist if none is found. In practice, that's not the case yet.
-	$playlist = '{"current": "0" , "time": 0, "loop": "false" ,"shuffled": "false" , "playlist": "[]"}';
+	$playlist = '{"current": "0" , "time": 0, , "volume": 100, "loop": "false" ,"shuffled": "false" , "playlist": "[]"}';
 	if ($userId != 0) {
 		if ($name == "") {
 			$currentPlaylist = getCurrentPlaylistId($userId);
