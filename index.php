@@ -2305,6 +2305,7 @@ class Musicco {
 						delegate: "li",
 						autoFocus: true,
 						menu: [
+							{title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
 							{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
 							{title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fas fa-search"},
 							{title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
@@ -2317,6 +2318,13 @@ class Musicco {
 								target = $(ui.target).parents("li");
 							}
 							switch (ui.cmd) {
+								case "info":
+									if (target.data("nature") == "album") {
+										displayInfo(target.data("album"));
+									} else {
+										displayInfo(target.data("songtitle"));
+									}
+									break;
 								case "goto_artist":
 									goToArtist(target.data("artist"));
 									break;
