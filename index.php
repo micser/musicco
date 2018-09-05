@@ -2096,7 +2096,8 @@ class Musicco {
 					$(".big-jp-play").trigger("click");
 				} else {
 					$(player).animate({volume: 0}, 200);
-					setTimeout(function() { $(".big-jp-pause").trigger("click"); status = "isPaused";}, 200);
+					status = "isPaused";
+					setTimeout(function() { $(".big-jp-pause").trigger("click"); }, 200);
 				}
 				showNotification(status);
 			}
