@@ -1956,64 +1956,44 @@ class Musicco {
 			}
 
 			function updateInfoPanel(url, artist, show, force) {
-				var resyncText = "&nbsp;&#8226;&nbsp;" + nowPlaying["artist"] + "&nbsp;&#9654;";
-				$("#resync").html(resyncText);
-				if (show) {
-					showPanel("#infoPanel");
-				}
-				if (force) {
-						$("#resync").show();
-				}
-				if (force || $("#resync").is(":hidden")) {
-					var searchArtistExt = "<?php print $this->getString("search"); ?>";
-					searchArtistExt +=  "<a target=\"blank\" href=\"http://last.fm/search?q=" + "+" + artist +"\">" + "<?php print $this->getString("lastfm"); ?>" + "</a>" ;
-					searchArtistExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
-					searchArtistExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>" + artist + "+band\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
-					$('#wikiPrev').html("");
+				var searchArtistExt = "TODO: redo";
+				var hasHistory = ((wikiHistoryPos != -1)) ? true : false;
+				var prevUrl = (hasHistory) ? wikiHistory[wikiHistoryPos].href : "";
+				var nextUrl = "";
+				if ((url != prevUrl) || (prevUrl == "")) {
+					wikiHistory.push({title: artist, href: url});
+					if (hasHistory) {
+						prevUrl = wikiHistory[wikiHistoryPos].href;
+					}
 					wikiHistoryPos += 1;
-					
-					var hasHistory = ((wikiHistoryPos > 0)) ? true : false;
-					var prevUrl = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].href : "";
-					var prevTitle = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].title : "";
-					var isCurrentArtist = (artist ===  nowPlaying["artist"]);
-
-					if ((url != "") && (url != prevUrl)) {
-						wikiHistory.push({seq: wikiHistoryPos, title: artist, href: url})
-					} else {
-						wikiHistoryPos -= 1;
-					}
-					
-					if ((hasHistory) && (wikiHistoryPos >= 0)) {
-						$('#wikiPrev').html("<a href=\"" + prevUrl + "\" class=\"historyLink\" title=\"" + prevTitle + "\">&#9664;&nbsp;" + prevTitle + "</a>");
-					} else if (isCurrentArtist) {
-						$("#resync").hide();
-					} else if (!isCurrentArtist) {
-						$("#resync").show();
-					}
-
-					$('#infoPanelTitle').html(artist);
-					$('#infoPanelText').html("");
-					$.ajax({
-						type: "GET",
-						dataType: "jsonP",
-						url: url,
-						success: function(json) {
-							if (json.parse) {
-								$('#infoPanelText').html(searchArtistExt + json.parse.text['*']);
-								$("#infoPanelText").find("*").removeAttr("style"); 
-								$("#infoPanelText").find("#toctogglecheckbox").hide(); 
-								$("#infoPanelText").find(".mw-editsection").hide(); 
-								$("#infoPanelText").find('.image').removeAttr("href", ""); 
-								$("#infoPanelText").find('.new').removeAttr("href", ""); 
-								$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
-								$("#infoPanelText").find('a').removeClass("new"); 
-								$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
-							} else {
-								$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist + " - " + searchArtistExt);
-							}
-						}
-					});
 				}
+				console.log(wikiHistory);
+				console.log(wikiHistoryPos);
+				console.log(prevUrl);
+				console.log(nextUrl);
+
+				$('#infoPanelTitle').html(artist);
+				$('#infoPanelText').html("");
+				$.ajax({
+					type: "GET",
+					dataType: "jsonP",
+					url: url,
+					success: function(json) {
+						if (json.parse) {
+							$('#infoPanelText').html(searchArtistExt + json.parse.text['*']);
+							$("#infoPanelText").find("*").removeAttr("style"); 
+							$("#infoPanelText").find("#toctogglecheckbox").hide(); 
+							$("#infoPanelText").find(".mw-editsection").hide(); 
+							$("#infoPanelText").find('.image').removeAttr("href", ""); 
+							$("#infoPanelText").find('.new').removeAttr("href", ""); 
+							$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
+							$("#infoPanelText").find('a').removeClass("new"); 
+							$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
+						} else {
+							$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist + " - " + searchArtistExt);
+						}
+					}
+				});
 			}
 
 			function updateLyricsPanel(artist, song) {
@@ -3091,6 +3071,7 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="infoPanel" class="panel">
 					<span id="wikiPrev"></span>
+					<span id="wikiNext"></span>
 					<span id="sync"><a id="resync" href="#"></a></span>
 					<div id="infoPanelTitle"></div>
 					<div id="infoPanelText"></div>
