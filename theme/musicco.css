@@ -529,8 +529,14 @@
 	}
 
 	#big-player,
-	#sharing-banner {
+	#sharing-banner,
+	#wikiHistory,
+	#imageViewerPanel {
 		text-align: center;
+	}
+
+	#imageViewerPanel img {
+		max-width: 100%;
 	}
 	
 	#shared-album-qr,
