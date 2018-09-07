@@ -4,8 +4,8 @@
 			--background: #121314;
 			--background-highlight: #272727;
 			--background-error: #FFE4E1;
-			--primary: #A7A97F;
-			--highlight: #E3E5BB;
+			--text: #A7A97F;
+			--text-highlight: #E3E5BB;
 			--error: #FF6666;
 			--help: #dd0;
 			--contrast-low: #000000;
@@ -80,16 +80,16 @@
 	}
 
 	.fancytree-treefocus span.fancytree-active span.fancytree-title, .fancytree-treefocus span.fancytree-selected span.fancytree-title {
-		outline: 1px dotted var(--highlight);
-		color: var(--highlight)!important;
+		outline: 1px dotted var(--text-highlight);
+		color: var(--text-highlight)!important;
 		background-color: transparent;
 	}
 
 	legend {
 		border-style: none;
-		background-color: var(--primary);
+		background-color: var(--text);
 		font-weight: bold;
-		Color: var(--highlight);
+		Color: var(--text-highlight);
 		width: 30%;
 		padding-left: 10px;
 	}
@@ -215,7 +215,7 @@
 	}
 
 	.ui-slider-range {
-		background: var(--highlight);
+		background: var(--text-highlight);
 	}
 
 	span.ui-slider-handle.ui-state-default {
@@ -223,25 +223,25 @@
 		opacity: 0;
 		height: .5em;
 		width: .5em;
-		background: var(--highlight);
-		border: 1px solid var(--primary);
+		background: var(--text-highlight);
+		border: 1px solid var(--text);
 	}
 
 	#big-cover:hover #big-jp-progress,
 	#big-cover:hover #big-volume-bar {
 	opacity: 1;
-	border: 1px solid var(--highlight);
+	border: 1px solid var(--text-highlight);
 	transition: border 4s ease;
 	transition: opacity 4s ease, border 1s ease;
 	
 	}
 
 	.ui-tabs .ui-tabs-nav {
-		border-bottom: 1px solid var(--primary);
+		border-bottom: 1px solid var(--text);
 	}
 	
 	.ui-menu {
-		border: 1px solid var(--primary)!important;
+		border: 1px solid var(--text)!important;
 		background-color: var(--background-highlight)!important;
 	}
 
@@ -286,7 +286,7 @@
 
 	#playlist > li > ul > li:hover,
 	a:hover {
-		color: var(--highlight);
+		color: var(--text-highlight);
 	}
 
 	.toggles,
@@ -346,7 +346,7 @@
 	span.current span.fancytree-title mark,
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match.current span.fancytree-title,
 	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title {
-		color: var(--highlight);
+		color: var(--text-highlight);
 	}
 	
 	a.infoPanelLink {
@@ -371,7 +371,7 @@
 	mark,
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match span.fancytree-title,
 	.fancytree-ext-filter-hidetr.fancytree-match span.fancytree-title {
-		color: var(--primary);
+		color: var(--text);
 	}
 
 	body,
@@ -624,7 +624,7 @@
 	.boxed {
 		border: 1px solid var(--background);
 		border-radius: .5em;
-		background-color: var(--highlight);
+		background-color: var(--text-highlight);
 		padding: .2em;
 		vertical-align: middle;
 		margin: .5em;
@@ -696,7 +696,7 @@
 		width: 100%;
 		margin: 0;
 		background: transparent;
-		color: var(--highlight);
+		color: var(--text-highlight);
 		height: .2em;
 		border: 1px solid transparent;
 		border-left: 0;
@@ -747,7 +747,7 @@
 	}
 	
 	#config fieldset {
-		border: 1px solid var(--primary);
+		border: 1px solid var(--text);
 		border-top-width: 2px;
 	}
 	
@@ -772,7 +772,7 @@
 		background: var(--contrast-high);
 		color: var(--constrast-low);
 		margin-left: 1em;
-		border: 1px solid var(--highlight);
+		border: 1px solid var(--text-highlight);
 		margin-bottom: .5em;
 	}
 
@@ -786,8 +786,8 @@
 		font-size: var(--text-small);
     visibility: hidden;
     width: 300px;
-    background-color: var(--primary);
-    color: var(--highlight);
+    background-color: var(--text);
+    color: var(--text-highlight);
     padding: 5px;
     border: 1px solid var(--background);
     position: absolute;
@@ -822,8 +822,8 @@
 		height: 5em;
 		width: 100%;
 		font-size: var(--text-quite-big);
-		background: var(--primary);
-		color: var(--highlight);
+		background: var(--text);
+		color: var(--text-highlight);
 		line-height: 150%;
 		border-radius: 3px 3px 0 0;
 		box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.2);
@@ -835,14 +835,14 @@
 		display: block;
 		border: none;
 		padding: 1em 0;
-		border-bottom: solid 1px var(--primary);
+		border-bottom: solid 1px var(--text);
 		transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
-		background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 96%, var(--primary) 4%);
-		background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, var(--primary) 4%);
+		background: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 96%, var(--text) 4%);
+		background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, var(--text) 4%);
 		background-position: -200px 0;
 		background-size: 200px 100%;
 		background-repeat: no-repeat;
-		color: var(--primary);
+		color: var(--text);
 	}
 
 	.landing-form:focus,
@@ -854,7 +854,7 @@
 
 	.landing-form:focus::-webkit-input-placeholder,
 	.landing-form:valid::-webkit-input-placeholder {
-		color: var(--primary);
+		color: var(--text);
 		font-size: var(--text-normal);
 		-webkit-transform: translateY(-1em);
 						transform: translateY(-1em);
@@ -863,11 +863,11 @@
 
 	.go {
 		border: none;
-		background: var(--primary);
+		background: var(--text);
 		border-radius: 3px;
 		padding: 6px;
 		width: 200px;
-		color: var(--highlight);
+		color: var(--text-highlight);
 		margin-left: 25px;
 		box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
 	}
@@ -901,7 +901,7 @@
 	}
 	
 	#controls {
-		color: var(--highlight);
+		color: var(--text-highlight);
 		padding-left: 5%;
 		padding-right: 5%;
 		justify-content: space-around;
@@ -925,7 +925,7 @@
 	#header {
 		height: 2em;
 		width: 100%;
-		color: var(--highlight);
+		color: var(--text-highlight);
 	}
 
 	#mini-controls {
@@ -936,11 +936,11 @@
 	#searchText,
 	#filterText,
 	#playlist_select {
-		border: 1px solid var(--highlight);
+		border: 1px solid var(--text-highlight);
 	}
 	
 	#searchText::-webkit-input-placeholder {
-		color: var(--primary);
+		color: var(--text);
 	}
 	
 	.ui-icon[class*=" fa-"] {

@@ -219,6 +219,8 @@ $_TRANSLATIONS["en"] = array(
 	"album_sharing" => "Some music for you to try on " . Musicco::getConfig('appName'),
 	"by" => " by ",
 	"clickToUploadYourOwn" => "upload", 
+	"background" => "Background",
+	"colours" => "Theme",
 	"defaultCoverURL" => "http://",
 	"downloadSuccessful" => "album art saved",
 	"favourites_added" => "Adding favourite...",
@@ -283,6 +285,7 @@ $_TRANSLATIONS["en"] = array(
 	"seekbackward" => "Previous Album",
 	"seekforward" => "Next Album",
 	"show_all" => "show old",
+	"text" => "Text",
 	"uncovering" => "Uncovering gems ",
 	"updateCoverArt" => "update album art",
 	"username" => "Username",
@@ -297,6 +300,8 @@ $_TRANSLATIONS["fr"] = array(
 	"album_sharing" => "Un peu de musique pour toi sur " . Musicco::getConfig('appName'),
 	"by" => " par ",
 	"clickToUploadYourOwn" => "charger", 
+	"background" => "Arri&egrave;re plan",
+	"colours" => "Th&egrave;",
 	"defaultCoverURL" => "http://",
 	"downloadSuccessful" => "Couverture sauvegardée",
 	"favourites_added" => "Favouris ajouté",
@@ -361,6 +366,7 @@ $_TRANSLATIONS["fr"] = array(
 	"seekbackward" => "Album précédent",
 	"seekforward" => "Album suivant",
 	"show_all" => "anciens",
+	"text" => "Texte",
 	"uncovering" => "Découverte en cours ",
 	"updateCoverArt" => "mettre à jour la couverture",
 	"username" => "Utilisateur",
@@ -793,6 +799,25 @@ class Musicco {
 			////////////////
 			// Functions //
 			//////////////
+
+			function setColour(e) {
+				document.documentElement.style.setProperty("--" + this.id, this.value);
+				document.documentElement.style.setProperty("--" + this.id + "-highlight", increase_brightness(this.value, (this.id == "background")? 10: 80));
+			}
+
+			function increase_brightness(hex, percent){
+					hex = hex.replace(/^\s*#|\s*$/g, '');
+					if(hex.length == 3){
+							hex = hex.replace(/(.)/g, '$1$1');
+					}
+					var r = parseInt(hex.substr(0, 2), 16),
+							g = parseInt(hex.substr(2, 2), 16),
+							b = parseInt(hex.substr(4, 2), 16);
+					return '#' +
+						 ((0|(1<<8) + r + (256 - r) * percent / 100).toString(16)).substr(1) +
+						 ((0|(1<<8) + g + (256 - g) * percent / 100).toString(16)).substr(1) +
+						 ((0|(1<<8) + b + (256 - b) * percent / 100).toString(16)).substr(1);
+			}
 
 			function isPortrait() {
 				return (viewerType === '"tall"') || (viewerType === '"square"');
@@ -2248,6 +2273,9 @@ class Musicco {
 				 // ACTIONS //
 				/////////////
 
+				(document.getElementById("background")).addEventListener("change", setColour);
+				(document.getElementById("text")).addEventListener("change", setColour);
+
 				var watcherTarget = document.getElementById('playlist');
 				if (watcherTarget) {
 					var watcherConfig = { attributes: false, childList: true, characterData: false, subtree: true };
@@ -3119,6 +3147,10 @@ if(!AuthManager::isAccessAllowed()) {
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-bath\"></i><span id=\"reload\"><a>".$this->getString("reload")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-question\"></i><span id=\"help\"><a>".$this->getString("help")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-info\"></i><span id=\"about\"><a>".$this->getString("about")."</a></span></div>";
+				print "<hr/>";
+				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-palette\"></i><span>".$this->getString("colours")."</span></div>";
+				print "<div><input type=\"color\" id=\"background\" name=\"color\" value=\"#121314\" /><label for=\"background\">".$this->getString("background")."</label></div>";
+				print "<div><input type=\"color\" id=\"text\" name=\"color\" value=\"#A7A97F\" /><label for=\"text\">".$this->getString("text")."</label></div>";
 				?>
 				</div>
 			</div>
