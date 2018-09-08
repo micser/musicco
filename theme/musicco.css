@@ -2,6 +2,7 @@
 
 	:root {
 			--background: #121314;
+			--background-transparent: rgba(18, 19, 20, 0.6);
 			--background-highlight: #272727;
 			--background-error: #FFE4E1;
 			--text: #A7A97F;
@@ -227,12 +228,11 @@
 		border: 1px solid var(--text);
 	}
 
-	#big-cover:hover #big-jp-progress,
 	#big-cover:hover #big-volume-bar {
 	opacity: 1;
 	border: 1px solid var(--text-highlight);
-	transition: border 4s ease;
-	transition: opacity 4s ease, border 1s ease;
+	transition: border 2s ease;
+	transition: opacity 2s ease, border 2s ease;
 	
 	}
 
@@ -458,8 +458,8 @@
 		width: 100%;
 		height: 100%;
 		z-index: 2;
-		opacity: 0.9;
-	 }
+		border: 0;
+		}
 
 	.modal {
 		margin-bottom: 3em;
@@ -699,11 +699,11 @@
 		color: var(--text-highlight);
 		height: .2em;
 		border: 1px solid transparent;
-		border-left: 0;
-		border-right: 0;
+		border: 0;
 		border-radius: 0;
 		position: relative;
 		bottom: .1em;
+		z-index: 1;
 	}
 
 	.hovered,
@@ -721,7 +721,7 @@
 		bottom: 10%;
 		right: 3%;
 		background: transparent;
-		box-shadow: 20px -20px 50px 50px var(--background-highlight)2221f
+		box-shadow: 20px -20px 50px 50px #2222221f;
 	}
 
 	.spread {
@@ -962,6 +962,24 @@
 	#playlist-tools {
 		left: .5em;
 	}
+	@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+		ui-tabs .ui-widget-header {
+			border: 1px solid var(--background-transparent);
+			background: var(--background-transparent);
+		}
+
+		#leftPanel {
+			-webkit-backdrop-filter: blur(10px) opacity(70%);
+			backdrop-filter: blur(10px) opacity(70%);
+			background-color: var(--background-transparent);
+		}
+	}
+
+	@supports not ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+		#leftPanel {
+		opacity: 0.9;
+		}
+	}
 
 	#playlistPanel > ul {
 		margin-bottom: 7em;
@@ -1003,7 +1021,7 @@
 
 		#big-player {
 			position: relative;
-			height: 100%;		
+			height: 100%;
 		}
 
 		#playlist-controls,
@@ -1011,19 +1029,28 @@
 		#big-timer {
 			display: none;
 		}
-		
+
 		#big-info {
 			position: absolute;
-			background: rgba(0, 0, 0, 0.8);
-			bottom: 3px;
+			background: rgba(0, 0, 0, 0.3);
+			bottom: 1px;
 			left: -3px;
 			width: 100%;
 			text-align: left;
 			opacity: 0;
 			padding: .5em 0 .5em .5em;
+			color: var(--text-highlight);
+		}
+
+		@supports not ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+			#big-info {
+				background: rgba(0, 0, 0, 0.8);
+			}
 		}
 
 		#big-info:hover {
+			-webkit-backdrop-filter: blur(5px);
+			backdrop-filter: blur(5px);
 			transition: opacity 1s ease-out;
 			opacity: 1;
 		}
