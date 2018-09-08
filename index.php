@@ -2273,14 +2273,18 @@ class Musicco {
 				 // ACTIONS //
 				/////////////
 
-				(document.getElementById("background")).addEventListener("change", setColour);
-				(document.getElementById("text")).addEventListener("change", setColour);
-
-				var watcherTarget = document.getElementById('playlist');
+				var watcherTarget = document.getElementById("playlist");
 				if (watcherTarget) {
 					var watcherConfig = { attributes: false, childList: true, characterData: false, subtree: true };
 					var watcher = new MutationObserver(refreshPlaylist);
 					watcher.observe(watcherTarget, watcherConfig);
+				}
+
+				var backgroundSetting = document.getElementById("background");
+				var textSetting = document.getElementById("text");
+				if (backgroundSetting) {
+					backgroundSetting.addEventListener("change", setColour);
+					textSetting.addEventListener("change", setColour);
 				}
 
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
