@@ -86,6 +86,12 @@
 		background-color: transparent;
 	}
 
+	hr {
+		background-color: var(--text);
+		height: 1px;
+		border: 0;
+	}
+
 	legend {
 		border-style: none;
 		background-color: var(--text);
@@ -388,6 +394,11 @@
 
 	input {
 		background-color: var(--background-highlight);
+	}
+
+	input[type="color"] {
+		width: 1.25em;
+		padding:0;
 	}
 
 	body {

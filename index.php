@@ -3152,9 +3152,9 @@ if(!AuthManager::isAccessAllowed()) {
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-question\"></i><span id=\"help\"><a>".$this->getString("help")."</a></span></div>";
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-info\"></i><span id=\"about\"><a>".$this->getString("about")."</a></span></div>";
 				print "<hr/>";
-				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-palette\"></i><span>".$this->getString("colours")."</span></div>";
-				print "<div><input type=\"color\" id=\"background\" name=\"color\" value=\"#121314\" /><label for=\"background\">".$this->getString("background")."</label></div>";
-				print "<div><input type=\"color\" id=\"text\" name=\"color\" value=\"#A7A97F\" /><label for=\"text\">".$this->getString("text")."</label></div>";
+				print "<div class=\"settings selected\"><i class=\"space-after fas fa-fw fa-palette\"></i><span>".$this->getString("colours")."</span></div>";
+				print "<div><input class=\"space-after\" type=\"color\" id=\"background\" name=\"color\" value=\"#121314\" /><label for=\"background\">".$this->getString("background")."</label></div>";
+				print "<div><input class=\"space-after\" type=\"color\" id=\"text\" name=\"color\" value=\"#A7A97F\" /><label for=\"text\">".$this->getString("text")."</label></div>";
 				?>
 				</div>
 			</div>
