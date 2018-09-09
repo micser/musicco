@@ -48,6 +48,17 @@ $_CONFIG['tempFolder'] = "temp";
 // Default: $_CONFIG['defaultPlaylist'] = "Now Playing";
 $_CONFIG['defaultPlaylist'] = "Now Playing";
 
+// Themes available by default in the Settings panel
+// Default: $_CONFIG['themes'] = array(
+// 											array("#121314", "#A7A97F", "musicco"),
+// 											array("#1d232c", "#f78031", "The Archandroid")
+// 										);
+$_CONFIG['themes'] = array(
+											array("#121314", "#A7A97F", "musicco"),
+											array("#1d232c", "#f78031", "The Archandroid")
+										);
+
+
 // The name you give to your covert art files
 // in your music library. This is used to find covers
 // on your disk and also to as a file name to 
@@ -156,7 +167,6 @@ $_CONFIG['debug_queries'] = false;
 // Default: $_CONFIG['debug_stack'] = false;
 $_CONFIG['debug_stack'] = false;
 
-
 /*
 * PERMISSIONS
 */
@@ -177,12 +187,14 @@ $_CONFIG['require_login'] = "false";
 // of your username+password+role
 // guestguestfalse ==> 46f186b77fa1179eaedbf1a97f319912
 // adminadmintrue ==> 68e72c93255129c8f066bf43d4ed65e3
-// Default: $_CONFIG['users'] = array(array("admin", "admin", "true"),
-//											array("guest", "guest", "false")
-//																);
-$_CONFIG['users'] = array(array("admin", "admin", "true"),
-													array("guest", "guest", "false")
-													);
+// Default: $_CONFIG['users'] = array(
+// 																	array("admin", "admin", "true"),
+//																	array("guest", "guest", "false")
+//															);
+$_CONFIG['users'] = array(
+											array("admin", "admin", "true"),
+											array("guest", "guest", "false")
+										);
 
 /*
  * SYSTEM
@@ -3153,8 +3165,8 @@ if(!AuthManager::isAccessAllowed()) {
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-info\"></i><span id=\"about\"><a>".$this->getString("about")."</a></span></div>";
 				print "<hr/>";
 				print "<div class=\"settings selected\"><i class=\"space-after fas fa-fw fa-palette\"></i><span>".$this->getString("colours")."</span></div>";
-				print "<div><input class=\"space-after\" type=\"color\" id=\"background\" name=\"color\" value=\"#121314\" /><label for=\"background\">".$this->getString("background")."</label></div>";
-				print "<div><input class=\"space-after\" type=\"color\" id=\"text\" name=\"color\" value=\"#A7A97F\" /><label for=\"text\">".$this->getString("text")."</label></div>";
+				print "<div><input class=\"space-after\" type=\"color\" id=\"background\" name=\"color\" value=\"".$this->getConfig("themes")[0][0]."\" /><label for=\"background\">".$this->getString("background")."</label></div>";
+				print "<div><input class=\"space-after\" type=\"color\" id=\"text\" name=\"color\" value=\"".$this->getConfig("themes")[0][1]."\" /><label for=\"text\">".$this->getString("text")."</label></div>";
 				?>
 				</div>
 			</div>
