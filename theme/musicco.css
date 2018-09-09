@@ -217,6 +217,15 @@
 		margin-top: 0.5em;
 	}
 
+	.settings-sub {
+		font-size: var(--text-smaller);
+		margin-top: 1em;
+	}
+
+	.settings-option {
+		font-size: var(--text-small);
+	}
+
 	.hidden {
 		display: none;
 	}
@@ -397,8 +406,10 @@
 	}
 
 	input[type="color"] {
-		width: 1.25em;
+		width: 1.5em;
+		height: 1.75em;
 		padding:0;
+		background-color: var(--background);
 	}
 
 	body {

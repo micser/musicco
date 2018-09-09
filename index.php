@@ -55,7 +55,9 @@ $_CONFIG['defaultPlaylist'] = "Now Playing";
 // 										);
 $_CONFIG['themes'] = array(
 											array("#121314", "#A7A97F", "musicco"),
-											array("#1d232c", "#f78031", "The Archandroid")
+											array("#383838", "#e99b45", "Origin of Symmetry"),
+											array("#1d232c", "#f78031", "The Archandroid"),
+											array("#121314", "#A7A97F", "magic")
 										);
 
 
@@ -233,6 +235,7 @@ $_TRANSLATIONS["en"] = array(
 	"clickToUploadYourOwn" => "upload", 
 	"background" => "Background",
 	"colours" => "Theme",
+	"define_theme" => "Define a theme",
 	"defaultCoverURL" => "http://",
 	"downloadSuccessful" => "album art saved",
 	"favourites_added" => "Adding favourite...",
@@ -285,6 +288,7 @@ $_TRANSLATIONS["en"] = array(
 	"removing_shared_links" => "deleting shared playlists...",
 	"removing_temp_files" => "cleaning in progress...",
 	"reset_db" => "update library",
+	"select_theme" => "Select a theme",
 	"scanning" => "Scanning ",
 	"scanning_ko" => "Scanning failed",
 	"scanning_ok" => "Folder scanned successfully",
@@ -302,6 +306,7 @@ $_TRANSLATIONS["en"] = array(
 	"updateCoverArt" => "update album art",
 	"username" => "Username",
 	"wrong_pass" => "Wrong username or password",
+	"your_theme" => "my theme"
 );
 
 
@@ -315,6 +320,7 @@ $_TRANSLATIONS["fr"] = array(
 	"background" => "Arri&egrave;re plan",
 	"colours" => "Th&egrave;",
 	"defaultCoverURL" => "http://",
+	"define_theme" => "Definir un thème",
 	"downloadSuccessful" => "Couverture sauvegardée",
 	"favourites_added" => "Favouris ajouté",
 	"favourites_removed" => "Favouris retiré",
@@ -377,12 +383,14 @@ $_TRANSLATIONS["fr"] = array(
 	"searchOne" => "&nbsp;&bull;&nbsp;rechercher&nbsp;&bull;&nbsp;", 
 	"seekbackward" => "Album précédent",
 	"seekforward" => "Album suivant",
+	"select_theme" => "Choisir un thème",
 	"show_all" => "anciens",
 	"text" => "Texte",
 	"uncovering" => "Découverte en cours ",
 	"updateCoverArt" => "mettre à jour la couverture",
 	"username" => "Utilisateur",
-	"wrong_pass" => "Utilisateur ou mot de passe invalide."
+	"wrong_pass" => "Utilisateur ou mot de passe invalide.",
+	"your_theme" => "mon thème"
 );
 
 /***************************************************************************/
@@ -1692,6 +1700,8 @@ class Musicco {
 						}
 						$("#background").val(options.background).trigger("change");
 						$("#text").val(options.text).trigger("change");
+						$("#my_theme").data("background", options.background);
+						$("#my_theme").data("text", options.text);
 					});
 				}
 			}
@@ -2465,6 +2475,12 @@ class Musicco {
 				 // EVENTS //
 				////////////
 
+				$(".theme-selector").on("click", function(e) {
+					$("#background").val($(this).data("background")).trigger("change");
+					$("#text").val($(this).data("text")).trigger("change");
+
+				});
+
 				$("#background, #text").on("change", function(e) {
 					document.documentElement.style.setProperty("--" + $(this).attr("id"), $(this).val());
 					document.documentElement.style.setProperty("--" + $(this).attr("id") + "-highlight", increase_brightness($(this).val(), ($(this).attr("id") == "background")? 10: 80));
@@ -3179,8 +3195,16 @@ if(!AuthManager::isAccessAllowed()) {
 				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-info\"></i><span id=\"about\"><a>".$this->getString("about")."</a></span></div>";
 				print "<hr/>";
 				print "<div class=\"settings selected\"><i class=\"space-after fas fa-fw fa-palette\"></i><span>".$this->getString("colours")."</span></div>";
-				print "<div><input class=\"space-after\" type=\"color\" id=\"background\" name=\"color\" value=\"".$this->getConfig("themes")[0][0]."\" /><label for=\"background\">".$this->getString("background")."</label></div>";
-				print "<div><input class=\"space-after\" type=\"color\" id=\"text\" name=\"color\" value=\"".$this->getConfig("themes")[0][1]."\" /><label for=\"text\">".$this->getString("text")."</label></div>";
+				print "<div class=\"settings-sub\"><span>".$this->getString("select_theme")."</span></div>";
+				print "<div>";
+				print "<a id=\"my_theme\" class=\"space-after theme-selector settings-option\" data-background=\"\" data-text=\"\">[".$this->getString("your_theme")."]</a>";
+				foreach ($this->getConfig("themes") as $theme){
+					print "<a class=\"space-after theme-selector settings-option\" data-background=\"".$theme[0]."\" data-text=\"".$theme[1]."\">[".$theme[2]."]</a>";
+				}
+				print "</div>";
+				print "<div class=\"settings-sub\"><span>".$this->getString("define_theme")."</span></div>";
+				print "<div class=\"settings-option\"><input class=\"space-after\" type=\"color\" id=\"background\" name=\"color\" value=\"".$this->getConfig("themes")[0][0]."\" /><label for=\"background\">".$this->getString("background")."</label></div>";
+				print "<div class=\"settings-option\"><input class=\"space-after\" type=\"color\" id=\"text\" name=\"color\" value=\"".$this->getConfig("themes")[0][1]."\" /><label for=\"text\">".$this->getString("text")."</label></div>";
 				?>
 				</div>
 			</div>
