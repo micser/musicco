@@ -3429,7 +3429,7 @@ function deleteGuestPlaylists() {
 function createDefaultPlaylist($user) {
 	debugMessage(__FUNCTION__);
 	logMessage("Creating a new playlist for ".$user);
-	savePlaylist($user, Musicco::getConfig('defaultPlaylist'), "[]", 0, 0, "false", "false");
+	savePlaylist($user, Musicco::getConfig('defaultPlaylist'), "[]", 0, 0, 100, "false", "false");
 }
 
 function getPlaylists($user) {
@@ -3548,6 +3548,7 @@ function savePlaylist($user, $name, $playlist, $current, $time, $volume, $loop, 
 		$update_playlist_query = NULL;
 		$db = NULL;
 		logMessage("Saved playlist $name for $user");
+		debugMessage("Saved playlist: ".$data);
 		setCurrentPlaylistId($userId, $playlistId);
 	}
 }
@@ -3568,8 +3569,7 @@ function isUser($user) {
 function loadPlaylist($user, $name) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
-	//TODO: Setting a default value should no longer be needed since we create a playlist if none is found. In practice, that's not the case yet.
-	$playlist = '{"current": "0" , "time": 0, , "volume": 100, "loop": "false" ,"shuffled": "false" , "playlist": "[]"}';
+	$playlist = "";
 	if ($userId != 0) {
 		if ($name == "") {
 			$currentPlaylist = getCurrentPlaylistId($userId);
@@ -3590,6 +3590,7 @@ function loadPlaylist($user, $name) {
 			setCurrentPlaylistId($userId, $row['id']);
 		}
 	}
+	debugMessage("Loaded playlist: ".$playlist);
 	return $playlist;
 }
 
