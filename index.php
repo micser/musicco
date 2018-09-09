@@ -644,7 +644,7 @@ class Musicco {
 		<style>
 			.previousAlbum { border-right: 1px red dashed; }
 			.previousTrack { color: red; }
-			.currentAlbum { border-right: 1px #E3E5BB dashed; }
+			.currentAlbum { border-right: 1px var(--text-highlight) dashed; }
 			.nextTrack { color: green; }
 			.nextAlbum { border-right: 1px green dashed; }
 		</style>
@@ -812,11 +812,6 @@ class Musicco {
 			// Functions //
 			//////////////
 
-			function setColour(e) {
-				document.documentElement.style.setProperty("--" + this.id, this.value);
-				document.documentElement.style.setProperty("--" + this.id + "-highlight", increase_brightness(this.value, (this.id == "background")? 10: 80));
-			}
-
 			function increase_brightness(hex, percent){
 					hex = hex.replace(/^\s*#|\s*$/g, '');
 					if(hex.length == 3){
@@ -848,11 +843,13 @@ class Musicco {
 			}
 
 			function volumeUp() {
-			$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") + 10);
+				$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") + 10);
+				saveSettings();
 			}
 
 			function volumeDown() {
-			$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") - 10);
+				$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") - 10);
+				saveSettings();
 			}
 
 			function setVolume(volume) {
@@ -1598,11 +1595,8 @@ class Musicco {
 					return album;
 				}).get();
 				var current = $(".currentTrack").index("#playlist li[data-nature=track]");
-				var volume = $("#big-volume-bar").slider("option", "value");
 				var time = Math.floor(player.currentTime);
-				var loop = playerConfig["loop"];
-				var shuffled = playerConfig["shuffled"];
-				$.post('?', {savePlaylist: '', u: user, n: name, p: JSON.stringify(playlist), c: current, t: time, v: volume, l: loop, s: shuffled}, function (response) {
+				$.post('?', {savePlaylist: '', u: user, n: name, p: JSON.stringify(playlist), c: current, t: time}, function (response) {
 				});
 			}
 
@@ -1671,6 +1665,37 @@ class Musicco {
 				})();
 			}
 
+			function saveSettings() {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				if (user!="") {
+					var volume = $("#big-volume-bar").slider("option", "value");
+					var loop = playerConfig["loop"];
+					var shuffled = playerConfig["shuffled"];
+					var background = $("#background").val();
+					var text = $("#text").val();
+					$.post('?', {saveSettings: '', u: user, v: volume, l: loop, s: shuffled, b: background, t: text}, function(response) {
+					});
+				}
+			}
+
+			function loadSettings() {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				if (user!="") {
+					$.post('?', {loadSettings: '', u: user}, function(response) {
+						var options = JSON.parse(response);
+						$("#big-volume-bar").slider("option", "value",parseInt(options.volume));
+						if (options.loop === "true") {
+							$('#loop').trigger("click");
+						}
+						if (options.shuffled === "true") {
+							$('#shuffled').trigger('click');
+						}
+						$("#background").val(options.background).trigger("change");
+						$("#text").val(options.text).trigger("change");
+					});
+				}
+			}
+
 			function loadPlaylist(name) {
 				resetPlayer();
 				player.currentTime = 0;
@@ -1692,13 +1717,6 @@ class Musicco {
 							insertFirst(tracksArray);
 							loadTrack(parseInt(response.current, 0));
 							player.currentTime = parseInt(response.time);
-							$("#big-volume-bar").slider("option", "value",parseInt(response.volume));
-							if (response.loop == "true") {
-								$('#big-repeat').trigger("click");
-							}
-							if (response.shuffled == "true") {
-								$('#big-shuffle').trigger('click');
-							}
 						}
 						$("#loading").hide();
 						hideSpinner();
@@ -2292,13 +2310,6 @@ class Musicco {
 					watcher.observe(watcherTarget, watcherConfig);
 				}
 
-				var backgroundSetting = document.getElementById("background");
-				var textSetting = document.getElementById("text");
-				if (backgroundSetting) {
-					backgroundSetting.addEventListener("change", setColour);
-					textSetting.addEventListener("change", setColour);
-				}
-
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
 				new Clipboard(".clip");
@@ -2410,6 +2421,7 @@ class Musicco {
 						}
 					});
 
+					loadSettings();
 					loadPlaylist();
 					adaptUI(true);
 				}
@@ -2452,6 +2464,12 @@ class Musicco {
 				  ////////////
 				 // EVENTS //
 				////////////
+
+				$("#background, #text").on("change", function(e) {
+					document.documentElement.style.setProperty("--" + $(this).attr("id"), $(this).val());
+					document.documentElement.style.setProperty("--" + $(this).attr("id") + "-highlight", increase_brightness($(this).val(), ($(this).attr("id") == "background")? 10: 80));
+					saveSettings();
+				});
 
 				$("#playlist").on("click taphold", ".move-down", function(e) {
 					var target = $(this).parents("li").next();
@@ -3002,14 +3020,10 @@ class Musicco {
 					$("#user_name").focus();
 				}
 
-				$("#big-shuffle").click(function() {
-					playerConfig["shuffled"] = !playerConfig["shuffled"];
+				$("#shuffled, #loop").click(function() {
+					playerConfig[$(this).attr("id")] = !playerConfig[$(this).attr("id")];
 					$(this).toggleClass("selected");
-				});
-
-				$("#big-repeat").click(function() {
-					playerConfig["loop"] = !playerConfig["loop"];
-					$(this).toggleClass("selected");
+					saveSettings();
 				});
 
 				$("#big-volume-down").click(function() {
@@ -3202,8 +3216,8 @@ if(!AuthManager::isAccessAllowed()) {
 					<span id="big-mute" class="toggles"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 					<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
 					<span class="guestPlay uncover toggles"><i class="fas fa-magic fa-2x fa-fw"></i></span>
-					<span id="big-shuffle" class="toggles touch-jp-shuffle"><i class="fas fa-random fa-2x fa-fw"></i></span>
-					<span id="big-repeat" class="toggles touch-jp-repeat"><i class="fas fa-redo fa-2x fa-fw"></i></span>
+					<span id="shuffled" class="toggles"><i class="fas fa-random fa-2x fa-fw"></i></span>
+					<span id="loop" class="toggles"><i class="fas fa-redo fa-2x fa-fw"></i></span>
 					<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x fa-fw"></i></span>
 					<span id="big-volume-up" class="toggles"><i class="fas fa-volume-up fa-2x fa-fw"></i></span>
 				</div>
@@ -3267,6 +3281,12 @@ if(!AuthManager::isAccessAllowed()) {
 	} elseif (isset($_POST['getPlaylists'])) {
 			return print getPlaylists($_POST['u']);
 			exit;
+	} elseif (isset($_POST['loadSettings'])) {
+			return print loadSettings($_POST['u']);
+			exit;
+	} elseif (isset($_POST['saveSettings'])) {
+		saveSettings($_POST['u'], $_POST['v'], $_POST['l'], $_POST['s'], $_POST['b'], $_POST['t']);
+		exit;
 	} elseif (isset($_POST['getFavourites'])) {
 			$user = $_POST['u'];
 			return print getFavourites($user);
@@ -3441,7 +3461,7 @@ function deleteGuestPlaylists() {
 function createDefaultPlaylist($user) {
 	debugMessage(__FUNCTION__);
 	logMessage("Creating a new playlist for ".$user);
-	savePlaylist($user, Musicco::getConfig('defaultPlaylist'), "[]", 0, 0, 100, "false", "false");
+	savePlaylist($user, Musicco::getConfig('defaultPlaylist'), "[]", 0, 0);
 }
 
 function getPlaylists($user) {
@@ -3548,12 +3568,12 @@ function getCurrentPlaylistName($userId) {
 		return $name;
 }
 
-function savePlaylist($user, $name, $playlist, $current, $time, $volume, $loop, $shuffled) {
+function savePlaylist($user, $name, $playlist, $current, $time) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$data = preg_replace('/"/', '\\\'', "{\"current\": \"$current\" , \"time\": \"$time\" , \"volume\": \"$volume\" , \"loop\": \"$loop\" , \"shuffled\": \"$shuffled\" , \"playlist\": \"".preg_replace('/"/', '\\"', $playlist)."\"}");
+		$data = preg_replace('/"/', '\\\'', "{\"current\": \"$current\" , \"time\": \"$time\" , \"playlist\": \"".preg_replace('/"/', '\\"', $playlist)."\"}");
 		$update_playlist_query = $db->prepare("REPLACE INTO playlists (userId, name, data) VALUES ($userId, \"$name\", \"$data\")");
 		$update_playlist_query->execute();
 		$playlistId = $db->lastInsertId();
@@ -3576,6 +3596,48 @@ function isUser($user) {
 		}
 	}
 	return $found;
+}
+
+function saveSettings($user, $volume, $loop, $shuffled, $background, $text) {
+	debugMessage(__FUNCTION__);
+	$userId = getId($user);
+	if ($userId != 0) {
+		$query = "UPDATE users set option_volume=$volume, option_loop=\"$loop\", option_shuffled=\"$shuffled\", theme_background=\"$background\", theme_text=\"$text\" WHERE id=$userId;";
+		debugMessage($query);
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$update_settings_query = $db->prepare($query);
+		$update_settings_query->execute();
+		$update_settings_query = NULL;
+		$db = NULL;
+		logMessage("Saved settings for $user");
+		debugMessage("Saved settings: ".$volume.$loop.$shuffled.$background.$text);
+	}
+}
+
+function loadSettings($user) {
+	debugMessage(__FUNCTION__);
+	$settings = [];
+	$userId = getId($user);
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$settings_query = $db->prepare("SELECT option_volume, option_loop, option_shuffled, theme_background, theme_text FROM users WHERE id=$userId;");
+		$settings_query->execute();
+		$result = $settings_query->fetchAll();
+		$settings_query = NULL;
+		$db = NULL;
+		foreach($result as $row) {
+			$settings = array(
+										"volume" => $row['option_volume'],
+										"loop" => $row['option_loop'],
+										"shuffled" => $row['option_shuffled'],
+										"background" => $row['theme_background'],
+										"text" => $row['theme_text']
+									);
+		}
+	}
+	logMessage("Loaded settings for $user");
+	debugMessage("Loaded settings: ". $row['option_volume'].$row['option_loop'].$row['option_shuffled'].$row['theme_background'].$row['theme_text']);
+	return json_encode($settings);
 }
 
 function loadPlaylist($user, $name) {
@@ -3649,7 +3711,7 @@ function createUser($user, $force) {
 	}
 	if ($isValidUser || $force) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist) VALUES (\"" . $user . "\", 0);");
+		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, option_volume, option_loop, option_shuffled, theme_background, theme_text) VALUES (\"" . $user . "\", 0, 100, \"false\", \"false\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
 		$create_user_query->execute();
 		$id = $db->lastInsertId();
 		$create_user_query = NULL;
@@ -3801,7 +3863,7 @@ function cleanDB($db) {
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
-	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER);");
+	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
 	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, data TEXT, unique(userId, name));");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
