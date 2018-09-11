@@ -2483,7 +2483,7 @@ class Musicco {
 
 				$("#background, #text").on("change", function(e) {
 					document.documentElement.style.setProperty("--" + $(this).attr("id"), $(this).val());
-					document.documentElement.style.setProperty("--" + $(this).attr("id") + "-highlight", increase_brightness($(this).val(), ($(this).attr("id") == "background")? 10: 80));
+					document.documentElement.style.setProperty("--" + $(this).attr("id") + "-highlight", increase_brightness($(this).val(), ($(this).attr("id") == "background")? 10: 60));
 					saveSettings();
 				});
 
