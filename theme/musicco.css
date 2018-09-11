@@ -991,8 +991,8 @@
 		}
 
 		#leftPanel {
-			-webkit-backdrop-filter: blur(10px) opacity(70%);
-			backdrop-filter: blur(10px) opacity(70%);
+			-webkit-backdrop-filter: blur(30px) opacity(100%);
+			backdrop-filter: blur(30px) opacity(100%);
 			background-color: var(--background-transparent);
 		}
 	}
