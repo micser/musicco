@@ -696,6 +696,7 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/clipboard.js/clipboard.min.js"></script>
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
+		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
 		<script type="text/javascript">
 				///////////////
 			 // VARIABLES //
@@ -819,6 +820,27 @@ class Musicco {
 			////////////////
 			// Functions //
 			//////////////
+
+				function setTheme(coverUrl) {
+				var albumArt = new Image();
+				albumArt.addEventListener("load", function(){
+					var colorThief = new ColorThief();
+					var background = colorThief.getColor(albumArt);
+					var text = colorThief.getPalette(albumArt)[colorThief.getPalette(albumArt).length - 1];
+						$("#background").val(rgbToHex(background[0], background[1], background[2])).trigger("change");
+						$("#text").val(rgbToHex(text[0], text[1], text[2])).trigger("change");
+				});
+				albumArt.src = coverUrl;
+				}
+
+				function componentToHex(c) {
+						var hex = c.toString(16);
+						return hex.length == 1 ? "0" + hex : hex;
+				}
+
+				function rgbToHex(r, g, b) {
+						return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+				}
 
 			function increase_brightness(hex, percent){
 					hex = hex.replace(/^\s*#|\s*$/g, '');
@@ -1783,6 +1805,7 @@ class Musicco {
 					$(".currentAlbum img").attr("src", coverUrl);
 					$(".currentAlbum li").data("cover", coverUrl);
 					$('#big-cover').css('background-image', 'url("' + coverUrl + '")'); 
+					setTheme(coverUrl);
 					savePlaylist();
 				}
 
