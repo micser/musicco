@@ -57,7 +57,6 @@ $_CONFIG['themes'] = array(
 											array("#121314", "#A7A97F", "musicco"),
 											array("#383838", "#e99b45", "Origin of Symmetry"),
 											array("#1d232c", "#f78031", "The Archandroid"),
-											array("#121314", "#A7A97F", "magic")
 										);
 
 
@@ -235,7 +234,7 @@ $_TRANSLATIONS["en"] = array(
 	"clickToUploadYourOwn" => "upload", 
 	"background" => "Background",
 	"colours" => "Theme",
-	"define_theme" => "Define a theme",
+	"define_theme" => "Custom",
 	"defaultCoverURL" => "http://",
 	"downloadSuccessful" => "album art saved",
 	"favourites_added" => "Adding favourite...",
@@ -249,6 +248,7 @@ $_TRANSLATIONS["en"] = array(
 	"libraryRebuiltIn" => "library updated in ",
 	"log_in" => "Log in",
 	"log_out" => "log out",
+	"dynamic" => "Dynamic",
 	"menu_download" => "Download",
 	"menu_favourite" => "Favourite",
 	"menu_goto_album" => "Find album",
@@ -288,7 +288,7 @@ $_TRANSLATIONS["en"] = array(
 	"removing_shared_links" => "deleting shared playlists...",
 	"removing_temp_files" => "cleaning in progress...",
 	"reset_db" => "update library",
-	"select_theme" => "Select a theme",
+	"select_theme" => "Preset",
 	"scanning" => "Scanning ",
 	"scanning_ko" => "Scanning failed",
 	"scanning_ok" => "Folder scanned successfully",
@@ -320,7 +320,7 @@ $_TRANSLATIONS["fr"] = array(
 	"background" => "Arri&egrave;re plan",
 	"colours" => "Th&egrave;",
 	"defaultCoverURL" => "http://",
-	"define_theme" => "Definir un thème",
+	"define_theme" => "Personnel",
 	"downloadSuccessful" => "Couverture sauvegardée",
 	"favourites_added" => "Favouris ajouté",
 	"favourites_removed" => "Favouris retiré",
@@ -333,6 +333,7 @@ $_TRANSLATIONS["fr"] = array(
 	"libraryRebuiltIn" => "discothèque rafraichie en ",
 	"log_in" => "Connexion",
 	"log_out" => "déconnexion",
+	"dynamic" => "dynamique",
 	"menu_download" => "Télécharger",
 	"menu_favourite" => "Favori",
 	"menu_goto_album" => "Trouver l'album",
@@ -383,7 +384,7 @@ $_TRANSLATIONS["fr"] = array(
 	"searchOne" => "&nbsp;&bull;&nbsp;rechercher&nbsp;&bull;&nbsp;", 
 	"seekbackward" => "Album précédent",
 	"seekforward" => "Album suivant",
-	"select_theme" => "Choisir un thème",
+	"select_theme" => "Prédéfini",
 	"show_all" => "anciens",
 	"text" => "Texte",
 	"uncovering" => "Découverte en cours ",
@@ -821,16 +822,29 @@ class Musicco {
 			// Functions //
 			//////////////
 
+				function isDynamicTheme() {
+				return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "dynamic" )
+				}
+
+				function isCustomTheme() {
+				return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "custom" )
+				}
+
 				function setTheme(coverUrl) {
 				var albumArt = new Image();
 				albumArt.addEventListener("load", function(){
 					var colorThief = new ColorThief();
 					var background = colorThief.getColor(albumArt);
 					var text = colorThief.getPalette(albumArt)[colorThief.getPalette(albumArt).length - 1];
-						$("#background").val(rgbToHex(background[0], background[1], background[2])).trigger("change");
-						$("#text").val(rgbToHex(text[0], text[1], text[2])).trigger("change");
+					setColour("background", rgbToHex(background[0], background[1], background[2]));
+					setColour("text", rgbToHex(text[0], text[1], text[2]));
 				});
 				albumArt.src = coverUrl;
+				}
+
+				function setColour(id, value) {
+					document.documentElement.style.setProperty("--" + id, value);
+					document.documentElement.style.setProperty("--" + id + "-highlight", increase_brightness(value, (id == "background")? 10: 60));
 				}
 
 				function componentToHex(c) {
@@ -1701,9 +1715,10 @@ class Musicco {
 					var volume = $("#big-volume-bar").slider("option", "value");
 					var loop = playerConfig["loop"];
 					var shuffled = playerConfig["shuffled"];
+					var theme = $("#theme_settings input[name=option_theme]:checked").attr("id");
 					var background = $("#background").val();
 					var text = $("#text").val();
-					$.post('?', {saveSettings: '', u: user, v: volume, l: loop, s: shuffled, b: background, t: text}, function(response) {
+					$.post('?', {saveSettings: '', u: user, v: volume, l: loop, s: shuffled, m: theme, b: background, t: text}, function(response) {
 					});
 				}
 			}
@@ -1718,8 +1733,9 @@ class Musicco {
 							$('#loop').trigger("click");
 						}
 						if (options.shuffled === "true") {
-							$('#shuffled').trigger('click');
+							$('#shuffled').trigger("click");
 						}
+						$("#theme_settings input[id=" + options.theme + "]").prop("checked", true).trigger("click");
 						$("#background").val(options.background).trigger("change");
 						$("#text").val(options.text).trigger("change");
 						$("#my_theme").data("background", options.background);
@@ -1805,7 +1821,9 @@ class Musicco {
 					$(".currentAlbum img").attr("src", coverUrl);
 					$(".currentAlbum li").data("cover", coverUrl);
 					$('#big-cover').css('background-image', 'url("' + coverUrl + '")'); 
-					setTheme(coverUrl);
+					if (isDynamicTheme()) {
+						setTheme(coverUrl);
+					}
 					savePlaylist();
 				}
 
@@ -2501,12 +2519,16 @@ class Musicco {
 				$(".theme-selector").on("click", function(e) {
 					$("#background").val($(this).data("background")).trigger("change");
 					$("#text").val($(this).data("text")).trigger("change");
+				});
 
+				$("#theme_settings input[type=radio]").on("click", function() {
+					$(this).parent("div").children(".theme_opts").show();
+					$("#theme_settings input").not($(this)).parent("div").children(".theme_opts").hide();
 				});
 
 				$("#background, #text").on("change", function(e) {
-					document.documentElement.style.setProperty("--" + $(this).attr("id"), $(this).val());
-					document.documentElement.style.setProperty("--" + $(this).attr("id") + "-highlight", increase_brightness($(this).val(), ($(this).attr("id") == "background")? 10: 60));
+					setColour($(this).attr("id"), $(this).val());
+					setColour("--" + $(this).attr("id") + "-highlight", increase_brightness($(this).val(), ($(this).attr("id") == "background")? 10: 60));
 					saveSettings();
 				});
 
@@ -3059,7 +3081,7 @@ class Musicco {
 					$("#user_name").focus();
 				}
 
-				$("#shuffled, #loop").click(function() {
+				$("#shuffled, #loop, #theme_settings input").click(function() {
 					playerConfig[$(this).attr("id")] = !playerConfig[$(this).attr("id")];
 					$(this).toggleClass("selected");
 					saveSettings();
@@ -3206,29 +3228,59 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="lyricsPanel" class="panel"></div>
 				<div id="settingsPanel">
-				<?php
-				if (AuthManager::isAdmin()) {
-					print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-sync\"></i><span id=\"reset_db\"><a>".$this->getString("reset_db")."</a></span></div>";
-					print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
-					print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
-					print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
-				}
-				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-bath\"></i><span id=\"reload\"><a>".$this->getString("reload")."</a></span></div>";
-				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-question\"></i><span id=\"help\"><a>".$this->getString("help")."</a></span></div>";
-				print "<div class=\"settings\"><i class=\"space-after fas fa-fw fa-info\"></i><span id=\"about\"><a>".$this->getString("about")."</a></span></div>";
-				print "<hr/>";
-				print "<div class=\"settings selected\"><i class=\"space-after fas fa-fw fa-palette\"></i><span>".$this->getString("colours")."</span></div>";
-				print "<div class=\"settings-sub\"><span>".$this->getString("select_theme")."</span></div>";
-				print "<div>";
-				print "<a id=\"my_theme\" class=\"space-after theme-selector settings-option\" data-background=\"\" data-text=\"\">[".$this->getString("your_theme")."]</a>";
-				foreach ($this->getConfig("themes") as $theme){
-					print "<a class=\"space-after theme-selector settings-option\" data-background=\"".$theme[0]."\" data-text=\"".$theme[1]."\">[".$theme[2]."]</a>";
-				}
-				print "</div>";
-				print "<div class=\"settings-sub\"><span>".$this->getString("define_theme")."</span></div>";
-				print "<div class=\"settings-option\"><input class=\"space-after\" type=\"color\" id=\"background\" name=\"color\" value=\"".$this->getConfig("themes")[0][0]."\" /><label for=\"background\">".$this->getString("background")."</label></div>";
-				print "<div class=\"settings-option\"><input class=\"space-after\" type=\"color\" id=\"text\" name=\"color\" value=\"".$this->getConfig("themes")[0][1]."\" /><label for=\"text\">".$this->getString("text")."</label></div>";
-				?>
+					<?php
+					if (AuthManager::isAdmin()) {
+						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-sync\"></i><span id=\"reset_db\"><a>".$this->getString("reset_db")."</a></span></div>";
+						print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
+						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
+						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
+					}
+					?>
+					<div class="settings">
+						<i class="space-after fas fa-fw fa-bath"></i><span id="reload"><a><?php print $this->getString("reload"); ?></a></span>
+					</div>
+					<div class="settings">
+						<i class="space-after fas fa-fw fa-question"></i><span id="help"><a><?php print $this->getString("help"); ?></a></span>
+					</div>
+					<div class="settings">
+						<i class="space-after fas fa-fw fa-info"></i><span id="about"><a><?php print $this->getString("about"); ?></a></span>
+					</div>
+					<hr/>
+					<form id="theme_settings">
+						<div class="settings selected">
+							<i class="space-after fas fa-fw fa-palette"></i><span><?php print $this->getString("colours"); ?></span>
+						</div>
+						<div class="settings-sub">
+							<input type="radio" id="dynamic" name="option_theme" />
+							<label for="dynamic"><?php print $this->getString("dynamic"); ?></label>
+						</div>
+						<div class="settings-sub">
+							<input type="radio" id="preset" name="option_theme" />
+							<label for="preset"><?php print $this->getString("select_theme"); ?></label>
+							<div class="theme_opts">
+								<a id="my_theme" class="space-after theme-selector settings-option" data-background="" data-text="">[<?php print $this->getString("your_theme"); ?>]</a>
+								<?php
+									foreach ($this->getConfig("themes") as $theme){
+										print "<a class=\"space-after theme-selector settings-option\" data-background=\"".$theme[0]."\" data-text=\"".$theme[1]."\">[".$theme[2]."]</a>";
+									}
+								?>
+							</div>
+						</div>
+						<div class="settings-sub">
+							<input type="radio" id="personal" name="option_theme" />
+							<label for="personal"><?php print $this->getString("define_theme"); ?></label>
+							<div class="theme_opts">
+								<div class="settings-option">
+									<input class="space-after" type="color" id="background" name="color" value="<?php $this->getConfig("themes")[0][0]; ?>" />
+									<label for="background"><?php print $this->getString("background"); ?></label>
+								</div>
+								<div class="settings-option">
+									<input class="space-after" type="color" id="text" name="color" value="<?php $this->getConfig("themes")[0][1]; ?>" />
+									<label for="text"><?php print $this->getString("text"); ?></label>
+								</div>
+							</div>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
@@ -3332,7 +3384,7 @@ if(!AuthManager::isAccessAllowed()) {
 			return print loadSettings($_POST['u']);
 			exit;
 	} elseif (isset($_POST['saveSettings'])) {
-		saveSettings($_POST['u'], $_POST['v'], $_POST['l'], $_POST['s'], $_POST['b'], $_POST['t']);
+		saveSettings($_POST['u'], $_POST['v'], $_POST['l'], $_POST['s'], $_POST['m'], $_POST['b'], $_POST['t']);
 		exit;
 	} elseif (isset($_POST['getFavourites'])) {
 			$user = $_POST['u'];
@@ -3645,11 +3697,11 @@ function isUser($user) {
 	return $found;
 }
 
-function saveSettings($user, $volume, $loop, $shuffled, $background, $text) {
+function saveSettings($user, $volume, $loop, $shuffled, $theme, $background, $text) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
-		$query = "UPDATE users set option_volume=$volume, option_loop=\"$loop\", option_shuffled=\"$shuffled\", theme_background=\"$background\", theme_text=\"$text\" WHERE id=$userId;";
+		$query = "UPDATE users set option_volume=$volume, option_loop=\"$loop\", option_shuffled=\"$shuffled\", option_theme=\"$theme\", theme_background=\"$background\", theme_text=\"$text\" WHERE id=$userId;";
 		debugMessage($query);
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$update_settings_query = $db->prepare($query);
@@ -3667,7 +3719,7 @@ function loadSettings($user) {
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$settings_query = $db->prepare("SELECT option_volume, option_loop, option_shuffled, theme_background, theme_text FROM users WHERE id=$userId;");
+		$settings_query = $db->prepare("SELECT option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text FROM users WHERE id=$userId;");
 		$settings_query->execute();
 		$result = $settings_query->fetchAll();
 		$settings_query = NULL;
@@ -3677,13 +3729,14 @@ function loadSettings($user) {
 										"volume" => $row['option_volume'],
 										"loop" => $row['option_loop'],
 										"shuffled" => $row['option_shuffled'],
+										"theme" => $row['option_theme'],
 										"background" => $row['theme_background'],
 										"text" => $row['theme_text']
 									);
 		}
 	}
 	logMessage("Loaded settings for $user");
-	debugMessage("Loaded settings: ". $row['option_volume'].$row['option_loop'].$row['option_shuffled'].$row['theme_background'].$row['theme_text']);
+	debugMessage("Loaded settings: ". $row['option_volume'].$row['option_loop'].$row['option_shuffled'].$row['option_theme'].$row['theme_background'].$row['theme_text']);
 	return json_encode($settings);
 }
 
@@ -3758,7 +3811,7 @@ function createUser($user, $force) {
 	}
 	if ($isValidUser || $force) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, option_volume, option_loop, option_shuffled, theme_background, theme_text) VALUES (\"" . $user . "\", 0, 100, \"false\", \"false\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
+		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text) VALUES (\"" . $user . "\", 0, 100, \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
 		$create_user_query->execute();
 		$id = $db->lastInsertId();
 		$create_user_query = NULL;
@@ -3910,7 +3963,7 @@ function cleanDB($db) {
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
-	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
+	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
 	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, data TEXT, unique(userId, name));");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
