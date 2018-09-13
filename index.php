@@ -2524,6 +2524,12 @@ class Musicco {
 				$("#theme_settings input[type=radio]").on("click", function() {
 					$(this).parent("div").children(".theme_opts").show();
 					$("#theme_settings input").not($(this)).parent("div").children(".theme_opts").hide();
+					if (isDynamicTheme()) {
+						setTheme($("#big-cover").css("background-image").replace("url(","").replace(")","").replace(/\"/gi, ""));
+					} else if (isCustomTheme()) {
+						$("#background").trigger("change");
+						$("#text").trigger("change");
+					}
 				});
 
 				$("#background, #text").on("change", function(e) {
@@ -3267,8 +3273,8 @@ if(!AuthManager::isAccessAllowed()) {
 							</div>
 						</div>
 						<div class="settings-sub">
-							<input type="radio" id="personal" name="option_theme" />
-							<label for="personal"><?php print $this->getString("define_theme"); ?></label>
+							<input type="radio" id="custom" name="option_theme" />
+							<label for="custom"><?php print $this->getString("define_theme"); ?></label>
 							<div class="theme_opts">
 								<div class="settings-option">
 									<input class="space-after" type="color" id="background" name="color" value="<?php $this->getConfig("themes")[0][0]; ?>" />

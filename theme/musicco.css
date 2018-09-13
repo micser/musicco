@@ -214,12 +214,16 @@
 	}
 
 	.settings {
-		margin-top: 0.5em;
+		margin-bottom: 0.5em;
 	}
 
 	.settings-sub {
 		font-size: var(--text-smaller);
-		margin-top: 1em;
+		padding-left: 1.5em;
+	}
+
+	.theme_opts {
+		padding-left: 2em;
 	}
 
 	.settings-option {
