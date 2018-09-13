@@ -67,13 +67,18 @@
 	}
 
 	/* I don't like the default space between icon and text in fancytree with fontawesome5 */
-
 	span.fancytree-title {
 		margin-left: 8px;
 	}
 
-	/* Fix for https://stackoverflow.com/questions/41777517/fancy-tree-icon-alignment-as-vertical-center in fancytree with fontawesome5 */
+	/* Override widget header border */
+	.ui-widget-header {
+		border-top: 0;
+		border-left: 0;
+		border-right: 0;
+	}
 
+	/* Fix for https://stackoverflow.com/questions/41777517/fancy-tree-icon-alignment-as-vertical-center in fancytree with fontawesome5 */
 	span.fancytree-title,
 	span.fancytree-icon,
 	span.fancytree-expander{
@@ -107,6 +112,36 @@
 		content: '\00a0\00a0\2039';
  }
 */
+
+	#playlist-tools {
+		position: fixed;
+		bottom: 0;
+		padding-bottom: .5em;
+		padding-top: .6em;
+		left: 26%;
+		width: 100%;
+		box-shadow: 0 -5px 15px -5px var(--background-highlight);
+		background: var(--background-highlight);
+	}
+
+	@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+		#playlist-tools {
+		background: none;
+		box-shadow: 0 0;
+		}
+
+		.magic, 
+		#playlist-tools {
+			-webkit-backdrop-filter: blur(50px) opacity(40%);
+			backdrop-filter: blur(50px) opacity(40%);
+		}
+	}
+
+	.magic {
+	background-repeat: no-repeat;
+	background-position: top;
+	background-size: cover;
+	}
 
 	.fa-play-before {
 		content:url("data:image/svg+xml;utf8,\
@@ -190,14 +225,16 @@
 		font-size: var(--text-tiny);
 	}
 
-	#playlist-tools {
-		position: fixed;
-		bottom: 0;
-		padding-bottom: .5em;
-		padding-top: .6em;
-		left: inherit;
-		width: 100%;
-		box-shadow: 0 -5px 15px -5px var(--background-highlight);
+	#big-player {
+		height: 100vh;
+	}
+
+	#playlist_select {
+		margin-left: .5em;
+	}
+
+	#ham {
+	display: none;
 	}
 
 	#includeOldAlbums {
@@ -413,7 +450,7 @@
 		width: 1.5em;
 		height: 1.75em;
 		padding:0;
-		background-color: var(--background);
+		background: none;
 	}
 
 	body {
@@ -449,12 +486,17 @@
 	#helpBox,
 	#sharing-banner,
 	#volume-value,
-	#playlist_select,
-	#playlist-tools {
+	#playlist_select {
 		-webkit-user-select: none;
 		-ms-user-select: none;
 		-moz-user-select: none;
 		background-color: var(--background);
+	}
+
+	/* Override leftPanel background so we can use dynamic theme */
+	.ui-widget-header, 
+	#leftPanel {
+		background: none;
 	}
 
 	span.fancytree-node,
@@ -985,9 +1027,18 @@
 		display: none;
 	}
 
-	#playlist-tools {
-		left: .5em;
+	#ham {
+		display: inline-block;
 	}
+
+	#big-player {
+		height:;
+	}
+
+	#playlist-tools {
+		left: 0;
+	}
+
 	@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
 		ui-tabs .ui-widget-header {
 			border: 1px solid var(--background-transparent);
@@ -1101,7 +1152,6 @@
 	#leftPanel {
 		left: 0;
 		opacity: 1;
-		border-right: 1px solid black;
 		display: block !important;
 		position: fixed;
 		top: 0;

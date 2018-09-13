@@ -840,6 +840,8 @@ class Musicco {
 					setColour("text", rgbToHex(text[0], text[1], text[2]));
 				});
 				albumArt.src = coverUrl;
+				$("body").css("background-image", "url(" + coverUrl + ")");
+				$("body").addClass("magic");
 				}
 
 				function setColour(id, value) {
@@ -2526,9 +2528,11 @@ class Musicco {
 					$("#theme_settings input").not($(this)).parent("div").children(".theme_opts").hide();
 					if (isDynamicTheme()) {
 						setTheme($("#big-cover").css("background-image").replace("url(","").replace(")","").replace(/\"/gi, ""));
-					} else if (isCustomTheme()) {
+					} else {
 						$("#background").trigger("change");
 						$("#text").trigger("change");
+						$("body").css("background-image", "");
+						$("body").removeClass("magic");
 					}
 				});
 
