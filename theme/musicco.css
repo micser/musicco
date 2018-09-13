@@ -494,7 +494,7 @@
 	}
 
 	/* Override leftPanel background so we can use dynamic theme */
-	.ui-widget-header, 
+	#leftPanel .ui-widget-header, 
 	#leftPanel {
 		background: none;
 	}
@@ -987,7 +987,7 @@
 	}
 
 	::-webkit-scrollbar-thumb {
-		background: var(--background-highlight);
+		background: var(--text);
 	}
 
 	#header {
