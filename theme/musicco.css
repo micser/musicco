@@ -230,6 +230,7 @@
 
 	#playlist_select {
 		margin-left: .5em;
+		color: var(--text);
 	}
 
 	#ham {
@@ -396,7 +397,6 @@
 	#logout a,
 	#loadingInfo,
 	.selected,
-	#playlist_select,
 	a.infoPanelLink:hover,
 	span.current span.fancytree-title mark,
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match.current span.fancytree-title,
@@ -1059,7 +1059,7 @@
 	#playlistPanel > ul {
 		margin-bottom: 7em;
 	}
-	
+
 	#mini-controls {
 		vertical-align: super;
 	}
@@ -1193,6 +1193,14 @@
 
 		#playlist-tools {
 			padding-bottom: 1em;
+			background: var(--background-highlight);
+			margin-right: -.8em;
+			border-radius: 5px;
+			opacity: .95;
+		}
+
+		.playlist-tools {
+			color: var(--text);
 		}
 
 		#leftPanel {
