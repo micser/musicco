@@ -114,12 +114,11 @@
 */
 
 	#playlist-tools {
-		position: fixed;
+		position: sticky;
+		margin: -1.4em;
 		bottom: 0;
-		padding-bottom: .5em;
-		padding-top: .6em;
-		left: 26%;
-		width: 100%;
+		padding-bottom: 3em;
+		padding-top: 1em;
 		box-shadow: 0 -5px 15px -5px var(--background-highlight);
 		background: var(--background-highlight);
 	}
@@ -1035,7 +1034,7 @@
 	}
 
 	#playlist-tools {
-		left: 0;
+		padding-bottom: 5em;
 	}
 
 	@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
@@ -1084,6 +1083,10 @@
 		#mini-controls {
 			display: inline !important;
 			vertical-align: unset;
+		}
+
+		#playlist-tools {
+			padding-bottom: 4em;
 		}
 
 		#mini-controls i {
@@ -1158,7 +1161,7 @@
 	}
 
 	#playlist-tools {
-		width: 58%;
+		padding-bottom: 3em;
 	}
 
 	#big-player {
@@ -1186,6 +1189,10 @@
 			display: block !important;
 			position: fixed;
 			top: 0;
+		}
+
+		#playlist-tools {
+			padding-bottom: 1em;
 		}
 
 		#leftPanel {

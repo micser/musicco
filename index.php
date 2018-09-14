@@ -2496,6 +2496,7 @@ class Musicco {
 							if (isPortrait()) {
 								$("#leftPanel").hide();
 							} else {
+								$("#mini-controls").hide();
 							}
 					} else {
 						$("#playlistToggle").hide();
