@@ -563,7 +563,6 @@
 
 	#loadingInfo {
 		display: none;
-		background: var(--background);
 		padding-top: 1em;
 		z-index: 3;
 		max-width: 35%;
