@@ -41,6 +41,33 @@
 		 100% { opacity: 1; }
 	}
 
+	#big-cover {
+		max-width: 70vw;
+		padding-top: 100%;
+		position: relative;
+	}
+
+	#logo, 
+	.logo-background,
+	#album-art {
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+		
+	}
+
+	.logo-background {
+		fill: var(--text);
+	}
+
+	.logo-highlight {
+		fill: var(--text-highlight);
+	}
+
 	.blink1 {
 	 animation: blink1 1s linear infinite;
 	}
@@ -604,6 +631,15 @@
 		font-size: var(--text-small);
 	}
 
+	#nowPlaying_songtitle {
+		height: var(--text-larger);
+	}
+
+	#nowPlaying_artist,
+	.album-details {
+		height: var(--text-normal);
+	}
+
 	#infoPanelTitle {
 		font-size: var(--text-big);
 		padding-top: 1em;
@@ -759,11 +795,11 @@
 		background: transparent;
 		color: var(--text-highlight);
 		height: .2em;
-		border: 1px solid transparent;
+		border: 1px solid #bebec1;
 		border: 0;
 		border-radius: 0;
 		position: relative;
-		bottom: .1em;
+		bottom: 0;
 		z-index: 1;
 	}
 
@@ -1018,6 +1054,12 @@
 	#viewer:after {
 		content: 'tall';
 		display: none;
+	}
+
+	#big-cover {
+		max-width: 100vw;
+		padding-top: 100%;
+		position: relative;
 	}
 
 	#ham {
