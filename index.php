@@ -931,7 +931,7 @@ class Musicco {
 			function resetPlayer() {
 				player.pause();
 				player.src = "";
-				$("#big-cover").css("background-image", "url(theme/images/about.svg)");
+				$("#album-art").attr("src", "theme/images/about.svg");
 				$("#nowPlaying_songtitle, #nowPlaying_artist, #nowPlaying_album, #nowPlaying_year").html("");
 				$("#duration, #current_time").html("00:00");
 			}
@@ -1822,7 +1822,7 @@ class Musicco {
 				function printCover(coverUrl) {
 					$(".currentAlbum img").attr("src", coverUrl);
 					$(".currentAlbum li").data("cover", coverUrl);
-					$('#big-cover').css('background-image', 'url("' + coverUrl + '")'); 
+					$('#album-art').attr("src", coverUrl); 
 					if (isDynamicTheme()) {
 						setTheme(coverUrl);
 					}
@@ -2213,7 +2213,7 @@ class Musicco {
 			function updatePlayerUI() {
 				$('.big-jp-play').hide();
 				$('.big-jp-pause').show();
-				$("#big-cover").css("background-image", 'url("' + nowPlaying["cover"] + '")');
+				$("#album-art").attr("src", nowPlaying["cover"]);
 				var textData = ["songtitle", "artist", "album", "year"];
 				textData.forEach(function(info) {
 					$("#nowPlaying_"+info).html(nowPlaying[info]); 
@@ -2528,7 +2528,7 @@ class Musicco {
 					$(this).parent("div").children(".theme_opts").show();
 					$("#theme_settings input").not($(this)).parent("div").children(".theme_opts").hide();
 					if (isDynamicTheme()) {
-						setTheme($("#big-cover").css("background-image").replace("url(","").replace(")","").replace(/\"/gi, ""));
+						setTheme($("#album-art").attr("src"));
 					} else {
 						$("#background").trigger("change");
 						$("#text").trigger("change");
@@ -2912,7 +2912,7 @@ class Musicco {
 					});
 				});
 
-				$(document).on("taphold", "#big-cover, .big-jp-play, .big-jp-pause", function(e) {
+				$(document).on("taphold", "#album-art, .big-jp-play, .big-jp-pause", function(e) {
 					playRandomAlbum();
 				});
 
@@ -3050,21 +3050,21 @@ class Musicco {
 					$("#searchPanel").contextmenu("open", $(this));
 				});
 
-				$("#big-cover").click(function(e) {
+				$("#album-art").click(function(e) {
 					if (e.target !== this) 
 					return;
 					triggerPlayPause();
 				});
 
-				$("#big-cover").on( "swipeup", function() {
+				$("#album-art").on( "swipeup", function() {
 					volumeUp();
 				});
 
-				$("#big-cover").on( "swipedown", function() {
+				$("#album-art").on( "swipedown", function() {
 					volumeDown();
 				});
 
-				$("#big-cover").on( "swipeleft", function() {
+				$("#album-art").on( "swipeleft", function() {
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
 					} else {
@@ -3072,7 +3072,7 @@ class Musicco {
 					}
 				});
 
-				$("#big-cover").on( "swiperight", function() {
+				$("#album-art").on( "swiperight", function() {
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
 					} else {
@@ -3300,6 +3300,7 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="big-player">
 			<div id="playerPanel">
 				<div id="big-cover">
+					<img id="album-art" src="theme/images/about.svg"/>
 					<div class="right" id="big-volume-bar"></div>
 					<div id="updateCoverArt" class="guestPlay">
 						<span id="statusText"><?php print $this->getString("..."); ?></span>

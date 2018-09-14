@@ -721,18 +721,13 @@
 		vertical-align: middle;
 		border: 0;
 		position: relative;
-		padding-top: 100%;
-		background-size: contain;
-		background-image: url(images/about.svg);
-		background-repeat: no-repeat;
-		background-position: center;
-		transition: background-image .5s ease;
 	}
 
 	#big-cover img {
 		width: 100%;
 		vertical-align: middle;
 		display:block;
+		transition: src .5s ease;
 	}
 
 	.album-action,
