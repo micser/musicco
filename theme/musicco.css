@@ -47,9 +47,11 @@
 		position: relative;
 	}
 
-	#logo, 
-	.logo-background,
-	#album-art {
+	#album-art, 
+	.logo-player {
+		vertical-align: middle;
+		display:block;
+		transition: src .5s ease;
 		height: 100%;
 		width: 100%;
 		position: absolute;
@@ -57,7 +59,6 @@
 		left: 0;
 		bottom: 0;
 		right: 0;
-		
 	}
 
 	.logo-background {
@@ -295,7 +296,7 @@
 	}
 
 	.hidden {
-		display: none;
+		display: none!important;
 	}
 
 	.ui-slider-range {
@@ -759,13 +760,6 @@
 		position: relative;
 	}
 
-	#big-cover img {
-		width: 100%;
-		vertical-align: middle;
-		display:block;
-		transition: src .5s ease;
-	}
-
 	.album-action,
 	.playlist-tools {
 		padding-left: 1em;
@@ -894,8 +888,12 @@
 }
 
 .tooltip:hover .tooltiptext {
-    visibility: visible;
+	visibility: visible;
 }
+
+	.logo-about {
+		width: 100%;
+	}
 
 	.landing {
 		position: fixed;
@@ -909,7 +907,7 @@
 		border-radius: 3px;
 	}
 
-	.landing-header img {
+	.logo-landing {
 		height: 2em;
 		vertical-align: middle;
 		overflow: hidden;
