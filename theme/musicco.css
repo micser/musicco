@@ -48,7 +48,8 @@
 	}
 
 	#album-art, 
-	.logo-player {
+	.logo-player, 
+	#big-cover .default-poster {
 		vertical-align: middle;
 		display:block;
 		transition: src .5s ease;
@@ -59,6 +60,9 @@
 		left: 0;
 		bottom: 0;
 		right: 0;
+		max-width: unset;
+		max-height: unset;
+		margin-left: 0;
 	}
 
 	.logo-background {
@@ -800,6 +804,10 @@
 	.hovered,
 	#big-volume-bar:hover {
 		opacity: 1!important;
+	}
+
+	.playlist-poster-container {
+		width: 100px;
 	}
 
 	#big-volume-bar {
