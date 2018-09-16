@@ -2679,7 +2679,7 @@ class Musicco {
 
 				$("#playlist").on("click", ".remove", function(e) {
 					e.stopPropagation();
-					var target = $(this).parent("li");
+					var target = $(this).closest("li");
 					if ($(target).data("nature") == "track") {
 						numSiblings = target.siblings();
 						if (numSiblings.length) {
