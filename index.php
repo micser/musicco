@@ -952,7 +952,7 @@ class Musicco {
 			function resetPlayer() {
 				player.pause();
 				player.src = "";
-				$("#album-art").attr("src", "").addClass("hidden");
+				$("#album-art").attr("src", "").hide();
 				$(".logo-player").show();
 				$("#nowPlaying_songtitle, #nowPlaying_artist, #nowPlaying_album, #nowPlaying_year").html("");
 				$("#duration, #current_time").html("00:00");
@@ -1824,12 +1824,12 @@ class Musicco {
 
 				function displayCover() {
 					var coverurl = nowPlaying["cover"];
+					resetFetchingStatus();
 					if (!isDefaultPoster()) {
 						coverurl = coverurl.replace(/#/g, "%23");
-						var searchAutomatically = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
-						resetFetchingStatus();
 						printCover(coverurl);
 					} else {
+						var searchAutomatically = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
 						$("#album-art").after(getDefaultPoster());
 						$("#album-art").hide();
 						$('.logo-player').hide();
@@ -1849,12 +1849,11 @@ class Musicco {
 				}
 
 				function printCover(coverUrl) {
-					$("#big-cover .default-poster").hide();
-					$(".logo-player").hide();
-					$("#album-art").show();
-					$(".currentAlbum img").attr("src", coverUrl);
+					$(".logo-player, #big-cover .default-poster, .currentAlbum .default-poster").hide();
+					$("#album-art, .currentAlbum img.playlist-poster").attr("src", coverUrl).show();
+					nowPlaying["cover"] = coverUrl;
 					$(".currentAlbum li").data("cover", coverUrl);
-					$("#album-art").attr("src", coverUrl).removeClass("hidden"); 
+					$(".currentAlbum .playlist-poster").attr("src", coverUrl);
 					if (isDynamicTheme()) {
 						setTheme(coverUrl);
 					}
@@ -1940,20 +1939,23 @@ class Musicco {
 					var currentPath = nowPlaying["parent"];
 					var isValidURL =/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
 					var isValidImage =/^(.)*\.(png|gif|bmp|jpg|jpeg)$/i;
-					var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>").replace("https", "http");
-					if ((isValidURL.test(userURL)) && (isValidImage.test(userURL))) {
-						$.ajax({
-							 type: "GET",
-							 url: "?head&url="+userURL,
-							 complete: function(data){
-							 if (data.responseText < 300) {
-								 saveCover(userURL, currentPath);
-								 setCoverInfoStatus("<?php print $this->getString("downloadSuccessful"); ?>"); 
-							 } else {
-								 setCoverInfoStatus("<?php print $this->getString("notDownloaded"); ?>"); 
+					var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>")
+					if (userURL != null) {
+						userURL = userURL.replace("https", "http");
+						if ((isValidURL.test(userURL)) && (isValidImage.test(userURL))) {
+							$.ajax({
+								 type: "GET",
+								 url: "?head&url="+userURL,
+								 complete: function(data){
+								 if (data.responseText < 300) {
+									 saveCover(userURL, currentPath);
+									 setCoverInfoStatus("<?php print $this->getString("downloadSuccessful"); ?>"); 
+								 } else {
+									 setCoverInfoStatus("<?php print $this->getString("notDownloaded"); ?>"); 
+								 }
 							 }
-						 }
-						});
+							});
+						}
 					}
 				}
 
@@ -2329,7 +2331,7 @@ class Musicco {
 						$thisAlbum.find("img.playlist-poster").attr("src", $thisAlbum.data("cover").replace(/#/g, "%23"));
 						$thisAlbum.find(".default-poster").remove();
 					} else {
-						$thisAlbum.find("img.playlist-poster").remove();
+						$thisAlbum.find("img.playlist-poster").hide();
 					}
 					$thisAlbum.find(".artist").html($thisAlbum.data("artist"));
 					$thisAlbum.find(".album").html($thisAlbum.data("album"));
@@ -3103,7 +3105,7 @@ class Musicco {
 					$("#searchPanel").contextmenu("open", $(this));
 				});
 
-				$(document).on("click", "#big-cover", function(e) {
+				$(document).on("click", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
 					triggerPlayPause();
 				});
 
