@@ -1096,6 +1096,7 @@
 	@supports not ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
 		#leftPanel {
 		opacity: 0.9;
+		background: var(--background);
 		}
 	}
 
