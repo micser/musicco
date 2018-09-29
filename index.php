@@ -855,11 +855,11 @@ class Musicco {
 					albumArt.addEventListener("load", function(){
 						var colorThief = new ColorThief();
 						var backgroundRGB = colorThief.getColor(albumArt);
-						var textRGB = colorThief.getPalette(albumArt)[0];
+						var textRGB = colorThief.getPalette(albumArt, 4)[1];
 						var background = rgbToHex(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]);
 						var text = rgbToHex(textRGB[0], textRGB[1], textRGB[2]);
 						if (text == background) {
-							textRGB = colorThief.getPalette(albumArt)[1];
+							textRGB = colorThief.getPalette(albumArt)[2];
 							var text = rgbToHex(textRGB[0], textRGB[1], textRGB[2]);
 						}
 						setColour("background", background);
