@@ -854,10 +854,16 @@ class Musicco {
 					var albumArt = new Image();
 					albumArt.addEventListener("load", function(){
 						var colorThief = new ColorThief();
-						var background = colorThief.getColor(albumArt);
-						var text = colorThief.getPalette(albumArt)[colorThief.getPalette(albumArt).length - 1];
-						setColour("background", rgbToHex(background[0], background[1], background[2]));
-						setColour("text", rgbToHex(text[0], text[1], text[2]));
+						var backgroundRGB = colorThief.getColor(albumArt);
+						var textRGB = colorThief.getPalette(albumArt)[0];
+						var background = rgbToHex(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]);
+						var text = rgbToHex(textRGB[0], textRGB[1], textRGB[2]);
+						if (text == background) {
+							textRGB = colorThief.getPalette(albumArt)[1];
+							var text = rgbToHex(textRGB[0], textRGB[1], textRGB[2]);
+						}
+						setColour("background", background);
+						setColour("text", text);
 					});
 					albumArt.src = coverUrl;
 					$("body").css("background-image", "url(" + coverUrl + ")");
@@ -2594,7 +2600,6 @@ class Musicco {
 
 				$("#background, #text").on("change", function(e) {
 					setColour($(this).attr("id"), $(this).val());
-					setColour("--" + $(this).attr("id") + "-highlight", increase_brightness($(this).val(), ($(this).attr("id") == "background")? 10: 60));
 					saveSettings();
 				});
 
