@@ -2050,8 +2050,11 @@ class Musicco {
 					}
 					var title = nowPlaying["songtitle"];
 					var artist = nowPlaying["artist"];
-					// REDO: poster may be null, create temp image in that case, or can I pass svg directly to the notification?
+					// REDO: Any way to make the poster dynamic based on the current theme?
 					var poster = nowPlaying["cover"];
+					if (poster == null) {
+						poster = "theme/images/default-poster.png"
+					}
 					var album = nowPlaying["album"];
 						
 					if ('mediaSession' in navigator) {
