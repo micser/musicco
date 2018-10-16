@@ -1812,7 +1812,13 @@ class Musicco {
 				var cover = cover;
 				$("#shared-album-qr").empty();
 				$("#shared-album-title").text(info);
-				$("#shared-album-cover").attr("src", cover);
+				if ((cover != "") && (cover != null)) {
+					$("#shared-album-cover img").attr("src", cover).show();
+					$("#shared-album-cover svg").hide();
+				} else {
+					$("#shared-album-cover img").hide();
+					$("#shared-album-cover svg").show();
+				}
 				$("#sharing-banner").dialog("open");
 				var link = getBaseURL() + "?guestPlay&u=" + user;
 				var qrW = $("#shared-album-cover").width();
@@ -3198,7 +3204,10 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="aboutPanel" class="modal"><?php print getAbout(); ?></div>
 		<div id="imageViewerPanel" class="modal"><img src=""/><div></div></div>
 		<div id="sharing-banner" class="modal">
-		<img id="shared-album-cover" class="boxed" src="app/apple-touch-icon.png" />
+			<div id="shared-album-cover" class="boxed">
+				<?php print Musicco::logo("logo-share"); ?>
+				<img src="" style="display: none;" />
+			</div>
 			<div id="shared-album-qr"></div>
 			<div id="shared-album-title" class="big"></div>
 			<div id="share-actions" class="spread">

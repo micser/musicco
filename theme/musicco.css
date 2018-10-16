@@ -48,7 +48,7 @@
 	}
 
 	#album-art, 
-	.logo-player, 
+	.logo-player,
 	#big-cover .default-poster {
 		vertical-align: middle;
 		display:block;
@@ -582,6 +582,23 @@
 	#shared-qr {
 		width: 90%;
 		vertical-align: text-bottom;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	#shared-album-cover img, 
+	.logo-share {
+		border-radius: 5px;
+	}
+
+	#shared-album-cover img {
+		width: 100%;
+		display: block;
+	}
+
+	.logo-share {
+		vertical-align: middle;
 	}
 
 	#shared-album-link {
