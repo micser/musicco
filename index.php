@@ -1890,7 +1890,6 @@ class Musicco {
 					var currentAlbum = nowPlaying["album"];
 					var currentArtist = nowPlaying["artist"];
 					var currentPath = nowPlaying["parent"];
-					var currentCover = nowPlaying["cover"];
 					$('#statusText').removeClass('canFetch');
 					var releaseUrl = "https://musicbrainz.org/ws/2/release/?query=release:\""+currentAlbum+"\"%20AND%20artist:\""+currentArtist+"\"&limit=1"
 					$.ajax({
@@ -1912,9 +1911,6 @@ class Musicco {
 											setCoverInfoStatus("<?php print $this->getString("fetchedAlbumArt"); ?>");
 										} else {
 											setCoverInfoStatus("<?php print $this->getString("noAlbumArt"); ?>"); 
-											if (!isTooLate()) {
-												printCover(currentCover);
-											}
 										}
 									}
 									});
