@@ -3335,10 +3335,10 @@ if(!AuthManager::isAccessAllowed()) {
 							<input type="radio" id="preset" name="option_theme" />
 							<label for="preset"><?php print $this->getString("select_theme"); ?></label>
 							<div class="theme_opts">
-								<a id="my_theme" class="space-after theme-selector settings-option" data-background="" data-text="">[<?php print $this->getString("your_theme"); ?>]</a>
+								<a id="my_theme" class="tooltip space-after theme-selector settings-option" data-background="" data-text="">[<?php print $this->getString("your_theme"); ?>]<span class="tooltiptext"><div class="theme-preview" style="background-color:var(--background);"></div><div class="theme-preview" style="background-color:var(--text);"></div></span></a>
 								<?php
 									foreach ($this->getConfig("themes") as $theme){
-										print "<a class=\"space-after theme-selector settings-option\" data-background=\"".$theme[0]."\" data-text=\"".$theme[1]."\">[".$theme[2]."]</a>";
+										print "<a class=\"tooltip space-after theme-selector settings-option\" data-background=\"".$theme[0]."\" data-text=\"".$theme[1]."\">[".$theme[2]."]<span class=\"tooltiptext\"><div class=\"theme-preview\" style=\"background-color:".$theme[0].";\"></div><div class=\"theme-preview\" style=\"background-color:".$theme[1].";\"></div></span></a>";
 									}
 								?>
 							</div>

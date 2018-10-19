@@ -892,29 +892,41 @@
 		margin-bottom: .5em;
 	}
 
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
+	.tooltip {
+		position: relative;
+		display: inline-block;
+	}
 
-.tooltip .tooltiptext {
+	.tooltip .tooltiptext {
 		font-family: Montserrat;
 		font-size: var(--text-small);
-    visibility: hidden;
-    width: 300px;
-    background-color: var(--text);
-    color: var(--text-highlight);
-    padding: 5px;
-    border: 1px solid var(--background);
-    position: absolute;
-    z-index: 1;
-    right: 0;
-    top: 2em;
-}
+		visibility: hidden;
+		width: 300px;
+		background-color: var(--text);
+		color: var(--text-highlight);
+		padding: 5px;
+		border: 1px solid var(--background);
+		position: absolute;
+		z-index: 1;
+		right: 0;
+		top: 2em;
+	}
 
-.tooltip:hover .tooltiptext {
-	visibility: visible;
-}
+	a.tooltip .tooltiptext {
+		width: 8.5em;
+		align: center;
+	}
+
+	.theme-preview {
+		display: inline-block;
+		width: 4em;
+		height: 2em;
+		border: 1px solid black;
+	}
+
+	.tooltip:hover .tooltiptext {
+		visibility: visible;
+	}
 
 	.logo-about {
 		width: 100%;
