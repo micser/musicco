@@ -53,14 +53,18 @@ $_CONFIG['defaultPlaylist'] = "Now Playing";
 // 											array("#121314", "#A7A97F", "musicco"),
 //											array("#383838", "#e99b45", "Origin of Symmetry"),
 //											array("#bebfc1", "#848c84", "Vespertine"),
+//											array("#08121d", "#77c0b9", "Contretemps"),
 // 											array("#1d232c", "#f78031", "The Archandroid"),
+//											array("#11304a", "#c0d2e3", "Muscle Museum"),
 // 											array("#800B0B", "#339317", "77")
 // 										);
 $_CONFIG['themes'] = array(
 											array("#121314", "#A7A97F", "musicco"),
 											array("#383838", "#e99b45", "Origin of Symmetry"),
 											array("#bebfc1", "#848c84", "Vespertine"),
+											array("#08121d", "#77c0b9", "Contretemps"),
 											array("#1d232c", "#f78031", "The Archandroid"),
+											array("#11304a", "#c0d2e3", "Muscle Museum"),
 											array("#800B0B", "#339317", "77")
 										);
 
@@ -848,32 +852,46 @@ class Musicco {
 				
 				}
 
-				//REDO (may not have image anymore, only skipping for now)
 				function setTheme(coverUrl) {
-				if (!isDefaultPoster()) {
 					var albumArt = new Image();
 					albumArt.addEventListener("load", function(){
 						var colorThief = new ColorThief();
-						var backgroundRGB = colorThief.getColor(albumArt);
-						var textRGB = colorThief.getPalette(albumArt, 4)[1];
-						var background = rgbToHex(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]);
-						var text = rgbToHex(textRGB[0], textRGB[1], textRGB[2]);
-						if (text == background) {
-							textRGB = colorThief.getPalette(albumArt)[2];
-							var text = rgbToHex(textRGB[0], textRGB[1], textRGB[2]);
+						var imagePalette = colorThief.getPalette(albumArt, 2);
+						var backgroundRGB = imagePalette[0];
+						var textRGB = imagePalette[1];
+						if (luminance(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]) > luminance(textRGB[0], textRGB[1], textRGB[2])) {
+							backgroundRGB = imagePalette[1];
+							textRGB = imagePalette[0];
 						}
-						setColour("background", background);
-						setColour("text", text);
+						if (luminance(textRGB[0], textRGB[1], textRGB[2]) < .4) {
+							textRGB = [Math.min(200, textRGB[0] + 60), Math.min(200, textRGB[1] + 60), Math.min(200, textRGB[2] + 60)];
+						} else if (luminance(textRGB[0], textRGB[1], textRGB[2]) > .7) {
+							textRGB = [Math.max(0, textRGB[0] - 60), Math.max(0, textRGB[1] - 60), Math.max(0, textRGB[2] - 60)];
+						}
+						setColour("background", rgbToHex(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]));
+						setColour("text", rgbToHex(textRGB[0], textRGB[1], textRGB[2]));
 					});
 					albumArt.src = coverUrl;
-					$("body").css("background-image", "url(" + coverUrl + ")");
+					if ((CSS.supports("-webkit-backdrop-filter", "blur(10px)")) || (CSS.supports("backdrop-filter", "blur(10px)"))) {
+						$("body").css("background-image", "url(\"" + coverUrl + "\")");
+					}
 					$("body").addClass("magic");
 				}
-			}
+
+				function luminance(r, g, b) {
+					var a = [r, g, b].map(function (v) {
+							v /= 255;
+							return v <= 0.03928
+									? v / 12.92
+									: Math.pow( (v + 0.055) / 1.055, 2.4 );
+					});
+					var luminance = a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+					return luminance;
+				}
 
 				function setColour(id, value) {
 					document.documentElement.style.setProperty("--" + id, value);
-					document.documentElement.style.setProperty("--" + id + "-highlight", increase_brightness(value, (id == "background")? 10: 60));
+					document.documentElement.style.setProperty("--" + id + "-highlight", increase_brightness(value, (id == "background")? 10: 70));
 				}
 
 				function componentToHex(c) {
@@ -1841,6 +1859,7 @@ class Musicco {
 						coverurl = coverurl.replace(/#/g, "%23");
 						printCover(coverurl);
 					} else {
+						$("body").css("background-image", "");
 						var searchAutomatically = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
 						$("#album-art").after(getDefaultPoster());
 						$("#album-art").hide();
