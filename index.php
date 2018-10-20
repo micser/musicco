@@ -1415,7 +1415,11 @@ class Musicco {
 					break;
 					case "playBefore":
 						var slash = node.isFolder()? "/": "" ;
-						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.before);
+						var location = Insert.before;
+						if (isFirstAlbumPlaying()) {
+						location = Insert.top;
+						}
+						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, location);
 					break;
 					case "goto_artist":
 						goToArtist(node.data.artist);
@@ -2452,6 +2456,10 @@ class Musicco {
 						}
 					return false;
 				}
+			}
+
+			function isFirstAlbumPlaying() {
+				return $(currentAlbum).index() == 0;
 			}
 
 			function insertFirst(tracksArray) {
