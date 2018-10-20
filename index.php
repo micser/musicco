@@ -3085,13 +3085,6 @@ class Musicco {
 					displayInfo(title);
 				});
 
-				$(document).on('mouseenter', ".nowrap", function() {
-					var $this = $(this);
-					if(this.offsetWidth < this.scrollWidth) {
-						$this.attr('title', $this.text());
-					}
-				});
-
 				$(document).on("click", ".historyLink", function(event) {
 					event.preventDefault();
 					for (var i=0;i<wikiHistory.length;i++) { 
@@ -3331,7 +3324,7 @@ if(!AuthManager::isAccessAllowed()) {
 						<div id="favourites">
 							<?php if (!isGuestPlay) { print getFavourites(AuthManager::getUserName()); } ?>
 						</div>
-						<div id="library" class="nowrap"></div>
+						<div id="library"></div>
 					</div>
 				</div>
 				<div id="searchPanel" class="panel guestPlay">
@@ -3445,7 +3438,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="big-info">
 					<div id="nowPlaying_songtitle" class="nowrap">&nbsp;</div>
 					<div id="nowPlaying_artist" class="nowrap">&nbsp;</div>
-					<div class="album-details">
+					<div class="album-details nowrap">
 						<span id="nowPlaying_album" class="nowrap">&nbsp;</span>
 						<span id="nowPlaying_year" class="nowrap">&nbsp;</span>
 					</div>
