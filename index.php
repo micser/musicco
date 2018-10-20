@@ -802,6 +802,9 @@ class Musicco {
 			///////////
 
 			player.onplay = function() {
+				if (player.volume != ($("#big-volume-bar").slider("option", "value") / 100)) {
+					$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
+				}
 				updatePlayerUI();
 			}
 
