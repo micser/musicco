@@ -3454,23 +3454,25 @@ if(!AuthManager::isAccessAllowed()) {
 						<span id="nowPlaying_year" class="nowrap">&nbsp;</span>
 					</div>
 				</div>
-				<div id="playlist-controls" class="spread">
-					<span id="big-unmute" class="toggles selected hidden"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
-					<span id="big-mute" class="toggles"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
-					<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
-					<span class="guestPlay uncover toggles"><i class="fas fa-magic fa-2x fa-fw"></i></span>
-					<span id="shuffled" class="toggles"><i class="fas fa-random fa-2x fa-fw"></i></span>
-					<span id="loop" class="toggles"><i class="fas fa-redo fa-2x fa-fw"></i></span>
-					<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x fa-fw"></i></span>
-					<span id="big-volume-up" class="toggles"><i class="fas fa-volume-up fa-2x fa-fw"></i></span>
-				</div>
-				<div id="controls" class="spread big-controls">
-					<span class="big-jp-previous-album"></span>
-					<span class="left big-jp-previous"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
-					<span class="big-jp-play"><i class="far fa-play-circle fa-5x fa-fw"></i></span>
-					<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-5x fa-fw"></i></span>
-					<span class="right big-jp-next"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
-					<span class="big-jp-next-album"></span>
+				<div id="big-player-bottom">
+					<div id="playlist-controls" class="spread">
+						<span id="big-unmute" class="toggles selected hidden"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
+						<span id="big-mute" class="toggles"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
+						<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
+						<span class="guestPlay uncover toggles"><i class="fas fa-magic fa-2x fa-fw"></i></span>
+						<span id="shuffled" class="toggles"><i class="fas fa-random fa-2x fa-fw"></i></span>
+						<span id="loop" class="toggles"><i class="fas fa-redo fa-2x fa-fw"></i></span>
+						<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x fa-fw"></i></span>
+						<span id="big-volume-up" class="toggles"><i class="fas fa-volume-up fa-2x fa-fw"></i></span>
+					</div>
+					<div id="controls" class="spread big-controls">
+						<span class="big-jp-previous-album"></span>
+						<span class="left big-jp-previous"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
+						<span class="big-jp-play"><i class="far fa-play-circle fa-5x fa-fw"></i></span>
+						<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-5x fa-fw"></i></span>
+						<span class="right big-jp-next"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
+						<span class="big-jp-next-album"></span>
+					</div>
 				</div>
 			</div>
 		</div>

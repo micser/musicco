@@ -187,6 +187,13 @@
 		height: 100vh;
 	}
 
+	#big-player-bottom {
+		display: flex;
+		flex-direction: column;
+		height: 20vh;
+		justify-content: center;
+	}
+
 	#playlist_select {
 		margin-left: .5em;
 		color: var(--text);
