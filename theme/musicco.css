@@ -944,8 +944,9 @@
 	}
 
 	#playlist-controls {
-		padding-left: 10%;
-		padding-right: 10%;
+		margin-left: auto;
+		width: 80%;
+		margin-right: auto;
 	}
 	
 	#share-actions {
@@ -1112,7 +1113,7 @@
 		#big-info {
 			position: absolute;
 			background: rgba(0, 0, 0, 0.3);
-			bottom: 1px;
+			bottom: 0;
 			left: -3px;
 			width: 100%;
 			text-align: left;
