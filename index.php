@@ -1820,7 +1820,7 @@ class Musicco {
 							queueMusic(root, "", Insert.top);
 						} else {
 							var tracksArray = groupBy(JSON.parse(response.playlist), "album");
-							if (tracksArray.length) {
+							if (Object.keys(tracksArray).length) {
 								insertFirst(tracksArray);
 								loadTrack(parseInt(response.current, 0));
 								player.currentTime = parseInt(response.time);
