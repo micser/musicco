@@ -1126,6 +1126,10 @@
 			display: none;
 		}
 
+		#big-player-bottom {
+			height: unset;
+		}
+
 		#big-info {
 			position: absolute;
 			background: rgba(0, 0, 0, 0.3);
