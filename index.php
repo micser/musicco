@@ -4331,7 +4331,7 @@ function builddb() {
 	 }
 	 
 	 function getHelp() {
-		$helpString="<div id='helpBox'>";
+		$helpString="<div id='helpBox' autofocus>";
 		$helpString.="<div class='bold big'><i class='fas fa-keyboard'></i>&nbsp;Keyboard Shortcuts</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='yellow bold'>Playback</div>";
@@ -4396,7 +4396,7 @@ function builddb() {
 	 }
 	 
 		function getAbout() {
-		$aboutString="<div id='aboutBox'>";
+		$aboutString="<div id='aboutBox' autofocus>";
 			$aboutString.="<div class='bold'><a tabindex='-1' target='_blank' href='//musicco.org'>".Musicco::logo("logo-about")."</a></div>";
 			$aboutString.="<div class='bold big'><a tabindex='-1' target='_blank' href='//musicco.org'>musicco</a></div>";
 			$aboutString.="<div class='bold'>A web based player for your music collection</div>";

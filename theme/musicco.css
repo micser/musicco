@@ -1005,11 +1005,20 @@
 	#playlist_select {
 		border: 1px solid var(--text-highlight);
 	}
-	
+
 	#searchText::-webkit-input-placeholder {
 		color: var(--text);
 	}
-	
+
+	.ui-button {
+		background: var(--background-highlight);
+		border: 1px solid var(--text);
+		color: var(--text-highlight);
+		background-image: url(images/close.svg);
+		background-size: .9em;
+		background-repeat: round;
+	}
+
 	.ui-icon[class*=" fa-"] {
 		background: none repeat scroll 0 0 transparent;
 		text-indent: 0;
