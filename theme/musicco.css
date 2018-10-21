@@ -452,11 +452,11 @@
 	#aboutBox,
 	#helpBox,
 	#sharing-banner,
-	#volume-value,
-	#playlist_select {
+	#volume-value {
 		-webkit-user-select: none;
 		-ms-user-select: none;
 		-moz-user-select: none;
+		background-color: var(--background);
 	}
 
 	/* Override leftPanel background so we can use dynamic theme */
