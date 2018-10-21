@@ -725,6 +725,7 @@ class Musicco {
 			var viewerType = '';
 			var windowWidth = '';
 			var timeUpdates = true;
+			var isInit = false;
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
@@ -1770,16 +1771,18 @@ class Musicco {
 			}
 
 			function saveSettings() {
-				var user = "<?php echo AuthManager::getUserName(); ?>";
-				if (user!="") {
-					var volume = $("#big-volume-bar").slider("option", "value");
-					var loop = playerConfig["loop"];
-					var shuffled = playerConfig["shuffled"];
-					var theme = $("#theme_settings input[name=option_theme]:checked").attr("id");
-					var background = $("#background").val();
-					var text = $("#text").val();
-					$.post('?', {saveSettings: '', u: user, v: volume, l: loop, s: shuffled, m: theme, b: background, t: text}, function(response) {
-					});
+				if (isInit) {
+					var user = "<?php echo AuthManager::getUserName(); ?>";
+					if (user!="") {
+						var volume = $("#big-volume-bar").slider("option", "value");
+						var loop = playerConfig["loop"];
+						var shuffled = playerConfig["shuffled"];
+						var theme = $("#theme_settings input[name=option_theme]:checked").attr("id");
+						var background = $("#background").val();
+						var text = $("#text").val();
+						$.post('?', {saveSettings: '', u: user, v: volume, l: loop, s: shuffled, m: theme, b: background, t: text}, function(response) {
+						});
+					}
 				}
 			}
 
@@ -1800,6 +1803,7 @@ class Musicco {
 						$("#text").val(options.text).trigger("change");
 						$("#my_theme").data("background", options.background);
 						$("#my_theme").data("text", options.text);
+						isInit = true;
 					});
 				}
 			}
