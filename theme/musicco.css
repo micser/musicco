@@ -152,12 +152,12 @@
 
 	#playlist-tools {
 		position: sticky;
-		margin: -1.4em;
-		bottom: 0;
-		padding-bottom: 3em;
-		padding-top: 1em;
+		margin: -1.3em;
+		top: 0;
+		padding: 1em .5em 1em .5em;
 		box-shadow: 0 -5px 15px -5px var(--background-highlight);
 		background: var(--background-highlight);
+		z-index: 1;
 	}
 
 	@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
@@ -196,7 +196,6 @@
 
 	#playlist_select {
 		margin-left: .5em;
-		color: var(--text);
 	}
 
 	#ham {
@@ -401,14 +400,17 @@
 		font-family: Montserrat, Verdana, sans-serif;
 	}
 
-	input,
 	.fa-border,
 	.fancytree-container {
 		border: 0;
 	}
 
-	input {
-		background-color: var(--background-highlight);
+	input, 
+	select {
+		color: var(--text);
+		background-color: var(--background);
+		border: 1px solid var(--text);
+		border-radius: 5px;
 	}
 
 	input[type="color"] {
@@ -455,7 +457,6 @@
 		-webkit-user-select: none;
 		-ms-user-select: none;
 		-moz-user-select: none;
-		background-color: var(--background);
 	}
 
 	/* Override leftPanel background so we can use dynamic theme */
@@ -500,6 +501,7 @@
 
 	#playlistPanel > ul {
 		padding: 0;
+		margin-top: 3em;
 	}
 
 	.ui-menu {
@@ -574,8 +576,6 @@
 		font-size: var(--text-smaller);
 	}
 
-	#lyricsPanel,
-	#infoPanel,
 	#nowPlaying_artist,
 	#current_time,
 	.artist,
@@ -586,6 +586,12 @@
 	#duration {
 		font-size: var(--text-small);
 	}
+
+	#lyricsPanel,
+	#infoPanel {
+		font-size: var(--text-smaller);
+	}
+
 
 	#nowPlaying_songtitle {
 		height: var(--text-larger);
@@ -748,7 +754,7 @@
 		border: 0;
 		border-radius: 0;
 		position: relative;
-		bottom: 0;
+		bottom: 0px;
 		z-index: 1;
 	}
 
@@ -1000,12 +1006,6 @@
 		margin-left: 2em;
 	}
 
-	#searchText,
-	#filterText,
-	#playlist_select {
-		border: 1px solid var(--text-highlight);
-	}
-
 	#searchText::-webkit-input-placeholder {
 		color: var(--text);
 	}
@@ -1047,10 +1047,6 @@
 
 	#big-player {
 		height:;
-	}
-
-	#playlist-tools {
-		padding-bottom: 5em;
 	}
 
 	@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
@@ -1100,10 +1096,6 @@
 		#mini-controls {
 			display: inline !important;
 			vertical-align: unset;
-		}
-
-		#playlist-tools {
-			padding-bottom: 4em;
 		}
 
 		#mini-controls i {
@@ -1188,10 +1180,6 @@
 		width: 60%;
 	}
 
-	#playlist-tools {
-		padding-bottom: 3em;
-	}
-
 	#big-player {
 		position: fixed;
 		top: 2em;
@@ -1220,9 +1208,7 @@
 		}
 
 		#playlist-tools {
-			padding-bottom: 1em;
 			background: var(--background-highlight);
-			margin-right: -.8em;
 			border-radius: 5px;
 			opacity: .95;
 		}

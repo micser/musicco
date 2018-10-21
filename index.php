@@ -250,6 +250,7 @@ $_TRANSLATIONS["en"] = array(
 	"favourites_removed" => "Removing favourite...",
 	"fetchedAlbumArt" => "album art fetched",
 	"fetchingAlbumArt" => "fetching album art...",
+	"filter_placeholder" => " filter library",
 	"genius" => "genius ",
 	"google" => "the web",
 	"help" => "help",
@@ -302,7 +303,7 @@ $_TRANSLATIONS["en"] = array(
 	"scanning_ko" => "Scanning failed",
 	"scanning_ok" => "Folder scanned successfully",
 	"search" => "Search ",
-	"search_placeholder" => "What are you looking for?",
+	"search_placeholder" => " What are you looking for?",
 	"searchingFor" => "Searching for ",
 	"searchingLibrary" => "Searching library...",
 	"searchingLyricsFor" => "Searching lyrics for ",
@@ -335,6 +336,7 @@ $_TRANSLATIONS["fr"] = array(
 	"favourites_removed" => "Favouris retiré",
 	"fetchedAlbumArt" => "couverture mise à jour",
 	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
+	"filter_placeholder" => " filtrer la discothèque",
 	"genius" => "genius ",
 	"google" => "le web",
 	"help" => "aide",
@@ -386,7 +388,7 @@ $_TRANSLATIONS["fr"] = array(
 	"scanning_ko" => "échec du scan",
 	"scanning_ok" => "Dossier ajouté",
 	"search" => "Chercher sur ",
-	"search_placeholder" => "Que cherchez-vous ?",
+	"search_placeholder" => " Que cherchez-vous ?",
 	"searchingFor" => "Recherche de ",
 	"searchingLibrary" => "Recherche en cours...",
 	"searchingLyricsFor" => "Recherche de paroles en cours pour ",
@@ -3337,7 +3339,7 @@ if(!AuthManager::isAccessAllowed()) {
 						<div id="filter">
 							<input id="includeOldAlbums" tabindex="0" type="checkbox" checked="true"/>
 							<label for="includeOldAlbums"><i class="fas fa-check-square"></i>&nbsp;<?php print $this->getString("show_all"); ?></label>
-							<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" />
+							<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" placeholder="<?php print $this->getString("filter_placeholder"); ?>"/>
 							<a class="btn" id="filterButton" href="#"><i class="fas fa-border fa-times"></i></a>
 						</div>
 						<div id="favourites">
@@ -3357,16 +3359,16 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="searchResults">&nbsp;</div>
 				</div>
 				<div id="playlistPanel" class="panel">
-					<div id="playlistSpinner">
-						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
-					</div>
-					<ul id="playlist"></ul>
 					<div id="playlist-tools" class="guestPlay">
 						<select id="playlist_select"></select>
 						<span id="renamePlaylist" class="playlist-tools"><i class="fa fa-edit"></i></span>
 						<span id="newPlaylist" class="playlist-tools"><i class="fa fa-plus"></i></span>
 						<span id="deletePlaylist" class="playlist-tools"><i class="fa fa-trash"></i></span>
 					</div>
+					<div id="playlistSpinner">
+						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
+					</div>
+					<ul id="playlist"></ul>
 				</div>
 				<div id="infoPanel" class="panel">
 					<div id="wikiHistory">
