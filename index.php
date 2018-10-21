@@ -706,6 +706,8 @@ class Musicco {
 		<meta name="msapplication-TileImage" content="app/mstile-310x310.png">
 		<meta name="theme-color" content="#a7a97f">
 		<script type="text/javascript" src="lib/jquery/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-mobile/jquery-migrate-3.0.1.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-mobile/jquery.mobile-1.4.5.swipe.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui/jquery-ui.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
 		<script type="text/javascript" defer src="lib/js-cookie/js.cookie-2.2.0.min.js"></script>
@@ -3186,15 +3188,15 @@ class Musicco {
 					triggerPlayPause();
 				});
 
-				$("#big-cover").on( "swipeup", function() {
+				$(document).on("swipeup", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
 					volumeUp();
 				});
 
-				$("#big-cover").on( "swipedown", function() {
+				$(document).on("swipedown", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
 					volumeDown();
 				});
 
-				$("#big-cover").on( "swipeleft", function() {
+				$(document).on("swipeleft", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
 					} else {
@@ -3202,7 +3204,7 @@ class Musicco {
 					}
 				});
 
-				$("#big-cover").on( "swiperight", function() {
+				$(document).on("swiperight", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
 					} else {
