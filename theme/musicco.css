@@ -1130,6 +1130,13 @@
 			height: unset;
 		}
 
+		#nowPlaying_songtitle,
+		#nowPlaying_artist, 
+		.album-details{
+			font-size: var(--text-quite-big);
+			height: var(--text-quite-big);
+		}
+
 		#big-info {
 			position: absolute;
 			background: rgba(0, 0, 0, 0.3);
@@ -1140,7 +1147,7 @@
 			opacity: 0;
 			padding: .5em 0 .5em .5em;
 			color: var(--text-highlight);
-			text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+			text-shadow: -1px -1px 0 var(--background), 1px -1px 0 var(--background), -1px 1px 0 var(--background), 1px 1px 0 var(--background);
 		}
 
 		@supports not ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
@@ -1160,7 +1167,7 @@
 		#nowPlaying_year,
 		#nowPlaying_artist,
 		#nowPlaying_title {
-			padding-left: 2px;
+			padding-left: 1em;
 		}
 	}
 }
