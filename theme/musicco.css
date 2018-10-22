@@ -1125,8 +1125,8 @@
 		#nowPlaying_songtitle,
 		#nowPlaying_artist, 
 		.album-details{
-			font-size: var(--text-quite-big);
-			height: var(--text-quite-big);
+			font-size: var(--text-larger);
+			height: var(--text-larger);
 		}
 
 		#big-info {
