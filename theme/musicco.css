@@ -145,11 +145,14 @@
 	#playlist-tools {
 		position: sticky;
 		margin: -1.3em;
-		top: -1em;
+		top: 0em;
 		padding: .5em .5em .5em .5em;
 		box-shadow: 0 -5px 15px -5px var(--background-highlight);
 		background: var(--background-highlight);
 		z-index: 1;
+		border-bottom-left-radius: 3px;
+		border-bottom-right-radius: 3px;
+		/* https://stackoverflow.com/questions/36378512/backdrop-filter-extends-beyond-border-radius --> there's still a bug in chrome where backdrop filter extends beyond border-radius... don't try to fix that! */
 	}
 
 	@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
@@ -1185,6 +1188,12 @@
 		#viewer:after {
 			content: 'widescreen';
 			display: none;
+		}
+
+		#playlist-tools {
+			top: -1em;
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
 		}
 
 		#playlistPanel {
