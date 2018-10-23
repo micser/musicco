@@ -95,14 +95,6 @@
 		height: .3em;
 	}
 
-	::-webkit-scrollbar-track {
-		border-radius: 0 .5em .5em 0;
-	}
-
-	::-webkit-scrollbar-thumb {
-		border-radius: 0 .5em .5em 0;
-	}
-
 	/* I don't like the default space between icon and text in fancytree with fontawesome5 */
 	span.fancytree-title {
 		margin-left: 8px;
@@ -153,8 +145,8 @@
 	#playlist-tools {
 		position: sticky;
 		margin: -1.3em;
-		top: 0;
-		padding: 1em .5em 1em .5em;
+		top: -1em;
+		padding: .5em .5em .5em .5em;
 		box-shadow: 0 -5px 15px -5px var(--background-highlight);
 		background: var(--background-highlight);
 		z-index: 1;
@@ -322,11 +314,7 @@
 		display:none;
 	}
 
-	.playlist-tools,
-	.remove,
-	.move-up,
-	.move-down,
-	.album-action {
+	.remove, .move-up, .move-down, .album-action {
 		opacity: 0.5;
 	}
 
@@ -500,7 +488,7 @@
 	}
 
 	#playlistPanel > ul {
-		padding: 0;
+		padding: .5em;
 		margin-top: 3em;
 	}
 
@@ -988,7 +976,7 @@
 	/* The highlight colour stuff comes next */
 
 	::-webkit-scrollbar-track {
-		background-color: var(--background);
+		background-color:transparent;
 	}
 
 	::-webkit-scrollbar-thumb {
@@ -1208,9 +1196,10 @@
 		}
 
 		#playlist-tools {
-			background: var(--background-highlight);
-			border-radius: 5px;
-			opacity: .95;
+			background: var(--background);
+			border-radius: 3px 3px 0 0;
+			border-bottom: 1px solid var(--text);
+			/* opacity: .95; */
 		}
 
 		.playlist-tools {
@@ -1229,6 +1218,7 @@
 			overflow-x: hidden;
 			overflow-y: auto;
 			border-right: 0;
+			margin-top: .4em;
 		}
 
 	}
