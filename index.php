@@ -995,7 +995,7 @@ class Musicco {
 				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
 				$(track).addClass("currentTrack");
 				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
-				player.src = encodeURIComponent($(track).data("parent") + $(track).data("path"));
+				player.src = encodeURI($(track).data("parent") + $(track).data("path"));
 				refreshPlaylist();
 			}
 
