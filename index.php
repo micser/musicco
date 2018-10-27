@@ -3343,7 +3343,7 @@ if(!AuthManager::isAccessAllowed()) {
 							<a class="btn" id="filterButton" href="#"><i class="fas fa-border fa-times"></i></a>
 						</div>
 						<div id="favourites">
-							<?php if (!isGuestPlay) { print getFavourites(AuthManager::getUserName()); } ?>
+							<?php if (!isGuestPlay()) { print getFavourites(AuthManager::getUserName()); } ?>
 						</div>
 						<div id="library"></div>
 					</div>
