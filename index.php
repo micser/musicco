@@ -87,8 +87,16 @@ $_CONFIG['coverExtension'] = ".png";
 // file exists in the same folder, its contents 
 // will be loaded into the lyrics panel before 
 // searching online for it.
-// Default: $_CONFIG['loadLyricsFromFile'] = true;
+// Default: $_CONFIG['loadLyricsFromFile'] = false;
 $_CONFIG['loadLyricsFromFile'] = false;
+
+// Whether to automatically look up
+// lyrics online. When disabled, all
+// you get is a link to search for lyrics
+// online.
+// Default: $_CONFIG['lookUpLyrics'] = false;
+$_CONFIG['lookUpLyrics'] = false;
+
 
 // Whether to automatically download
 // missing covers online. New covers
@@ -96,7 +104,7 @@ $_CONFIG['loadLyricsFromFile'] = false;
 // the song currently playing.
 // Even when turning this off, you can still 
 // trigger cover art search manually
-// Default: $_CONFIG['downLoadMissingCovers'] = true;
+// Default: $_CONFIG['downLoadMissingCovers'] = false;
 $_CONFIG['downLoadMissingCovers'] = false;
 
 // The search engine to use to search for more
@@ -2266,7 +2274,7 @@ class Musicco {
 				var LRCurl= encodeURI(nowPlaying["path"].replace(/.mp3/, ".lrc"));
 				var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
 				var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
-				var searchOnline = true;
+				var searchOnline = "<?php print $this->getConfig('lookUpLyrics') ?>";
 
 				if (loadLrc) {
 					$.ajax({
@@ -2288,7 +2296,7 @@ class Musicco {
 						}
 					});
 				}
-				if (searchOnline) {
+				else if (searchOnline) {
 					$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
 					$.ajax({
 						type: "GET",
@@ -2319,6 +2327,9 @@ class Musicco {
 								noLyricsFound(song, artist, searchLyricsExt);
 						}
 					});
+				}
+				else {
+					noLyricsFound(song, artist, searchLyricsExt);
 				}
 			}
 
@@ -4580,6 +4591,11 @@ function builddb() {
 		$wizard .= "<input name='loadLyricsFromFile' type='checkbox' checked>";
 		$wizard .= "<label for='loadLyricsFromFile'>Load lyrics from local .lrc files</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to load .lrc lyrics files from disk. If a .lrc file with the same name as the audio  file exists in the same folder, its contents  will be loaded into the lyrics panel before  searching online for it.</span></i>";
+		$wizard .= "</div>";
+		$wizard .= "<div>";
+		$wizard .= "<input name='lookUpLyrics' type='checkbox' checked>";
+		$wizard .= "<label for='lookUpLyrics'>Lookup lyrics online</label>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to lookup lyrics online to display them in the lyrics panel. When disabled, the lyrics panel only shows links to search for lyrics manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='downLoadMissingCovers' type='checkbox' checked>";
