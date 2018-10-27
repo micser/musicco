@@ -39,6 +39,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 ## pdo_sqlite (mandatory)
 ## php7.0-xml (mandatory)
+## php7.0-mbstring (mandatory)
 ## openssl (optional, for cover art support)
 ## zip (optional, for download support)
 
