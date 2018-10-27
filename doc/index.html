@@ -71,7 +71,7 @@
 			<h1 class="wow fadeInDown"><strong><span class="color">musicco</span></strong></h1>
 			<p class="wow fadeInDown">a web player for your music library</p>
 			<a target="_blank" href="https://github.com/micser/musicco/releases" class="btn btn-default btn-lg page-scroll wow fadeInUp" data-wow-delay="200ms">download</a>
-			<a target="_blank" href="https://www.musicco.org/demo" class="btn btn-default btn-lg page-scroll wow fadeInUp" data-wow-delay="200ms">live demo</a> 
+			<a target="_blank" href="https://www.musicco.app/demo" class="btn btn-default btn-lg page-scroll wow fadeInUp" data-wow-delay="200ms">live demo</a> 
 		</div>
 	</div>
 </header>
@@ -95,12 +95,12 @@
 				<p>It's not revolutionary, it just solves a few very specific problems I had...</p>
 				<div class="space"></div>
 				<h4>So why did you make musicco?</h4>
-				<p>I was tired of syncing music onto devices, only to realise it takes forever or I forgot the particular album I wanted to listen to at home that day. Commercial music streaming services are all fine, but what that obscure band I listen to that nobody knows about, what about the music I spent ages ripping from CDs at high bitrate? Oh, and don't get me started on id3 tags, my library is properly organised in Artist &gt; Album folders, I don't need to worry about wrongly-tagged files or players that don't sort tags properly.</p>
+				<p>I was tired of syncing music onto devices, only to realise it takes forever or I forgot the particular album I wanted to listen to at home that day. Commercial music streaming services are all fine, but what about that obscure album I bought from a band at a show that I listen to andnobody knows about? What about the music I spent ages ripping from CDs at high bitrate? Oh, and don't get me started on id3 tags, my library is properly organised in Artist &gt; Album folders, I don't need to worry about wrongly-tagged files or players that don't sort tags properly.</p>
 				<div class="space"></div>
 				<h4>How does it work?</h4>
-				<p>The concept behind musicco is nothing new. In fact, it is largely inspired from <a target="_blank" href="https://github.com/henrik242/musicbrowser">musicbrowser</a>, another cool, lightweight music streaming solution.</p>
+				<p>The concept behind musicco is nothing new. In fact, it is largely inspired by <a target="_blank" href="https://github.com/henrik242/musicbrowser">musicbrowser</a>, another cool, lightweight music streaming solution.</p>
 				<p>It is also technically based on <a target="_blank" href="http://encode-explorer.siineiolekala.net/">encode explorer</a>, a simple and efficient PHP file browser.</p>
-				<p>The rest of the work was just putting a UI on top of <a target="_blank" href="http://jplayer.org/">jplayer</a> to create playlists and integrate cover art, artist and lyrics information (from <a href="http://coverartarchive.org/">Cover Art Archive</a>, <a target="_blank" href="https://www.wikipedia.org">Wikipedia</a> and <a href="http://www.chartlyrics.com/">ChartLyrics</a>).</p>
+				<p>The rest of the work was just putting a UI on top of a HTML5 audio player to create playlists and integrate cover art, artist and lyrics information (from <a href="http://coverartarchive.org/">Cover Art Archive</a>, <a target="_blank" href="https://www.wikipedia.org">Wikipedia</a> and <a href="http://www.chartlyrics.com/">ChartLyrics</a>).</p>
 			</div>
 		</div>
 		<div class="section-title text-center wow fadeInDown">
@@ -298,7 +298,7 @@
 
 <div id="footer">
 	<div class="container">
-			<p><a href="https://www.musicco.org" rel="nofollow">musicco</a> - Design by <a target="_blank" href="http://www.templategarden.com" rel="nofollow">TemplateGarden</a></p>
+			<p><a href="https://www.musicco.app" rel="nofollow">musicco</a> - Design by <a target="_blank" href="http://www.templategarden.com" rel="nofollow">TemplateGarden</a></p>
 	</div>
 </div>
 
@@ -318,7 +318,7 @@
 					<div class="modal-body"> 
 						<h2>Web Music Magic!</h2>
 						<img class="img-responsive img-centered" src="img/features/player.png" alt="">
-						<div>musicco uses JPlayer, a free, cross-platform music player that does not require flash to play mp3s.</div>
+						<div>musicco uses HTML5 audio and does not require flash to play mp3s.</div>
 						<div>Create awesome playlists you can really play from any device with musicco's completely responsive UI!</div>
 						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
 					</div>
@@ -517,6 +517,7 @@
 							<li>p: show/hide playlist</li>
 							<li>i: show/hide Artist Information</li>
 							<li>l: show/hide lyrics</li>
+							<li>g: show Settings</li>
 							<li>Esc: hide all panels</li>
 						</ul>
 						<h4>Ninja</h4>
@@ -529,6 +530,12 @@
 							<li>j/k: highlight previous/next item</li>
 							<li>o: open current selection</li>
 							<li>a: queue current selection</li>
+						</ul>
+						<h4>Touch</h4>
+						<ul>
+							<li>Swipe left/right to go to the next album</li>
+							<li>Swipe up/down to change volume</li>
+							<li>Long press support and more!</li>
 						</ul>
 						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
 					</div>
@@ -552,7 +559,7 @@
 					<div class="modal-body"> 
 						<h2>Authentication and Sharing</h2>
 						<img class="img-responsive img-centered" src="img/features/authentication.png" alt="">
-						<div>You can (and probably should) require a login for musicco. There are two levels of users: guests and administrators. The main difference is that guest accounts do not have the right to update the music library or download individual tracks. When a login is required, your playlist is saved across sessions for your user only.</div>
+						<div>You can (and probably should) require a login for musicco. There are two levels of users: guests and administrators. The main difference is that guest accounts do not have the right to update the music library or download individual tracks. When a login is required, your playlists are saved across sessions for your user only.</div>
 						<div>Want to share a permalink to an album? You can do that by clicking the link icon in the playlist. You will get a link to the album that you can open in a guest session.</div>
 						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
 					</div>
@@ -579,14 +586,14 @@
 						<h3>Requirements</h3>
 						<ul>
 							<li>A web server with php and sqlite support and access to your music library</li>
-							<li>A web browser that supports html audio or flash</li>
+							<li>A web browser that supports html audio</li>
 							<li>There are no OS-specific requirements, and it runs great on a 500MHz CPU with 32MB of RAM (like a <a target="_blank" href="http://dns323.kood.org/">DNS-323</a> for example)</li>
 						</ul>
 						<h3>Installation</h3>
 						<ol>
 							<li>Extract the distribution archive into the root of your webserver</li>
 							<li>Place your music in the music folder or create a symbolic link to the root of your music directory to replace the music folder</li>
-							<li>Open up a browser and click on "Update Library". It may take a few minutes for this operation to finish if you have several thousand files.</li>
+							<li>Open up a browser, complete the setup wizard and click on "Update Library". It may take a few minutes for this operation to finish if you have several thousand files.</li>
 						</ol>
 						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
 					</div>
@@ -610,12 +617,12 @@
 					<div class="modal-body"> 
 						<h2>Configuration</h2>
 						<img class="img-responsive img-centered" src="img/features/configuration.png" alt="">
-						<p>You can modify the configuration of musicco by editing index.php and following the instructions in the file itself.</p>
+						<p>You can modify the main settings the first time you access the app.</p>
+						<p>You can modify the configuration of musicco by editing index.php and config.php. and following the instructions in the file itself.</p>
 						<p>You can currently configure:</p>
 						<ul>
 							<li>the name of the webapp</li>
 							<li>the default language (English and French come built-in, but you can add your own)</li>
-							<li>the skin used</li>
 							<li>the character set for reading file names</li>
 							<li>the name of the folder containing your music collection</li>
 							<li>whether or not to require a login to use the app</li>

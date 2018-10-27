@@ -23,8 +23,8 @@ $_CONFIG['dbVersion'] = "2";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appInfo'] = "(//musicco.org)";
-$_CONFIG['appInfo'] = "(//musicco.org)";
+// Default: $_CONFIG['appInfo'] = "(//musicco.app)";
+$_CONFIG['appInfo'] = "(//musicco.app)";
 
 // Choose a language. See bel ow in the language section for options.
 // Default: $_CONFIG['lang'] = "en";
@@ -4398,7 +4398,7 @@ function builddb() {
 		$helpString.="<div><i class='far fa-play-circle'></i>/<i class='far fa-pause-circle'></i>/<i class='far fa-image'></i>: play random album from playlist</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='yellow bold'>Find Out More at ";
-		$helpString.="<a tabindex='-1' class='yellow' target='_blank' href='https://www.musicco.org/#features'>musicco.org</a></div>";
+		$helpString.="<a tabindex='-1' class='yellow' target='_blank' href='https://www.musicco.app/#features'>musicco.app</a></div>";
 		
 		
 		$helpString.="</div>";
@@ -4407,8 +4407,8 @@ function builddb() {
 	 
 		function getAbout() {
 		$aboutString="<div id='aboutBox' autofocus>";
-			$aboutString.="<div class='bold'><a tabindex='-1' target='_blank' href='//musicco.org'>".Musicco::logo("logo-about")."</a></div>";
-			$aboutString.="<div class='bold big'><a tabindex='-1' target='_blank' href='//musicco.org'>musicco</a></div>";
+			$aboutString.="<div class='bold'><a tabindex='-1' target='_blank' href='//musicco.app'>".Musicco::logo("logo-about")."</a></div>";
+			$aboutString.="<div class='bold big'><a tabindex='-1' target='_blank' href='//musicco.app'>musicco</a></div>";
 			$aboutString.="<div class='bold'>A web based player for your music collection</div>";
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div>musicco is a light-weight, web-based streaming music player for your local library</div>";
@@ -4439,7 +4439,7 @@ function builddb() {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>2.0 (unreleased)</div>";
-				$aboutString.="<li>use native html audio instead of jplayer / jplayerPlaylist</li>";
+				$aboutString.="<li>Use native html audio instead of jplayer / jplayerPlaylist</li>";
 				$aboutString.="<li>Refreshed UI</li>";
 				$aboutString.="<li>Theme selector and dynamic theme</li>";
 				$aboutString.="<li>Added support for multiple playlists per user</li>";
@@ -4448,6 +4448,7 @@ function builddb() {
 				$aboutString.="<li>Added support for rich notifications on Android using Media Session API</li>";
 				$aboutString.="<li>Added play/pause and skip actions to desktop notification</li>";
 				$aboutString.="<li>Added support for quickly adding an album without scanning the entire library</li>";
+				$aboutString.="<li>Save your favourite albums</li>";
 				$aboutString.="<li>Handle accent-insensitive search</li>";
 				$aboutString.="<li>Improved webapp manifest so you can add musicco to your Android home screen</li>";
 				$aboutString.="<li>Fixed many other things!</li>";

@@ -2,7 +2,7 @@
 ![musicco](/doc/img/header-bg.png?raw=true "musicco")
 musicco is a web player for your music library Host it on a NAS and start streaming your music from any browser.  
 This is especially great on low-spec NAS that don't have enough power to host Squeezebox, Subsonic or an ITunes Server.  
-Check out https://www.musicco.org for more information or try the demo at https://www.musicco.org/demo.
+Check out https://www.musicco.app for more information or try the demo at https://www.musicco.app/demo.
 
 <a href="https://twitter.com/musiccoapp">
   <img src="http://jpillora.com/github-twitter-button/img/tweet.png" alt="Follow @musiccoapp" Follow @musiccoapp"></img>
@@ -43,6 +43,21 @@ Check out https://www.musicco.org for more information or try the demo at https:
 
 
 # Changelog
+
+## v2.0.0
+  Use native html audio instead of jplayer / jplayerPlaylist
+  Refreshed UI
+  Theme selector and dynamic theme
+  Added support for multiple playlists per user
+  Added support for marking albums and tracks as favourites
+  Improved controls for touchcreen browsers
+  Added support for rich notifications on Android using Media Session API
+  Added play/pause and skip actions to desktop notification
+  Added support for quickly adding an album without scanning the entire library
+  Save your favourite albums
+  Handle accent-insensitive search
+  Improved webapp manifest so you can add musicco to your Android home screen
+  Fixed many other things
 
 ## v1.3.5
   Bug fixes centered around track seeking and resuming current play position, added Uncover button to header in square mode.
