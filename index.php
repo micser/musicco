@@ -88,7 +88,7 @@ $_CONFIG['coverExtension'] = ".png";
 // will be loaded into the lyrics panel before 
 // searching online for it.
 // Default: $_CONFIG['loadLyricsFromFile'] = true;
-$_CONFIG['loadLyricsFromFile'] = true;
+$_CONFIG['loadLyricsFromFile'] = false;
 
 // Whether to automatically download
 // missing covers online. New covers
@@ -97,7 +97,7 @@ $_CONFIG['loadLyricsFromFile'] = true;
 // Even when turning this off, you can still 
 // trigger cover art search manually
 // Default: $_CONFIG['downLoadMissingCovers'] = true;
-$_CONFIG['downLoadMissingCovers'] = true;
+$_CONFIG['downLoadMissingCovers'] = false;
 
 // The search engine to use to search for more
 // information about artists and lyrics
