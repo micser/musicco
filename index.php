@@ -3523,7 +3523,7 @@ if(!AuthManager::isAccessAllowed()) {
 			deletePlaylist($_POST['u'], $_POST['n']);
 			exit;
 	} elseif (isset($_POST['savePlaylist'])) {
-			savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t'], $_POST['v'], $_POST['l'], $_POST['s']);
+			savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t']);
 			exit;
 	} elseif (isset($_POST['saveGuestPlaylist'])) {
 			$user = $_POST['u'];
