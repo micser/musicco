@@ -174,7 +174,7 @@
 
 		.magic, 
 		#playlist-tools {
-			-webkit-backdrop-filter: blur(50px) opacity(40%);
+			-webkit-backdrop-filter: blur(500px) opacity(95%);
 			backdrop-filter: blur(50px) opacity(40%);
 		}
 	}
@@ -426,6 +426,7 @@
 		margin: 0;
 		overflow-x: hidden;
 		overflow-y: hidden;
+		height: 100vw;
 	}
 
 	a {
