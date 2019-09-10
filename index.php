@@ -4489,7 +4489,11 @@ function builddb() {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>2.0 (unreleased)</div>";
+				$aboutString.="<div class='bold yellow'>2.1 (unreleased)</div>";
+				$aboutString.="<li>Play nice with Chromecast</li>";
+			$aboutString.="</ul>";
+			$aboutString.="<ul>";
+				$aboutString.="<div class='bold yellow'>2.0 (28th October 2018)</div>";
 				$aboutString.="<li>Use native html audio instead of jplayer / jplayerPlaylist</li>";
 				$aboutString.="<li>Refreshed UI</li>";
 				$aboutString.="<li>Theme selector and dynamic theme</li>";

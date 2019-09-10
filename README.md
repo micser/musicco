@@ -46,6 +46,9 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
+## v2.0.1
+  Fixed background blur for recent Chrome versions
+
 ## v2.0.0
   Use native html audio instead of jplayer / jplayerPlaylist
   Refreshed UI
