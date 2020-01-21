@@ -46,6 +46,10 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
+## v2.0.2
+  Fixed issues for screens with 1024x768 resolutions
+  Improved URL handling for cover uploads
+
 ## v2.0.1
   Fixed background blur for recent Chrome versions
 

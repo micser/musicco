@@ -13,8 +13,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "2.0.1";
-$_CONFIG['appVersion'] = "2.0.1";
+// Default: $_CONFIG['appVersion'] = "2.0.2";
+$_CONFIG['appVersion'] = "2.0.2";
 
 // The database version compatible with this version. This is for information purposes only, since
 // no backwards compatibility really exists
@@ -727,7 +727,6 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
-		<script src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
 		<script type="text/javascript">
 				///////////////
 			 // VARIABLES //
@@ -767,19 +766,6 @@ class Musicco {
 					}
 				};
 			}
-
-			window['__onGCastApiAvailable'] = function(isAvailable) {
-				if (isAvailable) {
-					initializeCastApi();
-				}
-			};
-
-			initializeCastApi = function() {
-				cast.framework.CastContext.getInstance().setOptions({
-					receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-				});
-			};
 
 			var draggedElement;
 			var nowPlaying = {};
@@ -829,25 +815,6 @@ class Musicco {
 			///////////
 
 			player.onplay = function() {
-
-				var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
-				var mediaInfo = new chrome.cast.media.MediaInfo(player.src, "audio/mpeg");
-				mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
-				mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
-				mediaInfo.metadata.title = nowPlaying["songtitle"];
-				mediaInfo.metadata.artist = nowPlaying["artist"];
-				mediaInfo.metadata.albumName = nowPlaying["album"];
-				mediaInfo.metadata.releaseDate = nowPlaying["year"];
-				mediaInfo.metadata.images = [
-					{'url': getBaseURL() + nowPlaying["cover"]}
-				];
-
-				var request = new chrome.cast.media.LoadRequest(mediaInfo);
-				request.currentTime = player.currentTime;
-				castSession.loadMedia(request).then(
-					function() { console.log('Load succeed'); },
-					function(errorCode) { console.log('Error code: ' + errorCode); });
-
 				if (player.volume != ($("#big-volume-bar").slider("option", "value") / 100)) {
 					$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
 				}
@@ -855,12 +822,6 @@ class Musicco {
 			}
 
 			player.onpause =  function() {
-
-				var castPlayer = new cast.framework.RemotePlayer();
-				var castPlayerController = new cast.framework.RemotePlayerController(castPlayer);
-
-
-				castPlayerController.playOrPause();
 				$('.big-jp-play').show();
 				$('.big-jp-pause').hide();
 				savePlaylist();
@@ -3516,7 +3477,6 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="big-player-bottom">
 					<div id="playlist-controls" class="spread">
-						<google-cast-launcher></google-cast-launcher>
 						<span id="big-unmute" class="toggles selected hidden"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 						<span id="big-mute" class="toggles"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 						<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
@@ -4488,10 +4448,6 @@ function builddb() {
 			}
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>2.1 (unreleased)</div>";
-				$aboutString.="<li>Play nice with Chromecast</li>";
-			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>2.0 (28th October 2018)</div>";
 				$aboutString.="<li>Use native html audio instead of jplayer / jplayerPlaylist</li>";

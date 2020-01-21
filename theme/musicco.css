@@ -6,9 +6,7 @@
 			--background-highlight: #272727;
 			--background-error: #FFE4E1;
 			--text: #A7A97F;
-			--disconnected-color:var(--text);
 			--text-highlight: #E3E5BB;
-			--connected-color: var(--text-highlight);
 			--error: #FF6666;
 			--help: #dd0;
 			--contrast-low: #000000;
@@ -41,15 +39,6 @@
 		 33% { opacity: 0; }
 		 66% { opacity: 0; }
 		 100% { opacity: 1; }
-	}
-
-	google-cast-launcher {
-		width: 2em;
-	}
-
-/* TODO: not working at the moment! */
-	google-cast-launcher:hover svg g {
-		fill: var(--text-highlight);
 	}
 
 	#big-cover {
