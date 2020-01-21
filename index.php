@@ -1997,6 +1997,8 @@ class Musicco {
 					var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>")
 					if (userURL != null) {
 						userURL = userURL.replace("https", "http");
+						userURL = userURL.replace("&f=1", "");
+						userURL = userURL.replace("&nofb=1", "");
 						if ((isValidURL.test(userURL)) && (isValidImage.test(userURL))) {
 							$.ajax({
 								 type: "GET",
