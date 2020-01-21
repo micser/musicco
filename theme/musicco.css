@@ -202,6 +202,7 @@
 
 	#playlist_select {
 		margin-left: .5em;
+		max-width: 65%;
 	}
 
 	#ham {
@@ -1272,3 +1273,21 @@
 		display: none;
 	}
 }
+
+@media (max-width: 1024px) {
+
+	.panelToggle {
+		padding-left: .75em!important;
+		padding-right: .75em!important;
+	}
+
+	#filterText {
+		width: 85%;
+	}
+
+	#searchText {
+		width: 75%;
+	}
+
+}
+
