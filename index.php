@@ -716,7 +716,7 @@ class Musicco {
 		<meta name="msapplication-TileImage" content="app/mstile-310x310.png">
 		<meta name="theme-color" content="#a7a97f">
 		<script type="text/javascript" src="lib/jquery/jquery-3.5.0.min.js"></script>
-		<script type="text/javascript" defer src="lib/jquery-mobile/jquery-migrate-3.0.1.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-mobile/jquery-migrate-3.2.0.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-mobile/jquery.mobile-1.4.5.swipe.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui/jquery-ui.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
