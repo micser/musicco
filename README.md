@@ -46,6 +46,9 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
+## v2.0.4
+  No plans yet, report bugs!
+
 ## v2.0.3
   Fixed issue playing files containing a #
   Fixed general scrolling issue of long lists
