@@ -715,12 +715,12 @@ class Musicco {
 		<meta name="msapplication-TileColor" content="#a7a97f">
 		<meta name="msapplication-TileImage" content="app/mstile-310x310.png">
 		<meta name="theme-color" content="#a7a97f">
-		<script type="text/javascript" src="lib/jquery/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="lib/jquery/jquery-3.5.0.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-mobile/jquery-migrate-3.0.1.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-mobile/jquery.mobile-1.4.5.swipe.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui/jquery-ui.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
-		<script type="text/javascript" defer src="lib/js-cookie/js.cookie-2.2.0.min.js"></script>
+		<script type="text/javascript" defer src="lib/js-cookie/js.cookie-2.2.1.min.js"></script>
 		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
 		<script type="text/javascript" defer src="lib/clipboard.js/clipboard.min.js"></script>
@@ -1133,7 +1133,7 @@ class Musicco {
 				var filterText = normalise($("#filterText").val().toLowerCase());
 				var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
 				var isMatching = new RegExp(filterText, "i");
-				var tree = $("#library").fancytree("getTree");
+				var tree = $.ui.fancytree.getTree("#library");
 				if ($("#includeOldAlbums").is(':checked')) {
 					tree.filterBranches(function(node) {
 						return isMatching.test(normalise(node.data.path));
@@ -1267,7 +1267,7 @@ class Musicco {
 						case 66: //b
 							if (!isGuestPlay()){	
 								 togglePanel("#browserPanel");
-								$("#library").fancytree("getTree").getFirstChild().setActive();
+								$.ui.fancytree.getTree("#library").getFirstChild().setActive();
 							}
 						break;
 
@@ -1605,6 +1605,7 @@ class Musicco {
 					tabindex: "0",
 					titlesTabbable: true,
 					tooltip: true,
+					nodata: false,
 					selectMode: 1,
 					postProcess: function(event, data) {
 						if (data.response.length != 0 ) {
@@ -1613,7 +1614,7 @@ class Musicco {
 						}
 					}
 				});
-				$("#favourites").fancytree("getTree").getPersistData();
+				$.ui.fancytree.getTree("#favourites").getPersistData();
 			}
 
 			function addFavourite(path) {
@@ -1770,7 +1771,7 @@ class Musicco {
 						error: function(data) {
 							tempHTML = oldHTML;
 							$("#reset_db").html(tempHTML);
-							var library = $("#library").fancytree("getTree");
+							var library = $.ui.fancytree.getTree("#library");
 							if (library.length > 0) {
 								library.reload();
 							}
@@ -2526,7 +2527,7 @@ class Musicco {
 
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				windowWidth = $(window).width();
-				new Clipboard(".clip");
+				new ClipboardJS(".clip");
 
 				if ($(".landing").is(":visible")) {
 					$("#loading").hide()
@@ -2848,12 +2849,12 @@ class Musicco {
 					flashInfo();
 				});
 
-				$("#includeOldAlbums").click(function () {
+				$("#includeOldAlbums").on("click", function () {
 					toggleCheckbox();
 					filterTree();
 				});
 
-				$("#filterText").keyup(function() {
+				$("#filterText").on("keyup", function() {
 					setTimeout( function() {
 						if (userIsStillTyping) {
 							userIsStillTyping = false;
@@ -2862,13 +2863,13 @@ class Musicco {
 					}, 400);
 				});
 				
-				$("#filterText").keydown(function() {
+				$("#filterText").on("keydown", function() {
 					userIsStillTyping = true;
 				});
 
 				$("#filterButton").on("click", function(event) {
 					event.preventDefault();
-					$("#library").fancytree("getTree").clearFilter();
+					$.ui.fancytree.getTree("#library").clearFilter();
 					$("#filterText").val('');
 					resetCheckbox();
 				});
@@ -2888,11 +2889,11 @@ class Musicco {
 					$("#aboutPanel").dialog("open");
 				});
 
-				$("#clear-playlist").click(function() {
+				$("#clear-playlist").on("click", function() {
 					clearPlaylist();
 				});
 
-				$('#uploadIt').click(function () {
+				$('#uploadIt').on("click", function () {
 						if ($(this).hasClass('canUpload')) {
 							uploadCover();
 						}
@@ -2924,7 +2925,7 @@ class Musicco {
 				}
 				);
 
-				$('#statusText').click(function () {
+				$('#statusText').on("click", function () {
 					if ($(this).hasClass('canFetch')) {
 						fetchCover();
 					}
@@ -2986,7 +2987,7 @@ class Musicco {
 					}
 				});
 
-				$('#clear').click(function () {
+				$('#clear').on("click", function () {
 					$('.hits').remove();
 					$('#searchText').val('');
 					toggleSearch();
@@ -3037,7 +3038,7 @@ class Musicco {
 							data: {quickscan: "", folder: folderName},
 							success: function(response) {
 								if (parseInt(response) > 0) {
-									$("#library").fancytree("getTree").reload();
+									$.ui.fancytree.getTree("#library").reload();
 									showLoadingInfo("<?php print $this->getString("scanning_ok"); ?>");
 									goToArtist(folderName);
 								} else {
@@ -3058,7 +3059,7 @@ class Musicco {
 						success: function(response) {
 							if (parseInt(response) > -1) {
 								tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response;
-								$("#library").fancytree("getTree").reload();
+								$.ui.fancytree.getTree("#library").reload();
 								updateFavourites();
 							} else {
 								checkLibraryRefresh(oldHTML);
@@ -3243,17 +3244,17 @@ class Musicco {
 					$("#user_name").focus();
 				}
 
-				$("#shuffled, #loop, #theme_settings input").click(function() {
+				$("#shuffled, #loop, #theme_settings input").on("click", function() {
 					playerConfig[$(this).attr("id")] = !playerConfig[$(this).attr("id")];
 					$(this).toggleClass("selected");
 					saveSettings();
 				});
 
-				$("#big-volume-down").click(function() {
+				$("#big-volume-down").on("click", function() {
 					volumeDown();
 				});
 
-				$("#big-volume-up").click(function() {
+				$("#big-volume-up").on("click", function() {
 					volumeUp();
 				});
 

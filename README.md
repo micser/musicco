@@ -46,8 +46,11 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
-## v2.0.4
-  No plans yet, report bugs!
+## v2.0.4 (in development)
+  Dependency updates
+  Allow re-running the setup wizard
+  Fix am issue where the mini toolbar would show up when unwanted
+  No other plans, report bugs!
 
 ## v2.0.3
   Fixed issue playing files containing a #

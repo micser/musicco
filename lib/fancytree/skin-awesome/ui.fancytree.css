@@ -8,7 +8,14 @@
  * Common Styles for Fancytree Skins.
  *
  * This section is automatically generated from the `skin-common.less` template.
- ******************************************************************************/
+ *
+ * Copyright (c) 2008-2020, Martin Wendt (https://wwWendt.de)
+ * Released under the MIT license
+ * https://github.com/mar10/fancytree/wiki/LicenseInfo
+ *
+ * @version 2.35.0
+ * @date 2020-03-27T22:41:58Z
+******************************************************************************/
 /*------------------------------------------------------------------------------
  * Helpers
  *----------------------------------------------------------------------------*/
@@ -114,7 +121,6 @@ span.fancytree-drag-helper-img,
   display: inline-block;
   vertical-align: top;
   background-repeat: no-repeat;
-  background-position: left;
   background-position: 0pt 0pt;
 }
 span.fancytree-icon,
@@ -171,7 +177,7 @@ span.fancytree-expander {
 .fancytree-fade-expander:hover span.fancytree-expander,
 .fancytree-fade-expander.fancytree-treefocus span.fancytree-expander,
 .fancytree-fade-expander .fancytree-treefocus span.fancytree-expander,
-.fancytree-fade-expander [class*='fancytree-statusnode-'] span.fancytree-expander {
+.fancytree-fade-expander [class*="fancytree-statusnode-"] span.fancytree-expander {
   transition: opacity 0.6s;
   opacity: 1;
 }
@@ -184,6 +190,19 @@ span.fancytree-checkbox {
 .fancytree-unselectable span.fancytree-checkbox {
   opacity: 0.4;
   filter: alpha(opacity=40);
+}
+.fancytree-container.fancytree-checkbox-auto-hide span.fancytree-checkbox {
+  visibility: hidden;
+}
+.fancytree-container.fancytree-checkbox-auto-hide .fancytree-node:hover span.fancytree-checkbox,
+.fancytree-container.fancytree-checkbox-auto-hide tr:hover td span.fancytree-checkbox,
+.fancytree-container.fancytree-checkbox-auto-hide .fancytree-node.fancytree-selected span.fancytree-checkbox,
+.fancytree-container.fancytree-checkbox-auto-hide tr.fancytree-selected td span.fancytree-checkbox {
+  visibility: unset;
+}
+.fancytree-container.fancytree-checkbox-auto-hide.fancytree-treefocus .fancytree-node.fancytree-active span.fancytree-checkbox,
+.fancytree-container.fancytree-checkbox-auto-hide.fancytree-treefocus tr.fancytree-active td span.fancytree-checkbox {
+  visibility: unset;
 }
 /*------------------------------------------------------------------------------
  * Node type icon
@@ -202,7 +221,8 @@ span.fancytree-icon {
 .fancytree-loading span.fancytree-expander,
 .fancytree-loading span.fancytree-expander:hover,
 .fancytree-statusnode-loading span.fancytree-icon,
-.fancytree-statusnode-loading span.fancytree-icon:hover {
+.fancytree-statusnode-loading span.fancytree-icon:hover,
+span.fancytree-icon.fancytree-icon-loading {
   background-image: none;
 }
 /* Status node icons */
@@ -313,11 +333,31 @@ ul.fancytree-container.fancytree-rtl.fancytree-no-connector > li {
  * 'table' extension
  *----------------------------------------------------------------------------*/
 table.fancytree-ext-table {
+  font-family: tahoma, arial, helvetica;
+  font-size: 10pt;
   border-collapse: collapse;
+  /* ext-ariagrid */
 }
 table.fancytree-ext-table span.fancytree-node {
   display: inline-block;
   box-sizing: border-box;
+}
+table.fancytree-ext-table td.fancytree-status-merged {
+  text-align: center;
+  font-style: italic;
+  color: silver;
+}
+table.fancytree-ext-table tr.fancytree-statusnode-error td.fancytree-status-merged {
+  color: red;
+}
+table.fancytree-ext-table.fancytree-ext-ariagrid.fancytree-cell-mode > tbody > tr.fancytree-active > td {
+  background-color: #eee;
+}
+table.fancytree-ext-table.fancytree-ext-ariagrid.fancytree-cell-mode > tbody > tr > td.fancytree-active-cell {
+  background-color: #cbe8f6;
+}
+table.fancytree-ext-table.fancytree-ext-ariagrid.fancytree-cell-mode.fancytree-cell-nav-mode > tbody > tr > td.fancytree-active-cell {
+  background-color: #3875d7;
 }
 /*------------------------------------------------------------------------------
  * 'columnview' extension
@@ -352,7 +392,10 @@ table.fancytree-ext-columnview span.fancytree-node {
   display: inline-block;
 }
 table.fancytree-ext-columnview span.fancytree-node.fancytree-expanded {
-  background-color: #CBE8F6;
+  background-color: #e0e0e0;
+}
+table.fancytree-ext-columnview span.fancytree-node.fancytree-active {
+  background-color: #cbe8f6;
 }
 table.fancytree-ext-columnview .fancytree-has-children span.fancytree-cv-right {
   position: absolute;
