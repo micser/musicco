@@ -226,7 +226,7 @@ $_CONFIG['show_donate_button'] = true;
 // file which is about to get loaded. This should simplify upgrades by avoiding 
 // losing your personalised settings. If the file does not exist, you'll see a
 // short installation wizard that will create it automatically.
-if(!file_exists('config.php') && !isset($_POST['saveConfig'])) {
+if((!file_exists('config.php') && !isset($_POST['saveConfig'])) || isset($_POST['runSetup'])) {
 		runSetupWizard();
 		exit;
 } elseif (isset($_POST['saveConfig'])) {
@@ -306,6 +306,7 @@ $_TRANSLATIONS["en"] = array(
 	"removing_shared_links" => "deleting shared playlists...",
 	"removing_temp_files" => "cleaning in progress...",
 	"reset_db" => "update library",
+	"run_setup" => "run configuration wizard",
 	"select_theme" => "Preset",
 	"scanning" => "Scanning ",
 	"scanning_ko" => "Scanning failed",
@@ -392,6 +393,7 @@ $_TRANSLATIONS["fr"] = array(
 	"removing_shared_links" => "suppression des playlists partagées...",
 	"removing_temp_files" => "cleaning in progress",
 	"reset_db" => "rafraichir la discothèque",
+	"run_setup" => "relancer l'assistant de configuration",
 	"scanning" => "Scan de ",
 	"scanning_ko" => "échec du scan",
 	"scanning_ok" => "Dossier ajouté",
@@ -2936,6 +2938,12 @@ class Musicco {
 					$("#searchForm").submit();
 				});
 
+				$("#run_setup").on("click", function(event) {
+					event.preventDefault();
+					$("#setupForm").submit();
+				});
+
+
 				$("#searchForm").submit(function(event) {
 					event.preventDefault();
 					var $form = $( this ),
@@ -3400,6 +3408,7 @@ if(!AuthManager::isAccessAllowed()) {
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
+						print "<div class=\"settings guestPlay\"><form id=\"setupForm\" action=\"?\" method=\"post\"><input name=\"runSetup\" style=\"display: none;\"/></form><i class=\"space-after fas fa-fw fa-hat-wizard\"></i><span id=\"run_setup\"><a>".$this->getString("run_setup")."</a></span></div>";
 					}
 					?>
 					<div class="settings">
