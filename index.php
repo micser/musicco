@@ -222,6 +222,13 @@ $_CONFIG['users'] = array(
 // Default: $_CONFIG['show_donate_button'] = true;
 $_CONFIG['show_donate_button'] = true;
 
+// Whether or not the setup wizard can be re-run from the web UI after the initial configuration.
+// When set to false, you will need physical access to the server to edit the configuration.
+// It is recommended to set this to false on installations where no login is required 
+// to avoid unwanted setup changes.
+// Default: $_CONFIG['canRerunWizard'] = false;
+$_CONFIG['canRerunWizard'] = false;
+
 // You can override any of the settings above by copying them into a config.php
 // file which is about to get loaded. This should simplify upgrades by avoiding 
 // losing your personalised settings. If the file does not exist, you'll see a
@@ -3409,7 +3416,9 @@ if(!AuthManager::isAccessAllowed()) {
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
-						print "<div class=\"settings guestPlay\"><form id=\"setupForm\" action=\"?\" method=\"post\"><input name=\"rerunSetup\" style=\"display: none;\"/></form><i class=\"space-after fas fa-fw fa-hat-wizard\"></i><span id=\"run_setup\"><a>".$this->getString("run_setup")."</a></span></div>";
+						if ($this->getConfig("canRerunWizard")) {
+							print "<div class=\"settings guestPlay\"><form id=\"setupForm\" action=\"?\" method=\"post\"><input name=\"rerunSetup\" style=\"display: none;\"/></form><i class=\"space-after fas fa-fw fa-hat-wizard\"></i><span id=\"run_setup\"><a>".$this->getString("run_setup")."</a></span></div>";
+						}
 					}
 					?>
 					<div class="settings">
@@ -4644,6 +4653,14 @@ function builddb() {
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>The search engine to use to search for covers when none could be found automatically. You could also try: https://www.google.com/search?tbm=isch&tbs=imgo:1,isz:l&q=.</span></i>";
 		$wizard .= "<br/>";
 		$wizard .= "<textarea name='imageSearchEngine' rows='6' cols='60'>".Musicco::getConfig('imageSearchEngine')."</textarea>";
+		$wizard .= "</div>";
+		$wizard .= "</fieldset>";
+		$wizard .= "<fieldset>";
+		$wizard .= "<legend>System</legend>";
+		$wizard .= "<div>";
+		$wizard .= "<input name='canRerunWizard' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('canRerunWizard')).">";
+		$wizard .= "<label for='canRerunWizard'>Allow running this wizard from the web UI again</label>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you uncheck this box, you will need physical access to the server to edit the configuration in the future. It is recommended to uncheck this box on installations where no login is required to avoid unwanted setup changes.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
 		$wizard .= "<div><input class='go right' type='submit' value='hey ho let&apos;s go'></div>";
