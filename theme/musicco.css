@@ -302,7 +302,8 @@
 	}
 
 	#playlist > li > ul > li:hover,
-	a:hover {
+	a:hover,
+	#ham:hover {
 		color: var(--text-highlight);
 	}
 
@@ -351,7 +352,6 @@
 	.currentTrack,
 	.currentTrack:before,
 	#searchLink,
-	#logout a,
 	#loadingInfo,
 	.selected,
 	a.infoPanelLink:hover,
@@ -989,6 +989,10 @@
 		background: var(--text);
 	}
 
+	#ham {
+		color: var(--text);
+	}
+
 	#header {
 		height: 2em;
 		width: 100%;
@@ -1067,10 +1071,6 @@
 		margin-bottom: 7em;
 	}
 
-	#mini-controls {
-		vertical-align: super;
-	}
-
 	#loadingInfo {
 		max-width: 100%;
 		padding-top: 0;
@@ -1089,7 +1089,6 @@
 
 		#mini-controls {
 			display: inline !important;
-			vertical-align: unset;
 		}
 
 		#mini-controls i {
