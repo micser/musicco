@@ -13,8 +13,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "2.0.4";
-$_CONFIG['appVersion'] = "2.0.4";
+// Default: $_CONFIG['appVersion'] = "2.1.0";
+$_CONFIG['appVersion'] = "2.1.0";
 
 // The database version compatible with this version. This is for information purposes only, since
 // no backwards compatibility really exists
@@ -265,7 +265,6 @@ $_TRANSLATIONS["en"] = array(
 	"lastfm" => "last.fm ",
 	"libraryRebuiltIn" => "library updated in ",
 	"log_in" => "Log in",
-	"log_out" => "log out",
 	"dynamic" => "Dynamic",
 	"menu_download" => "Download",
 	"menu_favourite" => "Favourite",
@@ -352,7 +351,6 @@ $_TRANSLATIONS["fr"] = array(
 	"lastfm" => "last.fm ",
 	"libraryRebuiltIn" => "discothèque rafraichie en ",
 	"log_in" => "Connexion",
-	"log_out" => "déconnexion",
 	"dynamic" => "dynamique",
 	"menu_download" => "Télécharger",
 	"menu_favourite" => "Favori",
@@ -3318,7 +3316,7 @@ if(!AuthManager::isAccessAllowed()) {
 		<!-- START: header -->
 		<div id="header" class="spread nowrap">
 			<span>
-			<span id="ham"><i class="fas fa-bars fa-2x"></i></span>
+			<span id="ham"><i class="fas fa-bars fa-fw"></i></span>
 			<span id="mini-controls" class="big-controls">
 				<span class="big-jp-previous-album">&nbsp;</span>
 				<span class="big-jp-previous"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
@@ -3340,7 +3338,7 @@ if(!AuthManager::isAccessAllowed()) {
 			</span>
 			<?php
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
-					print "<span id=\"logout\" class=\"right\"><a href=\"?logout\">".$this->getString("log_out")."</a></span>";
+					print "<span id=\"logout\" class=\"right\"><a href=\"?logout\"><i class=\"fas fa-sign-out-alt fa-fw\"></i>&nbsp;</a></span>";
 				}
 			?> 
 		</div>
@@ -4460,6 +4458,13 @@ function builddb() {
 			}
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
+			$aboutString.="<ul>";
+				$aboutString.="<div class='bold yellow'>2.1 (6th May 2020)</div>";
+				$aboutString.="<li>Minor UI refresh around header</li>";
+				$aboutString.="<li>Dependency refresh</li>";
+				$aboutString.="<li>Allow re-running the setup wizard</li>";
+				$aboutString.="<li>Minor bugfixes</li>";
+			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>2.0 (28th October 2018)</div>";
 				$aboutString.="<li>Use native html audio instead of jplayer / jplayerPlaylist</li>";
