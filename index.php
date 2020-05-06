@@ -226,7 +226,10 @@ $_CONFIG['show_donate_button'] = true;
 // file which is about to get loaded. This should simplify upgrades by avoiding 
 // losing your personalised settings. If the file does not exist, you'll see a
 // short installation wizard that will create it automatically.
-if((!file_exists('config.php') && !isset($_POST['saveConfig'])) || isset($_POST['runSetup'])) {
+if((!file_exists('config.php') && !isset($_POST['saveConfig'])) || isset($_POST['rerunSetup'])) {
+		if(isset($_POST['rerunSetup'])) {
+			include 'config.php';
+		}
 		runSetupWizard();
 		exit;
 } elseif (isset($_POST['saveConfig'])) {
@@ -305,7 +308,7 @@ $_TRANSLATIONS["en"] = array(
 	"removing_shared_links" => "deleting shared playlists...",
 	"removing_temp_files" => "cleaning in progress...",
 	"reset_db" => "update library",
-	"run_setup" => "run configuration wizard",
+	"run_setup" => "setup wizard",
 	"select_theme" => "Preset",
 	"scanning" => "Scanning ",
 	"scanning_ko" => "Scanning failed",
@@ -336,7 +339,7 @@ $_TRANSLATIONS["fr"] = array(
 	"by" => " par ",
 	"clickToUploadYourOwn" => "charger", 
 	"background" => "Arri&egrave;re plan",
-	"colours" => "Th&egrave;",
+	"colours" => "Th&egrave;me",
 	"defaultCoverURL" => "http://",
 	"define_theme" => "Personnel",
 	"downloadSuccessful" => "Couverture sauvegardée",
@@ -391,7 +394,7 @@ $_TRANSLATIONS["fr"] = array(
 	"removing_shared_links" => "suppression des playlists partagées...",
 	"removing_temp_files" => "cleaning in progress",
 	"reset_db" => "rafraichir la discothèque",
-	"run_setup" => "relancer l'assistant de configuration",
+	"run_setup" => "assistant de configuration",
 	"scanning" => "Scan de ",
 	"scanning_ko" => "échec du scan",
 	"scanning_ok" => "Dossier ajouté",
@@ -3406,7 +3409,7 @@ if(!AuthManager::isAccessAllowed()) {
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
-						print "<div class=\"settings guestPlay\"><form id=\"setupForm\" action=\"?\" method=\"post\"><input name=\"runSetup\" style=\"display: none;\"/></form><i class=\"space-after fas fa-fw fa-hat-wizard\"></i><span id=\"run_setup\"><a>".$this->getString("run_setup")."</a></span></div>";
+						print "<div class=\"settings guestPlay\"><form id=\"setupForm\" action=\"?\" method=\"post\"><input name=\"rerunSetup\" style=\"display: none;\"/></form><i class=\"space-after fas fa-fw fa-hat-wizard\"></i><span id=\"run_setup\"><a>".$this->getString("run_setup")."</a></span></div>";
 					}
 					?>
 					<div class="settings">
@@ -4551,6 +4554,11 @@ function builddb() {
 		return $userArray;
 	}
 
+	function getCheckboxStatus($optionName) {
+		$checkboxStatus = ($optionName == "true")? "checked" : "";
+		return $checkboxStatus;
+	}
+
 	 function getWizardUI() {
 		$wizard = "<html>";
 		$wizard .= "<body>";
@@ -4558,7 +4566,10 @@ function builddb() {
 		$wizard .= "<link rel='stylesheet' type='text/css' href='lib/font-awesome/css/all.min.css'>";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Montserrat' >";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='theme/musicco.css' >";
-		$wizard .= "<script type='text/javascript' src='lib/jquery/jquery-3.3.1.min.js'></script>";
+		$wizard .= "<script type='text/javascript' src='lib/jquery/jquery-3.5.0.min.js'></script>";
+		$wizard .= "<script type='text/javascript'>";
+		$wizard .= "$(document).ready(function() { if ($('#require_login').is(':checked')) { $('#users').toggle(); } $('#lang').val('".Musicco::getConfig('lang')."'); });";
+		$wizard .= "</script>";
 		$wizard .= "</head>";
 		$wizard .= "<div class='landing'>";
 		$wizard .= "<div class='landing-header'>";
@@ -4573,7 +4584,7 @@ function builddb() {
 		$wizard .= "<fieldset>";
 		$wizard .= "<legend>Access</legend>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='require_login' type='checkbox' onclick='$(&apos;#users&apos;).toggle();'>";
+		$wizard .= "<input id='require_login' name='require_login' type='checkbox' value='true' onclick='$(&apos;#users&apos;).toggle();' ".getCheckboxStatus(Musicco::getConfig('require_login')).">";
 		$wizard .= "<label for='require_login'>Require login</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you require a login, you can have several users listening to their own playlists. If you want your installation to be completely open and all your user sharing the same playlists, leave this box unchecked.</span></i>";
 		$wizard .= "</div>";
@@ -4588,7 +4599,7 @@ function builddb() {
 		$wizard .= "<legend>Features</legend>";
 		$wizard .= "<div>";
 		$wizard .= "<label for='lang'>UI language</label>";
-		$wizard .= "<select name='lang'>";
+		$wizard .= "<select id='lang' name='lang'>";
 		$wizard .= "<option value='en'>English</option>";
 		$wizard .= "<option value='fr'>French</option>";
 		$wizard .= "</select>";
@@ -4605,17 +4616,17 @@ function builddb() {
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>The name you give to your covert art files in your music library. This is used to find covers on your disk and also to as a file name to  save covers found by the cover art downloader.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='loadLyricsFromFile' type='checkbox' checked>";
+		$wizard .= "<input name='loadLyricsFromFile' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('loadLyricsFromFile')).">";
 		$wizard .= "<label for='loadLyricsFromFile'>Load lyrics from local .lrc files</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to load .lrc lyrics files from disk. If a .lrc file with the same name as the audio  file exists in the same folder, its contents  will be loaded into the lyrics panel before  searching online for it.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='lookUpLyrics' type='checkbox' checked>";
+		$wizard .= "<input name='lookUpLyrics' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('lookUpLyrics')).">";
 		$wizard .= "<label for='lookUpLyrics'>Lookup lyrics online</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to lookup lyrics online to display them in the lyrics panel. When disabled, the lyrics panel only shows links to search for lyrics manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='downLoadMissingCovers' type='checkbox' checked>";
+		$wizard .= "<input name='downLoadMissingCovers' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('downLoadMissingCovers')).">";
 		$wizard .= "<label for='downLoadMissingCovers'>Download album art</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to automatically download missing covers online. New covers will be saved to disk in the folder containing the song currently playing. Even when turning this off, you can still  trigger cover art search manually.</span></i>";
 		$wizard .= "</div>";
