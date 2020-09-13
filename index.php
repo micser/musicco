@@ -1105,7 +1105,8 @@ class Musicco {
 
 			function groupBy(xs, key) {
 				return xs.reduce(function(rv, x) {
-					(rv[x[key]] = rv[x[key]] || []).push(x);
+					var group = "_" + x[key];
+					(rv[group] = rv[group] || []).push(x);
 					return rv;
 				}, {});
 			};
