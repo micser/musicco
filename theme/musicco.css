@@ -11,6 +11,7 @@
 			--help: #dd0;
 			--contrast-low: #000000;
 			--contrast-high: #ffffff;
+			--text-minuscule: .5em;
 			--text-tiny: .7em;
 			--text-small: .8em;
 			--text-smaller: .9em;
@@ -785,7 +786,8 @@
 
 	#big-timer,
 	#big-info {
-		margin: 0 .2em 0 .2em;
+		margin: 0 .2em 0 0.2em;
+		padding-top: .1em;
 	}
 
 	.nowrap {
@@ -1171,19 +1173,59 @@
 		display: block !important;
 		position: fixed;
 		top: 0;
-		width: 60%;
+		width: 55%;
 	}
 
 	#big-player {
 		position: fixed;
-		top: 2em;
-		left: 64%;
+		top: .25em;
+		padding-top: 0.2em;
+		left: 61%;
 		margin-right: 5px;
 		overflow: hidden;
 		text-align: center;
-		width: 35%;
-		max-width: 70vh;
+		width: 40%;
+		max-width: 66vh;
+		/* max-height: 51vh; */
 		z-index: 2;
+	}
+
+	#big-volume-bar {
+		width: .05em;
+	}
+
+	#updateCoverArt {
+		font-size: var(--text-tiny);
+	}
+
+	#big-jp-progress {
+		height: .05em;
+	}
+
+	#big-player-bottom {
+		height: unset;
+		padding-top: .7em;
+	}
+
+	#nowPlaying_songtitle,
+	#nowPlaying_artist,
+	#nowPlaying_album,
+	.album-details {
+		font-size: var(--text-small);
+		height: var(--text-normal);
+	}
+
+	#current_time,
+	#duration {
+		font-size: var(--text-minuscule);
+		height: var(--text-tiny);
+	}
+	.fa-5x {
+		font-size: 3em;
+	}
+
+	.fa-2x {
+		font-size: 1.2em;
 	}
 
 	@media (min-width: 1000px) {

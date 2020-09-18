@@ -695,7 +695,7 @@ class Musicco {
 			.nextAlbum { border-right: 1px green dashed; }
 		</style>
 		-->
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/all.min.css">
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
 		<link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.min.css">
