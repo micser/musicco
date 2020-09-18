@@ -2,7 +2,7 @@
 
 	:root {
 			--background: #121314;
-			--background-transparent: rgba(18, 19, 20, 0.6);
+			--background-transparent: rgba(10, 11, 12, 0.8);
 			--background-highlight: #272727;
 			--background-error: #FFE4E1;
 			--text: #A7A97F;
@@ -155,22 +155,25 @@
 		/* https://stackoverflow.com/questions/36378512/backdrop-filter-extends-beyond-border-radius --> there's still a bug in chrome where backdrop filter extends beyond border-radius... don't try to fix that! */
 	}
 
-	@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+	@supports (backdrop-filter: blur(10px)) {
 		#playlist-tools {
 		background: none;
 		box-shadow: 0 0;
 		}
 
+		.blur {
+			filter: blur(10px);
+		}
+
 		.magic, 
 		#playlist-tools {
-			-webkit-backdrop-filter: blur(500px) opacity(95%);
-			backdrop-filter: blur(50px) opacity(40%);
+			backdrop-filter: blur(50px) opacity(100%) brightness(50%)
 		}
 	}
 
 	.magic {
 	background-repeat: no-repeat;
-	background-position: top;
+	background-position: center center;
 	background-size: cover;
 	}
 
@@ -1047,20 +1050,19 @@
 		height:;
 	}
 
-	@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+	@supports (backdrop-filter: blur(10px)) {
 		ui-tabs .ui-widget-header {
 			border: 1px solid var(--background-transparent);
 			background: var(--background-transparent);
 		}
 
 		#leftPanel {
-			-webkit-backdrop-filter: blur(30px) opacity(100%);
-			backdrop-filter: blur(30px) opacity(100%);
+			backdrop-filter: blur(30px);
 			background-color: var(--background-transparent);
 		}
 	}
 
-	@supports not ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+	@supports not (backdrop-filter: blur(10px)) {
 		#leftPanel {
 		opacity: 0.9;
 		background: var(--background);
@@ -1135,14 +1137,13 @@
 			text-shadow: -1px -1px 0 var(--background), 1px -1px 0 var(--background), -1px 1px 0 var(--background), 1px 1px 0 var(--background);
 		}
 
-		@supports not ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+		@supports not (backdrop-filter: blur(10px)) {
 			#big-info {
 				background: rgba(0, 0, 0, 0.8);
 			}
 		}
 
 		#big-info:hover {
-			-webkit-backdrop-filter: blur(5px);
 			backdrop-filter: blur(5px);
 			transition: opacity 1s ease-out;
 			opacity: 1;

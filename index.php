@@ -865,6 +865,18 @@ class Musicco {
 			// Functions //
 			//////////////
 
+				function blurPlayer() {
+					if (isPortrait()) {
+					if ($("#leftPanel").is(":visible")) {
+						$("#big-player").addClass("blur");
+					} else {
+						$("#big-player").removeClass("blur");
+					}
+				} else {
+						$("#big-player").removeClass("blur");
+					}
+				}
+
 				function isDynamicTheme() {
 				return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "dynamic" )
 				}
@@ -898,7 +910,7 @@ class Musicco {
 						setColour("text", rgbToHex(textRGB[0], textRGB[1], textRGB[2]));
 					});
 					albumArt.src = coverUrl;
-					if ((CSS.supports("-webkit-backdrop-filter", "blur(10px)")) || (CSS.supports("backdrop-filter", "blur(10px)"))) {
+					if (CSS.supports("backdrop-filter", "blur(10px)")) {
 						$("body").css("background-image", "url(\"" + coverUrl + "\")");
 					}
 					$("body").addClass("magic");
@@ -1083,7 +1095,7 @@ class Musicco {
 			function restorePanel() {
 				var panel = ($(".panel[class~='shown']").not("[class*='default']"));
 				if (panel.length) {
-					$("#leftPanel").show();
+					$("#leftPanel").show(400, function() { blurPlayer() });
 					$(".panelToggle[href='" + "#" + panel + "']").trigger("click");
 					if (isPortrait()) {
 						$(".default").removeClass("default");
@@ -2667,7 +2679,7 @@ class Musicco {
 						$("#playlistToggle").show();
 						$("#leftPanel").tabs("enable", 2 );
 							if (isPortrait()) {
-								$("#leftPanel").hide();
+								$("#leftPanel").hide(400, function() { blurPlayer() });
 							} else {
 								$("#mini-controls").hide();
 							}
@@ -2886,7 +2898,7 @@ class Musicco {
 				});
 
 				$("#ham").on("click", function() {
-					$('#leftPanel').toggle('slide', { direction: 'left' }, 200);
+					$('#leftPanel').toggle('slide', { direction: 'left' }, 200, function() {blurPlayer()});
 					if (isPortrait()) {
 						$("#mini-controls").toggle();
 					}
