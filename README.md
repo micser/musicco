@@ -51,6 +51,9 @@ Check out https://www.musicco.app for more information or try the demo at https:
   Allow re-running the setup wizard
   Fixed an issue where the mini toolbar would show up when unwanted
   Minor UI refresh around header
+  Fixed transparency effects
+  Improved layout for widescreen devices
+  Minor bugfixes
 
 ## v2.0.3
   Fixed issue playing files containing a #

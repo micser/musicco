@@ -4484,10 +4484,12 @@ function builddb() {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>2.1 (6th May 2020)</div>";
+				$aboutString.="<div class='bold yellow'>2.1 (in development)</div>";
 				$aboutString.="<li>Minor UI refresh around header</li>";
 				$aboutString.="<li>Dependency refresh</li>";
 				$aboutString.="<li>Allow re-running the setup wizard</li>";
+				$aboutString.="<li>Fixed transparency effects</li>";
+				$aboutString.="<li>Improved layout for widescreen devices</li>";
 				$aboutString.="<li>Minor bugfixes</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
