@@ -46,5 +46,14 @@
 	"background_color": "#A7A97F",
 	"theme_color": "#A7A97F",
 	"start_url": ".",
-	"display": "fullscreen"
+	"display": "fullscreen",
+	"shortcuts": [
+			{
+				"name": "Rebuild Library",
+				"short_name": "builddb",
+				"description": "Rebuilds the library from scratch",
+				"url": "./?builddb",
+				"icons": [{ "src": "app/icon-192x192.png", "sizes": "192x192" }]
+			}
+		]
 }
