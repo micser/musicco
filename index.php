@@ -2126,9 +2126,9 @@ class Musicco {
 
 			function flashInfo() {
 				setTimeout(function(){ 
-					$("#big-info").css('opacity', '');
+					$("#big-info").removeClass('flash');
 				 }, 3000);
-				$("#big-info").css('opacity', '1');
+				$("#big-info").addClass('flash');
 			}
 
 			function showPanel(panel) {

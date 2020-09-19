@@ -252,7 +252,6 @@
 	#big-cover:hover #big-volume-bar {
 	opacity: 1;
 	border: 1px solid var(--text-highlight);
-	transition: border 2s ease;
 	transition: opacity 2s ease, border 2s ease;
 	
 	}
@@ -1125,7 +1124,15 @@
 			height: var(--text-larger);
 		}
 
+		#big-info:hover,
+		.flash {
+			backdrop-filter: blur(5px)!important;
+			transition: backdrop-filter .5s ease-in, opacity .5s ease-out!important;
+			opacity: 1!important;
+		}
+
 		#big-info {
+			backdrop-filter: unset;
 			position: absolute;
 			background: rgba(0, 0, 0, 0.3);
 			bottom: 0;
@@ -1133,6 +1140,7 @@
 			width: 100%;
 			text-align: left;
 			opacity: 0;
+			transition: backdrop-filter 1s ease-in, opacity 1s ease-in;
 			padding: .5em 0 .5em .5em;
 			color: var(--text-highlight);
 			text-shadow: -1px -1px 0 var(--background), 1px -1px 0 var(--background), -1px 1px 0 var(--background), 1px 1px 0 var(--background);
@@ -1142,12 +1150,6 @@
 			#big-info {
 				background: rgba(0, 0, 0, 0.8);
 			}
-		}
-
-		#big-info:hover {
-			backdrop-filter: blur(5px);
-			transition: opacity 1s ease-out;
-			opacity: 1;
 		}
 
 		#nowPlaying_album,
