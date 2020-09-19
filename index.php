@@ -3286,7 +3286,7 @@ class Musicco {
 				});
 
 			$(window).resize(function(){
-				adaptUI();
+				adaptUI(true);
 			});
 
 			$(document).on("click", "#infoPanel a.image", function() {
