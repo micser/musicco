@@ -869,11 +869,14 @@ class Musicco {
 					if (isPortrait()) {
 					if ($("#leftPanel").is(":visible")) {
 						$("#big-player").addClass("blur");
+						$("#mini-controls").show();
 					} else {
 						$("#big-player").removeClass("blur");
+						$("#mini-controls").hide();
 					}
 				} else {
 						$("#big-player").removeClass("blur");
+						$("#mini-controls").hide();
 					}
 				}
 
@@ -2680,8 +2683,6 @@ class Musicco {
 						$("#leftPanel").tabs("enable", 2 );
 							if (isPortrait()) {
 								$("#leftPanel").hide(100, function() { blurPlayer() });
-							} else {
-								$("#mini-controls").hide();
 							}
 					} else {
 						$("#playlistToggle").hide();
@@ -2899,9 +2900,6 @@ class Musicco {
 
 				$("#ham").on("click", function() {
 					$('#leftPanel').toggle('slide', { direction: 'left' }, 200, function() {blurPlayer()});
-					if (isPortrait()) {
-						$("#mini-controls").toggle();
-					}
 				});
 
 				$("#help").on("click", function() {
