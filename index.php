@@ -1095,7 +1095,7 @@ class Musicco {
 			function restorePanel() {
 				var panel = ($(".panel[class~='shown']").not("[class*='default']"));
 				if (panel.length) {
-					$("#leftPanel").show(400, function() { blurPlayer() });
+					$("#leftPanel").show(100, function() { blurPlayer() });
 					$(".panelToggle[href='" + "#" + panel + "']").trigger("click");
 					if (isPortrait()) {
 						$(".default").removeClass("default");
@@ -2679,7 +2679,7 @@ class Musicco {
 						$("#playlistToggle").show();
 						$("#leftPanel").tabs("enable", 2 );
 							if (isPortrait()) {
-								$("#leftPanel").hide(400, function() { blurPlayer() });
+								$("#leftPanel").hide(100, function() { blurPlayer() });
 							} else {
 								$("#mini-controls").hide();
 							}
