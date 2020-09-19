@@ -3065,7 +3065,7 @@ class Musicco {
 							data: {quickscan: "", folder: folderName},
 							success: function(response) {
 								if (parseInt(response) > 0) {
-									$.ui.fancytree.getTree("#library").reload();
+									$.ui.fancytree.getTree("#library").findFirst(folderName).load(true);
 									showLoadingInfo("<?php print $this->getString("scanning_ok"); ?>");
 									goToArtist(folderName);
 								} else {
