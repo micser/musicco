@@ -3065,7 +3065,18 @@ class Musicco {
 							data: {quickscan: "", folder: folderName},
 							success: function(response) {
 								if (parseInt(response) > 0) {
-									$.ui.fancytree.getTree("#library").findFirst(folderName).load(true);
+									var scannedNode = $.ui.fancytree.getTree("#library").findFirst(folderName);
+									if (scannedNode !=null) {
+										scannedNode.load(true);
+									} else {
+										$.ui.fancytree.getTree("#library").getRootNode().addChildren({
+											title: folderName,
+											tooltip: folderName,
+											folder: true,
+											lazy: true,
+											data: {parent: decodeURI(musicRoot), path: folderName}
+										});
+									}
 									showLoadingInfo("<?php print $this->getString("scanning_ok"); ?>");
 									goToArtist(folderName);
 								} else {
