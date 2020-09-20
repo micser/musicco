@@ -3074,6 +3074,7 @@ class Musicco {
 											tooltip: folderName,
 											folder: true,
 											lazy: true,
+											extraClasses: "current",
 											data: {parent: decodeURI(musicRoot), path: folderName}
 										});
 									}
