@@ -40,6 +40,13 @@ $_CONFIG['charset'] = "UTF-8";
 // Default: $_CONFIG['musicRoot'] = "music";
 $_CONFIG['musicRoot'] = "music";
 
+// For performance reasons, you may not want to
+// display the entire library every time you load the
+// player. This setting defines how many items are loaded
+// in a batch.
+// Default: $_CONFIG['libraryThreshold'] = 200;
+$_CONFIG['libraryThreshold'] = 200;
+
 // The name of the folder containing temp files.
 // Default: $_CONFIG['tempFolder'] = "temp";
 $_CONFIG['tempFolder'] = "temp";
@@ -276,6 +283,7 @@ $_TRANSLATIONS["en"] = array(
 	"libraryRebuiltIn" => "library updated in ",
 	"log_in" => "Log in",
 	"dynamic" => "Dynamic",
+	"load_more" => "More...",
 	"menu_download" => "Download",
 	"menu_favourite" => "Favourite",
 	"menu_goto_album" => "Find album",
@@ -362,6 +370,7 @@ $_TRANSLATIONS["fr"] = array(
 	"libraryRebuiltIn" => "discothèque rafraichie en ",
 	"log_in" => "Connexion",
 	"dynamic" => "dynamique",
+	"load_more" => "Charger plus...",
 	"menu_download" => "Télécharger",
 	"menu_favourite" => "Favori",
 	"menu_goto_album" => "Trouver l'album",
@@ -1486,54 +1495,84 @@ class Musicco {
 			}
 
 			function initLibraryTree() {
-				$("#library").fancytree({
-					extensions: ["glyph", "filter", "persist"],	
-					glyph: customTreeIcons,
-					filter: {
-						mode: "hide",
-						fuzzy: true,
-						hideExpanders: false,
-						nodata: function() { 
-							setTimeout(function() {
-								$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
-							}, 50);
-							if (!$("#includeOldAlbums").is(':checked')) {
-								resetCheckbox();
-								filterTree();
-								setTimeout(function() {
-									$(".fancytree-statusnode-nodata").hide();
-								}, 50);
+					var libraryThreshold = <?php print $this->getConfig('libraryThreshold'); ?>;
+					var libraryOffset = libraryThreshold;
+					$.post('?', {querydb: '', root: decodeURI(musicRoot), type: 'browse'}, function(response) {
+						var library = JSON.parse(response);
+						var isLargeLib = (library.length > libraryThreshold) ? true : false ;
+
+						$("#library").fancytree({
+							extensions: ["glyph", "filter", "persist"],
+							glyph: customTreeIcons,
+							filter: {
+								mode: "hide",
+								fuzzy: true,
+								hideExpanders: false,
+								nodata: function() { 
+									setTimeout(function() {
+										$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
+									}, 50);
+									if (!$("#includeOldAlbums").is(':checked')) {
+										resetCheckbox();
+										filterTree();
+										setTimeout(function() {
+											$(".fancytree-statusnode-nodata").hide();
+										}, 50);
+									}
+								}
+							},
+							autoScroll: true,
+							clickFolderMode: 3,
+							keyboard: true,
+							tabindex: "0",
+							titlesTabbable: true,
+							tooltip: true,
+							selectMode: 1,
+							source: (isLargeLib) ? library.slice(0,libraryThreshold) : library,
+							beforeExpand: function(event, data) {
+								if (event.which === 3) {
+									return false;
+								}
+							},
+							lazyLoad: function(event, data) {
+								var node = data.node;
+								var root = node.data.parent + node.data.path + "/";
+								data.result = {
+									url: "?",
+									type: "POST",
+									data: {querydb: '', root: decodeURI(root), type: 'browse'},
+									cache: true
+								}
+							},
+							clickPaging: function(event, data) {
+								$.post('?', {querydb: '', root: decodeURI(musicRoot), type: 'browse', limit: libraryThreshold, offset: libraryOffset}, function(response) {
+									var nodes = JSON.parse(response);
+									data.node.replaceWith(nodes).done(function(){
+										console.log("nodes: " + nodes.length);
+										console.log("threshold: " + libraryThreshold);
+										if (nodes.length < libraryThreshold) {
+											data.node.remove();
+										} else {
+											libraryOffset = libraryOffset + libraryThreshold;
+											addPagingNode(libraryOffset, libraryThreshold);
+										}
+									});
+								});
 							}
+						});
+
+						if (isLargeLib) {
+							addPagingNode(libraryOffset, libraryThreshold);
 						}
-					},
-					autoScroll: true,
-					clickFolderMode: 3,
-					keyboard: true,
-					tabindex: "0",
-					titlesTabbable: true,
-					tooltip: true,
-					selectMode: 1,
-					source: {
-							url: "?",
-							type: "POST",
-							data: {querydb: '', root: decodeURI(musicRoot), type: 'browse'},
-							cache: true
-					},
-					beforeExpand: function(event, data) {
-						if (event.which === 3) {
-							return false;
-						}
-					},
-					lazyLoad: function(event, data) {
-						var node = data.node;
-						var root = node.data.parent + node.data.path + "/";
-						data.result = {
-							url: "?",
-							type: "POST",
-							data: {querydb: '', root: decodeURI(root), type: 'browse'},
-							cache: true
-						}
-					}
+
+
+					});
+			}
+
+			function addPagingNode(offset, limit) {
+				$.ui.fancytree.getTree("#library").getRootNode().addPagingNode({
+					title: "<?php print Musicco::getString('load_more'); ?>",
+					data: {offset: offset, limit: limit}
 				});
 			}
 
@@ -1588,10 +1627,10 @@ class Musicco {
 					menu: menuOptions,
 					beforeOpen: function(event, ui) {
 						var node = $.ui.fancytree.getNode(ui.target);
-						 setMenuEntries(node.isFolder(), $("#library"));
-						 //Activate node on right-click
+						setMenuEntries(node.isFolder(), $("#library"));
+						//Activate node on right-click
 						node.setActive();
-						 //Disable tree keyboard handling
+						//Disable tree keyboard handling
 						ui.menu.prevKeyboard = node.tree.options.keyboard;
 						node.tree.options.keyboard = false;
 					},
@@ -3675,8 +3714,10 @@ if(!AuthManager::isAccessAllowed()) {
 	} elseif (isset($_POST['querydb'])) {
 			$query_root = $_POST['root'];
 			$query_type = $_POST['type'];
+			$query_limit = (isset($_POST['limit']) ? $_POST['limit'] : 5000);
+			$query_offset = (isset($_POST['offset']) ? $_POST['offset'] : 0);
 			logMessage("Query: ".$query_type);
-			querydb($query_root, $query_type);
+			querydb($query_root, $query_type, $query_limit, $query_offset);
 			exit;
 	} elseif (isset($_GET['builddb']) || ((defined('STDIN')) && $argv[1]=="builddb")) {
 			logMessage("User requested library rebuild");
@@ -4053,11 +4094,11 @@ function getId($user) {
 	return $id;
 }
 
-function querydb($query_root, $query_type) {
+function querydb($query_root, $query_type, $query_limit, $query_offset) {
 	try	{
 		switch ($query_type) {
 		case "browse":
-		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE parent = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE";
+		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE parent = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE LIMIT $query_offset,$query_limit";
 		break;
 		case "queue":
 		$query = "";
