@@ -1572,7 +1572,7 @@ class Musicco {
 			function addPagingNode(offset, limit) {
 				$.ui.fancytree.getTree("#library").getRootNode().addPagingNode({
 					title: "<?php print Musicco::getString('load_more'); ?>",
-					data: {offset: offset, limit: limit}
+					data: {offset: offset, limit: limit, path: ''}
 				});
 			}
 
@@ -1622,7 +1622,7 @@ class Musicco {
 				});
 
 				$("#library").contextmenu({
-					delegate: "span.fancytree-title",
+					delegate: "span.treenode > span.fancytree-title",
 					autoFocus: true,
 					menu: menuOptions,
 					beforeOpen: function(event, ui) {
@@ -3714,8 +3714,8 @@ if(!AuthManager::isAccessAllowed()) {
 	} elseif (isset($_POST['querydb'])) {
 			$query_root = $_POST['root'];
 			$query_type = $_POST['type'];
-			$query_limit = (isset($_POST['limit']) ? $_POST['limit'] : 5000);
-			$query_offset = (isset($_POST['offset']) ? $_POST['offset'] : 0);
+			$query_limit = (isset($_POST['limit']) ? $_POST['limit'] : null);
+			$query_offset = (isset($_POST['offset']) ? $_POST['offset'] : null);
 			logMessage("Query: ".$query_type);
 			querydb($query_root, $query_type, $query_limit, $query_offset);
 			exit;
@@ -4098,7 +4098,10 @@ function querydb($query_root, $query_type, $query_limit, $query_offset) {
 	try	{
 		switch ($query_type) {
 		case "browse":
-		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE parent = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE LIMIT $query_offset,$query_limit";
+		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE parent = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE";
+		if ($query_limit != null) {
+			$query .= " LIMIT $query_offset,$query_limit";
+		}
 		break;
 		case "queue":
 		$query = "";
@@ -4541,6 +4544,7 @@ function builddb() {
 				$aboutString.="<li>Allow re-running the setup wizard</li>";
 				$aboutString.="<li>Fixed transparency effects</li>";
 				$aboutString.="<li>Improved layout for widescreen devices</li>";
+				$aboutString.="<li>Improved browse panel performance</li>";
 				$aboutString.="<li>Minor bugfixes</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
