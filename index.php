@@ -2744,6 +2744,16 @@ class Musicco {
 				 // EVENTS //
 				////////////
 
+				$("#panelContainer").on("scroll", function() {
+					if ($("#browserPanel").is(":visible")) {
+						var scrollHeight = $(document).height();
+						var scrollPos = $("#browserPanel").height() + $("#browserPanel").scrollTop();
+						if(((scrollHeight - 300) >= scrollPos) / scrollHeight == 0){
+							$(".fancytree-statusnode-paging").click();
+							}
+						}
+				});
+
 				$(".theme-selector").on("click", function(e) {
 					$("#background").val($(this).data("background")).trigger("change");
 					$("#text").val($(this).data("text")).trigger("change");
