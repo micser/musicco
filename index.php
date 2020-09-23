@@ -755,6 +755,7 @@ class Musicco {
 			var windowWidth = '';
 			var timeUpdates = true;
 			var isInit = false;
+			var library = [];
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
@@ -1498,7 +1499,7 @@ class Musicco {
 					var libraryThreshold = <?php print $this->getConfig('libraryThreshold'); ?>;
 					var libraryOffset = libraryThreshold;
 					$.post('?', {querydb: '', root: decodeURI(musicRoot), type: 'browse'}, function(response) {
-						var library = JSON.parse(response);
+						library = JSON.parse(response);
 						var isLargeLib = (library.length > libraryThreshold) ? true : false ;
 
 						$("#library").fancytree({
@@ -1545,18 +1546,14 @@ class Musicco {
 								}
 							},
 							clickPaging: function(event, data) {
-								$.post('?', {querydb: '', root: decodeURI(musicRoot), type: 'browse', limit: libraryThreshold, offset: libraryOffset}, function(response) {
-									var nodes = JSON.parse(response);
-									data.node.replaceWith(nodes).done(function(){
-										console.log("nodes: " + nodes.length);
-										console.log("threshold: " + libraryThreshold);
-										if (nodes.length < libraryThreshold) {
-											data.node.remove();
-										} else {
-											libraryOffset = libraryOffset + libraryThreshold;
-											addPagingNode(libraryOffset, libraryThreshold);
-										}
-									});
+								var nodes = library.slice(libraryOffset, libraryOffset + libraryThreshold);
+								data.node.replaceWith(nodes).done(function(){
+									if (nodes.length < libraryThreshold) {
+										//data.node.remove(); // unnecessary, add a control to clear instead?
+									} else {
+										libraryOffset = libraryOffset + libraryThreshold;
+										addPagingNode(libraryOffset, libraryThreshold);
+									}
 								});
 							}
 						});
@@ -3724,10 +3721,8 @@ if(!AuthManager::isAccessAllowed()) {
 	} elseif (isset($_POST['querydb'])) {
 			$query_root = $_POST['root'];
 			$query_type = $_POST['type'];
-			$query_limit = (isset($_POST['limit']) ? $_POST['limit'] : null);
-			$query_offset = (isset($_POST['offset']) ? $_POST['offset'] : null);
 			logMessage("Query: ".$query_type);
-			querydb($query_root, $query_type, $query_limit, $query_offset);
+			querydb($query_root, $query_type);
 			exit;
 	} elseif (isset($_GET['builddb']) || ((defined('STDIN')) && $argv[1]=="builddb")) {
 			logMessage("User requested library rebuild");
@@ -4104,14 +4099,11 @@ function getId($user) {
 	return $id;
 }
 
-function querydb($query_root, $query_type, $query_limit, $query_offset) {
+function querydb($query_root, $query_type) {
 	try	{
 		switch ($query_type) {
 		case "browse":
 		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE parent = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE";
-		if ($query_limit != null) {
-			$query .= " LIMIT $query_offset,$query_limit";
-		}
 		break;
 		case "queue":
 		$query = "";
