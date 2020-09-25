@@ -1845,7 +1845,7 @@ class Musicco {
 							$("#reset_db").html(tempHTML);
 							var library = $.ui.fancytree.getTree("#library");
 							if (library.length > 0) {
-								library.reload();
+								initLibraryTree();
 							}
 							updateFavourites();
 						}
@@ -3163,7 +3163,7 @@ class Musicco {
 						success: function(response) {
 							if (parseInt(response) > -1) {
 								tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response;
-								$.ui.fancytree.getTree("#library").reload();
+								initLibraryTree();
 								updateFavourites();
 							} else {
 								checkLibraryRefresh(oldHTML);
