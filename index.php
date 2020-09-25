@@ -756,6 +756,8 @@ class Musicco {
 			var timeUpdates = true;
 			var isInit = false;
 			var library = [];
+			var libraryInit = [];
+			var libraryVisible = [];
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
@@ -1166,10 +1168,11 @@ class Musicco {
 
 			function filterTree() {
 				//var start = Date.now();
+				var tree = $.ui.fancytree.getTree("#library");
+				tree.reload(library);
 				var filterText = normalise($("#filterText").val().toLowerCase());
 				var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
 				var isMatching = new RegExp(filterText, "i");
-				var tree = $.ui.fancytree.getTree("#library");
 				if ($("#includeOldAlbums").is(':checked')) {
 					tree.filterBranches(function(node) {
 						return isMatching.test(normalise(node.data.path));
@@ -1557,13 +1560,19 @@ class Musicco {
 								});
 							}
 						});
-
 						if (isLargeLib) {
 							addPagingNode(libraryOffset, libraryThreshold);
 						}
-
-
+						libraryInit = getTreeContent();
 					});
+			}
+
+			function getTreeContent() {
+				return $.ui.fancytree.getTree("#library").getRootNode().children;
+			}
+
+			function trimLibrary() {
+				$.ui.fancytree.getTree("#library").reload(libraryInit);
 			}
 
 			function addPagingNode(offset, limit) {
@@ -1571,6 +1580,7 @@ class Musicco {
 					title: "<?php print Musicco::getString('load_more'); ?>",
 					data: {offset: offset, limit: limit, path: ''}
 				});
+				libraryVisible = getTreeContent();
 			}
 
 			function initContextMenus() {
@@ -2751,6 +2761,13 @@ class Musicco {
 						}
 				});
 
+				$(".panelToggle, #ham").on("click", function() {
+					if ($("#browserPanel").is(":hidden")) {
+						$("#filterButton").trigger("click");
+						trimLibrary();
+					}
+				});
+
 				$(".theme-selector").on("click", function(e) {
 					$("#background").val($(this).data("background")).trigger("change");
 					$("#text").val($(this).data("text")).trigger("change");
@@ -2940,6 +2957,7 @@ class Musicco {
 				$("#filterButton").on("click", function(event) {
 					event.preventDefault();
 					$.ui.fancytree.getTree("#library").clearFilter();
+					$.ui.fancytree.getTree("#library").reload(libraryVisible);
 					$("#filterText").val('');
 					resetCheckbox();
 				});
