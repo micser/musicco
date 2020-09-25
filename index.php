@@ -1629,7 +1629,7 @@ class Musicco {
 				});
 
 				$("#library").contextmenu({
-					delegate: "span.treenode > span.fancytree-title",
+					delegate: ".fancytree-node:not(.fancytree-statusnode-paging) > span.fancytree-title",
 					autoFocus: true,
 					menu: menuOptions,
 					beforeOpen: function(event, ui) {
@@ -3134,7 +3134,7 @@ class Musicco {
 									if (scannedNode !=null) {
 										scannedNode.load(true);
 									} else {
-										$.ui.fancytree.getTree("#library").getRootNode().addChildren({
+										library.push({
 											title: folderName,
 											tooltip: folderName,
 											folder: true,
