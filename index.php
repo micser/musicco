@@ -2162,10 +2162,10 @@ class Musicco {
 				function scrollPlaylist() {
 					if (hasPlaylist() && $("#playlist").is(":visible")) {
 						var target = $('#playlistPanel');
-						if (isPortrait()) {
+						if (isPortrait() || isMedium()) {
 							target = $('#panelContainer');
 						}
-						var y = $(".currentTrack").offset().top - $("#playlist").offset().top - 200 + $(".currentTrack").scrollTop();
+						var y = $(".currentTrack").offset().top - $("#playlist").offset().top - 20 + $(".currentTrack").scrollTop();
 						target.animate({scrollTop:y});
 					}
 				}
