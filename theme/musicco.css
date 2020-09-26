@@ -546,6 +546,7 @@
 		padding-top: 1em;
 		z-index: 3;
 		max-width: 35%;
+		margin-right: .5em;
 	}
 
 	.big {
@@ -1293,7 +1294,11 @@
 	}
 	
 	#header {
-		height: 1em;
+		height: 1.5em;
+	}
+
+	#loadingInfo {
+		font-size: var(--text-tiny);
 	}
 
 }
