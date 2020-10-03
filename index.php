@@ -310,6 +310,7 @@ $_TRANSLATIONS["en"] = array(
 	"password" => "Password",
 	"pause" => "Pause", 
 	"play" => "Play", 
+	"playlist_modified" => "Your playlist was modified on another device, click here to refresh it.", 
 	"previoustrack" => "Previous",
 	"promptCoverURL" => "Album art URL", 
 	"promptPlaylistName" => "New Playlist Name", 
@@ -397,6 +398,7 @@ $_TRANSLATIONS["fr"] = array(
 	"password" => "Mot de passe",
 	"pause" => "Pause", 
 	"play" => "Lecture", 
+	"playlist_modified" => "La playlist a été modifiée sur un autre appareil, cliquez ici pour recharger.", 
 	"previoustrack" => "Précédent",
 	"promptCoverURL" => "Adresse de la couverture", 
 	"promptPlaylistName" => "Nom de la playlist", 
@@ -751,6 +753,7 @@ class Musicco {
 			 // VARIABLES //
 			///////////////
 
+			var clientId = "<?php print bin2hex(random_bytes(5)); ?>";
 			var viewerType = '';
 			var windowWidth = '';
 			var timeUpdates = true;
@@ -1784,7 +1787,7 @@ class Musicco {
 				}).get();
 				var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 				var time = Math.floor(player.currentTime);
-				$.post('?', {savePlaylist: '', u: user, n: name, p: JSON.stringify(playlist), c: current, t: time}, function (response) {
+				$.post('?', {savePlaylist: '', u: user, i: clientId, n: name, p: JSON.stringify(playlist), c: current, t: time}, function (response) {
 				});
 			}
 
@@ -1901,7 +1904,7 @@ class Musicco {
 				}
 				var user = "<?php echo AuthManager::getUserName(); ?>";
 				if (user!="") {
-					$.post('?', {loadPlaylist: '', u: user, n: name}, function(response) {
+					$.post('?', {loadPlaylist: '', u: user, i: clientId, n: name}, function(response) {
 						var data = JSON.parse(response.playlist)[0];
 						var needsBuilding = (data !=null)? data.build: false;
 						if (needsBuilding) {
@@ -2590,6 +2593,34 @@ class Musicco {
 				 // ACTIONS //
 				/////////////
 
+			var status = null;
+			if (!!window.EventSource) {
+				status = new EventSource("?checkStatus&u=" + "<?php echo AuthManager::getUserName(); ?>");
+			}
+
+			if (status != null) {
+				status.addEventListener('message', function(e) {
+					//console.log("STATUS message:");
+					//console.log(e.data);
+					var data = JSON.parse(e.data);
+					if ((isInit) && (data.client != clientId)) {
+						//console.log("should refresh!!");
+						$("#refreshPanel").dialog("open");
+					}
+				}, false);
+
+				status.addEventListener('open', function(e) {
+					//console.log("STATUS connection open !");
+				}, false);
+
+				status.addEventListener('error', function(e) {
+					//console.log("STATUS error");
+					if (e.readyState == EventSource.CLOSED) {
+						console.log("STATUS connection closed !");
+					}
+				}, false);
+			}
+
 				var watcherTarget = document.getElementById("playlist");
 				if (watcherTarget) {
 					var watcherConfig = { attributes: false, childList: true, characterData: false, subtree: true };
@@ -2743,6 +2774,14 @@ class Musicco {
 					autoOpen: false,
 					width: isPortrait() ? "100%": "40%",
 					height: $(window).height(),
+					show: { effect: "fade", duration: 400 },
+					hide: { effect: "fold", duration: 200 }
+				});
+				$( "#refreshPanel" ).dialog({
+					modal: true,
+					autoOpen: false,
+					width: "unset",
+					height: $(window).height() / 2,
 					show: { effect: "fade", duration: 400 },
 					hide: { effect: "fold", duration: 200 }
 				});
@@ -2920,7 +2959,7 @@ class Musicco {
 					savePlaylist();
 				});
 
-				$("#reload").on("click", function() {
+				$(".reload").on("click", function() {
 					$.ajax({
 						url: window.location.href,
 						headers: {
@@ -3393,6 +3432,7 @@ if(!AuthManager::isAccessAllowed()) {
 	<div id="musiccoplayer">
 		<!-- START: Modal Dialogues -->
 		<div id="helpPanel" class="modal"><?php print getHelp(); ?></div>
+		<div id="refreshPanel" class="modal"><a class="reload"><?php print $this->getString("playlist_modified"); ?></a></div>
 		<div id="aboutPanel" class="modal"><?php print getAbout(); ?></div>
 		<div id="imageViewerPanel" class="modal"><img src=""/><div></div></div>
 		<div id="sharing-banner" class="modal">
@@ -3510,7 +3550,7 @@ if(!AuthManager::isAccessAllowed()) {
 					}
 					?>
 					<div class="settings">
-						<i class="space-after fas fa-fw fa-bath"></i><span id="reload"><a><?php print $this->getString("reload"); ?></a></span>
+						<i class="space-after fas fa-fw fa-bath"></i><span id="reload" class="reload"><a><?php print $this->getString("reload"); ?></a></span>
 					</div>
 					<div class="settings">
 						<i class="space-after fas fa-fw fa-question"></i><span id="help"><a><?php print $this->getString("help"); ?></a></span>
@@ -3635,7 +3675,7 @@ if(!AuthManager::isAccessAllowed()) {
 					exit;
 				}
 			}
-			return print_r(loadPlaylist($_POST['u'], $_POST['n']));
+			return print_r(loadPlaylist($_POST['u'], $_POST['i'], $_POST['n']));
 			exit;
 	} elseif(isset($_POST['renamePlaylist'])) {
 			renamePlaylist($_POST['u'], $_POST['o'], $_POST['n']);
@@ -3644,14 +3684,14 @@ if(!AuthManager::isAccessAllowed()) {
 			deletePlaylist($_POST['u'], $_POST['n']);
 			exit;
 	} elseif (isset($_POST['savePlaylist'])) {
-			savePlaylist($_POST['u'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t']);
+			savePlaylist($_POST['u'], $_POST['i'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t']);
 			exit;
 	} elseif (isset($_POST['saveGuestPlaylist'])) {
 			$user = $_POST['u'];
 			$path = str_replace("\"", "\\\"", $_POST['p']);
 			$data = "[{\"build\": true , \"path\": \"".$path."\"}]";
 			createUser($user, true);
-			savePlaylist($user, "guestPlay", $data, "0", "0", "true", "false");
+			savePlaylist($user, "guestPlay", "guestPlay", $data, "0", "0", "true", "false");
 			logMessage("Saved guest playlist $path for $user");
 			exit;
 	} elseif (isset($_POST['getPlaylists'])) {
@@ -3759,6 +3799,9 @@ if(!AuthManager::isAccessAllowed()) {
 			$folder = $_POST['folder'];
 			quickscan($folder);
 			exit;
+	} elseif (isset($_GET['checkStatus'])) {
+			checkStatus($_GET['u']);
+			exit;
 	} else {
 		$musicco->run();
 }
@@ -3772,6 +3815,36 @@ function file_get_contents_utf8($fn) {
 // And here are the database functions...
 
 $favourites_list = "";
+
+function checkStatus($user) {
+	debugMessage(__FUNCTION__);
+	header('Content-Type: text/event-stream');
+	header('Cache-Control: no-cache');
+	$status = [];
+	$userId = getId($user);
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$status_query = $db->prepare("SELECT client, save_time FROM users WHERE id=$userId;");
+		$status_query->execute();
+		$result = $status_query->fetchAll();
+		$status_query = NULL;
+		$db = NULL;
+		foreach($result as $row) {
+			$status = array(
+										"client" => $row['client'],
+										"save_time" => $row['save_time']
+									);
+		}
+	}
+	logMessage("Loaded status for $user");
+	debugMessage("Loaded status: ".$row['client'].$row['save_time']);
+	echo "id: ".time().PHP_EOL;
+	echo "data: ".json_encode($status);
+	echo PHP_EOL;
+	echo PHP_EOL;
+  flush();
+  ob_flush();
+}
 
 function addFavourite($user, $path) {
 	debugMessage(__FUNCTION__);
@@ -3837,7 +3910,7 @@ function deleteGuestPlaylists() {
 function createDefaultPlaylist($user) {
 	debugMessage(__FUNCTION__);
 	logMessage("Creating a new playlist for ".$user);
-	savePlaylist($user, Musicco::getConfig('defaultPlaylist'), "[]", 0, 0);
+	savePlaylist($user, "", Musicco::getConfig('defaultPlaylist'), "[]", 0, 0);
 }
 
 function getPlaylists($user) {
@@ -3913,14 +3986,14 @@ function buildUL($favourites, $prefix) {
   $favourites_list .= "</ul>\n";
 }
 
-function setCurrentPlaylistId($userId, $playlistId) {
+function setCurrentPlaylistId($userId, $clientId, $playlistId) {
 		debugMessage(__FUNCTION__);
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$playlist_update_query = $db->prepare("UPDATE users set current_playlist=$playlistId WHERE id=$userId;");
+		$playlist_update_query = $db->prepare("UPDATE users set current_playlist=$playlistId, save_time=".time().", client=\"$clientId\" WHERE id=$userId;");
 		$playlist_update_query->execute();
 		$playlist_update_query = NULL;
 		$db = NULL;
-		logMessage("Set $playlistId as current playlist for $userId");
+		logMessage("Set $playlistId as current playlist for $userId on client $clientId");
 }
 
 function getCurrentPlaylistId($userId) {
@@ -3944,7 +4017,7 @@ function getCurrentPlaylistName($userId) {
 		return $name;
 }
 
-function savePlaylist($user, $name, $playlist, $current, $time) {
+function savePlaylist($user, $clientId, $name, $playlist, $current, $time) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
@@ -3957,7 +4030,7 @@ function savePlaylist($user, $name, $playlist, $current, $time) {
 		$db = NULL;
 		logMessage("Saved playlist $name for $user");
 		debugMessage("Saved playlist: ".$data);
-		setCurrentPlaylistId($userId, $playlistId);
+		setCurrentPlaylistId($userId, $clientId, $playlistId);
 	}
 }
 
@@ -4017,7 +4090,7 @@ function loadSettings($user) {
 	return json_encode($settings);
 }
 
-function loadPlaylist($user, $name) {
+function loadPlaylist($user, $clientId, $name) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	$playlist = "";
@@ -4038,7 +4111,7 @@ function loadPlaylist($user, $name) {
 		$db = NULL;
 		foreach($result as $row) {
 			$playlist = preg_replace("/\\\'/", '"', $row['data']);
-			setCurrentPlaylistId($userId, $row['id']);
+			setCurrentPlaylistId($userId, $clientId, $row['id']);
 		}
 	}
 	debugMessage("Loaded playlist: ".$playlist);
@@ -4088,7 +4161,7 @@ function createUser($user, $force) {
 	}
 	if ($isValidUser || $force) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text) VALUES (\"" . $user . "\", 0, 100, \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
+		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text) VALUES (\"" . $user . "\", 0, 0, \"\", 100, \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
 		$create_user_query->execute();
 		$id = $db->lastInsertId();
 		$create_user_query = NULL;
@@ -4240,7 +4313,7 @@ function cleanDB($db) {
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
-	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
+	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
 	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, data TEXT, unique(userId, name));");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
