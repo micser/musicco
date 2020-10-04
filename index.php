@@ -3226,6 +3226,7 @@ class Musicco {
 						success: function(response) {
 							if (parseInt(response) > -1) {
 								tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response;
+								$("#library").fancytree("destroy");
 								initLibraryTree();
 								updateFavourites();
 							} else {
