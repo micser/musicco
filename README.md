@@ -53,6 +53,8 @@ Check out https://www.musicco.app for more information or try the demo at https:
   Minor UI refresh around header
   Fixed transparency effects
   Improved layout for widescreen devices
+  Improved browse panel performance
+  Notify clients if they are out of date
   Minor bugfixes
 
 ## v2.0.3

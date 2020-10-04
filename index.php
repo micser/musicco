@@ -18,8 +18,8 @@ $_CONFIG['appVersion'] = "2.1.0";
 
 // The database version compatible with this version. This is for information purposes only, since
 // no backwards compatibility really exists
-// Default: $_CONFIG['dbVersion'] = "2";
-$_CONFIG['dbVersion'] = "2";
+// Default: $_CONFIG['dbVersion'] = "3";
+$_CONFIG['dbVersion'] = "3";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
@@ -310,7 +310,7 @@ $_TRANSLATIONS["en"] = array(
 	"password" => "Password",
 	"pause" => "Pause", 
 	"play" => "Play", 
-	"playlist_modified" => "Your playlist was modified on another device, click here to refresh it.", 
+	"playlist_modified" => "Your playlist was modified on another device, click here to reload it.", 
 	"previoustrack" => "Previous",
 	"promptCoverURL" => "Album art URL", 
 	"promptPlaylistName" => "New Playlist Name", 
@@ -398,7 +398,7 @@ $_TRANSLATIONS["fr"] = array(
 	"password" => "Mot de passe",
 	"pause" => "Pause", 
 	"play" => "Lecture", 
-	"playlist_modified" => "La playlist a été modifiée sur un autre appareil, cliquez ici pour recharger.", 
+	"playlist_modified" => "La playlist a été modifiée sur un autre appareil, cliquez ici pour la recharger.", 
 	"previoustrack" => "Précédent",
 	"promptCoverURL" => "Adresse de la couverture", 
 	"promptPlaylistName" => "Nom de la playlist", 
@@ -906,6 +906,10 @@ class Musicco {
 				function isDefaultPoster() {
 					return (nowPlaying["cover"] == null);
 				
+				}
+
+				function resetPlaylists() {
+					getPlaylists(loadPlaylist);
 				}
 
 				function setTheme(coverUrl) {
@@ -1810,15 +1814,19 @@ class Musicco {
 				});
 			}
 
-			function getPlaylists() {
+			function getPlaylists(callback) {
 				var user = "<?php echo AuthManager::getUserName(); ?>";
 				if (user!="") {
 					$.post('?', {getPlaylists: '', u: user}, function(response) {
+						$("#playlist_select").children().remove().end();
 						var playlists = JSON.parse(response);
 						$.each(playlists, function (i, name) {
 							$("#playlist_select").append('<option value="' + i + '">' + name  + '</option>');
 						});
 					});
+					if (callback != null) {
+						callback();
+					}
 				}
 			}
 
@@ -2594,32 +2602,7 @@ class Musicco {
 				/////////////
 
 			var status = null;
-			if (!!window.EventSource) {
-				status = new EventSource("?checkStatus&u=" + "<?php echo AuthManager::getUserName(); ?>");
-			}
-
-			if (status != null) {
-				status.addEventListener('message', function(e) {
-					//console.log("STATUS message:");
-					//console.log(e.data);
-					var data = JSON.parse(e.data);
-					if ((isInit) && (data.client != clientId)) {
-						//console.log("should refresh!!");
-						$("#refreshPanel").dialog("open");
-					}
-				}, false);
-
-				status.addEventListener('open', function(e) {
-					//console.log("STATUS connection open !");
-				}, false);
-
-				status.addEventListener('error', function(e) {
-					//console.log("STATUS error");
-					if (e.readyState == EventSource.CLOSED) {
-						console.log("STATUS connection closed !");
-					}
-				}, false);
-			}
+			startPolling();
 
 				var watcherTarget = document.getElementById("playlist");
 				if (watcherTarget) {
@@ -2748,6 +2731,35 @@ class Musicco {
 				 // FUNCTIONS //
 				///////////////
 
+				function startPolling(init) {
+					var check = isInit;
+					if (init != null) {
+						check = false;
+					}
+					if (!!window.EventSource) {
+						status = new EventSource("?checkStatus&u=" + "<?php echo AuthManager::getUserName(); ?>");
+					}
+
+					if (status != null) {
+						status.addEventListener('message', function(e) {
+							var data = JSON.parse(e.data);
+							if (check && (data.client != clientId)) {
+								stopPolling();
+								$("#refreshPanel").dialog("open");
+							}
+							check = true;
+						}, false);
+
+						status.addEventListener('open', function(e) { }, false);
+
+						status.addEventListener('error', function(e) { }, false);
+					}
+				}
+
+				function stopPolling() {
+					status.close();
+				}
+
 				function adaptUI(init) {
 				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				//console.log(newViewerType);
@@ -2780,6 +2792,7 @@ class Musicco {
 				$( "#refreshPanel" ).dialog({
 					modal: true,
 					autoOpen: false,
+					dialogClass: "polling",
 					width: "unset",
 					height: $(window).height() / 2,
 					show: { effect: "fade", duration: 400 },
@@ -2800,6 +2813,11 @@ class Musicco {
 							}
 						}
 				});
+
+				$(".polling .ui-dialog-titlebar-close").on("click", function() {
+					stopPolling();
+				});
+
 
 				$(".panelToggle, #ham").on("click", function() {
 					if ($("#browserPanel").is(":hidden")) {
@@ -2959,7 +2977,13 @@ class Musicco {
 					savePlaylist();
 				});
 
-				$(".reload").on("click", function() {
+				$(".obsoleteWarning").on("click", function() {
+					resetPlaylists();
+					$("#refreshPanel").dialog("close");
+					startPolling(true);
+				});
+
+				$("#reload").on("click", function() {
 					$.ajax({
 						url: window.location.href,
 						headers: {
@@ -3314,8 +3338,7 @@ class Musicco {
 						$("#playlist_select").val($("#playlist_select option:first").val());
 						loadPlaylist($("#playlist_select").find(":selected").text());
 					} else {
-						//TODO: Do this as a callback rather than after a set time
-						setTimeout(function() { getPlaylists(); loadPlaylist(); }, 500);
+						resetPlaylists();
 					}
 				});
 
@@ -3432,7 +3455,7 @@ if(!AuthManager::isAccessAllowed()) {
 	<div id="musiccoplayer">
 		<!-- START: Modal Dialogues -->
 		<div id="helpPanel" class="modal"><?php print getHelp(); ?></div>
-		<div id="refreshPanel" class="modal"><a class="reload"><?php print $this->getString("playlist_modified"); ?></a></div>
+		<div id="refreshPanel" class="modal"><a class="obsoleteWarning"><?php print $this->getString("playlist_modified"); ?></a></div>
 		<div id="aboutPanel" class="modal"><?php print getAbout(); ?></div>
 		<div id="imageViewerPanel" class="modal"><img src=""/><div></div></div>
 		<div id="sharing-banner" class="modal">
@@ -3550,7 +3573,7 @@ if(!AuthManager::isAccessAllowed()) {
 					}
 					?>
 					<div class="settings">
-						<i class="space-after fas fa-fw fa-bath"></i><span id="reload" class="reload"><a><?php print $this->getString("reload"); ?></a></span>
+						<i class="space-after fas fa-fw fa-bath"></i><span id="reload"><a><?php print $this->getString("reload"); ?></a></span>
 					</div>
 					<div class="settings">
 						<i class="space-after fas fa-fw fa-question"></i><span id="help"><a><?php print $this->getString("help"); ?></a></span>
@@ -4639,6 +4662,7 @@ function builddb() {
 				$aboutString.="<li>Fixed transparency effects</li>";
 				$aboutString.="<li>Improved layout for widescreen devices</li>";
 				$aboutString.="<li>Improved browse panel performance</li>";
+				$aboutString.="<li>Notify clients if they are out of date</li>";
 				$aboutString.="<li>Minor bugfixes</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
