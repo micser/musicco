@@ -1636,7 +1636,7 @@ class Musicco {
 				});
 
 				$("#library").contextmenu({
-					delegate: ".fancytree-node:not(.fancytree-statusnode-paging) > span.fancytree-title",
+					delegate: ".fancytree-node:not('.fancytree-statusnode-paging, .fancytree-statusnode-nodata') > span.fancytree-title",
 					autoFocus: true,
 					menu: menuOptions,
 					beforeOpen: function(event, ui) {
