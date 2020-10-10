@@ -42,6 +42,15 @@
 		 100% { opacity: 1; }
 	}
 
+	google-cast-launcher {
+		width: 2em;
+	}
+
+/* TODO: not working at the moment! */
+	google-cast-launcher:hover svg g {
+		fill: var(--text-highlight);
+	}
+
 	#big-cover {
 		max-width: 70vw;
 		padding-top: 100%;
