@@ -765,6 +765,13 @@ class Musicco {
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
+			var initializeCastApi = function() {
+				cast.framework.CastContext.getInstance().setOptions({
+					receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+				});
+			};
+
 			var musiccoService;
 			if ('serviceWorker' in navigator) {
 				window.addEventListener('load', function() {
@@ -793,19 +800,6 @@ class Musicco {
 				};
 			}
 
-			window['__onGCastApiAvailable'] = function(isAvailable) {
-				if (isAvailable) {
-					initializeCastApi();
-				}
-			};
-
-			initializeCastApi = function() {
-				cast.framework.CastContext.getInstance().setOptions({
-					receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-				});
-			};
-
 			var draggedElement;
 			var nowPlaying = {};
 			var playerConfig = {loop: false, shuffled: false};
@@ -814,6 +808,7 @@ class Musicco {
 			var currentAlbum = null;
 			var previousAlbum = null;
 			var nextAlbum = null;
+
 			var player = new Audio();
 			player.autoplay = false;
 
@@ -852,6 +847,12 @@ class Musicco {
 			  ////////////
 			 // Events //
 			///////////
+
+			window['__onGCastApiAvailable'] = function(isAvailable) {
+				if (isAvailable) {
+					setTimeout(function(){ initializeCastApi(); }, 500);
+				}
+			};
 
 			player.onplay = function() {
 
