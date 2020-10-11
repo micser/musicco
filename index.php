@@ -750,6 +750,7 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
 		<script src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
 		<script type="text/javascript">
+
 				///////////////
 			 // VARIABLES //
 			///////////////
@@ -762,14 +763,33 @@ class Musicco {
 			var library = [];
 			var libraryInit = [];
 			var libraryVisible = [];
+			var isCasting = false;
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
 			var initializeCastApi = function() {
-				cast.framework.CastContext.getInstance().setOptions({
+				var castContext = cast.framework.CastContext.getInstance();
+				castContext.setOptions({
 					receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
 					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
 				});
+				castContext.addEventListener(
+					cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+					function(event) {
+						switch (event.sessionState) {
+							case cast.framework.SessionState.SESSION_STARTED:
+								console.log('CastContext: CastSession resumed');
+								resumeCasting();
+							case cast.framework.SessionState.SESSION_RESUMED:
+								console.log('CastContext: CastSession connected');
+								startCasting();
+								break;
+							case cast.framework.SessionState.SESSION_ENDED:
+								console.log('CastContext: CastSession disconnected');
+								stopCasting();
+								break;
+						}
+					})
 			};
 
 			var musiccoService;
@@ -811,6 +831,8 @@ class Musicco {
 
 			var player = new Audio();
 			player.autoplay = false;
+
+			var castSession = null;
 
 			var albumProps = ["cover", "year", "artist", "album", "parent"];
 
@@ -855,38 +877,37 @@ class Musicco {
 			};
 
 			player.onplay = function() {
+				if (isCasting) {
+					var mediaInfo = new chrome.cast.media.MediaInfo(player.src, "audio/mpeg");
+					mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
+					mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
+					mediaInfo.metadata.title = nowPlaying["songtitle"];
+					mediaInfo.metadata.artist = nowPlaying["artist"];
+					mediaInfo.metadata.albumName = nowPlaying["album"];
+					mediaInfo.metadata.releaseDate = nowPlaying["year"];
+					mediaInfo.metadata.images = [
+						{'url': getBaseURL() + nowPlaying["cover"]}
+					];
 
-				var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
-				var mediaInfo = new chrome.cast.media.MediaInfo(player.src, "audio/mpeg");
-				mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
-				mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
-				mediaInfo.metadata.title = nowPlaying["songtitle"];
-				mediaInfo.metadata.artist = nowPlaying["artist"];
-				mediaInfo.metadata.albumName = nowPlaying["album"];
-				mediaInfo.metadata.releaseDate = nowPlaying["year"];
-				mediaInfo.metadata.images = [
-					{'url': getBaseURL() + nowPlaying["cover"]}
-				];
-
-				var request = new chrome.cast.media.LoadRequest(mediaInfo);
-				request.currentTime = player.currentTime;
-				castSession.loadMedia(request).then(
-					function() { console.log('Load succeed'); },
-					function(errorCode) { console.log('Error code: ' + errorCode); });
-
-				if (player.volume != ($("#big-volume-bar").slider("option", "value") / 100)) {
-					$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
+					var request = new chrome.cast.media.LoadRequest(mediaInfo);
+					request.currentTime = player.currentTime;
+					castSession.loadMedia(request).then(
+						function() { console.log('Load succeed'); },
+						function(errorCode) { console.log('Error code: ' + errorCode); });
 				}
+				// TODO reenable this volume discrepancy fix some time...
+				//if (player.volume != ($("#big-volume-bar").slider("option", "value") / 100)) {
+				//	$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
+				//}
 				updatePlayerUI();
 			}
 
 			player.onpause =  function() {
-
-				var castPlayer = new cast.framework.RemotePlayer();
-				var castPlayerController = new cast.framework.RemotePlayerController(castPlayer);
-
-
-				castPlayerController.playOrPause();
+				if (isCasting) {
+					var remotePlayer = new cast.framework.RemotePlayer();
+					var remotePlayerController = new cast.framework.RemotePlayerController(remotePlayer);
+					remotePlayerController.playOrPause();
+				}
 				$('.big-jp-play').show();
 				$('.big-jp-pause').hide();
 				savePlaylist();
@@ -919,6 +940,34 @@ class Musicco {
 			////////////////
 			// Functions //
 			//////////////
+
+				function startCasting() {
+					isCasting = true;
+					setVolume(0);
+					castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+				}
+
+				function resumeCasting() {
+					startCasting();
+					// get track progress! and update local player status. 
+				}
+
+				function stopCasting() {
+					isCasting = false;
+					setVolume(1);
+					castSession.endSession(true);
+					castSession = null;
+				}
+
+				function setCurrentTime(time) {
+					if (isCasting) {
+						var remotePlayer = new cast.framework.RemotePlayer();
+						var remotePlayerController = new cast.framework.RemotePlayerController(remotePlayer);
+						remotePlayer.currentTime = time;
+						remotePlayerController.seek();
+					}
+						player.currentTime = time;
+				}
 
 				function blurPlayer() {
 					if (isPortrait()) {
@@ -1027,14 +1076,6 @@ class Musicco {
 
 			function isWidescreen() {
 				return (viewerType === '"widescreen"');
-			}
-
-			function setCurrentTime(time) {
-				var castPlayer = new cast.framework.RemotePlayer();
-				var castPlayerController = new cast.framework.RemotePlayerController(castPlayer);
-				castPlayer.currentTime = time;
-				castPlayerController.seek();
-				player.currentTime = time;
 			}
 
 			function volumeUp() {
