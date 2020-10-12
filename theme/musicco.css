@@ -43,12 +43,13 @@
 	}
 
 	google-cast-launcher {
-		width: 2em!important;
 		--disconnected-color: var(--text);
 		--connected-color: var(--text-highlight);
+		min-width: 2em;
+		max-width: 2em;
+		margin-top: 5px;
 	}
 
-/* TODO: not working at the moment! */
 	google-cast-launcher:hover {
 		--disconnected-color: var(--text-highlight);
 	}

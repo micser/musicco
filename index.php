@@ -3736,7 +3736,7 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="big-player-bottom">
 					<div id="playlist-controls" class="spread">
-						<google-cast-launcher></google-cast-launcher>
+						<google-cast-launcher class="toggles"></google-cast-launcher>
 						<span id="big-unmute" class="toggles selected hidden"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 						<span id="big-mute" class="toggles"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 						<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
