@@ -763,6 +763,7 @@ class Musicco {
 			var library = [];
 			var libraryInit = [];
 			var libraryVisible = [];
+			var isPlaying = false;
 			var isCasting = false;
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
@@ -778,18 +779,19 @@ class Musicco {
 					function(event) {
 						switch (event.sessionState) {
 							case cast.framework.SessionState.SESSION_STARTED:
-								console.log('CastContext: CastSession resumed');
-								resumeCasting();
-							case cast.framework.SessionState.SESSION_RESUMED:
 								console.log('CastContext: CastSession connected');
 								startCasting();
+								break;
+							case cast.framework.SessionState.SESSION_RESUMED:
+								console.log('CastContext: CastSession resumed');
+								resumeCasting();
 								break;
 							case cast.framework.SessionState.SESSION_ENDED:
 								console.log('CastContext: CastSession disconnected');
 								stopCasting();
 								break;
 						}
-					})
+					});
 			};
 
 			var musiccoService;
@@ -945,6 +947,9 @@ class Musicco {
 					isCasting = true;
 					setVolume(0);
 					castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+					if (isPlaying) {
+						player.play();
+					}
 				}
 
 				function resumeCasting() {
@@ -2888,6 +2893,10 @@ class Musicco {
 				  ////////////
 				 // EVENTS //
 				////////////
+
+				$("google-cast-launcher").on("click", function() {
+					isPlaying = !player.paused;
+				});
 
 				$("#panelContainer").on("scroll", function() {
 					if ($("#browserPanel").is(":visible")) {
