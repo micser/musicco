@@ -764,6 +764,7 @@ class Musicco {
 			var libraryInit = [];
 			var libraryVisible = [];
 			var isPlaying = false;
+			var isResuming = false;
 			var isCasting = false;
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
@@ -879,7 +880,7 @@ class Musicco {
 			};
 
 			player.onplay = function() {
-				if (isCasting) {
+				if (isCasting && !isResuming) {
 					var mediaInfo = new chrome.cast.media.MediaInfo(player.src, "audio/mpeg");
 					mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
 					mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
@@ -897,6 +898,7 @@ class Musicco {
 						function() { console.log('Load succeed'); },
 						function(errorCode) { console.log('Error code: ' + errorCode); });
 				}
+				isResuming = false;
 				// TODO reenable this volume discrepancy fix some time...
 				//if (player.volume != ($("#big-volume-bar").slider("option", "value") / 100)) {
 				//	$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
@@ -954,11 +956,17 @@ class Musicco {
 
 				function resumeCasting() {
 					startCasting();
-					// get track progress! and update local player status. 
+					isResuming = true;
+					var mediaSession = castSession.getMediaSession();
+					player.currentTime = mediaSession.currentTime; 
+					if (mediaSession.playerState == chrome.cast.media.PlayerState.PLAYING) {
+						player.play();
+					}
 				}
 
 				function stopCasting() {
 					isCasting = false;
+					isResuming = false;
 					setVolume(1);
 					castSession.endSession(true);
 					castSession = null;
