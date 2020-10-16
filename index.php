@@ -773,11 +773,18 @@ class Musicco {
 				var castContext = cast.framework.CastContext.getInstance();
 				castContext.setOptions({
 					receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED,
+					resumeSavedSession: true
 				});
+				castContext.addEventListener(
+					cast.framework.CastContextEventType.CAST_STATE_CHANGED,
+					function(event) {
+						console.log("CAST_STATE_CHANGED: " + event.castState);
+					});
 				castContext.addEventListener(
 					cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
 					function(event) {
+						console.log("SESSION_STATE_CHANGED: " + event.sessionState);
 						switch (event.sessionState) {
 							case cast.framework.SessionState.SESSION_STARTED:
 								console.log('CastContext: CastSession connected');
@@ -881,22 +888,16 @@ class Musicco {
 
 			player.onplay = function() {
 				if (isCasting && !isResuming) {
-					var mediaInfo = new chrome.cast.media.MediaInfo(player.src, "audio/mpeg");
-					mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
-					mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
-					mediaInfo.metadata.title = nowPlaying["songtitle"];
-					mediaInfo.metadata.artist = nowPlaying["artist"];
-					mediaInfo.metadata.albumName = nowPlaying["album"];
-					mediaInfo.metadata.releaseDate = nowPlaying["year"];
-					mediaInfo.metadata.images = [
-						{'url': getBaseURL() + nowPlaying["cover"]}
-					];
-
-					var request = new chrome.cast.media.LoadRequest(mediaInfo);
-					request.currentTime = player.currentTime;
-					castSession.loadMedia(request).then(
-						function() { console.log('Load succeed'); },
-						function(errorCode) { console.log('Error code: ' + errorCode); });
+					var remotePlaylist = convertPlaylist();
+					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
+					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist);
+					playlistRequest.repeatMode = (playerConfig["loop"])? chrome.cast.media.RepeatMode.ON : chrome.cast.media.RepeatMode.OFF;
+					playlistRequest.startIndex = current;
+					castSession.getSessionObj().queueLoad(playlistRequest,  () => {
+						console.log("queue loaded");
+					}, (e) => {
+						console.log("queue load error");
+					});
 				}
 				isResuming = false;
 				// TODO reenable this volume discrepancy fix some time...
@@ -944,6 +945,31 @@ class Musicco {
 			////////////////
 			// Functions //
 			//////////////
+
+
+			function convertPlaylist() {
+				var queueItems = $("#playlist").find("li[data-nature=track]").map(function() {
+					var isCurrent = $(this).hasClass("currentTrack") ? true : false;
+					var queueItem;
+					var mediaInfo = new chrome.cast.media.MediaInfo(buildMediaSrc(getBaseURL() + $(this).data("parent"), $(this).data("path")), "audio/mpeg");
+					mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
+					mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
+					mediaInfo.metadata.title = $(this).data("songtitle");
+					mediaInfo.metadata.artist = $(this).data("artist");
+					mediaInfo.metadata.albumName = $(this).data("album");
+					mediaInfo.metadata.releaseDate = $(this).data("year");
+					mediaInfo.metadata.images = [
+						{'url': getBaseURL() + $(this).data("cover")}
+					];
+					queueItem = new chrome.cast.media.QueueItem(mediaInfo);
+					queueItem.autoplay = true;
+					queueItem.preloadTime = 10;
+					queueItem.startTime = isCurrent ? player.currentTime : 0;
+					return queueItem;
+				}).get();
+				return queueItems;
+			}
+
 
 				function startCasting() {
 					isCasting = true;
@@ -1145,8 +1171,12 @@ class Musicco {
 				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
 				$(track).addClass("currentTrack");
 				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
-				player.src = encodeURI($(track).data("parent") + $(track).data("path")).replace("#", "%23");
+				player.src = buildMediaSrc($(track).data("parent"), $(track).data("path"));
 				refreshPlaylist();
+			}
+
+			function buildMediaSrc(parent, path) {
+				return encodeURI(parent + path).replace("#", "%23");
 			}
 
 			function playTrack(track) {
