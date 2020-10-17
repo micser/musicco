@@ -777,26 +777,21 @@ class Musicco {
 					resumeSavedSession: true
 				});
 				castContext.addEventListener(
-					cast.framework.CastContextEventType.CAST_STATE_CHANGED,
-					function(event) {
-						console.log("CAST_STATE_CHANGED: " + event.castState);
-					});
-				castContext.addEventListener(
 					cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
 					function(event) {
-						console.log("SESSION_STATE_CHANGED: " + event.sessionState);
-						console.log(event);
+						//console.log("SESSION_STATE_CHANGED: " + event.sessionState);
+						//console.log(event);
 						switch (event.sessionState) {
 							case cast.framework.SessionState.SESSION_STARTED:
-								console.log('CastContext: CastSession connected: ' + event.session.getSessionId());
+								//console.log('CastContext: CastSession connected: ' + event.session.getSessionId());
 								startCasting();
 								break;
 							case cast.framework.SessionState.SESSION_RESUMED:
-								console.log('CastContext: CastSession resumed: ' + event.session.getSessionId());
+								//console.log('CastContext: CastSession resumed: ' + event.session.getSessionId());
 								resumeCasting();
 								break;
 							case cast.framework.SessionState.SESSION_ENDED:
-								console.log('CastContext: CastSession disconnected');
+								//console.log('CastContext: CastSession disconnected');
 								stopCasting();
 								break;
 						}
@@ -895,10 +890,10 @@ class Musicco {
 					playlistRequest.repeatMode = ((playerConfig["loop"] == false))? chrome.cast.media.RepeatMode.OFF : chrome.cast.media.RepeatMode.ON;
 					playlistRequest.startIndex = current;
 					castSession.getSessionObj().queueLoad(playlistRequest,  () => {
-						console.log("queue loaded");
+						//console.log("queue loaded");
 					}, (e) => {
-						console.log("queue load error");
-						console.log(e);
+						//console.log("queue load error");
+						//console.log(e);
 					});
 				}
 				isResuming = false;
@@ -986,12 +981,12 @@ class Musicco {
 
 				function resumeCasting() {
 					startCasting();
-					isResuming = true;
 					var mediaSession = castSession.getMediaSession();
 					if (mediaSession != null) {
 						loadTrack(mediaSession.media.contentId);
 						player.currentTime = mediaSession.getEstimatedTime();
 						if (mediaSession.playerState == chrome.cast.media.PlayerState.PLAYING) {
+							isResuming = true;
 							player.play();
 						}
 					}
