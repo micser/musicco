@@ -988,11 +988,12 @@ class Musicco {
 					startCasting();
 					isResuming = true;
 					var mediaSession = castSession.getMediaSession();
-					// TODO: Check mediaSession = null This may happen after queue load errors...
-					loadTrack(mediaSession.media.contentId);
-					player.currentTime = mediaSession.getEstimatedTime();
-					if (mediaSession.playerState == chrome.cast.media.PlayerState.PLAYING) {
-						player.play();
+					if (mediaSession != null) {
+						loadTrack(mediaSession.media.contentId);
+						player.currentTime = mediaSession.getEstimatedTime();
+						if (mediaSession.playerState == chrome.cast.media.PlayerState.PLAYING) {
+							player.play();
+						}
 					}
 				}
 
