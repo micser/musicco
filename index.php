@@ -785,13 +785,14 @@ class Musicco {
 					cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
 					function(event) {
 						console.log("SESSION_STATE_CHANGED: " + event.sessionState);
+						console.log(event);
 						switch (event.sessionState) {
 							case cast.framework.SessionState.SESSION_STARTED:
-								console.log('CastContext: CastSession connected');
+								console.log('CastContext: CastSession connected: ' + event.session.getSessionId());
 								startCasting();
 								break;
 							case cast.framework.SessionState.SESSION_RESUMED:
-								console.log('CastContext: CastSession resumed');
+								console.log('CastContext: CastSession resumed: ' + event.session.getSessionId());
 								resumeCasting();
 								break;
 							case cast.framework.SessionState.SESSION_ENDED:
@@ -891,12 +892,13 @@ class Musicco {
 					var remotePlaylist = convertPlaylist();
 					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist);
-					playlistRequest.repeatMode = (playerConfig["loop"])? chrome.cast.media.RepeatMode.ON : chrome.cast.media.RepeatMode.OFF;
+					playlistRequest.repeatMode = ((playerConfig["loop"] == false))? chrome.cast.media.RepeatMode.OFF : chrome.cast.media.RepeatMode.ON;
 					playlistRequest.startIndex = current;
 					castSession.getSessionObj().queueLoad(playlistRequest,  () => {
 						console.log("queue loaded");
 					}, (e) => {
 						console.log("queue load error");
+						console.log(e);
 					});
 				}
 				isResuming = false;
@@ -950,8 +952,10 @@ class Musicco {
 			function convertPlaylist() {
 				var queueItems = $("#playlist").find("li[data-nature=track]").map(function() {
 					var isCurrent = $(this).hasClass("currentTrack") ? true : false;
+					var contentId = $(this).index("#playlist li[data-nature=track]");
 					var queueItem;
-					var mediaInfo = new chrome.cast.media.MediaInfo(buildMediaSrc(getBaseURL() + $(this).data("parent"), $(this).data("path")), "audio/mpeg");
+					var mediaInfo = new chrome.cast.media.MediaInfo(contentId, "audio/mpeg");
+					mediaInfo.contentUrl = buildMediaSrc(getBaseURL() + $(this).data("parent"), $(this).data("path"));
 					mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
 					mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
 					mediaInfo.metadata.title = $(this).data("songtitle");
@@ -984,7 +988,9 @@ class Musicco {
 					startCasting();
 					isResuming = true;
 					var mediaSession = castSession.getMediaSession();
-					player.currentTime = mediaSession.currentTime; 
+					// TODO: Check mediaSession = null...
+					var playlistPos = mediaSession.media.contentId;
+					player.currentTime = mediaSession.getEstimatedTime();
 					if (mediaSession.playerState == chrome.cast.media.PlayerState.PLAYING) {
 						player.play();
 					}
