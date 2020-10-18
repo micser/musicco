@@ -766,6 +766,8 @@ class Musicco {
 			var isPlaying = false;
 			var isResuming = false;
 			var isCasting = false;
+			// TODO: seems to always be null
+			var castPlayerState = null;
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
@@ -773,8 +775,7 @@ class Musicco {
 				var castContext = cast.framework.CastContext.getInstance();
 				castContext.setOptions({
 					receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED,
-					resumeSavedSession: true
+					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
 				});
 				castContext.addEventListener(
 					cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
@@ -785,17 +786,54 @@ class Musicco {
 							case cast.framework.SessionState.SESSION_STARTED:
 								//console.log('CastContext: CastSession connected: ' + event.session.getSessionId());
 								startCasting();
-								break;
+							break;
 							case cast.framework.SessionState.SESSION_RESUMED:
 								//console.log('CastContext: CastSession resumed: ' + event.session.getSessionId());
 								resumeCasting();
-								break;
+							break;
+							case cast.framework.SessionState.SESSION_ENDING:
+								console.log('CastContext: CastSession disconnecting');
+								// TODO: seems to always be null
+								castPlayerState = castPlayer.savedPlayerState;
+							break;
 							case cast.framework.SessionState.SESSION_ENDED:
 								//console.log('CastContext: CastSession disconnected');
 								stopCasting();
-								break;
+							break;
 						}
 					});
+				castPlayer = new cast.framework.RemotePlayer();
+				castController = new cast.framework.RemotePlayerController(castPlayer);
+				castController.addEventListener(
+					cast.framework.RemotePlayerEventType.ANY_CHANGE,
+					function(event) {
+						console.log("ANY_CHANGE");
+						console.log(event);
+						switch (event.field) {
+							case "duration":
+								durationChange(event.value);
+							break;
+							case "currentTime":
+								timeUpdate(event.value);
+							break;
+							case "mediaInfo":
+								loadTrack(event.value["contentId"]);
+							break;
+						}
+					});
+				castController.addEventListener(
+					cast.framework.RemotePlayerEventType.PLAYER_STATE_CHANGED,
+					function(event) {
+						console.log("PLAYER_STATE_CHANGED");
+						console.log(event);
+						switch (event.playerState) {
+							case "PAUSED":
+							break;
+							case "PLAYING":
+							break;
+						}
+					});
+
 			};
 
 			var musiccoService;
@@ -839,6 +877,8 @@ class Musicco {
 			player.autoplay = false;
 
 			var castSession = null;
+			var castPlayer = null;
+			var castController = null;
 
 			var albumProps = ["cover", "year", "artist", "album", "parent"];
 
@@ -906,16 +946,18 @@ class Musicco {
 
 			player.onpause =  function() {
 				if (isCasting) {
-					var remotePlayer = new cast.framework.RemotePlayer();
-					var remotePlayerController = new cast.framework.RemotePlayerController(remotePlayer);
-					remotePlayerController.playOrPause();
+					castController.playOrPause();
 				}
 				$('.big-jp-play').show();
 				$('.big-jp-pause').hide();
 				savePlaylist();
 			}
 
-			player.onended = function() { 
+			////////////////
+			// Functions //
+			//////////////
+
+			function nextMedia() {
 				if (playerConfig["shuffled"]) {
 					playRandomTrack();
 				} else if ( (playerConfig["loop"] == false) && ($(nextTrack).index("#playlist li[data-nature=track]") == 0) ){
@@ -923,26 +965,22 @@ class Musicco {
 				} else {
 					playTrack(nextTrack);
 				}
-			};
+			}
 
-			player.ondurationchange = function() {
-				var duration = player.duration;
+			function durationChange(provided) {
+				var duration = (provided != null) ? provided : player.duration;
 				$("#duration").html(getDuration(duration));
 				$("#big-jp-progress").slider( "option", "max", parseInt(duration) );
 			}
 
-			player.ontimeupdate = function() {
-				var currentTime = player.currentTime;
+			function timeUpdate(provided) {
+				var currentTime = (provided != null) ? provided : player.currentTime;
+				player.currentTime = currentTime;
 				$("#current_time").html(getDuration(currentTime));
 				if (timeUpdates) {
 					$("#big-jp-progress").slider( "option", "value", parseInt(currentTime) );
 				}
 			}
-
-			////////////////
-			// Functions //
-			//////////////
-
 
 			function convertPlaylist() {
 				var queueItems = $("#playlist").find("li[data-nature=track]").map(function() {
@@ -969,129 +1007,142 @@ class Musicco {
 				return queueItems;
 			}
 
+			function startCasting() {
+				disableLocalPlayer();
+				isCasting = true;
+				castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+				if (isPlaying) {
+					player.play();
+				}
+			}
 
-				function startCasting() {
-					isCasting = true;
-					setVolume(0);
-					castSession = cast.framework.CastContext.getInstance().getCurrentSession();
-					if (isPlaying) {
+			function resumeCasting() {
+				startCasting();
+				var mediaSession = castSession.getMediaSession();
+				if (mediaSession != null) {
+					loadTrack(mediaSession.media.contentId);
+					player.currentTime = mediaSession.getEstimatedTime();
+					if (mediaSession.playerState == chrome.cast.media.PlayerState.PLAYING) {
+						isResuming = true;
 						player.play();
 					}
 				}
+			}
 
-				function resumeCasting() {
-					startCasting();
-					var mediaSession = castSession.getMediaSession();
-					if (mediaSession != null) {
-						loadTrack(mediaSession.media.contentId);
-						player.currentTime = mediaSession.getEstimatedTime();
-						if (mediaSession.playerState == chrome.cast.media.PlayerState.PLAYING) {
-							isResuming = true;
-							player.play();
-						}
-					}
+			function stopCasting() {
+				var mediaSession = castSession.getMediaSession();
+				player.currentTime = mediaSession.getEstimatedTime();
+				enableLocalPlayer();
+				isCasting = false;
+				isResuming = false;
+				castSession.endSession(true);
+				castSession = null;
+			}
+
+			function disableLocalPlayer() {
+				player.volume = 0;
+				player.removeEventListener("durationchange", durationChange);
+				player.removeEventListener("timeupdate", timeUpdate);
+				player.removeEventListener("ended", nextMedia);
+			}
+
+			function enableLocalPlayer() {
+				player.addEventListener("ended", nextMedia);
+				player.addEventListener("timeupdate", timeUpdate);
+				player.addEventListener("durationchange", durationChange);
+				player.volume = 1;
+			}
+
+			function setCurrentTime(time) {
+				if (isCasting) {
+					castPlayer.currentTime = time;
+					castController.seek();
 				}
+					player.currentTime = time;
+			}
 
-				function stopCasting() {
-					isCasting = false;
-					isResuming = false;
-					setVolume(1);
-					castSession.endSession(true);
-					castSession = null;
-				}
-
-				function setCurrentTime(time) {
-					if (isCasting) {
-						var remotePlayer = new cast.framework.RemotePlayer();
-						var remotePlayerController = new cast.framework.RemotePlayerController(remotePlayer);
-						remotePlayer.currentTime = time;
-						remotePlayerController.seek();
-					}
-						player.currentTime = time;
-				}
-
-				function blurPlayer() {
-					if (isPortrait()) {
-					if ($("#leftPanel").is(":visible")) {
-						$("#big-player").addClass("blur");
-						$("#mini-controls").show();
-					} else {
-						$("#big-player").removeClass("blur");
-						$("#mini-controls").hide();
-					}
+			function blurPlayer() {
+				if (isPortrait()) {
+				if ($("#leftPanel").is(":visible")) {
+					$("#big-player").addClass("blur");
+					$("#mini-controls").show();
 				} else {
-						$("#big-player").removeClass("blur");
-						$("#mini-controls").hide();
+					$("#big-player").removeClass("blur");
+					$("#mini-controls").hide();
+				}
+			} else {
+					$("#big-player").removeClass("blur");
+					$("#mini-controls").hide();
+				}
+			}
+
+			function isDynamicTheme() {
+			return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "dynamic" )
+			}
+
+			function isCustomTheme() {
+			return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "custom" )
+			}
+
+			function isDefaultPoster() {
+				return (nowPlaying["cover"] == null);
+			
+			}
+
+			function resetPlaylists() {
+				getPlaylists(loadPlaylist);
+			}
+
+			function setTheme(coverUrl) {
+				var albumArt = new Image();
+				albumArt.addEventListener("load", function(){
+					var colorThief = new ColorThief();
+					var imagePalette = colorThief.getPalette(albumArt, 2);
+					var backgroundRGB = imagePalette[0];
+					var textRGB = imagePalette[1];
+					if (luminance(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]) > luminance(textRGB[0], textRGB[1], textRGB[2])) {
+						backgroundRGB = imagePalette[1];
+						textRGB = imagePalette[0];
 					}
-				}
-
-				function isDynamicTheme() {
-				return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "dynamic" )
-				}
-
-				function isCustomTheme() {
-				return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "custom" )
-				}
-
-				function isDefaultPoster() {
-					return (nowPlaying["cover"] == null);
-				
-				}
-
-				function resetPlaylists() {
-					getPlaylists(loadPlaylist);
-				}
-
-				function setTheme(coverUrl) {
-					var albumArt = new Image();
-					albumArt.addEventListener("load", function(){
-						var colorThief = new ColorThief();
-						var imagePalette = colorThief.getPalette(albumArt, 2);
-						var backgroundRGB = imagePalette[0];
-						var textRGB = imagePalette[1];
-						if (luminance(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]) > luminance(textRGB[0], textRGB[1], textRGB[2])) {
-							backgroundRGB = imagePalette[1];
-							textRGB = imagePalette[0];
-						}
-						if (luminance(textRGB[0], textRGB[1], textRGB[2]) < .4) {
-							textRGB = [Math.min(200, textRGB[0] + 60), Math.min(200, textRGB[1] + 60), Math.min(200, textRGB[2] + 60)];
-						} else if (luminance(textRGB[0], textRGB[1], textRGB[2]) > .7) {
-							textRGB = [Math.max(0, textRGB[0] - 60), Math.max(0, textRGB[1] - 60), Math.max(0, textRGB[2] - 60)];
-						}
-						setColour("background", rgbToHex(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]));
-						setColour("text", rgbToHex(textRGB[0], textRGB[1], textRGB[2]));
-					});
-					albumArt.src = coverUrl;
-					if (CSS.supports("backdrop-filter", "blur(10px)")) {
-						$("body").css("background-image", "url(\"" + coverUrl + "\")");
+					if (luminance(textRGB[0], textRGB[1], textRGB[2]) < .4) {
+						textRGB = [Math.min(200, textRGB[0] + 60), Math.min(200, textRGB[1] + 60), Math.min(200, textRGB[2] + 60)];
+					} else if (luminance(textRGB[0], textRGB[1], textRGB[2]) > .7) {
+						textRGB = [Math.max(0, textRGB[0] - 60), Math.max(0, textRGB[1] - 60), Math.max(0, textRGB[2] - 60)];
 					}
-					$("body").addClass("magic");
+					setColour("background", rgbToHex(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]));
+					setColour("text", rgbToHex(textRGB[0], textRGB[1], textRGB[2]));
+				});
+				albumArt.src = coverUrl;
+				if (CSS.supports("backdrop-filter", "blur(10px)")) {
+					$("body").css("background-image", "url(\"" + coverUrl + "\")");
 				}
+				$("body").addClass("magic");
+			}
 
-				function luminance(r, g, b) {
-					var a = [r, g, b].map(function (v) {
-							v /= 255;
-							return v <= 0.03928
-									? v / 12.92
-									: Math.pow( (v + 0.055) / 1.055, 2.4 );
-					});
-					var luminance = a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-					return luminance;
-				}
+			function luminance(r, g, b) {
+				var a = [r, g, b].map(function (v) {
+						v /= 255;
+						return v <= 0.03928
+								? v / 12.92
+								: Math.pow( (v + 0.055) / 1.055, 2.4 );
+				});
+				var luminance = a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+				return luminance;
+			}
 
-				function setColour(id, value) {
-					document.documentElement.style.setProperty("--" + id, value);
-					document.documentElement.style.setProperty("--" + id + "-highlight", increase_brightness(value, (id == "background")? 10: 70));
-				}
+			function setColour(id, value) {
+				document.documentElement.style.setProperty("--" + id, value);
+				document.documentElement.style.setProperty("--" + id + "-highlight", increase_brightness(value, (id == "background")? 10: 70));
+			}
 
-				function componentToHex(c) {
-						var hex = c.toString(16);
-						return hex.length == 1 ? "0" + hex : hex;
-				}
+			function componentToHex(c) {
+					var hex = c.toString(16);
+					return hex.length == 1 ? "0" + hex : hex;
+			}
 
-				function rgbToHex(r, g, b) {
-						return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-				}
+			function rgbToHex(r, g, b) {
+					return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+			}
 
 			function increase_brightness(hex, percent){
 					hex = hex.replace(/^\s*#|\s*$/g, '');
@@ -1131,7 +1182,12 @@ class Musicco {
 
 			function setVolume(volume) {
 				$("#big-volume-bar").addClass("hovered").delay(1000).queue(function(n) { $("#big-volume-bar").removeClass("hovered"); n();});
-				player.volume = volume;
+				if (isCasting) {
+					castPlayer.volumeLevel = volume;
+					castController.setVolumeLevel();
+				} else {
+					player.volume = volume;
+				}
 			}
 
 			function hideSpinner() {
@@ -2731,8 +2787,9 @@ class Musicco {
 				 // ACTIONS //
 				/////////////
 
-			var status = null;
-			startPolling();
+			enableLocalPlayer();
+
+			var status = null; startPolling();
 
 				var watcherTarget = document.getElementById("playlist");
 				if (watcherTarget) {
