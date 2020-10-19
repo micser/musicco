@@ -780,8 +780,8 @@ class Musicco {
 				castContext.addEventListener(
 					cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
 					function(event) {
-						//console.log("SESSION_STATE_CHANGED: " + event.sessionState);
-						//console.log(event);
+						console.log("SESSION_STATE_CHANGED: " + event.sessionState);
+						console.log(event);
 						switch (event.sessionState) {
 							case cast.framework.SessionState.SESSION_STARTED:
 								//console.log('CastContext: CastSession connected: ' + event.session.getSessionId());
@@ -812,8 +812,8 @@ class Musicco {
 				castController.addEventListener(
 					cast.framework.RemotePlayerEventType.ANY_CHANGE,
 					function(event) {
-						console.log("ANY_CHANGE");
-						console.log(event);
+						//console.log("ANY_CHANGE");
+						//console.log(event);
 						switch (event.field) {
 							case "duration":
 								durationChange(event.value);
@@ -930,28 +930,6 @@ class Musicco {
 				}
 			};
 
-			player.onplay = function() {
-				if (isCasting && !isResuming) {
-					var remotePlaylist = convertPlaylist();
-					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
-					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist);
-					playlistRequest.repeatMode = ((playerConfig["loop"] == false))? chrome.cast.media.RepeatMode.OFF : chrome.cast.media.RepeatMode.ON;
-					playlistRequest.startIndex = current;
-					castSession.getSessionObj().queueLoad(playlistRequest,  () => {
-						//console.log("queue loaded");
-					}, (e) => {
-						//console.log("queue load error");
-						//console.log(e);
-					});
-				}
-				isResuming = false;
-				// TODO reenable this volume discrepancy fix some time...
-				//if (player.volume != ($("#big-volume-bar").slider("option", "value") / 100)) {
-				//	$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
-				//}
-				updatePlayerUI();
-			}
-
 			////////////////
 			// Functions //
 			//////////////
@@ -1016,7 +994,7 @@ class Musicco {
 						{'url': getBaseURL() + $(this).data("cover")}
 					];
 					queueItem = new chrome.cast.media.QueueItem(mediaInfo);
-					queueItem.autoplay = true;
+					queueItem.autoplay = isCurrent ? isPlaying : true;
 					queueItem.preloadTime = 10;
 					queueItem.startTime = isCurrent ? player.currentTime : 0;
 					return queueItem;
@@ -1028,21 +1006,19 @@ class Musicco {
 				disableLocalPlayer();
 				isCasting = true;
 				castSession = cast.framework.CastContext.getInstance().getCurrentSession();
-				if (isPlaying) {
-					player.play();
+				if (!isResuming) {
+					loadCastPlaylist();
 				}
 			}
 
 			function resumeCasting() {
+				isResuming = true;
 				startCasting();
 				var mediaSession = castSession.getMediaSession();
 				if (mediaSession != null) {
 					loadTrack(mediaSession.media.contentId);
 					player.currentTime = mediaSession.getEstimatedTime();
-					if (mediaSession.playerState == chrome.cast.media.PlayerState.PLAYING) {
-						isResuming = true;
-						player.play();
-					}
+					updatePlayPauseIcons(mediaSession.playerState == chrome.cast.media.PlayerState.PAUSED);
 				}
 			}
 
@@ -1056,18 +1032,42 @@ class Musicco {
 				castSession = null;
 			}
 
+			function loadCastPlaylist() {
+					isResuming = false;
+					var remotePlaylist = convertPlaylist();
+					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
+					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist);
+					playlistRequest.repeatMode = ((playerConfig["loop"] == false))? chrome.cast.media.RepeatMode.OFF : chrome.cast.media.RepeatMode.ON;
+					playlistRequest.startIndex = current;
+					castSession.getSessionObj().queueLoad(playlistRequest,  () => {
+						//console.log("queue loaded");
+					}, (e) => {
+						//console.log("queue load error");
+						//console.log(e);
+					});
+			}
+
 			function disableLocalPlayer() {
 				player.volume = 0;
 				player.removeEventListener("durationchange", durationChange);
 				player.removeEventListener("timeupdate", timeUpdate);
 				player.removeEventListener("ended", nextMedia);
+				player.removeEventListener("play", playEventListener);
 			}
 
 			function enableLocalPlayer() {
+				player.addEventListener("play", playEventListener);
 				player.addEventListener("ended", nextMedia);
 				player.addEventListener("timeupdate", function(){timeUpdate()});
 				player.addEventListener("durationchange", function(){durationChange()});
 				player.volume = 1;
+			}
+
+			function playEventListener() {
+				updatePlayPauseIcons(player.paused);
+				if (player.volume != ($("#big-volume-bar").slider("option", "value") / 100)) {
+					$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
+				}
 			}
 
 			function setCurrentTime(time) {
@@ -1248,10 +1248,30 @@ class Musicco {
 				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
 				player.src = buildMediaSrc($(track).data("parent"), $(track).data("path"));
 				refreshPlaylist();
+				updateUI();
 			}
 
 			function buildMediaSrc(parent, path) {
 				return encodeURI(parent + path).replace("#", "%23");
+			}
+
+			function updateUI() {
+				$("#album-art").attr("src", nowPlaying["cover"]);
+				var textData = ["songtitle", "artist", "album", "year"];
+				textData.forEach(function(info) {
+					$("#nowPlaying_"+info).html(nowPlaying[info]); 
+				});
+				if ($("#nowPlaying_year").html() != "") {
+					$("#nowPlaying_year").prepend("(");
+					$("#nowPlaying_year").append(")");
+				}
+				flashInfo();
+				showNotification();
+				$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying["artist"] + " " + nowPlaying["album"]);
+				updateInfoPanel(wikiLink(nowPlaying["artist"]), nowPlaying["artist"], false, false);
+				updateLyricsPanel(nowPlaying["artist"], nowPlaying["songtitle"]);
+				displayCover();
+				scrollPlaylist();
 			}
 
 			function playTrack(track) {
@@ -2635,39 +2655,16 @@ class Musicco {
 				if (isCasting) {
 					castController.playOrPause();
 				} else {
-					updatePlayPauseIcons(player.paused);
 					if (player.paused) {
-						$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
 						player.play();
+						$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 500);
 					} else {
-						$(player).animate({volume: 0}, 200);
 						status = "isPaused";
-						player.pause();
+						$(player).animate({volume: 0}, 200, function(){player.pause()});
 					}
+					updatePlayPauseIcons((status == "isPaused") ? true : false);
 				}
 				showNotification(status);
-			}
-
-			function updatePlayerUI() {
-				$('.big-jp-play').hide();
-				$('.big-jp-pause').show();
-				$("#album-art").attr("src", nowPlaying["cover"]);
-				var textData = ["songtitle", "artist", "album", "year"];
-				textData.forEach(function(info) {
-					$("#nowPlaying_"+info).html(nowPlaying[info]); 
-				});
-				if ($("#nowPlaying_year").html() != "") {
-					$("#nowPlaying_year").prepend("(");
-					$("#nowPlaying_year").append(")");
-				}
-				flashInfo();
-				showNotification();
-				$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying["artist"] + " " + nowPlaying["album"]);
-				updateInfoPanel(wikiLink(nowPlaying["artist"]), nowPlaying["artist"], false, false);
-				updateLyricsPanel(nowPlaying["artist"], nowPlaying["songtitle"]);
-				displayCover();
-				scrollPlaylist();
-				savePlaylist();
 			}
 
 			function getDuration(seconds) {
