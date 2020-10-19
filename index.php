@@ -766,8 +766,7 @@ class Musicco {
 			var isPlaying = false;
 			var isResuming = false;
 			var isCasting = false;
-			// TODO: seems to always be null
-			var castPlayerState = null;
+			var castPlayerState = {};
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
@@ -780,8 +779,8 @@ class Musicco {
 				castContext.addEventListener(
 					cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
 					function(event) {
-						console.log("SESSION_STATE_CHANGED: " + event.sessionState);
-						console.log(event);
+						//console.log("SESSION_STATE_CHANGED: " + event.sessionState);
+						//console.log(event);
 						switch (event.sessionState) {
 							case cast.framework.SessionState.SESSION_STARTED:
 								//console.log('CastContext: CastSession connected: ' + event.session.getSessionId());
@@ -792,14 +791,8 @@ class Musicco {
 								resumeCasting();
 							break;
 							case cast.framework.SessionState.SESSION_ENDING:
-								console.log('CastContext: CastSession disconnecting');
-								// TODO: seems to always be null
-								castPlayerState = castPlayer.savedPlayerState;
-								// TODO: 
-								// - get player play/pause status
-								// - get currentTime
-								// - get duration
-								// - get contentId
+								//console.log('CastContext: CastSession disconnecting');
+								saveCastPlayerState();
 							break;
 							case cast.framework.SessionState.SESSION_ENDED:
 								//console.log('CastContext: CastSession disconnected');
@@ -832,8 +825,8 @@ class Musicco {
 				castController.addEventListener(
 					cast.framework.RemotePlayerEventType.PLAYER_STATE_CHANGED,
 					function(event) {
-						console.log("PLAYER_STATE_CHANGED");
-						console.log(event);
+						//console.log("PLAYER_STATE_CHANGED");
+						//console.log(event);
 						switch (event.playerState) {
 							case "PAUSED":
 							break;
@@ -1023,13 +1016,24 @@ class Musicco {
 			}
 
 			function stopCasting() {
-				var mediaSession = castSession.getMediaSession();
-				player.currentTime = mediaSession.getEstimatedTime();
-				enableLocalPlayer();
 				isCasting = false;
 				isResuming = false;
 				castSession.endSession(true);
 				castSession = null;
+				loadTrack(castPlayerState["contentId"]);
+				player.currentTime = castPlayerState["currentTime"];
+				player.duration = castPlayerState["duration"];
+				enableLocalPlayer();
+				if (!castPlayerState["isPaused"]) {
+					player.play();
+				}
+			}
+
+			function saveCastPlayerState() {
+				castPlayerState["currentTime"] = castPlayer.currentTime;
+				castPlayerState["duration"] = castPlayer.duration;
+				castPlayerState["isPaused"] = castPlayer.isPaused;
+				castPlayerState["contentId"] = castPlayer.mediaInfo["contentId"];
 			}
 
 			function loadCastPlaylist() {
