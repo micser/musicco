@@ -795,6 +795,10 @@ class Musicco {
 								console.log('CastContext: CastSession disconnecting');
 								// TODO: seems to always be null
 								castPlayerState = castPlayer.savedPlayerState;
+								// TODO: 
+								// - get currentTime
+								// - get duration
+								// - get contentId
 							break;
 							case cast.framework.SessionState.SESSION_ENDED:
 								//console.log('CastContext: CastSession disconnected');
@@ -969,13 +973,20 @@ class Musicco {
 
 			function durationChange(provided) {
 				var duration = (provided != null) ? provided : player.duration;
+				// TODO: only do this when getting a DISCONNECTING event
+				if (isCasting) {
+					player.duration = duration;
+				}
 				$("#duration").html(getDuration(duration));
 				$("#big-jp-progress").slider( "option", "max", parseInt(duration) );
 			}
 
 			function timeUpdate(provided) {
 				var currentTime = (provided != null) ? provided : player.currentTime;
-				player.currentTime = currentTime;
+				// TODO: only do this when getting a DISCONNECTING event
+				if (isCasting) {
+					player.currentTime = currentTime;
+				}
 				$("#current_time").html(getDuration(currentTime));
 				if (timeUpdates) {
 					$("#big-jp-progress").slider( "option", "value", parseInt(currentTime) );
@@ -1048,8 +1059,8 @@ class Musicco {
 
 			function enableLocalPlayer() {
 				player.addEventListener("ended", nextMedia);
-				player.addEventListener("timeupdate", timeUpdate);
-				player.addEventListener("durationchange", durationChange);
+				player.addEventListener("timeupdate", function(){timeUpdate()});
+				player.addEventListener("durationchange", function(){durationChange()});
 				player.volume = 1;
 			}
 
