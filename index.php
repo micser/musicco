@@ -796,6 +796,7 @@ class Musicco {
 								// TODO: seems to always be null
 								castPlayerState = castPlayer.savedPlayerState;
 								// TODO: 
+								// - get player play/pause status
 								// - get currentTime
 								// - get duration
 								// - get contentId
@@ -822,6 +823,9 @@ class Musicco {
 							break;
 							case "mediaInfo":
 								loadTrack(event.value["contentId"]);
+							break;
+							case "isPaused":
+								updatePlayPauseIcons(event.value);
 							break;
 						}
 					});
@@ -948,18 +952,20 @@ class Musicco {
 				updatePlayerUI();
 			}
 
-			player.onpause =  function() {
-				if (isCasting) {
-					castController.playOrPause();
-				}
-				$('.big-jp-play').show();
-				$('.big-jp-pause').hide();
-				savePlaylist();
-			}
-
 			////////////////
 			// Functions //
 			//////////////
+
+
+			function updatePlayPauseIcons(isPaused) {
+				if (isPaused) {
+					$('.big-jp-pause').hide();
+					$('.big-jp-play').show();
+				} else {
+					$('.big-jp-play').hide();
+					$('.big-jp-pause').show();
+				}
+			}
 
 			function nextMedia() {
 				if (playerConfig["shuffled"]) {
@@ -2625,13 +2631,19 @@ class Musicco {
 
 			function triggerPlayPause() {
 				var status = "";
-				if (player.paused) { 
-					$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
-					$(".big-jp-play").trigger("click");
+				savePlaylist();
+				if (isCasting) {
+					castController.playOrPause();
 				} else {
-					$(player).animate({volume: 0}, 200);
-					status = "isPaused";
-					setTimeout(function() { $(".big-jp-pause").trigger("click"); }, 200);
+					updatePlayPauseIcons(player.paused);
+					if (player.paused) {
+						$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
+						player.play();
+					} else {
+						$(player).animate({volume: 0}, 200);
+						status = "isPaused";
+						player.pause();
+					}
 				}
 				showNotification(status);
 			}
@@ -3081,14 +3093,6 @@ class Musicco {
 				});
 
 				$(".previous_track").on("click", function() {
-				});
-
-				$(".big-jp-play").on("click", function() {
-					player.play();
-				});
-
-				$(".big-jp-pause").on("click", function() {
-					player.pause();
 				});
 
 				$("#shared-album-show-qr, #shared-album-show-cover").on("click", function() {
@@ -3573,7 +3577,7 @@ class Musicco {
 					$("#searchPanel").contextmenu("open", $(this));
 				});
 
-				$(document).on("click", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
+				$(document).on("click", ".big-jp-play, .big-jp-pause, #album-art, #big-cover .default-poster, .logo-player", function(e) {
 					triggerPlayPause();
 				});
 
