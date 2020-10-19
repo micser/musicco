@@ -1010,7 +1010,6 @@ class Musicco {
 				var mediaSession = castSession.getMediaSession();
 				if (mediaSession != null) {
 					loadTrack(mediaSession.media.contentId);
-					player.currentTime = mediaSession.getEstimatedTime();
 					updatePlayPauseIcons(mediaSession.playerState == chrome.cast.media.PlayerState.PAUSED);
 				}
 			}
