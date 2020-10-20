@@ -792,10 +792,11 @@ class Musicco {
 							break;
 							case cast.framework.SessionState.SESSION_ENDING:
 								//console.log('CastContext: CastSession disconnecting');
-								saveCastPlayerState();
+								//saveCastPlayerState();
 							break;
 							case cast.framework.SessionState.SESSION_ENDED:
 								//console.log('CastContext: CastSession disconnected');
+								saveCastPlayerState();
 								stopCasting();
 							break;
 						}
