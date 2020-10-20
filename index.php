@@ -815,7 +815,9 @@ class Musicco {
 								timeUpdate(event.value);
 							break;
 							case "mediaInfo":
-								loadTrack(event.value["contentId"]);
+								if (event.value != null) {
+									loadTrack(event.value["contentId"]);
+								}
 							break;
 							case "isPaused":
 								updatePlayPauseIcons(event.value);
@@ -1280,7 +1282,12 @@ class Musicco {
 			function playTrack(track) {
 				var trackNumber = $(track).index("#playlist li[data-nature=track]");
 				loadTrack(trackNumber);
-				player.play();
+				if (isCasting) {
+					isPlaying = true;
+					loadCastPlaylist();
+				} else {
+					player.play();
+				}
 			}
 
 			function playRandomTrack() {
