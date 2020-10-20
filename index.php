@@ -832,8 +832,10 @@ class Musicco {
 						//console.log(event);
 						switch (event.playerState) {
 							case "PAUSED":
+								updatePlayPauseIcons(true);
 							break;
 							case "PLAYING":
+								updatePlayPauseIcons(false);
 							break;
 						}
 					});
@@ -1239,8 +1241,13 @@ class Musicco {
 			}
 
 			function resetPlayer() {
-				player.pause();
-				player.src = "";
+				updatePlayPauseIcons(true);
+				if (isCasting) {
+					castController.stop();
+				} else {
+					player.pause();
+					player.src = "";
+				}
 				$("#album-art").attr("src", "").hide();
 				$(".logo-player").show();
 				$("#nowPlaying_songtitle, #nowPlaying_artist, #nowPlaying_album, #nowPlaying_year").html("");
@@ -1289,6 +1296,7 @@ class Musicco {
 				} else {
 					player.play();
 				}
+				updatePlayPauseIcons(false);
 			}
 
 			function playRandomTrack() {
