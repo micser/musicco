@@ -881,6 +881,7 @@ class Musicco {
 
 			var player = new Audio();
 			player.autoplay = false;
+			var localVolume = 1;
 
 			var castSession = null;
 			var castPlayer = null;
@@ -1001,9 +1002,9 @@ class Musicco {
 			}
 
 			function startCasting() {
-				disableLocalPlayer();
 				isCasting = true;
 				castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+				disableLocalPlayer();
 				if (!isResuming) {
 					loadCastPlaylist();
 				}
@@ -1056,7 +1057,9 @@ class Musicco {
 			}
 
 			function disableLocalPlayer() {
+				localVolume = player.volume;
 				player.volume = 0;
+				$("#big-volume-bar").slider("option", "value", castSession.getVolume() * 100);
 				player.removeEventListener("durationchange", durationChange);
 				player.removeEventListener("timeupdate", timeUpdate);
 				player.removeEventListener("ended", nextMedia);
@@ -1068,7 +1071,8 @@ class Musicco {
 				player.addEventListener("ended", nextMedia);
 				player.addEventListener("timeupdate", function(){timeUpdate()});
 				player.addEventListener("durationchange", function(){durationChange()});
-				player.volume = 1;
+				player.volume = localVolume;
+				$("#big-volume-bar").slider("option", "value", localVolume * 100);
 			}
 
 			function playEventListener() {
@@ -2127,7 +2131,7 @@ class Musicco {
 				if (user!="") {
 					$.post('?', {loadSettings: '', u: user}, function(response) {
 						var options = JSON.parse(response);
-						$("#big-volume-bar").slider("option", "value",parseInt(options.volume));
+						$("#big-volume-bar").slider("option", "value", parseInt(options.volume));
 						if (options.loop === "true") {
 							$('#loop').trigger("click");
 						}
@@ -2826,8 +2830,6 @@ class Musicco {
 				 // ACTIONS //
 				/////////////
 
-			enableLocalPlayer();
-
 			var status = null; startPolling();
 
 				var watcherTarget = document.getElementById("playlist");
@@ -2873,6 +2875,7 @@ class Musicco {
 						start: function(event, ui) { timeUpdates = false; },
 						stop: function(event, ui) { setCurrentTime(ui.value); timeUpdates = true; }
 					});
+
 					$("#big-volume-bar").slider({
 						orientation: "vertical",
 						range: "min",
@@ -2948,6 +2951,7 @@ class Musicco {
 						}
 					});
 
+					enableLocalPlayer();
 					loadSettings();
 					loadPlaylist();
 					adaptUI(true);
