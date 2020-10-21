@@ -1408,10 +1408,10 @@ class Musicco {
 								break;
 							}
 						}
+					$("#playlist").trigger("updated");
 					if (playAfter) {
 						playTrack($("#playlist").find("li[data-nature=track]").first());
 					}
-					savePlaylist();
 				}, "json");
 			}
 
@@ -2402,7 +2402,7 @@ class Musicco {
 				function clearPlaylist() {
 					resetPlayer();
 					$("#playlist li").remove();
-					savePlaylist();
+					$("#playlist").trigger("updated");
 				}
 
 				function toggleSearch() {
@@ -2777,7 +2777,7 @@ class Musicco {
 				$(draggedElement).siblings().css("opacity", "1");
 				$(draggedElement).css("border", "0");
 				draggedElement = null;
-				savePlaylist();
+				$("#playlist").trigger("updated");
 			}
 
 			function isBefore(el1, el2) {
@@ -3030,6 +3030,13 @@ class Musicco {
 				 // EVENTS //
 				////////////
 
+				$("#playlist").on("updated", function() {
+					savePlaylist();
+					if (isCasting) {
+						loadCastPlaylist();
+					}
+				});
+
 				$("google-cast-launcher").on("click", function() {
 					isPlaying = !player.paused;
 				});
@@ -3086,6 +3093,7 @@ class Musicco {
 						target = $("#playlist > li").last();
 					}
 					target.after($(this).parents("li"));
+					$("#playlist").trigger("updated");
 				});
 
 				$("#playlist").on("click taphold", ".move-up", function(e) {
@@ -3095,6 +3103,7 @@ class Musicco {
 						target = $("#playlist > li").first();
 					}
 					target.before($(this).parents("li"));
+					$("#playlist").trigger("updated");
 				});
 
 				$("#big-volume-bar").on("change", function() {
@@ -3196,7 +3205,7 @@ class Musicco {
 							target.remove();
 						}
 					}
-					savePlaylist();
+					$("#playlist").trigger("updated");
 				});
 
 				$(".obsoleteWarning").on("click", function() {
