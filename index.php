@@ -818,6 +818,9 @@ class Musicco {
 							case "mediaInfo":
 								if (event.value != null) {
 									loadTrack(event.value["contentId"]);
+								} else {
+									resetPlayer();
+									//updatePlayPauseIcons(true);
 								}
 							break;
 							case "isPaused":
