@@ -1804,7 +1804,7 @@ class Musicco {
 
 			function deletePlaylist(name) {
 				var user = "<?php echo AuthManager::getUserName(); ?>";
-				$.post('?', {deletePlaylist: '', u: user, n: name}, function (response) {
+				$.post('?', {deletePlaylist: '', u: user, i: clientId, n: name}, function (response) {
 				});
 			}
 
@@ -3705,7 +3705,7 @@ if(!AuthManager::isAccessAllowed()) {
 			renamePlaylist($_POST['u'], $_POST['o'], $_POST['n']);
 			exit;
 	} elseif(isset($_POST['deletePlaylist'])) {
-			deletePlaylist($_POST['u'], $_POST['n']);
+			deletePlaylist($_POST['u'], $_POST['i'], $_POST['n']);
 			exit;
 	} elseif (isset($_POST['savePlaylist'])) {
 			savePlaylist($_POST['u'], $_POST['i'], $_POST['n'], $_POST['p'], $_POST['c'], $_POST['t']);
@@ -4155,7 +4155,7 @@ function renamePlaylist($user, $oldName, $newName) {
 	}
 }
 
-function deletePlaylist($user, $name) {
+function deletePlaylist($user, $clientId, $name) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
@@ -4170,7 +4170,7 @@ function deletePlaylist($user, $name) {
 		$delete_query = NULL;
 		$db = NULL;
 		if ($num_playlists == 1) {
-			setCurrentPlaylistId($userId, 0);
+			setCurrentPlaylistId($userId, $clientId, 0);
 		}
 	}
 }
