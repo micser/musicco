@@ -934,6 +934,12 @@ class Musicco {
 			//////////////
 
 
+			function setRepeatMode() {
+				return (playerConfig["shuffled"] == true) ? chrome.cast.media.RepeatMode.ALL_AND_SHUFFLE 
+							: (playerConfig["loop"] == false) ? chrome.cast.media.RepeatMode.OFF 
+							: chrome.cast.media.RepeatMode.ALL;
+			}
+
 			function updatePlayPauseIcons(isPaused) {
 				if (isPaused) {
 					$('.big-jp-pause').hide();
@@ -1046,7 +1052,7 @@ class Musicco {
 					var remotePlaylist = convertPlaylist();
 					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist);
-					playlistRequest.repeatMode = ((playerConfig["loop"] == false))? chrome.cast.media.RepeatMode.OFF : chrome.cast.media.RepeatMode.ON;
+					playlistRequest.repeatMode = setRepeatMode();
 					playlistRequest.startIndex = current;
 					castSession.getSessionObj().queueLoad(playlistRequest,  () => {
 						//console.log("queue loaded");
@@ -2113,6 +2119,7 @@ class Musicco {
 			function saveSettings() {
 				if (isInit) {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
+					if (isCasting) { setRepeatMode(); }
 					if (user!="") {
 						var volume = $("#big-volume-bar").slider("option", "value");
 						var loop = playerConfig["loop"];
