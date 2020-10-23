@@ -42,6 +42,18 @@
 		 100% { opacity: 1; }
 	}
 
+	google-cast-launcher {
+		--disconnected-color: var(--text);
+		--connected-color: var(--text-highlight);
+		min-width: 2em;
+		max-width: 2em;
+		margin-top: 5px;
+	}
+
+	google-cast-launcher:hover {
+		--disconnected-color: var(--text-highlight);
+	}
+
 	#big-cover {
 		max-width: 70vw;
 		padding-top: 100%;

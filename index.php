@@ -104,6 +104,12 @@ $_CONFIG['loadLyricsFromFile'] = false;
 // Default: $_CONFIG['lookUpLyrics'] = false;
 $_CONFIG['lookUpLyrics'] = false;
 
+// Whether to enable the ability to cast music
+// to compatible chromecast devices on your
+// network. Enabling this option loads the 
+// google cast javascript library remotely.
+// Default: $_CONFIG['isCastAllowed'] = false;
+$_CONFIG['isCastAllowed'] = false;
 
 // Whether to automatically download
 // missing covers online. New covers
@@ -748,7 +754,13 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
+		<?php 
+			if ($this->getConfig('isCastAllowed')) {
+				echo '<script src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>';
+			}
+		 ?>
 		<script type="text/javascript">
+
 				///////////////
 			 // VARIABLES //
 			///////////////
@@ -761,8 +773,87 @@ class Musicco {
 			var library = [];
 			var libraryInit = [];
 			var libraryVisible = [];
+			var isPlaying = false;
+			var isResuming = false;
+			var isCasting = false;
+			var castPlayerState = {};
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
+
+			var initializeCastApi = function() {
+				var castContext = cast.framework.CastContext.getInstance();
+				castContext.setOptions({
+					receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+				});
+				castContext.addEventListener(
+					cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
+					function(event) {
+						//console.log("SESSION_STATE_CHANGED: " + event.sessionState);
+						//console.log(event);
+						switch (event.sessionState) {
+							case cast.framework.SessionState.SESSION_STARTED:
+								//console.log('CastContext: CastSession connected: ' + event.session.getSessionId());
+								startCasting();
+							break;
+							case cast.framework.SessionState.SESSION_RESUMED:
+								//console.log('CastContext: CastSession resumed: ' + event.session.getSessionId());
+								resumeCasting();
+							break;
+							case cast.framework.SessionState.SESSION_ENDING:
+								//console.log('CastContext: CastSession disconnecting');
+								//saveCastPlayerState();
+							break;
+							case cast.framework.SessionState.SESSION_ENDED:
+								//console.log('CastContext: CastSession disconnected');
+								saveCastPlayerState();
+								stopCasting();
+							break;
+						}
+					});
+				castPlayer = new cast.framework.RemotePlayer();
+				castController = new cast.framework.RemotePlayerController(castPlayer);
+				castController.addEventListener(
+					cast.framework.RemotePlayerEventType.ANY_CHANGE,
+					function(event) {
+						//console.log("ANY_CHANGE");
+						//console.log(event);
+						switch (event.field) {
+							case "duration":
+								durationChange(event.value);
+							break;
+							case "currentTime":
+								timeUpdate(event.value);
+							break;
+							case "mediaInfo":
+								if (event.value != null) {
+									loadTrack(event.value["contentId"]);
+								} else {
+									resetPlayer();
+									//updatePlayPauseIcons(true);
+								}
+							break;
+							case "isPaused":
+								updatePlayPauseIcons(event.value);
+							break;
+						}
+					});
+				castController.addEventListener(
+					cast.framework.RemotePlayerEventType.PLAYER_STATE_CHANGED,
+					function(event) {
+						//console.log("PLAYER_STATE_CHANGED");
+						//console.log(event);
+						switch (event.playerState) {
+							case "PAUSED":
+								updatePlayPauseIcons(true);
+							break;
+							case "PLAYING":
+								updatePlayPauseIcons(false);
+							break;
+						}
+					});
+
+			};
 
 			var musiccoService;
 			if ('serviceWorker' in navigator) {
@@ -800,8 +891,14 @@ class Musicco {
 			var currentAlbum = null;
 			var previousAlbum = null;
 			var nextAlbum = null;
+
 			var player = new Audio();
 			player.autoplay = false;
+			var localVolume = 1;
+
+			var castSession = null;
+			var castPlayer = null;
+			var castController = null;
 
 			var albumProps = ["cover", "year", "artist", "album", "parent"];
 
@@ -839,20 +936,34 @@ class Musicco {
 			 // Events //
 			///////////
 
-			player.onplay = function() {
-				if (player.volume != ($("#big-volume-bar").slider("option", "value") / 100)) {
-					$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
+			window['__onGCastApiAvailable'] = function(isAvailable) {
+				if (isAvailable) {
+					setTimeout(function(){ initializeCastApi(); }, 500);
 				}
-				updatePlayerUI();
+			};
+
+			////////////////
+			// Functions //
+			//////////////
+
+
+			function setRepeatMode() {
+				return (playerConfig["shuffled"] == true) ? chrome.cast.media.RepeatMode.ALL_AND_SHUFFLE 
+							: (playerConfig["loop"] == false) ? chrome.cast.media.RepeatMode.OFF 
+							: chrome.cast.media.RepeatMode.ALL;
 			}
 
-			player.onpause =  function() {
-				$('.big-jp-play').show();
-				$('.big-jp-pause').hide();
-				savePlaylist();
+			function updatePlayPauseIcons(isPaused) {
+				if (isPaused) {
+					$('.big-jp-pause').hide();
+					$('.big-jp-play').show();
+				} else {
+					$('.big-jp-play').hide();
+					$('.big-jp-pause').show();
+				}
 			}
 
-			player.onended = function() { 
+			function nextMedia() {
 				if (playerConfig["shuffled"]) {
 					playRandomTrack();
 				} else if ( (playerConfig["loop"] == false) && ($(nextTrack).index("#playlist li[data-nature=track]") == 0) ){
@@ -860,108 +971,226 @@ class Musicco {
 				} else {
 					playTrack(nextTrack);
 				}
-			};
+			}
 
-			player.ondurationchange = function() {
-				var duration = player.duration;
+			function durationChange(provided) {
+				var duration = (provided != null) ? provided : player.duration;
+				// TODO: only do this when getting a DISCONNECTING event
+				if (isCasting) {
+					player.duration = duration;
+				}
 				$("#duration").html(getDuration(duration));
 				$("#big-jp-progress").slider( "option", "max", parseInt(duration) );
 			}
 
-			player.ontimeupdate = function() {
-				var currentTime = player.currentTime;
+			function timeUpdate(provided) {
+				var currentTime = (provided != null) ? provided : player.currentTime;
+				// TODO: only do this when getting a DISCONNECTING event
+				if (isCasting) {
+					player.currentTime = currentTime;
+				}
 				$("#current_time").html(getDuration(currentTime));
 				if (timeUpdates) {
 					$("#big-jp-progress").slider( "option", "value", parseInt(currentTime) );
 				}
 			}
 
-			////////////////
-			// Functions //
-			//////////////
+			function convertPlaylist() {
+				var queueItems = $("#playlist").find("li[data-nature=track]").map(function() {
+					var isCurrent = $(this).hasClass("currentTrack") ? true : false;
+					var contentId = $(this).index("#playlist li[data-nature=track]");
+					var queueItem;
+					var mediaInfo = new chrome.cast.media.MediaInfo(contentId, "audio/mpeg");
+					mediaInfo.contentUrl = buildMediaSrc(getBaseURL() + $(this).data("parent"), $(this).data("path"));
+					mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
+					mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
+					mediaInfo.metadata.title = $(this).data("songtitle");
+					mediaInfo.metadata.artist = $(this).data("artist");
+					mediaInfo.metadata.albumName = $(this).data("album");
+					mediaInfo.metadata.releaseDate = $(this).data("year");
+					mediaInfo.metadata.images = [
+						{'url': getBaseURL() + $(this).data("cover")}
+					];
+					queueItem = new chrome.cast.media.QueueItem(mediaInfo);
+					queueItem.autoplay = isCurrent ? isPlaying : true;
+					queueItem.preloadTime = 10;
+					queueItem.startTime = isCurrent ? player.currentTime : 0;
+					return queueItem;
+				}).get();
+				return queueItems;
+			}
 
-				function blurPlayer() {
-					if (isPortrait()) {
-					if ($("#leftPanel").is(":visible")) {
-						$("#big-player").addClass("blur");
-						$("#mini-controls").show();
-					} else {
-						$("#big-player").removeClass("blur");
-						$("#mini-controls").hide();
-					}
+			function startCasting() {
+				isCasting = true;
+				castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+				disableLocalPlayer();
+				if (!isResuming) {
+					loadCastPlaylist();
+				}
+			}
+
+			function resumeCasting() {
+				isResuming = true;
+				startCasting();
+				var mediaSession = castSession.getMediaSession();
+				if (mediaSession != null) {
+					loadTrack(mediaSession.media.contentId);
+					updatePlayPauseIcons(mediaSession.playerState == chrome.cast.media.PlayerState.PAUSED);
+				}
+			}
+
+			function stopCasting() {
+				isCasting = false;
+				isResuming = false;
+				castSession.endSession(true);
+				castSession = null;
+				loadTrack(castPlayerState["contentId"]);
+				player.currentTime = castPlayerState["currentTime"];
+				player.duration = castPlayerState["duration"];
+				enableLocalPlayer();
+				if (!castPlayerState["isPaused"]) {
+					player.play();
+				}
+			}
+
+			function saveCastPlayerState() {
+				castPlayerState["currentTime"] = castPlayer.currentTime;
+				castPlayerState["duration"] = castPlayer.duration;
+				castPlayerState["isPaused"] = castPlayer.isPaused;
+				castPlayerState["contentId"] = castPlayer.mediaInfo["contentId"];
+			}
+
+			function loadCastPlaylist() {
+					isResuming = false;
+					var remotePlaylist = convertPlaylist();
+					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
+					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist);
+					playlistRequest.repeatMode = setRepeatMode();
+					playlistRequest.startIndex = current;
+					castSession.getSessionObj().queueLoad(playlistRequest,  () => {
+						//console.log("queue loaded");
+					}, (e) => {
+						//console.log("queue load error");
+						//console.log(e);
+					});
+			}
+
+			function disableLocalPlayer() {
+				localVolume = player.volume;
+				player.volume = 0;
+				$("#big-volume-bar").slider("option", "value", castSession.getVolume() * 100);
+				player.removeEventListener("durationchange", durationChange);
+				player.removeEventListener("timeupdate", timeUpdate);
+				player.removeEventListener("ended", nextMedia);
+				player.removeEventListener("play", playEventListener);
+			}
+
+			function enableLocalPlayer() {
+				player.addEventListener("play", playEventListener);
+				player.addEventListener("ended", nextMedia);
+				player.addEventListener("timeupdate", function(){timeUpdate()});
+				player.addEventListener("durationchange", function(){durationChange()});
+				player.volume = localVolume;
+				$("#big-volume-bar").slider("option", "value", localVolume * 100);
+			}
+
+			function playEventListener() {
+				updatePlayPauseIcons(player.paused);
+				if (player.volume != ($("#big-volume-bar").slider("option", "value") / 100)) {
+					$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
+				}
+			}
+
+			function setCurrentTime(time) {
+				if (isCasting) {
+					castPlayer.currentTime = time;
+					castController.seek();
+				}
+					player.currentTime = time;
+			}
+
+			function blurPlayer() {
+				if (isPortrait()) {
+				if ($("#leftPanel").is(":visible")) {
+					$("#big-player").addClass("blur");
+					$("#mini-controls").show();
 				} else {
-						$("#big-player").removeClass("blur");
-						$("#mini-controls").hide();
+					$("#big-player").removeClass("blur");
+					$("#mini-controls").hide();
+				}
+			} else {
+					$("#big-player").removeClass("blur");
+					$("#mini-controls").hide();
+				}
+			}
+
+			function isDynamicTheme() {
+			return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "dynamic" )
+			}
+
+			function isCustomTheme() {
+			return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "custom" )
+			}
+
+			function isDefaultPoster() {
+				return (nowPlaying["cover"] == null);
+			
+			}
+
+			function resetPlaylists() {
+				getPlaylists(loadPlaylist);
+			}
+
+			function setTheme(coverUrl) {
+				var albumArt = new Image();
+				albumArt.addEventListener("load", function(){
+					var colorThief = new ColorThief();
+					var imagePalette = colorThief.getPalette(albumArt, 2);
+					var backgroundRGB = imagePalette[0];
+					var textRGB = imagePalette[1];
+					if (luminance(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]) > luminance(textRGB[0], textRGB[1], textRGB[2])) {
+						backgroundRGB = imagePalette[1];
+						textRGB = imagePalette[0];
 					}
-				}
-
-				function isDynamicTheme() {
-				return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "dynamic" )
-				}
-
-				function isCustomTheme() {
-				return ($("#theme_settings input[name=option_theme]:checked").attr("id") === "custom" )
-				}
-
-				function isDefaultPoster() {
-					return (nowPlaying["cover"] == null);
-				
-				}
-
-				function resetPlaylists() {
-					getPlaylists(loadPlaylist);
-				}
-
-				function setTheme(coverUrl) {
-					var albumArt = new Image();
-					albumArt.addEventListener("load", function(){
-						var colorThief = new ColorThief();
-						var imagePalette = colorThief.getPalette(albumArt, 2);
-						var backgroundRGB = imagePalette[0];
-						var textRGB = imagePalette[1];
-						if (luminance(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]) > luminance(textRGB[0], textRGB[1], textRGB[2])) {
-							backgroundRGB = imagePalette[1];
-							textRGB = imagePalette[0];
-						}
-						if (luminance(textRGB[0], textRGB[1], textRGB[2]) < .4) {
-							textRGB = [Math.min(200, textRGB[0] + 60), Math.min(200, textRGB[1] + 60), Math.min(200, textRGB[2] + 60)];
-						} else if (luminance(textRGB[0], textRGB[1], textRGB[2]) > .7) {
-							textRGB = [Math.max(0, textRGB[0] - 60), Math.max(0, textRGB[1] - 60), Math.max(0, textRGB[2] - 60)];
-						}
-						setColour("background", rgbToHex(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]));
-						setColour("text", rgbToHex(textRGB[0], textRGB[1], textRGB[2]));
-					});
-					albumArt.src = coverUrl;
-					if (CSS.supports("backdrop-filter", "blur(10px)")) {
-						$("body").css("background-image", "url(\"" + coverUrl + "\")");
+					if (luminance(textRGB[0], textRGB[1], textRGB[2]) < .4) {
+						textRGB = [Math.min(200, textRGB[0] + 60), Math.min(200, textRGB[1] + 60), Math.min(200, textRGB[2] + 60)];
+					} else if (luminance(textRGB[0], textRGB[1], textRGB[2]) > .7) {
+						textRGB = [Math.max(0, textRGB[0] - 60), Math.max(0, textRGB[1] - 60), Math.max(0, textRGB[2] - 60)];
 					}
-					$("body").addClass("magic");
+					setColour("background", rgbToHex(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2]));
+					setColour("text", rgbToHex(textRGB[0], textRGB[1], textRGB[2]));
+				});
+				albumArt.src = coverUrl;
+				if (CSS.supports("backdrop-filter", "blur(10px)")) {
+					$("body").css("background-image", "url(\"" + coverUrl + "\")");
 				}
+				$("body").addClass("magic");
+			}
 
-				function luminance(r, g, b) {
-					var a = [r, g, b].map(function (v) {
-							v /= 255;
-							return v <= 0.03928
-									? v / 12.92
-									: Math.pow( (v + 0.055) / 1.055, 2.4 );
-					});
-					var luminance = a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
-					return luminance;
-				}
+			function luminance(r, g, b) {
+				var a = [r, g, b].map(function (v) {
+						v /= 255;
+						return v <= 0.03928
+								? v / 12.92
+								: Math.pow( (v + 0.055) / 1.055, 2.4 );
+				});
+				var luminance = a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+				return luminance;
+			}
 
-				function setColour(id, value) {
-					document.documentElement.style.setProperty("--" + id, value);
-					document.documentElement.style.setProperty("--" + id + "-highlight", increase_brightness(value, (id == "background")? 10: 70));
-				}
+			function setColour(id, value) {
+				document.documentElement.style.setProperty("--" + id, value);
+				document.documentElement.style.setProperty("--" + id + "-highlight", increase_brightness(value, (id == "background")? 10: 70));
+			}
 
-				function componentToHex(c) {
-						var hex = c.toString(16);
-						return hex.length == 1 ? "0" + hex : hex;
-				}
+			function componentToHex(c) {
+					var hex = c.toString(16);
+					return hex.length == 1 ? "0" + hex : hex;
+			}
 
-				function rgbToHex(r, g, b) {
-						return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-				}
+			function rgbToHex(r, g, b) {
+					return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+			}
 
 			function increase_brightness(hex, percent){
 					hex = hex.replace(/^\s*#|\s*$/g, '');
@@ -989,10 +1218,6 @@ class Musicco {
 				return (viewerType === '"widescreen"');
 			}
 
-			function setCurrentTime(time) {
-				player.currentTime = time;
-			}
-
 			function volumeUp() {
 				$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") + 10);
 				saveSettings();
@@ -1005,7 +1230,12 @@ class Musicco {
 
 			function setVolume(volume) {
 				$("#big-volume-bar").addClass("hovered").delay(1000).queue(function(n) { $("#big-volume-bar").removeClass("hovered"); n();});
-				player.volume = volume;
+				if (isCasting) {
+					castPlayer.volumeLevel = volume;
+					castController.setVolumeLevel();
+				} else {
+					player.volume = volume;
+				}
 			}
 
 			function hideSpinner() {
@@ -1034,8 +1264,13 @@ class Musicco {
 			}
 
 			function resetPlayer() {
-				player.pause();
-				player.src = "";
+				updatePlayPauseIcons(true);
+				if (isCasting) {
+					castController.stop();
+				} else {
+					player.pause();
+					player.src = "";
+				}
 				$("#album-art").attr("src", "").hide();
 				$(".logo-player").show();
 				$("#nowPlaying_songtitle, #nowPlaying_artist, #nowPlaying_album, #nowPlaying_year").html("");
@@ -1047,14 +1282,44 @@ class Musicco {
 				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
 				$(track).addClass("currentTrack");
 				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
-				player.src = encodeURI($(track).data("parent") + $(track).data("path")).replace("#", "%23");
+				player.src = buildMediaSrc($(track).data("parent"), $(track).data("path"));
 				refreshPlaylist();
+				updateUI();
+			}
+
+			function buildMediaSrc(parent, path) {
+				return encodeURI(parent + path).replace("#", "%23");
+			}
+
+			function updateUI() {
+				$("#album-art").attr("src", nowPlaying["cover"]);
+				var textData = ["songtitle", "artist", "album", "year"];
+				textData.forEach(function(info) {
+					$("#nowPlaying_"+info).html(nowPlaying[info]); 
+				});
+				if ($("#nowPlaying_year").html() != "") {
+					$("#nowPlaying_year").prepend("(");
+					$("#nowPlaying_year").append(")");
+				}
+				flashInfo();
+				showNotification();
+				$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying["artist"] + " " + nowPlaying["album"]);
+				updateInfoPanel(wikiLink(nowPlaying["artist"]), nowPlaying["artist"], false, false);
+				updateLyricsPanel(nowPlaying["artist"], nowPlaying["songtitle"]);
+				displayCover();
+				scrollPlaylist();
 			}
 
 			function playTrack(track) {
 				var trackNumber = $(track).index("#playlist li[data-nature=track]");
 				loadTrack(trackNumber);
-				player.play();
+				if (isCasting) {
+					isPlaying = true;
+					loadCastPlaylist();
+				} else {
+					player.play();
+				}
+				updatePlayPauseIcons(false);
 			}
 
 			function playRandomTrack() {
@@ -1166,10 +1431,10 @@ class Musicco {
 								break;
 							}
 						}
+					$("#playlist").trigger("updated");
 					if (playAfter) {
 						playTrack($("#playlist").find("li[data-nature=track]").first());
 					}
-					savePlaylist();
 				}, "json");
 			}
 
@@ -1867,6 +2132,7 @@ class Musicco {
 			function saveSettings() {
 				if (isInit) {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
+					if (isCasting) { setRepeatMode(); }
 					if (user!="") {
 						var volume = $("#big-volume-bar").slider("option", "value");
 						var loop = playerConfig["loop"];
@@ -1885,7 +2151,7 @@ class Musicco {
 				if (user!="") {
 					$.post('?', {loadSettings: '', u: user}, function(response) {
 						var options = JSON.parse(response);
-						$("#big-volume-bar").slider("option", "value",parseInt(options.volume));
+						$("#big-volume-bar").slider("option", "value", parseInt(options.volume));
 						if (options.loop === "true") {
 							$('#loop').trigger("click");
 						}
@@ -2160,7 +2426,7 @@ class Musicco {
 				function clearPlaylist() {
 					resetPlayer();
 					$("#playlist li").remove();
-					savePlaylist();
+					$("#playlist").trigger("updated");
 				}
 
 				function toggleSearch() {
@@ -2428,37 +2694,20 @@ class Musicco {
 
 			function triggerPlayPause() {
 				var status = "";
-				if (player.paused) { 
-					$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 200);
-					$(".big-jp-play").trigger("click");
+				savePlaylist();
+				if (isCasting) {
+					castController.playOrPause();
 				} else {
-					$(player).animate({volume: 0}, 200);
-					status = "isPaused";
-					setTimeout(function() { $(".big-jp-pause").trigger("click"); }, 200);
+					if (player.paused) {
+						player.play();
+						$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 500);
+					} else {
+						status = "isPaused";
+						$(player).animate({volume: 0}, 200, function(){player.pause()});
+					}
+					updatePlayPauseIcons((status == "isPaused") ? true : false);
 				}
 				showNotification(status);
-			}
-
-			function updatePlayerUI() {
-				$('.big-jp-play').hide();
-				$('.big-jp-pause').show();
-				$("#album-art").attr("src", nowPlaying["cover"]);
-				var textData = ["songtitle", "artist", "album", "year"];
-				textData.forEach(function(info) {
-					$("#nowPlaying_"+info).html(nowPlaying[info]); 
-				});
-				if ($("#nowPlaying_year").html() != "") {
-					$("#nowPlaying_year").prepend("(");
-					$("#nowPlaying_year").append(")");
-				}
-				flashInfo();
-				showNotification();
-				$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying["artist"] + " " + nowPlaying["album"]);
-				updateInfoPanel(wikiLink(nowPlaying["artist"]), nowPlaying["artist"], false, false);
-				updateLyricsPanel(nowPlaying["artist"], nowPlaying["songtitle"]);
-				displayCover();
-				scrollPlaylist();
-				savePlaylist();
 			}
 
 			function getDuration(seconds) {
@@ -2552,7 +2801,7 @@ class Musicco {
 				$(draggedElement).siblings().css("opacity", "1");
 				$(draggedElement).css("border", "0");
 				draggedElement = null;
-				savePlaylist();
+				$("#playlist").trigger("updated");
 			}
 
 			function isBefore(el1, el2) {
@@ -2601,8 +2850,7 @@ class Musicco {
 				 // ACTIONS //
 				/////////////
 
-			var status = null;
-			startPolling();
+			var status = null; startPolling();
 
 				var watcherTarget = document.getElementById("playlist");
 				if (watcherTarget) {
@@ -2647,6 +2895,7 @@ class Musicco {
 						start: function(event, ui) { timeUpdates = false; },
 						stop: function(event, ui) { setCurrentTime(ui.value); timeUpdates = true; }
 					});
+
 					$("#big-volume-bar").slider({
 						orientation: "vertical",
 						range: "min",
@@ -2722,6 +2971,7 @@ class Musicco {
 						}
 					});
 
+					enableLocalPlayer();
 					loadSettings();
 					loadPlaylist();
 					adaptUI(true);
@@ -2804,6 +3054,17 @@ class Musicco {
 				 // EVENTS //
 				////////////
 
+				$("#playlist").on("updated", function() {
+					savePlaylist();
+					if (isCasting) {
+						loadCastPlaylist();
+					}
+				});
+
+				$("google-cast-launcher").on("click", function() {
+					isPlaying = !player.paused;
+				});
+
 				$("#panelContainer").on("scroll", function() {
 					if ($("#browserPanel").is(":visible")) {
 						var scrollHeight = $(document).height();
@@ -2856,6 +3117,7 @@ class Musicco {
 						target = $("#playlist > li").last();
 					}
 					target.after($(this).parents("li"));
+					$("#playlist").trigger("updated");
 				});
 
 				$("#playlist").on("click taphold", ".move-up", function(e) {
@@ -2865,6 +3127,7 @@ class Musicco {
 						target = $("#playlist > li").first();
 					}
 					target.before($(this).parents("li"));
+					$("#playlist").trigger("updated");
 				});
 
 				$("#big-volume-bar").on("change", function() {
@@ -2879,14 +3142,6 @@ class Musicco {
 				});
 
 				$(".previous_track").on("click", function() {
-				});
-
-				$(".big-jp-play").on("click", function() {
-					player.play();
-				});
-
-				$(".big-jp-pause").on("click", function() {
-					player.pause();
 				});
 
 				$("#shared-album-show-qr, #shared-album-show-cover").on("click", function() {
@@ -2974,7 +3229,7 @@ class Musicco {
 							target.remove();
 						}
 					}
-					savePlaylist();
+					$("#playlist").trigger("updated");
 				});
 
 				$(".obsoleteWarning").on("click", function() {
@@ -3371,7 +3626,7 @@ class Musicco {
 					$("#searchPanel").contextmenu("open", $(this));
 				});
 
-				$(document).on("click", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
+				$(document).on("click", ".big-jp-play, .big-jp-pause, #album-art, #big-cover .default-poster, .logo-player", function(e) {
 					triggerPlayPause();
 				});
 
@@ -3651,6 +3906,11 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="big-player-bottom">
 					<div id="playlist-controls" class="spread">
+						<?php 
+							if ($this->getConfig('isCastAllowed')) {
+							echo '<google-cast-launcher class="toggles"></google-cast-launcher>';
+							}
+						 ?>
 						<span id="big-unmute" class="toggles selected hidden"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 						<span id="big-mute" class="toggles"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 						<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
@@ -4827,6 +5087,11 @@ function builddb() {
 		$wizard .= "<input name='downLoadMissingCovers' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('downLoadMissingCovers')).">";
 		$wizard .= "<label for='downLoadMissingCovers'>Download album art</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to automatically download missing covers online. New covers will be saved to disk in the folder containing the song currently playing. Even when turning this off, you can still  trigger cover art search manually.</span></i>";
+		$wizard .= "</div>";
+		$wizard .= "<div>";
+		$wizard .= "<input name='isCastAllowed' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('isCastAllowed')).">";
+		$wizard .= "<label for='isCastAllowed'>Enable casting to compatible devices</label>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>When checked, the google chromecast library is loaded and will enable casting to compatible devices on your network.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
 		$wizard .= "<fieldset>";
