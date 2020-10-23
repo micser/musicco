@@ -104,6 +104,12 @@ $_CONFIG['loadLyricsFromFile'] = false;
 // Default: $_CONFIG['lookUpLyrics'] = false;
 $_CONFIG['lookUpLyrics'] = false;
 
+// Whether to enable the ability to cast music
+// to compatible chromecast devices on your
+// network. Enabling this option loads the 
+// google cast javascript library remotely.
+// Default: $_CONFIG['isCastAllowed'] = false;
+$_CONFIG['isCastAllowed'] = false;
 
 // Whether to automatically download
 // missing covers online. New covers
@@ -748,7 +754,11 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
-		<script src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+		<?php 
+			if ($this->getConfig('isCastAllowed')) {
+				echo '<script src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>';
+			}
+		 ?>
 		<script type="text/javascript">
 
 				///////////////
@@ -3896,7 +3906,11 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="big-player-bottom">
 					<div id="playlist-controls" class="spread">
-						<google-cast-launcher class="toggles"></google-cast-launcher>
+						<?php 
+							if ($this->getConfig('isCastAllowed')) {
+							echo '<google-cast-launcher class="toggles"></google-cast-launcher>';
+							}
+						 ?>
 						<span id="big-unmute" class="toggles selected hidden"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 						<span id="big-mute" class="toggles"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
 						<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
@@ -5073,6 +5087,11 @@ function builddb() {
 		$wizard .= "<input name='downLoadMissingCovers' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('downLoadMissingCovers')).">";
 		$wizard .= "<label for='downLoadMissingCovers'>Download album art</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to automatically download missing covers online. New covers will be saved to disk in the folder containing the song currently playing. Even when turning this off, you can still  trigger cover art search manually.</span></i>";
+		$wizard .= "</div>";
+		$wizard .= "<div>";
+		$wizard .= "<input name='isCastAllowed' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('isCastAllowed')).">";
+		$wizard .= "<label for='isCastAllowed'>Enable casting to compatible devices</label>";
+		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>When checked, the google chromecast library is loaded and will enable casting to compatible devices on your network.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
 		$wizard .= "<fieldset>";
