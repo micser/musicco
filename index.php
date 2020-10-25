@@ -996,6 +996,8 @@ class Musicco {
 			}
 
 			function convertPlaylist() {
+				// TODO: change queueitem[current] mediainfo property before returning the array
+				var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 				var queueItems = $("#playlist").find("li[data-nature=track]").map(function() {
 					var isCurrent = $(this).hasClass("currentTrack") ? true : false;
 					var contentId = $(this).index("#playlist li[data-nature=track]");
@@ -1017,7 +1019,8 @@ class Musicco {
 					queueItem.startTime = isCurrent ? player.currentTime : 0;
 					return queueItem;
 				}).get();
-				return queueItems;
+				var queueWithCurrentFirst = (queueItems.slice(current, queueItems.length)).concat(queueItems.slice(0, current));
+				return queueWithCurrentFirst;
 			}
 
 			function startCasting() {
@@ -1061,17 +1064,32 @@ class Musicco {
 			}
 
 			function loadCastPlaylist() {
+					var i, j , chunks = 30;
 					isResuming = false;
 					var remotePlaylist = convertPlaylist();
 					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
-					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist);
+					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist.slice(0, chunks));
 					playlistRequest.repeatMode = setRepeatMode();
-					playlistRequest.startIndex = current;
-					castSession.getSessionObj().queueLoad(playlistRequest,  () => {
-						//console.log("queue loaded");
+					//TODO set start index after the whole queue is loaded if it was not done here...
+					//playlistRequest.startIndex = (current <= chunks) ? current : 0;
+					castSession.getSessionObj().queueLoad(playlistRequest, () => {
+						console.log("queue loaded");
+						for (i = chunks, j = remotePlaylist.length; i < j; i+=chunks) {
+							var items = new chrome.cast.media.QueueInsertItemsRequest(remotePlaylist.slice(i, i + chunks));
+							castSession.getMediaSession().queueInsertItems(items, () => {
+								console.log("appended playlist chunk");
+								//if (current <= i + chunks) {
+								//	castSession.getMediaSession().queueData.startIndex = current;
+								//}
+							}, (e) => {
+								console.log("failed to append playlist chunk");
+								console.log(e);
+							});
+						}
+					console.log("loaded everything");
 					}, (e) => {
-						//console.log("queue load error");
-						//console.log(e);
+						console.log("queue load error");
+						console.log(e);
 					});
 			}
 
