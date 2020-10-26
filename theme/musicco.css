@@ -268,11 +268,12 @@
 		border: 1px solid var(--text);
 	}
 
-	#big-cover:hover #big-volume-bar {
-	opacity: 1;
-	border: 1px solid var(--text-highlight);
-	transition: opacity 2s ease, border 2s ease;
-	
+	@media (hover: hover) {
+		#big-cover:hover #big-volume-bar {
+		opacity: 1;
+		border: 1px solid var(--text-highlight);
+		transition: opacity 2s ease, border 2s ease;
+		}
 	}
 
 	.ui-tabs .ui-tabs-nav {
