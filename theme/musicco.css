@@ -170,7 +170,6 @@
 
 	@supports (backdrop-filter: blur(10px)) {
 		#playlist-tools {
-		background: none;
 		box-shadow: 0 0;
 		}
 
