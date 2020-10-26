@@ -3476,7 +3476,7 @@ class Musicco {
 											folder: true,
 											lazy: true,
 											extraClasses: "current",
-											data: {parent: decodeURI(musicRoot), path: folderName}
+											data: {parent: decodeURI(musicRoot), path: folderName, songtitle: folderName, artist: folderName, album: folderName}
 										});
 									}
 									showLoadingInfo("<?php print $this->getString("scanning_ok"); ?>");
