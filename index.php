@@ -2237,8 +2237,10 @@ class Musicco {
 				var link = getBaseURL() + "?guestPlay&u=" + user;
 				var qrW = $("#shared-album-cover").width();
 				var qrH = $("#shared-album-cover").height();
+				var background = window.getComputedStyle(document.body).getPropertyValue('--text-highlight');
+				var foreground = window.getComputedStyle(document.body).getPropertyValue('--background');
 				$("#shared-album-link").val(link).select().attr('size', link.length);
-				$("#shared-album-qr").qrcode({width: qrW, height: qrH, text: link});
+				$("#shared-album-qr").qrcode({width: qrW, height: qrH, text: link, background: background, foreground: foreground});
 				if (navigator.share) {
 					$("#shared-album-share").show();
 				} else {
