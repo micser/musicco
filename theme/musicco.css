@@ -249,6 +249,13 @@
 
 	.ui-slider-range {
 		background: var(--text-highlight);
+		transition: opacity 1s;
+		opacity: 0.5;
+	}
+
+	.ui-slider-range:hover {
+		transition: opacity .5s;
+		opacity: 1;
 	}
 
 	span.ui-slider-handle.ui-state-default {
