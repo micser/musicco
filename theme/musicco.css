@@ -207,6 +207,7 @@
 	#playlist_select {
 		margin-left: .5em;
 		max-width: 65%;
+		width: 16em;
 	}
 
 	#ham {
