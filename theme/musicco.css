@@ -2,7 +2,7 @@
 
 	:root {
 			--background: #121314;
-			--background-transparent: rgba(10, 11, 12, 0.8);
+			--background-neutral: rgba(10, 11, 12, 0.8);
 			--background-highlight: #272727;
 			--background-error: #FFE4E1;
 			--text: #A7A97F;
@@ -101,11 +101,6 @@
 
 	.blink3 {
 	 animation: blink3 1s linear infinite;
-	}
-
-	::-webkit-scrollbar {
-		width: .3em;
-		height: .3em;
 	}
 
 	/* I don't like the default space between icon and text in fancytree with fontawesome5 */
@@ -1005,12 +1000,21 @@
 
 	/* The highlight colour stuff comes next */
 
+	::-webkit-scrollbar {
+		width: .3em;
+	}
+
 	::-webkit-scrollbar-track {
-		background-color:transparent;
+		background-color: transparent;
 	}
 
 	::-webkit-scrollbar-thumb {
-		background: var(--text);
+		background-color: var(--text-transparent);
+		border-radius: 1px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background-color: var(--text);
 	}
 
 	#ham {
@@ -1073,13 +1077,13 @@
 
 	@supports (backdrop-filter: blur(10px)) {
 		ui-tabs .ui-widget-header {
-			border: 1px solid var(--background-transparent);
-			background: var(--background-transparent);
+			border: 1px solid var(--background-neutral);
+			background: var(--background-neutral);
 		}
 
 		#leftPanel {
 			backdrop-filter: blur(30px);
-			background-color: var(--background-transparent);
+			background-color: var(--background-neutral);
 		}
 	}
 

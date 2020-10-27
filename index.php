@@ -1198,6 +1198,7 @@ class Musicco {
 
 			function setColour(id, value) {
 				document.documentElement.style.setProperty("--" + id, value);
+				document.documentElement.style.setProperty("--" + id + "-transparent", value + "80");
 				document.documentElement.style.setProperty("--" + id + "-highlight", increase_brightness(value, (id == "background")? 10: 70));
 			}
 
