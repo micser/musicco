@@ -829,8 +829,12 @@ class Musicco {
 								if (event.value != null) {
 									loadTrack(event.value["contentId"]);
 								} else {
-									resetPlayer();
-									//updatePlayPauseIcons(true);
+									//console.log(event);
+									if (isCasting) {
+										//TODO: re-enable this, but make sure it is only called when reaching the end of the queue, not at every track change
+										//resetPlayer();
+										//updatePlayPauseIcons(true);
+									}
 								}
 							break;
 							case "isPaused":
@@ -995,7 +999,7 @@ class Musicco {
 				}
 			}
 
-			function convertPlaylist() {
+			function convertPlaylist(autoplay) {
 				// TODO: change queueitem[current] mediainfo property before returning the array
 				var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 				var queueItems = $("#playlist").find("li[data-nature=track]").map(function() {
@@ -1014,7 +1018,7 @@ class Musicco {
 						{'url': getBaseURL() + $(this).data("cover")}
 					];
 					queueItem = new chrome.cast.media.QueueItem(mediaInfo);
-					queueItem.autoplay = isCurrent ? isPlaying : true;
+					queueItem.autoplay = isCurrent ? autoplay : true;
 					queueItem.preloadTime = 10;
 					queueItem.startTime = isCurrent ? player.currentTime : 0;
 					return queueItem;
@@ -1028,7 +1032,7 @@ class Musicco {
 				castSession = cast.framework.CastContext.getInstance().getCurrentSession();
 				disableLocalPlayer();
 				if (!isResuming) {
-					loadCastPlaylist();
+					loadCastPlaylist(isPlaying);
 				}
 			}
 
@@ -1063,33 +1067,28 @@ class Musicco {
 				castPlayerState["contentId"] = castPlayer.mediaInfo["contentId"];
 			}
 
-			function loadCastPlaylist() {
+			function loadCastPlaylist(autoplay) {
 					var i, j , chunks = 30;
 					isResuming = false;
-					var remotePlaylist = convertPlaylist();
+					var remotePlaylist = convertPlaylist(autoplay);
 					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist.slice(0, chunks));
 					playlistRequest.repeatMode = setRepeatMode();
-					//TODO set start index after the whole queue is loaded if it was not done here...
-					//playlistRequest.startIndex = (current <= chunks) ? current : 0;
 					castSession.getSessionObj().queueLoad(playlistRequest, () => {
-						console.log("queue loaded");
+						//console.log("queue loaded");
 						for (i = chunks, j = remotePlaylist.length; i < j; i+=chunks) {
 							var items = new chrome.cast.media.QueueInsertItemsRequest(remotePlaylist.slice(i, i + chunks));
 							castSession.getMediaSession().queueInsertItems(items, () => {
-								console.log("appended playlist chunk");
-								//if (current <= i + chunks) {
-								//	castSession.getMediaSession().queueData.startIndex = current;
-								//}
+								//console.log("appended playlist chunk");
 							}, (e) => {
-								console.log("failed to append playlist chunk");
-								console.log(e);
+								//console.log("failed to append playlist chunk");
+								//console.log(e);
 							});
 						}
-					console.log("loaded everything");
+					//console.log("loaded everything");
 					}, (e) => {
-						console.log("queue load error");
-						console.log(e);
+						//console.log("queue load error");
+						//console.log(e);
 					});
 			}
 
@@ -1333,8 +1332,7 @@ class Musicco {
 				var trackNumber = $(track).index("#playlist li[data-nature=track]");
 				loadTrack(trackNumber);
 				if (isCasting) {
-					isPlaying = true;
-					loadCastPlaylist();
+					loadCastPlaylist(true);
 				} else {
 					player.play();
 				}
@@ -3078,7 +3076,7 @@ class Musicco {
 				$("#playlist").on("updated", function() {
 					savePlaylist();
 					if (isCasting) {
-						loadCastPlaylist();
+						loadCastPlaylist(castPlayer.playerState == chrome.cast.media.PlayerState.PLAYING);
 					}
 				});
 
