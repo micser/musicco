@@ -903,7 +903,7 @@ class Musicco {
 			var castPlayer = null;
 			var castController = null;
 
-			var albumProps = ["cover", "year", "artist", "album", "parent"];
+			var albumProps = ["cover", "year", "artist", "album", "parentfolder"];
 
 			var userIsStillTyping = false;
 			var menuOptions = [
@@ -1006,7 +1006,7 @@ class Musicco {
 					var contentId = $(this).index("#playlist li[data-nature=track]");
 					var queueItem;
 					var mediaInfo = new chrome.cast.media.MediaInfo(contentId, "audio/mpeg");
-					mediaInfo.contentUrl = buildMediaSrc(getBaseURL() + $(this).data("parent"), $(this).data("path"));
+					mediaInfo.contentUrl = buildMediaSrc(getBaseURL() + $(this).data("parentfolder"), $(this).data("path"));
 					mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
 					mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
 					mediaInfo.metadata.title = $(this).data("songtitle");
@@ -1299,13 +1299,13 @@ class Musicco {
 				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
 				$(track).addClass("currentTrack");
 				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
-				player.src = buildMediaSrc($(track).data("parent"), $(track).data("path"));
+				player.src = buildMediaSrc($(track).data("parentfolder"), $(track).data("path"));
 				refreshPlaylist();
 				updateUI();
 			}
 
-			function buildMediaSrc(parent, path) {
-				return encodeURI(parent + path).replace("#", "%23");
+			function buildMediaSrc(parentfolder, path) {
+				return encodeURI(parentfolder + path).replace("#", "%23");
 			}
 
 			function updateUI() {
@@ -1390,7 +1390,7 @@ class Musicco {
 					$(nextTrack).addClass("nextTrack");
 					$(nextAlbum).addClass("nextAlbum");
 					//TODO: preloading tracks is blocking the client
-					//var tracks = [ $(previousTrack).data("parent") + $(previousTrack).data("path"),  $(nextTrack).data("parent") + $(nextTrack).data("path") ];
+					//var tracks = [ $(previousTrack).data("parentfolder") + $(previousTrack).data("path"),  $(nextTrack).data("parentfolder") + $(nextTrack).data("path") ];
 					//postMessage({command: "preload", tracks: tracks});
 				}
 			}
@@ -1615,7 +1615,7 @@ class Musicco {
 						case 65: //a
 							if (treeIsFocused) {
 								var slash = node.isFolder()? "/": "" ;
-								queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.last);
+								queueMusic(node.data.parentfolder + node.data.path + slash, node.data.songtitle, Insert.last);
 							}
 						break;
 
@@ -1745,15 +1745,15 @@ class Musicco {
 					break;
 					case "queue":
 						var slash = node.isFolder()? "/": "" ;
-						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.last);
+						queueMusic(node.data.parentfolder + node.data.path + slash, node.data.songtitle, Insert.last);
 					break;
 					case "playRightNow":
 						var slash = node.isFolder()? "/": "" ;
-						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.top);
+						queueMusic(node.data.parentfolder + node.data.path + slash, node.data.songtitle, Insert.top);
 					break;
 					case "playAsNextAlbum":
 						var slash = node.isFolder()? "/": "" ;
-						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, Insert.next);
+						queueMusic(node.data.parentfolder + node.data.path + slash, node.data.songtitle, Insert.next);
 					break;
 					case "playBefore":
 						var slash = node.isFolder()? "/": "" ;
@@ -1761,29 +1761,29 @@ class Musicco {
 						if (isFirstAlbumPlaying()) {
 						location = Insert.top;
 						}
-						queueMusic(node.data.parent + node.data.path + slash, node.data.songtitle, location);
+						queueMusic(node.data.parentfolder + node.data.path + slash, node.data.songtitle, location);
 					break;
 					case "goto_artist":
 						goToArtist(node.data.artist);
 					break;
 					case "share": 
-						var path = node.data.parent + node.data.path;
+						var path = node.data.parentfolder + node.data.path;
 						var separator = (node.data.artist == '')? "" : " - ";
 						var info = node.data.artist + separator + node.title;
 						var image = node.data.cover;
 						saveGuestPlaylist(path, info, image);
 					break;
 					case "download":
-						downloadTrack(node.data.parent, node.data.path)
+						downloadTrack(node.data.parentfolder, node.data.path)
 					break;
 					case "downloadAlbum":
-						downloadAlbum(node.data.parent + node.data.album, node.data.album);
+						downloadAlbum(node.data.parentfolder + node.data.album, node.data.album);
 					break;
 					case "favourite":
-						addFavourite(node.data.parent + node.data.path);
+						addFavourite(node.data.parentfolder + node.data.path);
 					break;
 					case "removeFavourite":
-						deleteFavourite(node.data.parent + node.data.path);
+						deleteFavourite(node.data.parentfolder + node.data.path);
 					break;
 				}
 			}
@@ -1830,7 +1830,7 @@ class Musicco {
 							},
 							lazyLoad: function(event, data) {
 								var node = data.node;
-								var root = node.data.parent + node.data.path + "/";
+								var root = node.data.parentfolder + node.data.path + "/";
 								data.result = {
 									url: "?",
 									type: "POST",
@@ -1887,7 +1887,7 @@ class Musicco {
 								album: ui.target.data("album"),
 								artist: (ui.target.data("artist").length > 0 ? ui.target.data("artist") : ui.target.data("path")),
 								cover: ui.target.data("cover"),
-								parent: ui.target.data("parent"),
+								parentfolder: ui.target.data("parentfolder"),
 								path: ui.target.data("path").replace(/^(.*)\/$/, "$1"),
 								songtitle: ui.target.data("songtitle"),
 								type: ui.target.data("type"),
@@ -1948,12 +1948,12 @@ class Musicco {
 				});
 			}
 
-			function downloadTrack(parent, track) {
-				window.open("?getTrack&album=" + parent + "&track=" + track);
+			function downloadTrack(parentfolder, track) {
+				window.open("?getTrack&album=" + parentfolder + "&track=" + track);
 			}
 
-			function downloadAlbum(parent, album) {
-				window.open("?getAlbum&parent=" + encodeURIComponent(parent) + "&album=" + encodeURIComponent(album));
+			function downloadAlbum(parentfolder, album) {
+				window.open("?getAlbum&parentfolder=" + encodeURIComponent(parentfolder) + "&album=" + encodeURIComponent(album));
 			}
 
 			function initFavouriteTree() {
@@ -2306,7 +2306,7 @@ class Musicco {
 				function fetchCover() {
 					var currentAlbum = nowPlaying["album"];
 					var currentArtist = nowPlaying["artist"];
-					var currentPath = nowPlaying["parent"];
+					var currentPath = nowPlaying["parentfolder"];
 					$('#statusText').removeClass('canFetch');
 					var releaseUrl = "https://musicbrainz.org/ws/2/release/?query=release:\""+currentAlbum+"\"%20AND%20artist:\""+currentArtist+"\"&limit=1"
 					$.ajax({
@@ -2361,7 +2361,7 @@ class Musicco {
 				}
 
 				function uploadCover() {
-					var currentPath = nowPlaying["parent"];
+					var currentPath = nowPlaying["parentfolder"];
 					var isValidURL =/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!10(?:\.\d{1,3}){3})(?!127(?:\.\d{1,3}){3})(?!169\.254(?:\.\d{1,3}){2})(?!192\.168(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i;
 					var isValidImage =/^(.)*\.(png|gif|bmp|jpg|jpeg)$/i;
 					var userURL = window.prompt("<?php print $this->getString("promptCoverURL"); ?>", "<?php print $this->getString("defaultCoverURL"); ?>")
@@ -2962,13 +2962,13 @@ class Musicco {
 								break;
 								case "download":
 									if (target.data("nature") == "album") {
-										downloadAlbum(target.data("parent"), target.data("album"));
+										downloadAlbum(target.data("parentfolder"), target.data("album"));
 									} else {
-										downloadTrack(target.data("parent"), target.data("path"));
+										downloadTrack(target.data("parentfolder"), target.data("path"));
 									}
 								break;
 								case "share":
-									var path = target.data("parent");
+									var path = target.data("parentfolder");
 									var detail = target.data("album");
 									if (target.data("nature") == "track") {
 										path = path + target.data("path");
@@ -2981,9 +2981,9 @@ class Musicco {
 								break;
 								case "favourite":
 									if (target.data("nature") == "album") {
-										addFavourite(target.data("parent"));
+										addFavourite(target.data("parentfolder"));
 									} else {
-										addFavourite(target.data("parent") + target.data("path"));
+										addFavourite(target.data("parentfolder") + target.data("path"));
 									}
 								break;
 							}
@@ -3378,7 +3378,7 @@ class Musicco {
 						var hits= data;
 						if (hits != null) {
 							$.each(hits, function (i, elem) {
-								var parent = hits[i].parent;
+								var parentfolder = hits[i].parentfolder;
 								var name = hits[i].title;
 								var type = hits[i].type;
 								var extraClasses = hits[i].extraClasses;
@@ -3394,17 +3394,17 @@ class Musicco {
 								if (type == 1) {
 									optionalSlash = slash;
 								}
-								var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
-								var parentItem = parent.substr(levelUp.length);
-								var parentItemName = parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1).replace(/<?php print Musicco::getConfig('new_marker'); ?>/, "").replace(/\//g, " &gt; ");
-								var parentSongTitle = parentItem.replace("[" + year + "]", "").replace("/", "");
-								var parentTitle = parentItem.replace("/", "");
+								var levelUp = parentfolder.substr(0,parentfolder.substr(0,parentfolder.lastIndexOf("/")).lastIndexOf("/")+1);
+								var parentfolderItem = parentfolder.substr(levelUp.length);
+								var parentfolderItemName = parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1).replace(/<?php print Musicco::getConfig('new_marker'); ?>/, "").replace(/\//g, " &gt; ");
+								var parentfolderSongTitle = parentfolderItem.replace("[" + year + "]", "").replace("/", "");
+								var parentfolderTitle = parentfolderItem.replace("/", "");
 								var hitLink="<div class=\"hits\">";
-								if (parentItemName=="") {
-									parentItemName="home";
+								if (parentfolderItemName=="") {
+									parentfolderItemName="home";
 								}
-								hitLink+="<a class=\"searchResultParent\"  tabindex=\"1\" data-folder=\"true\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + parentSongTitle + "\" data-year=\"" + year + "\" data-parent=\"" + levelUp + "\" data-title=\"" + parentTitle + "\" data-path=\"" + parentItem + "\">" + parentItemName +"</a> &gt; ";
-								hitLink+="<a class=\"searchResult " + extraClasses + "\" tabindex=\"1\" data-folder=\"" + isFolder + "\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + songtitle + "\" data-year=\"" + year + "\" data-parent=\"" + parent + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path +"\">"+ name +"</a></div>";
+								hitLink+="<a class=\"searchResultParent\"  tabindex=\"1\" data-folder=\"true\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + parentfolderSongTitle + "\" data-year=\"" + year + "\" data-parentfolder=\"" + levelUp + "\" data-title=\"" + parentfolderTitle + "\" data-path=\"" + parentfolderItem + "\">" + parentfolderItemName +"</a> &gt; ";
+								hitLink+="<a class=\"searchResult " + extraClasses + "\" tabindex=\"1\" data-folder=\"" + isFolder + "\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + songtitle + "\" data-year=\"" + year + "\" data-parentfolder=\"" + parentfolder + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path +"\">"+ name +"</a></div>";
 								$("#searchResults").before(hitLink);
 							});
 						} else {
@@ -3432,11 +3432,11 @@ class Musicco {
 
 					$(document).on("click", ".downloadAlbum", function(event) {
 						event.preventDefault();
-						downloadAlbum($(this).parents("li").data("parent"), $(this).parents("li").data("album"))
+						downloadAlbum($(this).parents("li").data("parentfolder"), $(this).parents("li").data("album"))
 					});
 
 					$(document).on("click", ".favouriteAlbum", function(event) {
-						addFavourite($(this).parents("li").data("parent"));
+						addFavourite($(this).parents("li").data("parentfolder"));
 					});
 
 				$(document).on("click", "#remove_shared_links", function() {
@@ -3477,7 +3477,7 @@ class Musicco {
 											folder: true,
 											lazy: true,
 											extraClasses: "current",
-											data: {parent: decodeURI(musicRoot), path: folderName, songtitle: folderName, artist: folderName, album: folderName}
+											data: {parentfolder: decodeURI(musicRoot), path: folderName, songtitle: folderName, artist: folderName, album: folderName}
 										});
 									}
 									showLoadingInfo("<?php print $this->getString("scanning_ok"); ?>");
@@ -3535,20 +3535,20 @@ class Musicco {
 								if (hits != null) {
 									$.each(hits, function (i, elem) {
 										var slash="/";
-										var parent = hits[i].parent;
+										var parentfolder = hits[i].parentfolder;
 										var name = hits[i].title;
 										var type = hits[i].type;
-										var levelUp = parent.substr(0,parent.substr(0,parent.lastIndexOf("/")).lastIndexOf("/")+1);
-										var parentItem = parent.substr(levelUp.length);
-										var parentItemName = parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parent.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1);
+										var levelUp = parentfolder.substr(0,parentfolder.substr(0,parentfolder.lastIndexOf("/")).lastIndexOf("/")+1);
+										var parentfolderItem = parentfolder.substr(levelUp.length);
+										var parentfolderItemName = parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1);
 										var hitLink="<div class=\"hits\">";
-									if (parentItemName=="") {
-										parentItemName="home";
+									if (parentfolderItemName=="") {
+										parentfolderItemName="home";
 									}
-										hitLink+="<a class=\"searchResult uncoverLink\" id=\"" + i +"\" data-parent=\""+ levelUp +"\" data-title=\"" + parentItem + "\" data-path=\"" + parentItem + "\">"+ parentItemName +"</a>";
+										hitLink+="<a class=\"searchResult uncoverLink\" id=\"" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\">"+ parentfolderItemName +"</a>";
 									$("#searchResults").before(hitLink);
 									var thisHit = "#"+i;
-									queueMusic($(thisHit).data("parent") + $(thisHit).data("path"), $(thisHit).data("title"), Insert.last);
+									queueMusic($(thisHit).data("parentfolder") + $(thisHit).data("path"), $(thisHit).data("title"), Insert.last);
 									});
 								}
 							$(".uncoverLink").remove(); 
@@ -3634,7 +3634,7 @@ class Musicco {
 
 				$(document).on("click", ".share", function() {
 					saveGuestPlaylist(
-						$(this).parents("li").data("parent"),
+						$(this).parents("li").data("parentfolder"),
 						$(this).parents("li").data("album") + " <?php print $this->getString("by"); ?> " + $(this).parents("li").data("artist"),
 						$(this).parents("li").find("img.playlist-poster").attr("src")
 					);
@@ -4043,9 +4043,9 @@ if(!AuthManager::isAccessAllowed()) {
 			return print_r(file_get_contents_utf8($url));
 			exit;
 	} elseif (isset($_GET['getAlbum'])) {
-			$parent = $_GET['parent'];
+			$parentfolder = $_GET['parentfolder'];
 			$album = $_GET['album'];
-			$rootPath = realpath($parent);
+			$rootPath = realpath($parentfolder);
 			$zip = new ZipArchive();
 			$zip->open('./'.Musicco::getConfig('tempFolder').'/'.$album.'.zip', ZipArchive::CREATE | ZipArchive::OVERWRITE);
 			
@@ -4158,10 +4158,10 @@ function addFavourite($user, $path) {
 		if (preg_match("/.*\.mp3$/", $path)) {
 			array_push($tracks, $path);
 		} else {
-			$query = "SELECT parent, name FROM item WHERE parent LIKE \"$path%\" AND type IN (".Musicco::TYPE_FILE.");";
+			$query = "SELECT parentfolder, name FROM item WHERE parentfolder LIKE \"$path%\" AND type IN (".Musicco::TYPE_FILE.");";
 			$children = $db->query($query);
 			foreach($children as $row) {
-				array_push($tracks, $row["parent"] . $row["name"]);
+				array_push($tracks, $row["parentfolder"] . $row["name"]);
 			}
 		}
 		foreach($tracks as $track) {
@@ -4278,7 +4278,7 @@ function buildUL($favourites, $prefix) {
   foreach ($favourites as $key => $value) {
     $is_folder = (is_array($value)) ? "class='folder' data-folder='true'": "data-folder='false'";
     $isNew = (preg_match("/".Musicco::getConfig('new_marker')."/", $key))? "current" : "treenode";
-		$li_data = "$is_folder data-parent='$prefix$slash' data-key='".urlencode($prefix.$slash.$key)."' data-extraClasses='$isNew' data-path='$key' data-album='$key' data-artist='$key' data-cover=''  data-songtitle='$key' data-type='' data-year='' data-favourite='true'";
+		$li_data = "$is_folder data-parentfolder='$prefix$slash' data-key='".urlencode($prefix.$slash.$key)."' data-extraClasses='$isNew' data-path='$key' data-album='$key' data-artist='$key' data-cover=''  data-songtitle='$key' data-type='' data-year='' data-favourite='true'";
 		$favourites_list .= "<li $li_data><span>";
     $favourites_list .= preg_replace("/".Musicco::getConfig('new_marker')."/", "", $key)."</span>";
     // if the value is another array, recursively build the list
@@ -4498,30 +4498,30 @@ function querydb($query_root, $query_type) {
 	try	{
 		switch ($query_type) {
 		case "browse":
-		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE parent = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE";
+		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE parentfolder = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE";
 		break;
 		case "queue":
 		$query = "";
 		if (preg_match("/.*\.mp3$/", $query_root)) {
 			$query_root = explode("/", $query_root);
 			$filename = $query_root[sizeOf($query_root)-1];
-			$parent = "";
+			$parentfolder = "";
 			for($i=0; $i<sizeOf($query_root)-1; $i++) {
-				$parent.=$query_root[$i]."/";
-			$query = "SELECT main.name, main.type, main.parent, (SELECT (parent || name) FROM item sub WHERE sub.parent = main.parent AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parent = \"$parent\" AND main.name = \"$filename\"  AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parent, main.name COLLATE NOCASE";
+				$parentfolder.=$query_root[$i]."/";
+			$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder = \"$parentfolder\" AND main.name = \"$filename\"  AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE";
 			}
 		} else {
-			$query = "SELECT main.name, main.type, main.parent, (SELECT (parent || name) FROM item sub WHERE sub.parent = main.parent AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parent LIKE \"$query_root%\"  AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parent, main.name COLLATE NOCASE";
+			$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE \"$query_root%\"  AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE";
 		}
 		break;
 		case "search":
-		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE normalised_name LIKE \"%$query_root%\" AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY parent, name COLLATE NOCASE";
+		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE normalised_name LIKE \"%$query_root%\" AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY parentfolder, name COLLATE NOCASE";
 		break;
 		case "uncover":
-		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		case "uncover_new":
-		$query = "SELECT name, type, parent, cover, album, artist, title, year, number, extension FROM item WHERE parent LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE parentfolder LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		default:
 	}
@@ -4537,7 +4537,7 @@ function querydb($query_root, $query_type) {
 	foreach($result as $row) {
 		$name = $row['name'];
 		$type = $row['type'];
-		$parent = $row['parent'];
+		$parentfolder = $row['parentfolder'];
 		$cover = $row['cover'];
 		$album = $row['album'];
 		$artist = $row['artist'];
@@ -4550,7 +4550,7 @@ function querydb($query_root, $query_type) {
 		$list[]= array(
 							"title" => str_replace(Musicco::getConfig('new_marker'), "", $name),
 							"path" => $name,
-							"parent" => $parent,
+							"parentfolder" => $parentfolder,
 							"type" => $type,
 							"cover" => $cover,
 							"album" => $album,
@@ -4564,7 +4564,7 @@ function querydb($query_root, $query_type) {
 							"lazy" => $folder,
 							"extraClasses" => $extraClasses
 							);
-		//logMessage("$name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension, $folder, $extraClasses");
+		//logMessage("$name, $type, $parentfolder, $cover, $album, $artist, $title, $year, $number, $extension, $folder, $extraClasses");
 	}
 	$db = NULL;
 	logMessage("Displayed Data in ".number_format((microtime(true) - $_START_DISPLAY), 3)." seconds");
@@ -4592,7 +4592,7 @@ function quickscan($folder) {
 	$newMusic = build_library(Musicco::getConfig('musicRoot')."/".$folder, ".mp3");
 	if (sizeof($newMusic) > 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$db->exec('INSERT INTO item (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) VALUES ("'.$folder.'","'. normalise($folder).'", "1", "'.Musicco::getConfig('musicRoot').'/", "", "", "", "'.$folder.'", "", "", "");');
+		$db->exec('INSERT INTO item (name, normalised_name, type, parentfolder, cover, album, artist, title, year, number, extension) VALUES ("'.$folder.'","'. normalise($folder).'", "1", "'.Musicco::getConfig('musicRoot').'/", "", "", "", "'.$folder.'", "", "", "");');
 		insertResults($newMusic, $db, false);
 		$db = NULL;
 	}
@@ -4613,8 +4613,8 @@ function initDB() {
 function cleanDB($db) {
 	$db->exec("DELETE FROM item_tmp;");
 	$db->exec("DELETE FROM data;");
-	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
-	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parent TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
+	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
+	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
 	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
@@ -4623,8 +4623,8 @@ function cleanDB($db) {
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('version', '".Musicco::getConfig('dbVersion')."');");
-	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parent, name);");
-	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx2 ON item (parent, name, type);");
+	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parentfolder, name);");
+	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx2 ON item (parentfolder, name, type);");
 	$db->exec("CREATE INDEX IF NOT EXISTS item_idx3 ON item (name, type);");
 	$db->exec("CREATE INDEX IF NOT EXISTS item_idx4 ON item (normalised_name, type);");
 	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS users_idx ON users (id, current_playlist);");
@@ -4636,13 +4636,13 @@ function insertResults($library, $db, $background) {
 	if ($background) {
 		$destTable = "item_tmp";
 	}
-	$insert_item = $db->prepare('INSERT INTO '.$destTable.' (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
+	$insert_item = $db->prepare('INSERT INTO '.$destTable.' (name, normalised_name, type, parentfolder, cover, album, artist, title, year, number, extension) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
 
 	foreach ($library as $item) {
 		$name= $item[0];
 		$normalised_name = normalise($name);
 		$type= $item[1];
-		$parent= $item[2];
+		$parentfolder= $item[2];
 		$cover= "";
 		$album= "";
 		$artist= "";
@@ -4651,7 +4651,7 @@ function insertResults($library, $db, $background) {
 		$number= "";
 		$extension= "";
 		// compute year 
-		$target =  ($type == Musicco::TYPE_FOLDER)? $name : $parent;
+		$target =  ($type == Musicco::TYPE_FOLDER)? $name : $parentfolder;
 		if (preg_match(Musicco::getConfig('yearPattern'), $target, $year_matches)) {
 			$year = $year_matches[1];
 		}				
@@ -4670,15 +4670,15 @@ function insertResults($library, $db, $background) {
 		}
 
 		// compute album
-		$exploded_parent = explode("/", $parent);
+		$exploded_parentfolder = explode("/", $parentfolder);
 		
 		$album_location = ($type == Musicco::TYPE_FOLDER)? 3 : 2;
-		if (sizeOf($exploded_parent) - $album_location > 0) {
-			$album = $exploded_parent[sizeOf($exploded_parent) - $album_location];
+		if (sizeOf($exploded_parentfolder) - $album_location > 0) {
+			$album = $exploded_parentfolder[sizeOf($exploded_parentfolder) - $album_location];
 			$i=1;
-			while(($i < sizeOf($exploded_parent)) && (preg_match(Musicco::getConfig('albumPattern'), $album))) {
+			while(($i < sizeOf($exploded_parentfolder)) && (preg_match(Musicco::getConfig('albumPattern'), $album))) {
 				$i+=1;
-				$album = $exploded_parent[$i];
+				$album = $exploded_parentfolder[$i];
 			}
 		} else {
 			$album = $name;
@@ -4687,15 +4687,15 @@ function insertResults($library, $db, $background) {
 		
 		// compute artist
 		$i=1;
-		$artist = $exploded_parent[$i];
-		while(($i < sizeOf($exploded_parent)) && (preg_match(Musicco::getConfig('artistPattern'), $artist))) {
+		$artist = $exploded_parentfolder[$i];
+		while(($i < sizeOf($exploded_parentfolder)) && (preg_match(Musicco::getConfig('artistPattern'), $artist))) {
 			$i+=1;
-			$artist = $exploded_parent[$i];
+			$artist = $exploded_parentfolder[$i];
 		}
 		$artist = str_replace(Musicco::getConfig('new_marker'), "", $artist);
 
 		// insert all info in DB
-		$insert_item->execute(array($name, $normalised_name, $type, $parent, $cover, $album, $artist, $title, $year, $number, $extension));
+		$insert_item->execute(array($name, $normalised_name, $type, $parentfolder, $cover, $album, $artist, $title, $year, $number, $extension));
 	}
 	$insert_item = NULL;
 }
@@ -4730,7 +4730,7 @@ function builddb() {
 			$db->exec("DROP INDEX item_idx4;");
 			$db->exec("DROP INDEX users_idx;");
 			$db->exec("DROP INDEX playlists_idx;");
-			$db->exec("INSERT INTO item (name, normalised_name, type, parent, cover, album, artist, title, year, number, extension) SELECT name, normalised_name, type, parent, cover, album, artist, title, year, number, extension FROM item_tmp;");
+			$db->exec("INSERT INTO item (name, normalised_name, type, parentfolder, cover, album, artist, title, year, number, extension) SELECT name, normalised_name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item_tmp;");
 			$db->exec("REINDEX item_idx;");
 			$db->exec("REINDEX item_idx2;");
 			$db->exec("REINDEX item_idx3;");
@@ -4748,21 +4748,21 @@ function builddb() {
 			$get_favourites_query->execute();
 			$favourites = $get_favourites_query->fetchAll();
 			$get_favourites_query = NULL;
-			$file_check = $db->prepare('SELECT COUNT(id) from item where parent = ? AND name = ?;');
+			$file_check = $db->prepare('SELECT COUNT(id) from item where parentfolder = ? AND name = ?;');
 			foreach($favourites as $row) {
 				$favourite = pathinfo($row['path']);
-				$parent = $favourite["dirname"]."/";
+				$parentfolder = $favourite["dirname"]."/";
 				$file = $favourite["basename"];
-				$file_check->execute(array($parent, $file));
+				$file_check->execute(array($parentfolder, $file));
 				$count = $file_check->fetchColumn();
 				if (!$count) {
-					$alt_parent = preg_replace("/".Musicco::getConfig('new_marker')."/", "", $parent);
-					$file_check->execute(array($alt_parent, $file));
+					$alt_parentfolder = preg_replace("/".Musicco::getConfig('new_marker')."/", "", $parentfolder);
+					$file_check->execute(array($alt_parentfolder, $file));
 					$count = $file_check->fetchColumn();
 					if (!$count) {
-						$db->exec("DELETE from favourites where path=\"$parent$file\";");
+						$db->exec("DELETE from favourites where path=\"$parentfolder$file\";");
 					} else {
-						$db->exec("UPDATE favourites SET path=\"$alt_parent$file\" where path=\"$parent$file\";");
+						$db->exec("UPDATE favourites SET path=\"$alt_parentfolder$file\" where path=\"$parentfolder$file\";");
 					}
 				}
 			}
