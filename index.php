@@ -767,7 +767,6 @@ class Musicco {
 
 			var clientId = "<?php print bin2hex(random_bytes(5)); ?>";
 			var viewerType = '';
-			var windowWidth = '';
 			var timeUpdates = true;
 			var isInit = false;
 			var library = [];
@@ -1396,10 +1395,12 @@ class Musicco {
 				}
 			}
 
-			function restorePanel() {
+			function restorePanel(resume) {
 				var panel = ($(".panel[class~='shown']").not("[class*='default']"));
 				if (panel.length) {
-					$("#leftPanel").show(100, function() { blurPlayer() });
+					if (resume) {
+						$("#leftPanel").show(100, function() { blurPlayer() });
+					}
 					$(".panelToggle[href='" + "#" + panel + "']").trigger("click");
 					if (isPortrait()) {
 						$(".default").removeClass("default");
@@ -2879,7 +2880,6 @@ class Musicco {
 				}
 
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
-				windowWidth = $(window).width();
 				new ClipboardJS(".clip");
 
 				if ($(".landing").is(":visible")) {
@@ -3031,11 +3031,11 @@ class Musicco {
 
 				function adaptUI(init) {
 				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
+				var viewerTypeHasChanged = (newViewerType != viewerType);
+				var panelIsOpen = (($("#leftPanel").is(":visible") && isPortrait()) || (viewerTypeHasChanged && !(isPortrait())));
 				//console.log(newViewerType);
-				var newWindowWidth = $(window).width();
-				if ((newViewerType != viewerType) && (newWindowWidth != windowWidth) || (init)) {
+				if (viewerTypeHasChanged || init) {
 					viewerType = newViewerType;
-					windowWidth = newWindowWidth;
 					if (!isWidescreen()) {
 						$("#playlistToggle").show();
 						$("#leftPanel").tabs("enable", 2 );
@@ -3048,7 +3048,7 @@ class Musicco {
 					}
 					$("#leftPanel").tabs("refresh");
 				}
-				restorePanel();
+				restorePanel(panelIsOpen);
 				blurPlayer();
 				$( ".modal" ).dialog({
 					modal: true,
