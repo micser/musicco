@@ -1067,28 +1067,32 @@ class Musicco {
 			}
 
 			function loadCastPlaylist(autoplay) {
-					var i, j , chunks = 30;
 					isResuming = false;
 					var remotePlaylist = convertPlaylist(autoplay);
 					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
-					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist.slice(0, chunks));
+					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist.slice(0, 1));
 					playlistRequest.repeatMode = setRepeatMode();
 					castSession.getSessionObj().queueLoad(playlistRequest, () => {
 						//console.log("queue loaded");
-						for (i = chunks, j = remotePlaylist.length; i < j; i+=chunks) {
-							var items = new chrome.cast.media.QueueInsertItemsRequest(remotePlaylist.slice(i, i + chunks));
-							castSession.getMediaSession().queueInsertItems(items, () => {
-								//console.log("appended playlist chunk");
-							}, (e) => {
-								//console.log("failed to append playlist chunk");
-								//console.log(e);
-							});
-						}
+						queueCastItems(remotePlaylist.slice(1,remotePlaylist.length))
 					//console.log("loaded everything");
 					}, (e) => {
 						//console.log("queue load error");
 						//console.log(e);
 					});
+			}
+
+			function queueCastItems(queueItems) {
+				var i, j , chunks = 30;
+				for (i = 0, j = queueItems.length; i < j; i+=chunks) {
+					var items = new chrome.cast.media.QueueInsertItemsRequest(queueItems.slice(i, i + chunks));
+					castSession.getMediaSession().queueInsertItems(items, () => {
+						//console.log("appended playlist chunk");
+					}, (e) => {
+						//console.log("failed to append playlist chunk");
+						//console.log(e);
+					});
+				}
 			}
 
 			function disableLocalPlayer() {
