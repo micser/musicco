@@ -827,13 +827,6 @@ class Musicco {
 							case "mediaInfo":
 								if (event.value != null) {
 									loadTrack(event.value["contentId"]);
-								} else {
-									//console.log(event);
-									if (isCasting) {
-										//TODO: re-enable this, but make sure it is only called when reaching the end of the queue, not at every track change
-										//resetPlayer();
-										//updatePlayPauseIcons(true);
-									}
 								}
 							break;
 							case "isPaused":
@@ -970,7 +963,8 @@ class Musicco {
 				if (playerConfig["shuffled"]) {
 					playRandomTrack();
 				} else if ( (playerConfig["loop"] == false) && ($(nextTrack).index("#playlist li[data-nature=track]") == 0) ){
-					resetPlayer();
+					loadTrack(0);
+					updatePlayPauseIcons(true);
 				} else {
 					playTrack(nextTrack);
 				}
