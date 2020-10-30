@@ -776,6 +776,7 @@ class Musicco {
 			var isResuming = false;
 			var isCasting = false;
 			var castPlayerState = {};
+			var castContentUrl = "";
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
@@ -801,7 +802,6 @@ class Musicco {
 							break;
 							case cast.framework.SessionState.SESSION_ENDING:
 								//console.log('CastContext: CastSession disconnecting');
-								//saveCastPlayerState();
 							break;
 							case cast.framework.SessionState.SESSION_ENDED:
 								//console.log('CastContext: CastSession disconnected');
@@ -826,7 +826,10 @@ class Musicco {
 							break;
 							case "mediaInfo":
 								if (event.value != null) {
-									loadTrack(event.value["contentId"]);
+									if (event.value["contentUrl"] != castContentUrl) {
+										loadTrack(event.value["contentId"]);
+										castContentUrl = event.value["contentUrl"];
+									}
 								}
 							break;
 							case "isPaused":
@@ -972,20 +975,12 @@ class Musicco {
 
 			function durationChange(provided) {
 				var duration = (provided != null) ? provided : player.duration;
-				// TODO: only do this when getting a DISCONNECTING event
-				if (isCasting) {
-					player.duration = duration;
-				}
 				$("#duration").html(getDuration(duration));
 				$("#big-jp-progress").slider( "option", "max", parseInt(duration) );
 			}
 
 			function timeUpdate(provided) {
 				var currentTime = (provided != null) ? provided : player.currentTime;
-				// TODO: only do this when getting a DISCONNECTING event
-				if (isCasting) {
-					player.currentTime = currentTime;
-				}
 				$("#current_time").html(getDuration(currentTime));
 				if (timeUpdates) {
 					$("#big-jp-progress").slider( "option", "value", parseInt(currentTime) );
@@ -993,7 +988,6 @@ class Musicco {
 			}
 
 			function convertPlaylist(autoplay) {
-				// TODO: change queueitem[current] mediainfo property before returning the array
 				var repeat = (playerConfig["shuffled"] == true || playerConfig["loop"] == true) ? true : false;
 				var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 				var queueItems = $("#playlist").find("li[data-nature=track]").map(function() {
