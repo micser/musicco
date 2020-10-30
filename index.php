@@ -789,22 +789,22 @@ class Musicco {
 				castContext.addEventListener(
 					cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
 					function(event) {
-						//console.log("SESSION_STATE_CHANGED: " + event.sessionState);
-						//console.log(event);
+						console.debug("SESSION_STATE_CHANGED: " + event.sessionState);
+						console.debug(event);
 						switch (event.sessionState) {
 							case cast.framework.SessionState.SESSION_STARTED:
-								//console.log('CastContext: CastSession connected: ' + event.session.getSessionId());
+								console.debug('CastContext: CastSession connected: ' + event.session.getSessionId());
 								startCasting();
 							break;
 							case cast.framework.SessionState.SESSION_RESUMED:
-								//console.log('CastContext: CastSession resumed: ' + event.session.getSessionId());
+								console.debug('CastContext: CastSession resumed: ' + event.session.getSessionId());
 								resumeCasting();
 							break;
 							case cast.framework.SessionState.SESSION_ENDING:
-								//console.log('CastContext: CastSession disconnecting');
+								console.debug('CastContext: CastSession disconnecting');
 							break;
 							case cast.framework.SessionState.SESSION_ENDED:
-								//console.log('CastContext: CastSession disconnected');
+								console.debug('CastContext: CastSession disconnected');
 								saveCastPlayerState();
 								stopCasting();
 							break;
@@ -815,8 +815,8 @@ class Musicco {
 				castController.addEventListener(
 					cast.framework.RemotePlayerEventType.ANY_CHANGE,
 					function(event) {
-						//console.log("ANY_CHANGE");
-						//console.log(event);
+						console.debug("ANY_CHANGE");
+						console.debug(event);
 						switch (event.field) {
 							case "duration":
 								durationChange(event.value);
@@ -840,8 +840,8 @@ class Musicco {
 				castController.addEventListener(
 					cast.framework.RemotePlayerEventType.PLAYER_STATE_CHANGED,
 					function(event) {
-						//console.log("PLAYER_STATE_CHANGED");
-						//console.log(event);
+						console.debug("PLAYER_STATE_CHANGED");
+						console.debug(event);
 						switch (event.playerState) {
 							case "PAUSED":
 								updatePlayPauseIcons(true);
@@ -859,12 +859,12 @@ class Musicco {
 				window.addEventListener('load', function() {
 					 navigator.serviceWorker.register('musicco.js').then(function(registration) {
 						// Registration was successful
-						//console.log('ServiceWorker registration successful with scope: ', registration.scope);
+						console.debug('ServiceWorker registration successful with scope: ', registration.scope);
 						musiccoService = registration;
 					}, function(err) {
 						// registration failed :(
 						musiccoService = null;
-						//console.log('ServiceWorker registration failed: ', err);
+						console.warn('ServiceWorker registration failed: ', err);
 					});
 				});
 				navigator.serviceWorker.onmessage = function (e) {
@@ -1064,12 +1064,11 @@ class Musicco {
 					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist.slice(0, 1));
 					castSession.getSessionObj().queueLoad(playlistRequest, () => {
-						//console.log("queue loaded");
+						console.debug("queue loaded");
 						queueCastItems(remotePlaylist.slice(1,remotePlaylist.length))
-					//console.log("loaded everything");
 					}, (e) => {
-						//console.log("queue load error");
-						//console.log(e);
+						console.warn("queue load error");
+						console.warn(e);
 					});
 			}
 
@@ -1078,10 +1077,10 @@ class Musicco {
 				for (i = 0, j = queueItems.length; i < j; i+=chunks) {
 					var items = new chrome.cast.media.QueueInsertItemsRequest(queueItems.slice(i, i + chunks));
 					castSession.getMediaSession().queueInsertItems(items, () => {
-						//console.log("appended playlist chunk");
+						console.debug("appended playlist chunk");
 					}, (e) => {
-						//console.log("failed to append playlist chunk");
-						//console.log(e);
+						console.warn("failed to append playlist chunk");
+						console.warn(e);
 					});
 				}
 			}
@@ -1452,7 +1451,6 @@ class Musicco {
 			}
 
 			function filterTree() {
-				//var start = Date.now();
 				var tree = $.ui.fancytree.getTree("#library");
 				tree.reload(library);
 				var filterText = normalise($("#filterText").val().toLowerCase());
@@ -1467,7 +1465,6 @@ class Musicco {
 						return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
 					});
 				}
-				//console.log(Date.now() - start);
 			}
 
 			function hotkey(e) {
@@ -1933,7 +1930,7 @@ class Musicco {
 							node.tree.options.keyboard = ui.menu.prevKeyboard;
 							node.setFocus();
 						} else {
-							console.log("Node was null, unsure what the status of keyboard support is in that case");
+							console.warn("Node was null, unsure what the status of keyboard support is in that case");
 						}
 					},
 					select: function(event, ui) {
@@ -2146,10 +2143,10 @@ class Musicco {
 				// This sets everything as expected but seems to be completely ignored in the end ¯\_(ツ)_/¯
 				if (isCasting) { 
 					castSession.getMediaSession().queueSetRepeatMode(getRepeatMode(), () => {
-						//console.log("set repeat mode");
+						console.debug("set repeat mode");
 					}, (e) => {
-						//console.log("failed to set repeat mode");
-						//console.log(e);
+						console.warn("failed to set repeat mode");
+						console.warn(e);
 					});
 				}
 			}
@@ -3044,7 +3041,7 @@ class Musicco {
 				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				var viewerTypeHasChanged = (newViewerType != viewerType);
 				var panelIsOpen = (($("#leftPanel").is(":visible") && isPortrait()) || (viewerTypeHasChanged && !(isPortrait())));
-				//console.log(newViewerType);
+				console.debug(newViewerType);
 				if (viewerTypeHasChanged || init) {
 					viewerType = newViewerType;
 					if (!isWidescreen()) {
@@ -3591,8 +3588,8 @@ class Musicco {
 						text: $("#shared-album-title").text(),
 						url: $("#shared-album-link").val()
 					})
-						.then(() => console.log('Successful share'))
-						.catch((error) => console.log('Error sharing', error));
+						.then(() => console.debug('Successful share'))
+						.catch((error) => console.warn('Error sharing', error));
 				});
 
 				$('a.fader:has(img)').hover(
@@ -3686,7 +3683,7 @@ class Musicco {
 
 				$("body").on("keyup", function(e) {
 					// Uncomment the following line to debug the received keycode
-					// console.log("key: " + e.keyCode + " shift: " + e.shiftKey + " ctrl: " + e.ctrlKey + " super: " + e.metaKey);
+					console.debug("key: " + e.keyCode + " shift: " + e.shiftKey + " ctrl: " + e.ctrlKey + " super: " + e.metaKey);
 					if (!e.metaKey) {
 						hotkey(e);
 					}
