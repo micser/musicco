@@ -2212,6 +2212,9 @@ class Musicco {
 								insertFirst(tracksArray);
 								loadTrack(parseInt(response.current, 0));
 								player.currentTime = parseInt(response.time);
+								if (isCasting) {
+									loadCastPlaylist(false);
+								}
 							}
 						}
 						$("#loading").hide();
