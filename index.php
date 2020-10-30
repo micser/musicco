@@ -950,7 +950,7 @@ class Musicco {
 			//////////////
 
 
-			function setRepeatMode() {
+			function getRepeatMode() {
 				return (playerConfig["shuffled"] == true) ? chrome.cast.media.RepeatMode.ALL_AND_SHUFFLE 
 							: (playerConfig["loop"] == false) ? chrome.cast.media.RepeatMode.OFF 
 							: chrome.cast.media.RepeatMode.ALL;
@@ -1000,6 +1000,7 @@ class Musicco {
 
 			function convertPlaylist(autoplay) {
 				// TODO: change queueitem[current] mediainfo property before returning the array
+				var repeat = (playerConfig["shuffled"] == true || playerConfig["loop"] == true) ? true : false;
 				var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 				var queueItems = $("#playlist").find("li[data-nature=track]").map(function() {
 					var isCurrent = $(this).hasClass("currentTrack") ? true : false;
@@ -1017,11 +1018,14 @@ class Musicco {
 						{'url': getBaseURL() + $(this).data("cover")}
 					];
 					queueItem = new chrome.cast.media.QueueItem(mediaInfo);
-					queueItem.autoplay = isCurrent ? autoplay : true;
-					queueItem.preloadTime = 10;
-					queueItem.startTime = isCurrent ? player.currentTime : 0;
+					queueItem.startTime = 0;
+					queueItem.autoplay = true;
+					queueItem.preloadTime = 20;
 					return queueItem;
 				}).get();
+				queueItems[0].autoplay = repeat;
+				queueItems[current].startTime = player.currentTime;
+				queueItems[current].autoplay = autoplay;
 				var queueWithCurrentFirst = (queueItems.slice(current, queueItems.length)).concat(queueItems.slice(0, current));
 				return queueWithCurrentFirst;
 			}
@@ -1071,7 +1075,6 @@ class Musicco {
 					var remotePlaylist = convertPlaylist(autoplay);
 					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist.slice(0, 1));
-					playlistRequest.repeatMode = setRepeatMode();
 					castSession.getSessionObj().queueLoad(playlistRequest, () => {
 						//console.log("queue loaded");
 						queueCastItems(remotePlaylist.slice(1,remotePlaylist.length))
@@ -2151,10 +2154,22 @@ class Musicco {
 				})();
 			}
 
+			function setCastRepeatMode() {
+				// This sets everything as expected but seems to be completely ignored in the end ¯\_(ツ)_/¯
+				if (isCasting) { 
+					castSession.getMediaSession().queueSetRepeatMode(getRepeatMode(), () => {
+						//console.log("set repeat mode");
+					}, (e) => {
+						//console.log("failed to set repeat mode");
+						//console.log(e);
+					});
+				}
+			}
+
 			function saveSettings() {
 				if (isInit) {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
-					if (isCasting) { setRepeatMode(); }
+					setCastRepeatMode();
 					if (user!="") {
 						var volume = $("#big-volume-bar").slider("option", "value");
 						var loop = playerConfig["loop"];
@@ -2180,6 +2195,7 @@ class Musicco {
 						if (options.shuffled === "true") {
 							$('#shuffled').trigger("click");
 						}
+						setCastRepeatMode();
 						$("#theme_settings input[id=" + options.theme + "]").prop("checked", true).trigger("click");
 						$("#background").val(options.background).trigger("change");
 						$("#text").val(options.text).trigger("change");
