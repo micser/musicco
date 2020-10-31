@@ -2244,7 +2244,7 @@ class Musicco {
 				$("#sharing-banner").dialog("open");
 				var link = getBaseURL() + "?guestPlay&u=" + user;
 				var qrW = $("#shared-album-cover").width();
-				var qrH = $("#shared-album-cover").height();
+				var qrH = ($("#shared-album-cover").height()) ? $("#shared-album-cover").height() : $("#shared-album-cover").width();
 				var background = window.getComputedStyle(document.body).getPropertyValue('--text-highlight');
 				var foreground = window.getComputedStyle(document.body).getPropertyValue('--background');
 				$("#shared-album-link").val(link).select().attr('size', link.length);
@@ -3173,7 +3173,6 @@ class Musicco {
 
 				$("#shared-album-show-qr, #shared-album-show-cover").on("click", function() {
 					$("#shared-album-cover, #shared-album-qr, #shared-album-show-qr, #shared-album-show-cover").toggle();
-					$("#shared-album-qr canvas").addClass("boxed");
 				});
 
 				$(document).on("click taphold", ".big-jp-previous", function(e) {
