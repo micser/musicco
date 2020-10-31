@@ -274,7 +274,12 @@
 	.ui-tabs .ui-tabs-nav {
 		border-bottom: 1px solid var(--text);
 	}
-	
+
+	.ui-widget-overlay {
+		background: var(--text)!important;
+		opacity: .5!important;
+	}
+
 	.ui-menu {
 		border: 1px solid var(--background)!important;
 		border-radius: 3px;
@@ -318,7 +323,6 @@
 		color: var(--text-highlight);
 		font-size: 1em!important;
 	}
-
 
 	span.fancytree-active span.fancytree-title, span.fancytree-selected span.fancytree-title {
 		background-color: transparent;
@@ -1069,10 +1073,6 @@
 	#mini-controls {
 		display: none;
 		margin-left: 2em;
-	}
-
-	#searchText::-webkit-input-placeholder {
-		color: var(--text);
 	}
 
 	.ui-button {
