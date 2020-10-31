@@ -2404,7 +2404,7 @@ class Musicco {
 
 				function playBeforeIcon() {
 					var playBeforeIcon = '<svg class="menu-svg play-before" viewBox="0 0 24 24">'
-						+ '<g fill-rule="evenodd" class="logo-background">'
+						+ '<g fill-rule="evenodd" class="logo-highlight">'
 							+ '<rect opacity=".5" x="1" y="17" width="14" height="2" rx="1"></rect>'
 							+ '<rect opacity=".5" x="1" y="12" width="14" height="2" rx="1"></rect>'
 							+ '<rect x="1" y="7" width="9" height="2" rx="1"></rect>'
@@ -2417,7 +2417,7 @@ class Musicco {
 
 				function playNextIcon() {
 					var playNextIcon = '<svg class="menu-svg play-next" viewBox="0 0 24 24">'
-						+ '<g fill-rule="evenodd" class="logo-background">'
+						+ '<g fill-rule="evenodd" class="logo-highlight">'
 							+ '<rect opacity=".5" x="1" y="17" width="14" height="2" rx="1"></rect>'
 							+ '<rect opacity=".5" x="1" y="7" width="14" height="2" rx="1"></rect>'
 							+ '<rect x="1" y="12" width="9" height="2" rx="1"></rect>'
@@ -2430,7 +2430,7 @@ class Musicco {
 
 				function playLastIcon() {
 					var playLastIcon = '<svg class="menu-svg play-last" viewBox="0 0 24 24">'
-						+ '<g transform="translate(1 5)" fill-rule="evenodd" class="logo-background">'
+						+ '<g transform="translate(1 5)" fill-rule="evenodd" class="logo-highlight">'
 							+ '<rect opacity=".5" width="14" height="2" rx="1"></rect>'
 							+ '<rect opacity=".5" y="5" width="14" height="2" rx="1"></rect>'
 							+ '<rect y="10" width="9" height="2" rx="1"></rect>'

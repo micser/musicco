@@ -3,6 +3,7 @@
 	:root {
 			--background: #121314;
 			--background-neutral: rgba(10, 11, 12, 0.8);
+			--background-subtle: rgba(10, 11, 12, 0.1);
 			--background-highlight: #272727;
 			--background-error: #FFE4E1;
 			--text: #A7A97F;
@@ -19,6 +20,10 @@
 			--text-larger: 1.2em;
 			--text-quite-big: 1.5em;
 			--text-big: 2em;
+	}
+
+	:focus {
+		outline: none;
 	}
 
 	@keyframes blink1 {
@@ -84,11 +89,6 @@
 
 	.logo-highlight {
 		fill: var(--text-highlight);
-	}
-
-	.ui-menu-item-wrapper:hover .menu-svg g,
-	.menu-svg:hover g {
-		fill: #121314;
 	}
 
 	.blink1 {
@@ -276,9 +276,49 @@
 	}
 	
 	.ui-menu {
-		border: 1px solid var(--text)!important;
-		background-color: var(--background-highlight)!important;
+		border: 1px solid var(--background)!important;
+		border-radius: 3px;
+		background-color: var(--background)!important;
+		box-shadow: rgba(48, 59, 64, 0.07) 0px 6px 9px,
+								rgba(26, 4, 0, 0.12) 0px 3px 6px,
+								rgba(0, 0, 0, 0.05) 0px 1px 2px!important;
+
 	}
+
+	.ui-menu-item {
+		font-size: var(--text-smaller);
+		border-bottom: 1px solid var(--background-subtle);
+	}
+
+	.ui-menu-item:last-of-type {
+		border-bottom: 0;
+	}
+
+	.ui-menu-icons .ui-menu-item-wrapper {
+		padding-left: 3.5em!important;
+		padding-top: .75em!important;
+		padding-bottom: .75em!important;
+	}
+
+	.ui-menu .ui-menu-item:first-of-type:hover .ui-state-active {
+		border-radius: 3px 3px 0 0;
+	}
+
+	.ui-menu .ui-menu-item:last-of-type:hover .ui-state-active {
+		border-radius: 0 0 3px 3px;
+	}
+
+	.ui-menu .ui-menu-item .ui-state-active:hover {
+		border: 1px solid var(--background-highlight)!important;
+		background-color: var(--background-highlight)!important;
+		color: var(--text)!important;
+	}
+
+	.ui-menu-item .ui-icon {
+		color: var(--text-highlight);
+		font-size: 1em!important;
+	}
+
 
 	span.fancytree-active span.fancytree-title, span.fancytree-selected span.fancytree-title {
 		background-color: transparent;
@@ -419,8 +459,8 @@
 	select {
 		color: var(--text);
 		background-color: var(--background);
-		border: 1px solid var(--text);
-		border-radius: 5px;
+		border: 1px solid var(--background-highlight);
+		border-radius: 3px;
 	}
 
 	input[type="color"] {
@@ -536,7 +576,7 @@
 
 	#shared-album-cover img, 
 	.logo-share {
-		border-radius: 5px;
+		border-radius: 3px;
 	}
 
 	#shared-album-cover img {
@@ -933,7 +973,6 @@
 	.landing-form:focus,
 	.landing-form:valid {
 		box-shadow: none;
-		outline: none;
 		background-position: 0 0;
 	}
 
