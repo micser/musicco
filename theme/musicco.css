@@ -602,10 +602,7 @@
 
 	#loadingInfo {
 		display: none;
-		padding-top: 1em;
 		z-index: 3;
-		max-width: 35%;
-		margin-right: .5em;
 	}
 
 	.big {
@@ -1137,11 +1134,6 @@
 		margin-bottom: 7em;
 	}
 
-	#loadingInfo {
-		max-width: 100%;
-		padding-top: 0;
-	}
-
 	@media (min-aspect-ratio: 9/10) and (max-aspect-ratio: 11/10) {
 
 		#viewer:after {
@@ -1251,6 +1243,10 @@
 		width: 35%;
 		max-width: 70vh;
 		z-index: 2;
+	}
+
+	#header {
+		place-content: flex-end;
 	}
 
 	@media (min-width: 1000px) {

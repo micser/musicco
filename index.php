@@ -3759,29 +3759,29 @@ if(!AuthManager::isAccessAllowed()) {
 		<!-- START: header -->
 		<div id="header" class="spread nowrap">
 			<span>
-			<span id="ham"><i class="fas fa-bars fa-fw"></i></span>
-			<span id="mini-controls" class="big-controls">
-				<span class="big-jp-previous-album">&nbsp;</span>
-				<span class="big-jp-previous"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
-				<span class="big-jp-play"><i class="far fa-play-circle fa-fw"></i>&nbsp;</span>
-				<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-fw"></i>&nbsp;</span>
-				<span class="big-jp-next"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
-				<span class="big-jp-next-album">&nbsp;</span>
-				&nbsp;
-				&nbsp;
-				<span class="uncover guestPlay toggles"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
-				&nbsp;
-				&nbsp;
-				<span class="big-volume-down toggles"><i class="fas fa-volume-down fa-fw"></i>&nbsp;</span>
-				<span class="big-volume-down toggles"><i class="fas fa-volume-up fa-fw"></i>&nbsp;</span>
-			</span>
+				<span id="ham"><i class="fas fa-bars fa-fw"></i></span>
+				<span id="mini-controls" class="big-controls">
+					<span class="big-jp-previous-album">&nbsp;</span>
+					<span class="big-jp-previous"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-play"><i class="far fa-play-circle fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-next"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-next-album">&nbsp;</span>
+					&nbsp;
+					&nbsp;
+					<span class="uncover guestPlay toggles"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
+					&nbsp;
+					&nbsp;
+					<span class="big-volume-down toggles"><i class="fas fa-volume-down fa-fw"></i>&nbsp;</span>
+					<span class="big-volume-down toggles"><i class="fas fa-volume-up fa-fw"></i>&nbsp;</span>
+				</span>
 			</span>
 			<span id="loadingInfo">
 				<span class="blink1">&#9834;</span><span class="blink2">&#9834;</span><span class="blink3">&#9834;</span>&nbsp;<span id="toast_text"></span>
 			</span>
 			<?php
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
-					print "<span id=\"logout\" class=\"right\"><a href=\"?logout\"><i class=\"fas fa-sign-out-alt fa-fw\"></i>&nbsp;</a></span>";
+					print "<span id=\"logout\"><a href=\"?logout\"><i class=\"fas fa-sign-out-alt fa-fw\"></i>&nbsp;</a></span>";
 				}
 			?> 
 		</div>
