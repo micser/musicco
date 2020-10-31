@@ -2405,8 +2405,8 @@ class Musicco {
 				function playBeforeIcon() {
 					var playBeforeIcon = '<svg class="menu-svg play-before" viewBox="0 0 24 24">'
 						+ '<g fill-rule="evenodd" class="logo-highlight">'
-							+ '<rect opacity=".5" x="1" y="17" width="14" height="2" rx="1"></rect>'
-							+ '<rect opacity=".5" x="1" y="12" width="14" height="2" rx="1"></rect>'
+							+ '<rect opacity=".3" x="1" y="17" width="14" height="2" rx="1"></rect>'
+							+ '<rect opacity=".3" x="1" y="12" width="14" height="2" rx="1"></rect>'
 							+ '<rect x="1" y="7" width="9" height="2" rx="1"></rect>'
 							+ '<rect transform="rotate(90 18 8)" x="17" y="3" width="2" height="10" rx="1"></rect>'
 							+ '<rect x="17" y="3" width="2" height="10" rx="1"></rect>'
@@ -2418,8 +2418,8 @@ class Musicco {
 				function playNextIcon() {
 					var playNextIcon = '<svg class="menu-svg play-next" viewBox="0 0 24 24">'
 						+ '<g fill-rule="evenodd" class="logo-highlight">'
-							+ '<rect opacity=".5" x="1" y="17" width="14" height="2" rx="1"></rect>'
-							+ '<rect opacity=".5" x="1" y="7" width="14" height="2" rx="1"></rect>'
+							+ '<rect opacity=".3" x="1" y="17" width="14" height="2" rx="1"></rect>'
+							+ '<rect opacity=".3" x="1" y="7" width="14" height="2" rx="1"></rect>'
 							+ '<rect x="1" y="12" width="9" height="2" rx="1"></rect>'
 							+ '<rect transform="rotate(90 18 8)" x="22" y="3" width="2" height="10" rx="1"></rect>'
 							+ '<rect x="17" y="8" width="2" height="10" rx="1"></rect>'
@@ -2431,8 +2431,8 @@ class Musicco {
 				function playLastIcon() {
 					var playLastIcon = '<svg class="menu-svg play-last" viewBox="0 0 24 24">'
 						+ '<g transform="translate(1 5)" fill-rule="evenodd" class="logo-highlight">'
-							+ '<rect opacity=".5" width="14" height="2" rx="1"></rect>'
-							+ '<rect opacity=".5" y="5" width="14" height="2" rx="1"></rect>'
+							+ '<rect opacity=".3" width="14" height="2" rx="1"></rect>'
+							+ '<rect opacity=".3" y="5" width="14" height="2" rx="1"></rect>'
 							+ '<rect y="10" width="9" height="2" rx="1"></rect>'
 							+ '<path d="M21.005 10c.55 0 .995.444.995 1 0 .552-.456 1-.995 1h-8.01c-.55 0-.995-.444-.995-1 0-.552.456-1 .995-1h8.01"></path>'
 							+ '<rect x="16" y="6" width="2" height="10" rx="1"></rect>'
