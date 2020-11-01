@@ -47,6 +47,13 @@
 		 100% { opacity: 1; }
 	}
 
+	body,
+	input,
+	.fancytree-node {
+		font-family: Montserrat, Verdana, sans-serif;
+		text-shadow: 0 1px 2px var(--background-neutral);
+	}
+
 	google-cast-launcher {
 		--disconnected-color: var(--text);
 		--connected-color: var(--text-highlight);
@@ -273,6 +280,7 @@
 
 	.ui-tabs .ui-tabs-nav {
 		border-bottom: 1px solid var(--text);
+		text-shadow: none;
 	}
 
 	.ui-widget-overlay {
@@ -287,7 +295,7 @@
 		box-shadow: rgba(48, 59, 64, 0.07) 0px 6px 9px,
 								rgba(26, 4, 0, 0.12) 0px 3px 6px,
 								rgba(0, 0, 0, 0.05) 0px 1px 2px!important;
-
+		text-shadow: none;
 	}
 
 	.ui-menu-item {
@@ -422,7 +430,7 @@
 	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title {
 		color: var(--text-highlight);
 	}
-	
+
 	a.infoPanelLink {
 	text-decoration: underline;
 	text-decoration-style: dotted;
@@ -446,12 +454,6 @@
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match span.fancytree-title,
 	.fancytree-ext-filter-hidetr.fancytree-match span.fancytree-title {
 		color: var(--text);
-	}
-
-	body,
-	input,
-	.fancytree-node {
-		font-family: Montserrat, Verdana, sans-serif;
 	}
 
 	.fa-border,
@@ -936,6 +938,11 @@
 		box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
 		padding-bottom: 40px;
 		border-radius: 3px;
+		text-shadow: none;
+	}
+
+	.landing input {
+		text-shadow: none;
 	}
 
 	.logo-landing {
