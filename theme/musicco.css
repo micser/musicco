@@ -278,8 +278,69 @@
 		}
 	}
 
+	/* Classes for replacing generic form elements with font-awesome */
+	.fa-input {
+		display: none;
+	}
+
+	input[type="checkbox"] + .fa,
+	input[type="checkbox"] + label > .fa,
+	input[type="radio"] + .fa,
+	input[type="radio"] + label > .fa { cursor: pointer; }
+
+	/* Unchecked */
+	input[type="checkbox"] + .fa-check-circle:before,
+	input[type="checkbox"] + label > .fa-check-circle:before,
+	input[type="radio"] + .fa-check-circle:before,
+	input[type="radio"] + label > .fa-check-circle:before { content: "\f111"; } /* .fa-circle */
+	input[type="checkbox"] + .fa-dot-circle-o:before,
+	input[type="checkbox"] + .fa-check-circle-o:before,
+	input[type="checkbox"] + label > .fa-dot-circle-o:before,
+	input[type="checkbox"] + label > .fa-check-circle-o:before,
+	input[type="radio"] + .fa-dot-circle-o:before,
+	input[type="radio"] + label > .fa-dot-circle-o:before,
+	input[type="radio"] + .fa-check-circle-o:before,
+	input[type="radio"] + label > .fa-circle:before {content: "\f111"; } /* .fa-circle */
+	input[type="radio"] + .fa-circle:before,
+	input[type="radio"] + label > .fa-circle:before { content: "\f1db"; } /* .fa-circle-thin */
+	input[type="checkbox"] + .fa-check:before,
+	input[type="checkbox"] + .fa-check-square-o:before,
+	input[type="checkbox"] + label > .fa-check:before,
+	input[type="checkbox"] + label > .fa-check-square-o:before { content: "\f096"; } /* .fa-square-o */
+	input[type="checkbox"] + .fa-check-square:before,
+	input[type="checkbox"] + label > .fa-check-square:before { content: "\f0c8"; } /* .fa-square */
+
+	/* Checked */
+	input[type="checkbox"]:checked + .fa-check:before,
+	input[type="checkbox"]:checked + label > .fa-check:before { content: "\f00c"; }
+	input[type="checkbox"]:checked + .fa-check-circle:before,
+	input[type="checkbox"]:checked + label > .fa-check-circle:before,
+	input[type="radio"]:checked + .fa-check-circle:before,
+	input[type="radio"]:checked + label > .fa-check-circle:before { content: "\f058"; }
+	input[type="checkbox"]:checked + .fa-check-circle-o:before,
+	input[type="checkbox"]:checked + label > .fa-check-circle-o:before,
+	input[type="radio"]:checked + .fa-check-circle-o:before,
+	input[type="radio"]:checked + label > .fa-check-circle-o:before { content: "\f05d"; }
+	input[type="checkbox"]:checked + .fa-check-square:before,
+	input[type="checkbox"]:checked + label > .fa-check-square:before { content: "\f14a"; }
+	input[type="checkbox"]:checked + .fa-check-square-o:before,
+	input[type="checkbox"]:checked + label > .fa-check-square-o:before { content: "\f046"; }
+	input[type="radio"]:checked + .fa-circle:before,
+	input[type="radio"]:checked + label > .fa-circle:before { content: "\f111"; }
+	input[type="checkbox"]:checked + .fa-dot-circle-o:before,
+	input[type="checkbox"]:checked + label > .fa-dot-circle-o:before,
+	input[type="radio"]:checked + .fa-dot-circle-o:before,
+	input[type="radio"]:checked + label > .fa-dot-circle-o:before { content: "\f192"; }
+
+	.fa-square,
+	.fa-check-square {
+		color: var(--text);
+	}
+
 	.ui-tabs .ui-tabs-nav {
 		border-bottom: 1px solid var(--text);
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
 		text-shadow: none;
 	}
 
@@ -867,7 +928,7 @@
 		margin-bottom: 1em;
 	}
 
-	#config i {
+	#config .fa-question-circle {
 		margin-left: 1em;
 		float: right;
 	}

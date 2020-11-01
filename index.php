@@ -2444,7 +2444,7 @@ class Musicco {
 				function resetCheckbox() {
 					$('#includeOldAlbums').prop("checked", true);
 					$("label[for='includeOldAlbums'] i").removeClass("fa-square");
-					$("label[for='includeOldAlbums'] i").addClass("fa-check-square ");
+					$("label[for='includeOldAlbums'] i").addClass("fa-check-square");
 				}
 
 				function toggleCheckbox() {
@@ -3869,12 +3869,12 @@ if(!AuthManager::isAccessAllowed()) {
 							<i class="space-after fas fa-fw fa-palette"></i><span><?php print $this->getString("colours"); ?></span>
 						</div>
 						<div class="settings-sub">
-							<input type="radio" id="dynamic" name="option_theme" />
-							<label for="dynamic"><?php print $this->getString("dynamic"); ?></label>
+							<input type="radio" id="dynamic" class="fa-input" name="option_theme" />
+							<label for="dynamic"><i class="fa fa-fw fa-dot-circle-o"></i><?php print $this->getString("dynamic"); ?></label>
 						</div>
 						<div class="settings-sub">
-							<input type="radio" id="preset" name="option_theme" />
-							<label for="preset"><?php print $this->getString("select_theme"); ?></label>
+							<input type="radio" id="preset" class="fa-input" name="option_theme" />
+							<label for="preset"><i class="fa fa-fw fa-dot-circle-o"></i><?php print $this->getString("select_theme"); ?></label>
 							<div class="theme_opts">
 								<a id="my_theme" class="tooltip space-after theme-selector settings-option" data-background="" data-text="">[<?php print $this->getString("your_theme"); ?>]<span class="tooltiptext"><div class="theme-preview" style="background-color:var(--background);"></div><div class="theme-preview" style="background-color:var(--text);"></div></span></a>
 								<?php
@@ -3885,8 +3885,8 @@ if(!AuthManager::isAccessAllowed()) {
 							</div>
 						</div>
 						<div class="settings-sub">
-							<input type="radio" id="custom" name="option_theme" />
-							<label for="custom"><?php print $this->getString("define_theme"); ?></label>
+							<input type="radio" id="custom" class="fa-input" name="option_theme" />
+							<label for="custom"><i class="fa fa-fw fa-dot-circle-o"></i><?php print $this->getString("define_theme"); ?></label>
 							<div class="theme_opts">
 								<div class="settings-option">
 									<input class="space-after" type="color" id="background" name="color" value="<?php $this->getConfig("themes")[0][0]; ?>" />
@@ -5068,8 +5068,8 @@ function builddb() {
 		$wizard .= "<fieldset>";
 		$wizard .= "<legend>Access</legend>";
 		$wizard .= "<div>";
-		$wizard .= "<input id='require_login' name='require_login' type='checkbox' value='true' onclick='$(&apos;#users&apos;).toggle();' ".getCheckboxStatus(Musicco::getConfig('require_login')).">";
-		$wizard .= "<label for='require_login'>Require login</label>";
+		$wizard .= "<input id='require_login' class='fa-input' name='require_login' type='checkbox' value='true' onclick='$(&apos;#users&apos;).toggle();' ".getCheckboxStatus(Musicco::getConfig('require_login')).">";
+		$wizard .= "<label for='require_login'><i class='fa fa-fw fa-check-square'></i>Require login</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you require a login, you can have several users listening to their own playlists. If you want your installation to be completely open and all your user sharing the same playlists, leave this box unchecked.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div id='users' style='display:none;'>";
@@ -5100,23 +5100,23 @@ function builddb() {
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>The name you give to your covert art files in your music library. This is used to find covers on your disk and also to as a file name to  save covers found by the cover art downloader.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='loadLyricsFromFile' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('loadLyricsFromFile')).">";
-		$wizard .= "<label for='loadLyricsFromFile'>Load lyrics from local .lrc files</label>";
+		$wizard .= "<input name='loadLyricsFromFile' class='fa-input' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('loadLyricsFromFile')).">";
+		$wizard .= "<label for='loadLyricsFromFile'><i class='fa fa-fw fa-check-square'></i>Load lyrics from local .lrc files</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to load .lrc lyrics files from disk. If a .lrc file with the same name as the audio  file exists in the same folder, its contents  will be loaded into the lyrics panel before  searching online for it.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='lookUpLyrics' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('lookUpLyrics')).">";
-		$wizard .= "<label for='lookUpLyrics'>Lookup lyrics online</label>";
+		$wizard .= "<input name='lookUpLyrics' class='fa-input' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('lookUpLyrics')).">";
+		$wizard .= "<label for='lookUpLyrics'><i class='fa fa-fw fa-check-square'></i>Lookup lyrics online</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to lookup lyrics online to display them in the lyrics panel. When disabled, the lyrics panel only shows links to search for lyrics manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='downLoadMissingCovers' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('downLoadMissingCovers')).">";
-		$wizard .= "<label for='downLoadMissingCovers'>Download album art</label>";
+		$wizard .= "<input name='downLoadMissingCovers' class='fa-input' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('downLoadMissingCovers')).">";
+		$wizard .= "<label for='downLoadMissingCovers'><i class='fa fa-fw fa-check-square'></i>Download album art</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to automatically download missing covers online. New covers will be saved to disk in the folder containing the song currently playing. Even when turning this off, you can still  trigger cover art search manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='isCastAllowed' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('isCastAllowed')).">";
-		$wizard .= "<label for='isCastAllowed'>Enable casting to compatible devices</label>";
+		$wizard .= "<input name='isCastAllowed' class='fa-input' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('isCastAllowed')).">";
+		$wizard .= "<label for='isCastAllowed'><i class='fa fa-fw fa-check-square'></i>Enable casting to compatible devices</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>When checked, the google chromecast library is loaded and will enable casting to compatible devices on your network.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
@@ -5138,8 +5138,8 @@ function builddb() {
 		$wizard .= "<fieldset>";
 		$wizard .= "<legend>System</legend>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='canRerunWizard' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('canRerunWizard')).">";
-		$wizard .= "<label for='canRerunWizard'>Allow running this wizard from the web UI again</label>";
+		$wizard .= "<input name='canRerunWizard' class='fa-input' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('canRerunWizard')).">";
+		$wizard .= "<label for='canRerunWizard'><i class='fa fa-fw fa-check-square'></i>Allow running this wizard from the web UI again</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you uncheck this box, you will need physical access to the server to edit the configuration in the future. It is recommended to uncheck this box on installations where no login is required to avoid unwanted setup changes.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
