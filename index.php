@@ -2301,14 +2301,29 @@ class Musicco {
 					return window.location.href.substr(0, window.location.href.lastIndexOf("/") + 1);
 				}
 
+
+				function tickerIsBusy() {
+					return $( "#loadingInfo" ).queue().length != 0;
+				}
+
 				function showLoadingInfo(info) {
-					$('#loadingInfo').stop(true);
-					$("#toast_text").text(info);
-					$('#loadingInfo').fadeTo(100, 1, function() {
-						$('#loadingInfo').fadeTo(2000, 0, function() {
-							$("#toast_text").text(""); 
-						});
-					});
+					if (tickerIsBusy()) {
+						setTimeout(function(){ showLoadingInfo(info);}, 200);
+					} else {
+						queueMessage(info);
+					}
+				}
+
+				function queueMessage(info) {
+					$.when(
+								$('#loadingInfo').fadeTo(500, 1).promise(),
+								$("#toast_text").text(info).promise()
+					).done(function() {
+							$('#loadingInfo').fadeTo(500, 0).promise()
+							.done(function() {
+									$("#toast_text").text("")
+							})
+					})
 				}
 
 				function fetchCover() {
@@ -2476,7 +2491,7 @@ class Musicco {
 				}
 
 			function flashInfo() {
-				setTimeout(function(){ 
+				setTimeout(function(){
 					$("#big-info").removeClass('flash');
 				 }, 3000);
 				$("#big-info").addClass('flash');
