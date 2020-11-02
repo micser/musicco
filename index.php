@@ -3952,8 +3952,8 @@ if(!AuthManager::isAccessAllowed()) {
 							echo '<google-cast-launcher class="toggles"></google-cast-launcher>';
 							}
 						 ?>
-						<span id="big-unmute" class="toggles selected hidden"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
-						<span id="big-mute" class="toggles"><i class="fas fa-volume-off fa-2x fa-fw"></i></span>
+						<span id="big-unmute" class="toggles selected"><i class="fas fa-volume-mute fa-2x fa-fw"></i></span>
+						<span id="big-mute" class="toggles"><i class="fas fa-volume-mute fa-2x fa-fw"></i></span>
 						<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
 						<span class="guestPlay uncover toggles"><i class="fas fa-magic fa-2x fa-fw"></i></span>
 						<span id="shuffled" class="toggles"><i class="fas fa-random fa-2x fa-fw"></i></span>

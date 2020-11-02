@@ -67,6 +67,10 @@
 		--disconnected-color: var(--text-highlight);
 	}
 
+	#big-unmute {
+		display: none;
+	}
+
 	#big-cover {
 		max-width: 70vw;
 		padding-top: 100%;
@@ -1435,15 +1439,18 @@
 		padding-right: 0;
 	}
 
-	.big-volume-down, 
-	.big-volume-up {
-		display: none;
+	#big-volume-down, 
+	#big-volume-up,
+	#big-mute,
+	#big-unmute {
+		display: none!important;
 	}
 
 	#big-volume-up:before,
 	#big-volume-down:before,
-	#big-mute:before {
-		display: none;
+	#big-mute:before,
+	#big-unmute:before {
+		display: none!important;
 	}
 }
 
