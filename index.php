@@ -953,12 +953,16 @@ class Musicco {
 			}
 
 			function updatePlayPauseIcons(isPaused) {
+				if ($(".big-jp-play-pause").is(":focus")) {
+					$('.big-jp-play-pause').blur();
+				}
+				$('.big-jp-play-pause').focus();
 				if (isPaused) {
-					$('.big-jp-pause').hide();
-					$('.big-jp-play').show();
+					$('.big-jp-play-pause').removeClass('playing');
+					$('.big-jp-play-pause').addClass('paused');
 				} else {
-					$('.big-jp-play').hide();
-					$('.big-jp-pause').show();
+					$('.big-jp-play-pause').removeClass('paused');
+					$('.big-jp-play-pause').addClass('playing');
 				}
 			}
 
@@ -3537,7 +3541,7 @@ class Musicco {
 					});
 				});
 
-				$(document).on("taphold", "#big-cover, .big-jp-play, .big-jp-pause", function(e) {
+				$(document).on("taphold", "#big-cover, .big-jp-play-pause", function(e) {
 					playRandomAlbum();
 				});
 
@@ -3667,7 +3671,7 @@ class Musicco {
 					$("#searchPanel").contextmenu("open", $(this));
 				});
 
-				$(document).on("click", ".big-jp-play, .big-jp-pause, #album-art, #big-cover .default-poster, .logo-player", function(e) {
+				$(document).on("click", ".big-jp-play-pause, #album-art, #big-cover .default-poster, .logo-player", function(e) {
 					triggerPlayPause();
 				});
 
@@ -3778,8 +3782,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<span id="mini-controls" class="big-controls">
 					<span class="big-jp-previous-album">&nbsp;</span>
 					<span class="big-jp-previous"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
-					<span class="big-jp-play"><i class="far fa-play-circle fa-fw"></i>&nbsp;</span>
-					<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-play-pause"><i class="far fa-fw"></i>&nbsp;</span>
 					<span class="big-jp-next"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
 					<span class="big-jp-next-album">&nbsp;</span>
 					&nbsp;
@@ -3964,8 +3967,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="controls" class="spread big-controls">
 						<span class="big-jp-previous-album"></span>
 						<span class="left big-jp-previous"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
-						<span class="big-jp-play"><i class="far fa-play-circle fa-5x fa-fw"></i></span>
-						<span class="big-jp-pause" style="display: none;"><i class="far fa-pause-circle fa-5x fa-fw"></i></span>
+						<span class="big-jp-play-pause"><i class="far fa-5x fa-fw"></i></span>
 						<span class="right big-jp-next"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
 						<span class="big-jp-next-album"></span>
 					</div>
