@@ -41,6 +41,12 @@
 			"src": "app/icon-512x512.png",
 			"sizes": "512x512",
 			"type": "image/png"
+		},
+		{
+			"src": "app/icon-maskable.png",
+			"sizes": "600x600",
+			"type": "image/png",
+			"purpose": "maskable"
 		}
 	],
 	"background_color": "#A7A97F",
