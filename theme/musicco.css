@@ -566,7 +566,7 @@
 		100% {transform: rotate(90deg);}
 	}
 
-	.big-jp-play-pause:focus {
+	.big-jp-play-pause:active {
 		animation-name: rotate-icon;
 		animation-iteration-count: 1;
 		animation-duration: .2s;

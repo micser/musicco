@@ -953,10 +953,6 @@ class Musicco {
 			}
 
 			function updatePlayPauseIcons(isPaused) {
-				if ($(".big-jp-play-pause").is(":focus")) {
-					$('.big-jp-play-pause').blur();
-				}
-				$('.big-jp-play-pause').focus();
 				if (isPaused) {
 					$('.big-jp-play-pause').removeClass('playing');
 					$('.big-jp-play-pause').addClass('paused');
