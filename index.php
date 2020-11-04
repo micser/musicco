@@ -3777,9 +3777,9 @@ if(!AuthManager::isAccessAllowed()) {
 				<span id="ham"><i class="fas fa-bars fa-fw"></i></span>
 				<span id="mini-controls" class="big-controls">
 					<span class="big-jp-previous-album">&nbsp;</span>
-					<span class="big-jp-previous" tabindex="1"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
-					<span class="big-jp-play-pause" tabindex="1"><i class="far fa-fw"></i>&nbsp;</span>
-					<span class="big-jp-next" tabindex="1"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-previous"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-play-pause"><i class="far fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-next"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
 					<span class="big-jp-next-album">&nbsp;</span>
 					&nbsp;
 					&nbsp;
@@ -3962,9 +3962,9 @@ if(!AuthManager::isAccessAllowed()) {
 					</div>
 					<div id="controls" class="spread big-controls">
 						<span class="big-jp-previous-album"></span>
-						<span class="left big-jp-previous" tabindex="1"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
-						<span class="big-jp-play-pause" tabindex="1"><i class="far fa-5x fa-fw"></i></span>
-						<span class="right big-jp-next" tabindex="1"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
+						<span class="left big-jp-previous"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
+						<span class="big-jp-play-pause"><i class="far fa-5x fa-fw"></i></span>
+						<span class="right big-jp-next"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
 						<span class="big-jp-next-album"></span>
 					</div>
 				</div>
