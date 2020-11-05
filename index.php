@@ -1336,7 +1336,7 @@ class Musicco {
 			}
 
 			function playRandomAlbum() {
-				if ($('#playlist > li').length) {
+				if ($("#playlist li[data-nature=album]").length > 1) {
 					var currentAlbum = Math.max($("#playlist > li.currentAlbum").index(), 0);
 					var randomAlbum = currentAlbum;
 					while (randomAlbum == currentAlbum) {
