@@ -404,26 +404,26 @@
 
 	mark {
 		text-decoration: underline;
-    background-color: rgba(0, 0, 0, 0);
+		background-color: rgba(0, 0, 0, 0);
 	}
 
 	#loading {
-    position: fixed;
-    left: 0;
-    top: 0;
-    z-index: 3;
-    opacity: 0.7
+		position: fixed;
+		left: 0;
+		top: 0;
+		z-index: 3;
+		opacity: 0.7
 	}
 	
 	#loading,
 	#playlistSpinner {
-    width: 100%;
-    height: 100%;
-    text-align: center;
+		width: 100%;
+		height: 100%;
+		text-align: center;
 	}
 
 	#playlistSpinner {
-    margin-top: 50%;
+		margin-top: 50%;
 	}
 
 	#resync {
@@ -789,7 +789,7 @@
 	#infoPanelTitle {
 		font-size: var(--text-big);
 		padding-top: 1em;
-    padding-bottom: 2em;
+		padding-bottom: 2em;
 	}
 
 	.hits {
@@ -1153,7 +1153,7 @@
 	
 	#share-actions {
 		margin-top: 1em;
-    margin-bottom: 1em;
+		margin-bottom: 1em;
 	}
 
 	#share-actions,
@@ -1207,6 +1207,11 @@
 		display: none;
 		margin-left: 2em;
 		color: var(--text);
+	}
+
+	#mini-controls span,
+	#mini-controls input + label {
+		display: inline-block;
 	}
 
 	#mini-controls span:hover,
@@ -1293,7 +1298,7 @@
 		}
 
 		#mini-controls {
-			display: inline !important;
+			display: inline!important;
 		}
 
 		#mini-controls i {
