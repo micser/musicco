@@ -20,6 +20,7 @@
 			--text-larger: 1.2em;
 			--text-quite-big: 1.5em;
 			--text-big: 2em;
+			--quick: .2s;
 	}
 
 	:focus {
@@ -521,61 +522,37 @@
 	.toggles:active {
 		animation-name: stretch;
 		animation-iteration-count: 1;
-		animation-duration: .2s;
-	}
-
-	@keyframes step-left {
-		0% {
-			transform: translateX(-.25em);
-		}
-		50% {
-			transform: translateX(-.5em);
-		}
-		100% {
-			transform: translateX(-.25em);
-		}
+		animation-duration: var(--quick);
 	}
 
 	.big-jp-previous:active {
-		animation-name: step-left;
-		animation-iteration-count: 1;
-		animation-duration: .2s;
-	}
-
-	@keyframes step-right {
-		0% {
-			transform: translateX(.25em);
-		}
-		50% {
-			transform: translateX(.5em);
-		}
-		100% {
-			transform: translateX(.25em);
-		}
+		transform: translateX(-.5em);
+		transition-duration: var(--quick);
 	}
 
 	.big-jp-next:active {
-		animation-name: step-right;
-		animation-iteration-count: 1;
-		animation-duration: .2s;
+		transform: translateX(.5em);
+		transition-duration: var(--quick);
 	}
 
-	@keyframes rotate-icon {
-		0% {transform: rotate(0deg);}
-		100% {transform: rotate(90deg);}
+	.play-pause {
+		display: none;
 	}
 
-	.big-jp-play-pause:active {
-		animation-name: rotate-icon;
-		animation-iteration-count: 1;
-		animation-duration: .2s;
+	.play-pause + label {
+		transform: rotate(180deg);
+		transition-duration: var(--quick);
 	}
 
-	.paused i:before {
+	.play-pause:checked + label {
+		transform: rotate(0deg);
+	}
+
+	.play-pause:checked + label i:before {
 		content: "\f144";
 	}
 
-	.playing i:before {
+	.play-pause + label i:before {
 		content: "\f28b";
 	}
 
