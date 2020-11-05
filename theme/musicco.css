@@ -444,6 +444,9 @@
 	}
 
 	.toggles,
+	.play-pause + label i,
+	.big-jp-previous,
+	.big-jp-next,
 	#big-jp-progress, 
 	.go,
 	a,
@@ -1203,6 +1206,17 @@
 	#mini-controls {
 		display: none;
 		margin-left: 2em;
+		color: var(--text);
+	}
+
+	#mini-controls span:hover,
+	#mini-controls input + label:hover {
+		color: var(--text-highlight);
+	}
+
+	.big-controls span:hover,
+	.big-controls input + label:hover {
+		color: var(--text);
 	}
 
 	.ui-button {
