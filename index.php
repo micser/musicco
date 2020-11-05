@@ -876,6 +876,7 @@ class Musicco {
 								triggerPlayPause();
 							break;
 							case "nexttrack":
+								triggerButton("next");
 								playTrack(nextTrack);
 							break;
 					}
@@ -1461,6 +1462,11 @@ class Musicco {
 				}
 			}
 
+			function triggerButton(button) {
+				$(".big-jp-" + button).clearQueue();
+				$(".big-jp-" + button).addClass("shift-" + button).delay(200).queue(function() { $(this).removeClass("shift-" + button); });
+			}
+
 			function hotkey(e) {
 				// Key codes:
 				// 13: enter
@@ -1555,6 +1561,7 @@ class Musicco {
 					
 						case 37: //left arrow
 						case 177: //media previous
+							triggerButton("previous");
 							if (playerConfig["shuffled"]) {
 								playRandomTrack();
 							} else {
@@ -1568,6 +1575,7 @@ class Musicco {
 					
 						case 39: //right arrow
 						case 176: //media next
+							triggerButton("next");
 							if (playerConfig["shuffled"]) {
 								playRandomTrack();
 							} else {
@@ -2542,10 +2550,10 @@ class Musicco {
 									{ src: poster, sizes: '512x512', type: 'image/png' },
 								]
 							});
-						navigator.mediaSession.setActionHandler('previoustrack', function() { playTrack(previousTrack);});
-						navigator.mediaSession.setActionHandler('nexttrack', function() { playTrack(nextTrack);});
-						navigator.mediaSession.setActionHandler('seekbackward', function() { playTrack($(previousAlbum).find("li").first()) });
-						navigator.mediaSession.setActionHandler('seekforward', function() { playTrack($(nextAlbum).find("li").first()) });
+						navigator.mediaSession.setActionHandler('previoustrack', function() { triggerButton("previous"); playTrack(previousTrack);});
+						navigator.mediaSession.setActionHandler('nexttrack', function() { triggerButton("next"); playTrack(nextTrack);});
+						navigator.mediaSession.setActionHandler('seekbackward', function() { triggerButton("previous"); playTrack($(previousAlbum).find("li").first()) });
+						navigator.mediaSession.setActionHandler('seekforward', function() { triggerButton("next"); playTrack($(nextAlbum).find("li").first()) });
 					} else if (musiccoService != null) {
 						var actions = [];
 						if (status == "isPaused") {
@@ -3674,6 +3682,7 @@ class Musicco {
 				});
 
 				$(document).on("swipeleft", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
+					triggerButton("next");
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
 					} else {
@@ -3682,6 +3691,7 @@ class Musicco {
 				});
 
 				$(document).on("swiperight", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
+					triggerButton("previous");
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
 					} else {

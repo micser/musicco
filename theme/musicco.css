@@ -538,6 +538,16 @@
 		transition-duration: var(--quick);
 	}
 
+	.shift-previous {
+		transform: translateX(-.5em);
+		transition-duration: var(--quick);
+	}
+
+	.shift-next {
+		transform: translateX(.5em);
+		transition-duration: var(--quick);
+	}
+
 	.play-pause {
 		display: none;
 	}
