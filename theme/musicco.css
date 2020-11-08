@@ -379,14 +379,17 @@
 		padding-bottom: .75em!important;
 	}
 
+	.ui-menu .ui-menu-item:first-of-type .ui-state-active,
 	.ui-menu .ui-menu-item:first-of-type:hover .ui-state-active {
 		border-radius: 3px 3px 0 0;
 	}
 
+	.ui-menu .ui-menu-item:last-of-type .ui-state-active,
 	.ui-menu .ui-menu-item:last-of-type:hover .ui-state-active {
 		border-radius: 0 0 3px 3px;
 	}
 
+	.ui-menu .ui-menu-item .ui-state-active,
 	.ui-menu .ui-menu-item .ui-state-active:hover {
 		border: 1px solid var(--background-highlight)!important;
 		background-color: var(--background-highlight)!important;
