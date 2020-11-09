@@ -1867,11 +1867,21 @@ class Musicco {
 				libraryVisible = getTreeContent();
 			}
 
+			function positionSafe(ui) {
+				var menuHeight = ui.menu.children().length * 42;
+				if (window.innerHeight - ui.target.offset().top < menuHeight) {
+					var fixedPos = window.innerHeight - menuHeight;
+					$(".ui-menu").css("top", fixedPos + "px");
+				}
+			}
+
 			function initContextMenus() {
 				$("#searchPanel").contextmenu({
-					autoTrigger: 'false',
+					open: function(event, ui){ positionSafe(ui) },
 					delegate: ".searchResult,.searchResultParent",
 					autoFocus: true,
+					closeOnWindowBlur: false,
+					preventContextMenuForPopup: true,
 					menu: menuOptions,
 					select: function(event, ui) {
 						var node = {
@@ -1894,8 +1904,11 @@ class Musicco {
 				});
 
 				$("#favourites").contextmenu({
+					open: function(event, ui){ positionSafe(ui) },
 					delegate: "span.fancytree-title",
 					autoFocus: true,
+					closeOnWindowBlur: false,
+					preventContextMenuForPopup: true,
 					menu: menuOptions,
 					beforeOpen: function(event, ui) {
 						var node = $.ui.fancytree.getNode(ui.target);
@@ -1913,8 +1926,11 @@ class Musicco {
 				});
 
 				$("#library").contextmenu({
+					open: function(event, ui){ positionSafe(ui) },
 					delegate: ".fancytree-node:not('.fancytree-statusnode-paging, .fancytree-statusnode-nodata') > span.fancytree-title",
 					autoFocus: true,
+					closeOnWindowBlur: false,
+					preventContextMenuForPopup: true,
 					menu: menuOptions,
 					beforeOpen: function(event, ui) {
 						var node = $.ui.fancytree.getNode(ui.target);
@@ -1938,6 +1954,73 @@ class Musicco {
 					select: function(event, ui) {
 						var node = $.ui.fancytree.getNode(ui.target);
 						handleMenuSelection(node, ui.cmd);
+					}
+				});
+
+				$("#playlist").contextmenu({
+					open: function(event, ui){ positionSafe(ui) },
+					delegate: "li",
+					autoFocus: true,
+					closeOnWindowBlur: false,
+					preventContextMenuForPopup: true,
+					menu: [
+						{title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
+						{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
+						{title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fas fa-search"},
+						{title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
+						{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
+						{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"}
+					],
+					select: function(event, ui) {
+						var target = ui.target;
+						if (!$(ui.target).is("li")) {
+							target = $(ui.target).parents("li");
+						}
+						switch (ui.cmd) {
+							case "info":
+								if (target.data("nature") == "album") {
+									displayInfo(target.data("album"));
+								} else {
+									displayInfo(target.data("songtitle"));
+								}
+								break;
+							case "goto_artist":
+								goToArtist(target.data("artist"));
+								break;
+							case "goto_album":
+								if (target.data("nature") == "album") {
+									goToAlbum(target.data("album"));
+								} else {
+									goToAlbum(target.data("title"));
+								}
+							break;
+							case "download":
+								if (target.data("nature") == "album") {
+									downloadAlbum(target.data("parentfolder"), target.data("album"));
+								} else {
+									downloadTrack(target.data("parentfolder"), target.data("path"));
+								}
+							break;
+							case "share":
+								var path = target.data("parentfolder");
+								var detail = target.data("album");
+								if (target.data("nature") == "track") {
+									path = path + target.data("path");
+									detail = target.data("songtitle");
+								}
+								var separator = " - ";
+								var info = target.data("artist") + separator + detail;
+								var image = target.data("cover");
+								saveGuestPlaylist(path, info, image);
+							break;
+							case "favourite":
+								if (target.data("nature") == "album") {
+									addFavourite(target.data("parentfolder"));
+								} else {
+									addFavourite(target.data("parentfolder") + target.data("path"));
+								}
+							break;
+						}
 					}
 				});
 			}
@@ -2653,6 +2736,7 @@ class Musicco {
 								$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
 								$("#infoPanelText").find('a').removeClass("new"); 
 								$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
+								$("#infoPanelText").find('a[href^="#"]').addClass("infoPanelAnchor");
 							} else {
 								$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist + " - " + searchArtistExt);
 							}
@@ -2950,71 +3034,6 @@ class Musicco {
 						stop: function(event, ui) { setVolume(ui.value / 100) }
 					});
 
-					$("#playlist").contextmenu({
-						autoTrigger: 'false',
-						delegate: "li",
-						autoFocus: true,
-						menu: [
-							{title: "<?php print $this->getString("menu_info"); ?>", cmd: "info", uiIcon: "fas fa-info-circle"},
-							{title: "<?php print $this->getString("menu_goto_artist"); ?>", cmd: "goto_artist", uiIcon: "far fa-user"},
-							{title: "<?php print $this->getString("menu_goto_album"); ?>", cmd: "goto_album", uiIcon: "fas fa-search"},
-							{title: "<?php print $this->getString("menu_download"); ?>", cmd: "download", uiIcon: "fas fa-download"},
-							{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
-							{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"}
-						],
-						select: function(event, ui) {
-							var target = ui.target;
-							if (!$(ui.target).is("li")) {
-								target = $(ui.target).parents("li");
-							}
-							switch (ui.cmd) {
-								case "info":
-									if (target.data("nature") == "album") {
-										displayInfo(target.data("album"));
-									} else {
-										displayInfo(target.data("songtitle"));
-									}
-									break;
-								case "goto_artist":
-									goToArtist(target.data("artist"));
-									break;
-								case "goto_album":
-									if (target.data("nature") == "album") {
-										goToAlbum(target.data("album"));
-									} else {
-										goToAlbum(target.data("title"));
-									}
-								break;
-								case "download":
-									if (target.data("nature") == "album") {
-										downloadAlbum(target.data("parentfolder"), target.data("album"));
-									} else {
-										downloadTrack(target.data("parentfolder"), target.data("path"));
-									}
-								break;
-								case "share":
-									var path = target.data("parentfolder");
-									var detail = target.data("album");
-									if (target.data("nature") == "track") {
-										path = path + target.data("path");
-										detail = target.data("songtitle");
-									}
-									var separator = " - ";
-									var info = target.data("artist") + separator + detail;
-									var image = target.data("cover");
-									saveGuestPlaylist(path, info, image);
-								break;
-								case "favourite":
-									if (target.data("nature") == "album") {
-										addFavourite(target.data("parentfolder"));
-									} else {
-										addFavourite(target.data("parentfolder") + target.data("path"));
-									}
-								break;
-							}
-						}
-					});
-
 					enableLocalPlayer();
 					loadSettings();
 					loadPlaylist();
@@ -3052,6 +3071,10 @@ class Musicco {
 
 				function stopPolling() {
 					status.close();
+				}
+
+				function makeJqSafe(id) {
+					return id.replace( /(:|\.|\[|\]|,|=|@)/g, "\\$1" );
 				}
 
 				function adaptUI(init) {
@@ -3578,6 +3601,13 @@ class Musicco {
 							$(".uncoverLink").remove(); 
 						}, "json");
 					}
+				});
+
+				$(document).on("click", ".infoPanelAnchor", function(event) {
+					event.preventDefault();
+					var anchor = makeJqSafe($(this).attr("href"));
+					var y = $(anchor).offset().top + - $("#infoPanel").offset().top + $("#infoPanel").scrollTop();
+					$("#panelContainer").animate({scrollTop:y});
 				});
 
 				$(document).on("click", ".infoPanelLink", function(event) {
