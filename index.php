@@ -335,7 +335,7 @@ $_TRANSLATIONS["en"] = array(
 	"scanning" => "Scanning ",
 	"scanning_ko" => "Scanning failed",
 	"scanning_ok" => "Folder scanned successfully",
-	"search" => "Search ",
+	"search" => "Search on ",
 	"search_placeholder" => " What are you looking for?",
 	"searchingFor" => "Searching for ",
 	"searchingLibrary" => "Searching library...",
@@ -2696,7 +2696,7 @@ class Musicco {
 					var searchArtistExt = "<?php print $this->getString("search"); ?>";
 					searchArtistExt +=  "<a target=\"blank\" href=\"http://last.fm/search?q=" + "+" + artist +"\">" + "<?php print $this->getString("lastfm"); ?>" + "</a>" ;
 					searchArtistExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
-					searchArtistExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>" + artist + "+band\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
+					searchArtistExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>" + artist + "+band\">" + "<?php print $this->getString("google"); ?>" + "</a><br/><br/>" ;
 					$('#wikiPrev').html("");
 					wikiHistoryPos += 1;
 					

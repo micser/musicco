@@ -163,6 +163,100 @@
  }
 */
 
+	/* Infopanel Styling */
+
+	#infoPanel table.infobox tr:first-child,
+	.shortdescription,
+	.ambox,
+	.tocnumber,
+	li.nv-view a,
+	li.nv-talk a,
+	li.nv-edit a {
+		display: none;
+	}
+
+	.thumb,
+	#infoPanel table.infobox {
+		text-align: center;
+	}
+
+	table.infobox td {
+		padding-bottom: .5em;
+	}
+
+	#infoPanel table.infobox th {
+		text-align: left;
+		vertical-align: top;
+		color: var(--text-highlight);
+	}
+
+	#infoPanel table.infobox th[scope="row"] + td,
+	.navbox-group {
+		text-align: left;
+		padding-left: 1.5em;
+	}
+
+	.hlist dd, .hlist dt, .hlist li, table.infobox .plainlist li {
+		margin: 0;
+		display: inline;
+}
+
+	table.infobox .hlist li {
+		overflow-wrap: anywhere;
+	}
+
+	table.infobox .hlist li::after {
+		padding: 0;
+		margin: 0;
+		content: "\00A0\25AA\00A0";
+		color: var(--text);
+		font-size: var(--text-smaller);
+	}
+
+	table.infobox .hlist li:last-child::after {
+		content: "";
+	}
+
+	table.infobox .hlist ul,
+	table.infobox .plainlist ul {
+		margin: 0;
+		padding: 0;
+	}
+
+	.thumbcaption,
+	table.infobox a.image + div {
+		font-size: var(--text-smaller);
+	}
+
+	.mw-parser-output h1,
+	.mw-parser-output h2,
+	.mw-parser-output h3 {
+		padding-top: 2.5em;
+	}
+
+	.mw-headline,
+	.toctitle,
+	.thumbcaption,
+	.thumbcaption a,
+	.navbox-title,
+	table.infobox b,
+	table.infobox a.image + div,
+	table.infobox a.image + div a {
+		color: var(--text-highlight);
+	}
+
+	.toc ul,
+	.toc ol {
+		list-style-type: none;
+	}
+
+	.toctext,
+	toc a.infoPanelAnchor {
+		margin-left: -1.5em;
+	}
+
+	/* End of infopanel styling */
+
 	#playlist-tools {
 		position: sticky;
 		margin: -1.3em;
