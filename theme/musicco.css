@@ -668,7 +668,7 @@
 	}
 
 	.play-pause + label {
-		transform: rotate(180deg);
+		transform: rotate(360deg);
 		transition-duration: var(--quick);
 	}
 
