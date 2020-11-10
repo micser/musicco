@@ -55,6 +55,11 @@
 		text-shadow: 0 1px 2px var(--background-neutral);
 	}
 
+	#big-player-bottom,
+	#mini-controls {
+		-webkit-tap-highlight-color: transparent;
+	}
+
 	google-cast-launcher {
 		--disconnected-color: var(--text);
 		--connected-color: var(--text-highlight);
