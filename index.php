@@ -2241,13 +2241,14 @@ class Musicco {
 					var user = "<?php echo AuthManager::getUserName(); ?>";
 					setCastRepeatMode();
 					if (user!="") {
+						var panel = $(".panel.shown").attr("id");
 						var volume = $("#big-volume-bar").slider("option", "value");
 						var loop = playerConfig["loop"];
 						var shuffled = playerConfig["shuffled"];
 						var theme = $("#theme_settings input[name=option_theme]:checked").attr("id");
 						var background = $("#background").val();
 						var text = $("#text").val();
-						$.post('?', {saveSettings: '', u: user, v: volume, l: loop, s: shuffled, m: theme, b: background, t: text}, function(response) {
+						$.post('?', {saveSettings: '', u: user, p: panel, v: volume, l: loop, s: shuffled, m: theme, b: background, t: text}, function(response) {
 						});
 					}
 				}
@@ -2258,6 +2259,7 @@ class Musicco {
 				if (user!="") {
 					$.post('?', {loadSettings: '', u: user}, function(response) {
 						var options = JSON.parse(response);
+						showPanel("#" + options.panel);
 						$("#big-volume-bar").slider("option", "value", parseInt(options.volume));
 						if (options.loop === "true") {
 							$('#loop').trigger("click");
@@ -2586,6 +2588,7 @@ class Musicco {
 				$(".panel").removeClass("shown");
 				$(panel).addClass("shown");
 				$(".panelToggle[href='" + panel + "']").trigger("click");
+				saveSettings();
 			}
 
 			function notificationSupported() {
@@ -4058,7 +4061,7 @@ if(!AuthManager::isAccessAllowed()) {
 			return print loadSettings($_POST['u']);
 			exit;
 	} elseif (isset($_POST['saveSettings'])) {
-		saveSettings($_POST['u'], $_POST['v'], $_POST['l'], $_POST['s'], $_POST['m'], $_POST['b'], $_POST['t']);
+		saveSettings($_POST['u'], $_POST['p'], $_POST['v'], $_POST['l'], $_POST['s'], $_POST['m'], $_POST['b'], $_POST['t']);
 		exit;
 	} elseif (isset($_POST['getFavourites'])) {
 			$user = $_POST['u'];
@@ -4404,11 +4407,11 @@ function isUser($user) {
 	return $found;
 }
 
-function saveSettings($user, $volume, $loop, $shuffled, $theme, $background, $text) {
+function saveSettings($user, $panel, $volume, $loop, $shuffled, $theme, $background, $text) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
-		$query = "UPDATE users set option_volume=$volume, option_loop=\"$loop\", option_shuffled=\"$shuffled\", option_theme=\"$theme\", theme_background=\"$background\", theme_text=\"$text\" WHERE id=$userId;";
+		$query = "UPDATE users set option_panel=\"$panel\", option_volume=$volume, option_loop=\"$loop\", option_shuffled=\"$shuffled\", option_theme=\"$theme\", theme_background=\"$background\", theme_text=\"$text\" WHERE id=$userId;";
 		debugMessage($query);
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$update_settings_query = $db->prepare($query);
@@ -4416,7 +4419,7 @@ function saveSettings($user, $volume, $loop, $shuffled, $theme, $background, $te
 		$update_settings_query = NULL;
 		$db = NULL;
 		logMessage("Saved settings for $user");
-		debugMessage("Saved settings: ".$volume.$loop.$shuffled.$background.$text);
+		debugMessage("Saved settings: ".$panel.$volume.$loop.$shuffled.$background.$text);
 	}
 }
 
@@ -4426,13 +4429,14 @@ function loadSettings($user) {
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$settings_query = $db->prepare("SELECT option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text FROM users WHERE id=$userId;");
+		$settings_query = $db->prepare("SELECT option_panel, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text FROM users WHERE id=$userId;");
 		$settings_query->execute();
 		$result = $settings_query->fetchAll();
 		$settings_query = NULL;
 		$db = NULL;
 		foreach($result as $row) {
 			$settings = array(
+										"panel" => $row['option_panel'],
 										"volume" => $row['option_volume'],
 										"loop" => $row['option_loop'],
 										"shuffled" => $row['option_shuffled'],
@@ -4443,7 +4447,7 @@ function loadSettings($user) {
 		}
 	}
 	logMessage("Loaded settings for $user");
-	debugMessage("Loaded settings: ". $row['option_volume'].$row['option_loop'].$row['option_shuffled'].$row['option_theme'].$row['theme_background'].$row['theme_text']);
+	debugMessage("Loaded settings: ".$row['option_panel'].$row['option_volume'].$row['option_loop'].$row['option_shuffled'].$row['option_theme'].$row['theme_background'].$row['theme_text']);
 	return json_encode($settings);
 }
 
@@ -4518,7 +4522,7 @@ function createUser($user, $force) {
 	}
 	if ($isValidUser || $force) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text) VALUES (\"" . $user . "\", 0, 0, \"\", 100, \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
+		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_panel, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text) VALUES (\"" . $user . "\", 0, 0, \"\", \"browserPanel\", 100, \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
 		$create_user_query->execute();
 		$id = $db->lastInsertId();
 		$create_user_query = NULL;
@@ -4670,7 +4674,7 @@ function cleanDB($db) {
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
-	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
+	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_panel TEXT NOT NULL, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
 	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, data TEXT, unique(userId, name));");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
@@ -4990,12 +4994,15 @@ function builddb() {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>2.1 (in development)</div>";
-				$aboutString.="<li>Minor UI refresh around header</li>";
-				$aboutString.="<li>Dependency refresh</li>";
+				$aboutString.="<li>Dependency updates</li>";
+				$aboutString.="<li>Added casting directly from player</li>";
 				$aboutString.="<li>Allow re-running the setup wizard</li>";
+				$aboutString.="<li>Fixed an issue where the mini toolbar would show up when unwanted</li>";
+				$aboutString.="<li>Minor UI refresh around info panel, header, player controls, context menus and album art</li>";
 				$aboutString.="<li>Fixed transparency effects</li>";
 				$aboutString.="<li>Improved layout for widescreen devices</li>";
 				$aboutString.="<li>Improved browse panel performance</li>";
+				$aboutString.="<li>Save active panel setting</li>";
 				$aboutString.="<li>Notify clients if they are out of date</li>";
 				$aboutString.="<li>Minor bugfixes</li>";
 			$aboutString.="</ul>";

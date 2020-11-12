@@ -48,12 +48,14 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 ## v2.1.0 (in development)
   Dependency updates
+  Added casting directly from player
   Allow re-running the setup wizard
   Fixed an issue where the mini toolbar would show up when unwanted
-  Minor UI refresh around header
+  Minor UI refresh around info panel, header, player controls, context menus and album art
   Fixed transparency effects
   Improved layout for widescreen devices
   Improved browse panel performance
+  Save active panel setting
   Notify clients if they are out of date
   Minor bugfixes
 
