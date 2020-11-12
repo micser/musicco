@@ -3154,6 +3154,7 @@ class Musicco {
 					if ($("#browserPanel").is(":hidden")) {
 						$("#filterButton").trigger("click");
 						trimLibrary();
+						saveSettings();
 					}
 				});
 
