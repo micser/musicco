@@ -274,6 +274,8 @@ $_TRANSLATIONS["en"] = array(
 	"clickToUploadYourOwn" => "upload", 
 	"background" => "Background",
 	"colours" => "Theme",
+	"clear_history" => "clear history",
+	"clearing_history" => "Clearing your listening history...",
 	"define_theme" => "Custom",
 	"defaultCoverURL" => "http://",
 	"downloadSuccessful" => "album art saved",
@@ -362,6 +364,8 @@ $_TRANSLATIONS["fr"] = array(
 	"clickToUploadYourOwn" => "charger", 
 	"background" => "Arri&egrave;re plan",
 	"colours" => "Th&egrave;me",
+	"clear_history" => "effacer l'historique",
+	"clearing_history" => "Suppression de l'historique en cours...",
 	"defaultCoverURL" => "http://",
 	"define_theme" => "Personnel",
 	"downloadSuccessful" => "Couverture sauvegardée",
@@ -2153,6 +2157,7 @@ class Musicco {
 				var time = Math.floor(player.currentTime);
 				$.post('?', {savePlaylist: '', u: user, i: clientId, n: name, p: JSON.stringify(playlist), c: current, t: time}, function (response) {
 				});
+				saveHistory();
 			}
 
 			function createNewPlaylist(name) {
@@ -2187,6 +2192,38 @@ class Musicco {
 					if (callback != null) {
 						callback();
 					}
+				}
+			}
+
+			function insertHistoryItem(item) {
+					var markup = '<li><i class="far fa-user"></i><span class="historyItem">' + item + '</span></li>';
+					$('#history li:contains("' + item + '")').remove();
+					if ( $('#history li').length > 0 ) {
+						$("#history li:first").before(markup);
+					} else {
+						$("#history").append(markup);
+					}
+			}
+
+			function saveHistory() {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				var item = nowPlaying["artist"];
+				insertHistoryItem(item);
+				if (user!="" && item !="") {
+					$.post('?', {saveHistory: '', u: user, i: item}, function(response) {
+					});
+				}
+			}
+
+			function getHistory() {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				if (user!="") {
+					$.post('?', {getHistory: '', u: user}, function(response) {
+						var history = JSON.parse(response);
+						$.each(history, function (i, item) {
+							$("#history").append('<li><i class="far fa-user"></i><span class="historyItem">' + item + '</span></li>');
+							});
+					});
 				}
 			}
 
@@ -3039,6 +3076,7 @@ class Musicco {
 
 					enableLocalPlayer();
 					loadSettings();
+					getHistory();
 					loadPlaylist();
 					adaptUI(true);
 				}
@@ -3473,6 +3511,10 @@ class Musicco {
 					toggleSearch();
 				});
 
+					$(document).on("click", ".historyItem", function() {
+						goToArtist($(this).text());
+					});
+
 					$(document).on("dblclick", ".artist, #nowPlaying_artist", function() {
 						goToArtist($(this).text());
 					});
@@ -3497,6 +3539,19 @@ class Musicco {
 							url: "",
 							data: {deleteGuestPlaylists: ""}
 						});
+				});
+
+				$(document).on("click", "#clear_history", function() {
+						$("#history").empty();
+						var user = "<?php echo AuthManager::getUserName(); ?>";
+						if (user != "") {
+							showLoadingInfo("<?php print $this->getString("clearing_history"); ?>");
+							$.ajax({
+								type: "POST",
+								url: "",
+								data: {clear_history: "", u: user}
+							});
+						}
 				});
 
 				$(document).on("click", "#remove_temp_files", function() {
@@ -3846,6 +3901,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<li id="playlistToggle"><a href="#playlistPanel" class="panelToggle"><i class="fas fa-list"></i></a></li>
 				<li id="infoToggle"><a href="#infoPanel" class="panelToggle"><i class="fas fa-info-circle"></i></a></li>
 				<li id="lyricsToggle"><a href="#lyricsPanel" class="panelToggle"><i class="fas fa-microphone"></i></a></li>
+				<li id="historyToggle"><a href="#historyPanel" class="guestPlay panelToggle"><i class="fas fa-clock"></i></a></li>
 				<li id="settingsToggle"><a href="#settingsPanel" class="panelToggle"><i class="fas fa-cogs"></i></a></li>
 			</ul>
 			<div id="panelContainer">
@@ -3894,6 +3950,9 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="infoPanelText"></div>
 				</div>
 				<div id="lyricsPanel" class="panel"></div>
+				<div id="historyPanel" class="panel guestPlay">
+					<ul id="history"></ul>
+				</div>
 				<div id="settingsPanel">
 					<?php
 					if (AuthManager::isAdmin()) {
@@ -3908,6 +3967,9 @@ if(!AuthManager::isAccessAllowed()) {
 					?>
 					<div class="settings">
 						<i class="space-after fas fa-fw fa-bath"></i><span id="reload"><a><?php print $this->getString("reload"); ?></a></span>
+					</div>
+					<div class="guestPlay settings">
+						<i class="space-after fas fa-fw fa-clock"></i><span id="clear_history"><a><?php print $this->getString("clear_history"); ?></a></span>
 					</div>
 					<div class="settings">
 						<i class="space-after fas fa-fw fa-question"></i><span id="help"><a><?php print $this->getString("help"); ?></a></span>
@@ -4055,6 +4117,12 @@ if(!AuthManager::isAccessAllowed()) {
 			savePlaylist($user, "guestPlay", "guestPlay", $data, "0", "0", "true", "false");
 			logMessage("Saved guest playlist $path for $user");
 			exit;
+	} elseif (isset($_POST['saveHistory'])) {
+			return print saveHistory($_POST['u'], $_POST['i']);
+			exit;
+	} elseif (isset($_POST['getHistory'])) {
+			return print getHistory($_POST['u']);
+			exit;
 	} elseif (isset($_POST['getPlaylists'])) {
 			return print getPlaylists($_POST['u']);
 			exit;
@@ -4148,6 +4216,10 @@ if(!AuthManager::isAccessAllowed()) {
 			logMessage("User requested library rebuild");
 			builddb();
 			exit;
+	} elseif (isset($_POST['clear_history'])) {
+			logMessage("Clearing user history");
+			clearHistory($_POST['u']);
+			exit;
 	} elseif (isset($_POST['deleteGuestPlaylists'])) {
 			logMessage("Removing guest playlists");
 			deleteGuestPlaylists();
@@ -4230,6 +4302,18 @@ function addFavourite($user, $path) {
 	}
 }
 
+function saveHistory($user, $item) {
+	debugMessage(__FUNCTION__);
+	$userId = getId($user);
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$insert_history = "REPLACE INTO history (userId, item) VALUES ($userId, \"$item\")";
+		$db->exec($insert_history);
+		}
+	$db = NULL;
+	logMessage("Saved history for $user");
+}
+
 function deleteFavourite($user, $path) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
@@ -4243,6 +4327,19 @@ function deleteFavourite($user, $path) {
 		$favourites_query->execute();
 		$children = $favourites_query->fetchAll();
 		$favourites_query = NULL;
+		$db = NULL;
+	}
+}
+
+function clearHistory($user) {
+	debugMessage(__FUNCTION__);
+	$userId = getId($user);
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$history_query = $db->prepare("DELETE FROM history WHERE userId=$userId;");
+		$history_query->execute();
+		$children = $history_query->fetchAll();
+		$history_query = NULL;
 		$db = NULL;
 	}
 }
@@ -4327,6 +4424,25 @@ function getFavourites($user) {
 	}
 	buildUL($favourites, "");
 	return $favourites_list;
+}
+
+function getHistory($user) {
+	debugMessage(__FUNCTION__);
+	$history = [];
+	$userId = getId($user);
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$history_query = $db->prepare("SELECT item FROM history WHERE userId=$userId;");
+		$history_query->execute();
+		$result = $history_query->fetchAll();
+		$history_query = NULL;
+		$db = NULL;
+		foreach($result as $row) {
+			array_push($history, $row['item']);
+		}
+	}
+	logMessage("Loaded history for $user");
+	return json_encode($history);
 }
 
 function buildUL($favourites, $prefix) {
@@ -4523,7 +4639,7 @@ function createUser($user, $force) {
 	}
 	if ($isValidUser || $force) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_panel, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text) VALUES (\"" . $user . "\", 0, 0, \"\", \"browserPanel\", 100, \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
+		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_panel, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text) VALUES (\"" . $user . "\", 0, 0, \"\", \"infoPanel\", 100, \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
 		$create_user_query->execute();
 		$id = $db->lastInsertId();
 		$create_user_query = NULL;
@@ -4678,6 +4794,7 @@ function cleanDB($db) {
 	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_panel TEXT NOT NULL, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
 	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, data TEXT, unique(userId, name));");
+	$db->exec("CREATE TABLE history (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , item TEXT, unique(userId, item));");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
@@ -4995,8 +5112,8 @@ function builddb() {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>2.1 (in development)</div>";
-				$aboutString.="<li>Dependency updates</li>";
 				$aboutString.="<li>Added casting directly from player</li>";
+				$aboutString.="<li>Allow viewing listening history</li>";
 				$aboutString.="<li>Allow re-running the setup wizard</li>";
 				$aboutString.="<li>Fixed an issue where the mini toolbar would show up when unwanted</li>";
 				$aboutString.="<li>Minor UI refresh around info panel, header, player controls, context menus and album art</li>";
@@ -5005,6 +5122,7 @@ function builddb() {
 				$aboutString.="<li>Improved browse panel performance</li>";
 				$aboutString.="<li>Save active panel setting</li>";
 				$aboutString.="<li>Notify clients if they are out of date</li>";
+				$aboutString.="<li>Dependency updates</li>";
 				$aboutString.="<li>Minor bugfixes</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";

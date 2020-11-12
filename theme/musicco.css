@@ -545,6 +545,18 @@
 		display: none;
 	}
 
+	#history {
+	list-style-type: none;
+	}
+
+	#history li {
+		margin: .5em;
+	}
+
+	#history li i:before {
+		padding-right: .75em;
+	}
+
 	/* tabs */
 	.ui-widget-header { }
 
@@ -554,7 +566,8 @@
 
 	#playlist > li > ul > li:hover,
 	a:hover,
-	#ham:hover {
+	#ham:hover,
+	#history li:hover {
 		color: var(--text-highlight);
 	}
 
@@ -565,7 +578,8 @@
 	#big-jp-progress, 
 	.go,
 	a,
-	#controls > span > i {
+	#controls > span > i,
+	.historyItem {
 		cursor: pointer;
 	}
 
@@ -897,7 +911,8 @@
 	}
 
 	#lyricsPanel,
-	#infoPanel {
+	#infoPanel,
+	#historyPanel {
 		font-size: var(--text-smaller);
 	}
 

@@ -47,8 +47,8 @@ Check out https://www.musicco.app for more information or try the demo at https:
 # Changelog
 
 ## v2.1.0 (in development)
-  Dependency updates
   Added casting directly from player
+  Allow viewing listening history
   Allow re-running the setup wizard
   Fixed an issue where the mini toolbar would show up when unwanted
   Minor UI refresh around info panel, header, player controls, context menus and album art
@@ -57,6 +57,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
   Improved browse panel performance
   Save active panel setting
   Notify clients if they are out of date
+  Dependency updates
   Minor bugfixes
 
 ## v2.0.3
