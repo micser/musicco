@@ -545,16 +545,54 @@
 		display: none;
 	}
 
+	#historyPanel {
+		width: 100%;
+		margin: 0 auto;
+		padding: 2em;
+		margin: 0 auto;
+		position: relative;
+	}
+
 	#history {
-	list-style-type: none;
+	text-align: center;
+	color: var(--text-highlight);
+	width: 80%;
+	}
+
+	#history > ul > span {
+		background: var(--background-highlight);
+		display: block;
+		margin-left: -2.8em;
+		padding-top: .5em;
+		padding-bottom: .5em;
+		border-radius: 4px 4px 0 0;
+	}
+
+	#history ul {
+		border-radius: 4px;
+		list-style-type: none;
+		margin-left: -.75em;
+		background: var(--background);
 	}
 
 	#history li {
-		margin: .5em;
+		text-align: left;
+		padding-top: .5em;
+		padding-bottom: .5em;
+		color: var(--text);
+	}
+
+	#history li span {
+		display: inline-block;
+	}
+
+	#history li span.historyAlbum {
+		text-indent: 1.8em;
 	}
 
 	#history li i:before {
-		padding-right: .75em;
+		color: var(--text-highlight);
+		padding-right: 1em;
 	}
 
 	/* tabs */
@@ -567,7 +605,8 @@
 	#playlist > li > ul > li:hover,
 	a:hover,
 	#ham:hover,
-	#history li:hover {
+	.historyArtist:hover,
+	.historyAlbum:hover {
 		color: var(--text-highlight);
 	}
 
@@ -579,7 +618,8 @@
 	.go,
 	a,
 	#controls > span > i,
-	.historyItem {
+	.historyArtist,
+	.historyAlbum {
 		cursor: pointer;
 	}
 

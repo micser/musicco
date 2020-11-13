@@ -351,7 +351,13 @@ $_TRANSLATIONS["en"] = array(
 	"updateCoverArt" => "update album art",
 	"username" => "Username",
 	"wrong_pass" => "Wrong username or password",
-	"your_theme" => "my theme"
+	"your_theme" => "my theme",
+	"today" => "Today",
+	"yesterday" => "Yesterday",
+	"this-week" => "This week",
+	"this-month" => "This month",
+	"this-year" => "This year",
+	"prehistoric" => "Ages ago"
 );
 
 
@@ -441,7 +447,13 @@ $_TRANSLATIONS["fr"] = array(
 	"updateCoverArt" => "mettre à jour la couverture",
 	"username" => "Utilisateur",
 	"wrong_pass" => "Utilisateur ou mot de passe invalide.",
-	"your_theme" => "mon thème"
+	"your_theme" => "mon thème",
+	"today" => "Aujourd'hui",
+	"yesterday" => "Hier",
+	"this-week" => "Cette semaine",
+	"this-month" => "Ce mois-ci",
+	"this-year" => "Cette année",
+	"prehistoric" => "Il y a longtemps"
 );
 
 /***************************************************************************/
@@ -2195,24 +2207,26 @@ class Musicco {
 				}
 			}
 
-			function insertHistoryItem(item) {
-					var markup = '<li><i class="far fa-user"></i><span class="historyItem">' + item + '</span></li>';
-					$('#history li:contains("' + item + '")').remove();
-					if ( $('#history li').length > 0 ) {
-						$("#history li:first").before(markup);
+			function insertHistoryItem(artist, album) {
+					var markup = '<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyArtist">' + artist + '</span><br/><span class="historyAlbum">' + album + '</span></li>';
+					$('#history li:contains("' + album + '")').remove();
+					if ( $('#today li').length > 0 ) {
+						$("#today li:first").before(markup);
 					} else {
-						$("#history").append(markup);
+						$("#today").append(markup);
 					}
 			}
 
 			function saveHistory() {
 				var user = "<?php echo AuthManager::getUserName(); ?>";
-				var item = nowPlaying["artist"];
-				insertHistoryItem(item);
-				if (user!="" && item !="") {
-					$.post('?', {saveHistory: '', u: user, i: item}, function(response) {
+				var artist = nowPlaying["artist"];
+				var album = nowPlaying["album"];
+				insertHistoryItem(artist, album);
+				if (user!="" && artist !="" && album !="") {
+					$.post('?', {saveHistory: '', u: user, i: artist, a: album}, function(response) {
 					});
 				}
+				updateHistoryCategories();
 			}
 
 			function getHistory() {
@@ -2221,10 +2235,46 @@ class Musicco {
 					$.post('?', {getHistory: '', u: user}, function(response) {
 						var history = JSON.parse(response);
 						$.each(history, function (i, item) {
-							$("#history").append('<li><i class="far fa-user"></i><span class="historyItem">' + item + '</span></li>');
+							$(getRelativeDate(item.timestamp)).append('<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyArtist">' + item.artist + '</span><br/><span class="historyAlbum">' + item.album + '</span></li>');
 							});
 					});
 				}
+				updateHistoryCategories();
+			}
+
+			function randomIcon() {
+				var icons = ["fas fa-record-vinyl", "fas fa-compact-disc", "fas fa-drum", "fas fa-guitar", "fas fa-headphones"];
+				return icons[Math.floor(Math.random() * icons.length)];
+			}
+
+			function updateHistoryCategories() {
+				$("#history ul:not(:has(li))").hide();
+				$("#history ul:has(li)").show();
+			}
+
+			function getRelativeDate(timestamp) {
+				var delta = Math.round((Date.now() /1000 - timestamp));
+
+				var day = 60 * 60 * 24,
+						yesterday = day * 2,
+						week = day * 7,
+						month =  day * 30,
+						year = day * 365;
+				var fuzzy;
+				if (delta < day) {
+						fuzzy = '#today';
+				} else if (delta < yesterday) {
+						fuzzy = '#yesterday';
+				} else if (delta < week) {
+						fuzzy = '#this-week';
+				} else if (delta < month) {
+						fuzzy = '#this-month';
+				} else if (delta < year) {
+						fuzzy = '#this-year';
+				} else {
+					fuzzy = '#prehistoric';
+				}
+				return fuzzy;
 			}
 
 			function goToArtist(artist) {
@@ -3511,12 +3561,16 @@ class Musicco {
 					toggleSearch();
 				});
 
-					$(document).on("click", ".historyItem", function() {
+					$(document).on("click", ".historyArtist", function() {
 						goToArtist($(this).text());
 					});
 
 					$(document).on("dblclick", ".artist, #nowPlaying_artist", function() {
 						goToArtist($(this).text());
+					});
+
+					$(document).on("click", ".historyAlbum", function() {
+						goToAlbum($(this).text().replace("(", "").replace(")", ""));
 					});
 
 					$(document).on("dblclick", ".album, .year, .songtitle, #nowPlaying_album, #nowPlaying_year, #nowPlaying_songtitle", function() {
@@ -3951,7 +4005,14 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="lyricsPanel" class="panel"></div>
 				<div id="historyPanel" class="panel guestPlay">
-					<ul id="history"></ul>
+					<div id="history">
+						<ul id="today"><span><?php print $this->getString("today") ?></span></ul>
+						<ul id="yesterday"><span><?php print $this->getString("yesterday") ?></span></ul>
+						<ul id="this-week"><span><?php print $this->getString("this-week") ?></span></ul>
+						<ul id="this-month"><span><?php print $this->getString("this-month") ?></span></ul>
+						<ul id="this-year"><span><?php print $this->getString("this-year") ?></span></ul>
+						<ul id="prehistoric"><span><?php print $this->getString("prehistoric") ?></span></ul>
+					</div>
 				</div>
 				<div id="settingsPanel">
 					<?php
@@ -4118,7 +4179,7 @@ if(!AuthManager::isAccessAllowed()) {
 			logMessage("Saved guest playlist $path for $user");
 			exit;
 	} elseif (isset($_POST['saveHistory'])) {
-			return print saveHistory($_POST['u'], $_POST['i']);
+			return print saveHistory($_POST['u'], $_POST['i'], $_POST['a']);
 			exit;
 	} elseif (isset($_POST['getHistory'])) {
 			return print getHistory($_POST['u']);
@@ -4302,12 +4363,12 @@ function addFavourite($user, $path) {
 	}
 }
 
-function saveHistory($user, $item) {
+function saveHistory($user, $artist, $album) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$insert_history = "REPLACE INTO history (userId, item) VALUES ($userId, \"$item\")";
+		$insert_history = "REPLACE INTO history (userId, item, timestamp) VALUES ($userId, \"$artist\", \"$album\", ".time().")";
 		$db->exec($insert_history);
 		}
 	$db = NULL;
@@ -4432,13 +4493,13 @@ function getHistory($user) {
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$history_query = $db->prepare("SELECT item FROM history WHERE userId=$userId;");
+		$history_query = $db->prepare("SELECT artist, album, timestamp FROM history WHERE userId=$userId ORDER BY timestamp DESC;");
 		$history_query->execute();
 		$result = $history_query->fetchAll();
 		$history_query = NULL;
 		$db = NULL;
 		foreach($result as $row) {
-			array_push($history, $row['item']);
+			array_push($history, array("artist" => $row['artist'], "album" => $row['album'], "timestamp" => $row['timestamp']));
 		}
 	}
 	logMessage("Loaded history for $user");
@@ -4794,7 +4855,7 @@ function cleanDB($db) {
 	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_panel TEXT NOT NULL, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
 	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, data TEXT, unique(userId, name));");
-	$db->exec("CREATE TABLE history (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , item TEXT, unique(userId, item));");
+	$db->exec("CREATE TABLE history (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , artist TEXT, album TEXT, timestamp INTEGER, unique(userId, artist, album));");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FOLDER', ".Musicco::TYPE_FOLDER.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
