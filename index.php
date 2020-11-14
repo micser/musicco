@@ -4375,7 +4375,7 @@ function saveHistory($user, $artist, $album) {
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$insert_history = "REPLACE INTO history (userId, item, timestamp) VALUES ($userId, \"$artist\", \"$album\", ".time().")";
+		$insert_history = "REPLACE INTO history (userId, artist, album, timestamp) VALUES ($userId, \"$artist\", \"$album\", ".time().")";
 		$db->exec($insert_history);
 		}
 	$db = NULL;
