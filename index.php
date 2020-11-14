@@ -2307,7 +2307,7 @@ class Musicco {
 							tempHTML = oldHTML;
 							$("#reset_db").html(tempHTML);
 							var library = $.ui.fancytree.getTree("#library");
-							if (library.length > 0) {
+							if (library && library.length > 0) {
 								initLibraryTree();
 							}
 							updateFavourites();
@@ -3245,8 +3245,10 @@ class Musicco {
 
 				$(".panelToggle, #ham").on("click", function() {
 					if ($("#browserPanel").is(":hidden")) {
-						$("#filterButton").trigger("click");
-						trimLibrary();
+						if ($.ui.fancytree.getTree("#library")) {
+							$("#filterButton").trigger("click");
+							trimLibrary();
+						}
 						saveSettings();
 					}
 				});
