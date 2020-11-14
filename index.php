@@ -3022,8 +3022,8 @@ class Musicco {
 			}
 
 			function dragEnd() {
-				$(draggedElement).siblings().css("opacity", "1");
-				$(draggedElement).css("border", "0");
+				$(draggedElement).siblings().css("opacity", "");
+				$(draggedElement).css("border", "");
 				draggedElement = null;
 				$("#playlist").trigger("updated");
 			}
