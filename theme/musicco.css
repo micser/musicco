@@ -573,6 +573,7 @@
 		list-style-type: none;
 		margin-left: -.75em;
 		background: var(--background);
+		border: 1px solid var(--background-highlight);
 	}
 
 	#history li {
