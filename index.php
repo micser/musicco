@@ -2226,8 +2226,8 @@ class Musicco {
 				var user = "<?php echo AuthManager::getUserName(); ?>";
 				var artist = nowPlaying["artist"];
 				var album = nowPlaying["album"];
-				insertHistoryItem(artist, album);
-				if (user!="" && artist !="" && album !="") {
+				if (user && artist && album) {
+					insertHistoryItem(artist, album);
 					$.post('?', {saveHistory: '', u: user, i: artist, a: album}, function(response) {
 					});
 				}
