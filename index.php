@@ -1503,6 +1503,7 @@ class Musicco {
 				// 177: media next
 				// 65: a
 				// 66: b
+				// 67: c
 				// 83: s
 				// 80: p
 				// 84: t
@@ -1543,7 +1544,7 @@ class Musicco {
 				} else if (menuIsFocused || tabIsFocused) {
 					//no keys intercepted on context menu
 				} else {
-					customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 71, 72, 73, 76, 80, 83, 84, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
+					customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 71, 72, 73, 76, 80, 83, 84, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
 				}
 				
 				if (customKeyEvents.indexOf(e.keyCode) > -1) {
@@ -1604,10 +1605,14 @@ class Musicco {
 						break;
 
 						case 66: //b
-							if (!isGuestPlay()){	
+							if (!isGuestPlay()){
 								 togglePanel("#browserPanel");
 								$.ui.fancytree.getTree("#library").getFirstChild().setActive();
 							}
+						break;
+
+						case	67: // c
+							togglePanel("#historyPanel");
 						break;
 
 						case	72: // h
@@ -5102,6 +5107,7 @@ function builddb() {
 		$helpString.="<div>p: show playlist</div>";
 		$helpString.="<div>i: show artist information</div>";
 		$helpString.="<div>l: show lyrics</div>";
+		$helpString.="<div>c: show listening history</div>";
 		$helpString.="<div class='guestPlay'>g: show settings</div>";
 		$helpString.="<div>Esc: hide all panels</div>";
 		$helpString.="<div><br/></div>";
