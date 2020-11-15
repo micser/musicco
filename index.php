@@ -1550,8 +1550,8 @@ class Musicco {
 				if (customKeyEvents.indexOf(e.keyCode) > -1) {
 					switch (e.keyCode) {
 						case 13: //enter
-							if ($(".hits a").is(':focus')) {
-								$(".hits a:focus").trigger('mouseup');
+							if ($(".searchResult, .searchResultParent").is(':focus')) {
+								$(".searchResult:focus, .searchResultParent:focus").trigger('mouseup');
 							}
 						break;
 						case 32: //space
@@ -2653,7 +2653,7 @@ class Musicco {
 
 				function toggleSearch() {
 					togglePanel("#searchPanel");
-						$('.hits').remove();
+						$('#hits ul').remove();
 						$('#searchText').select();
 						$('#searchText').focus();
 				}
@@ -3519,7 +3519,7 @@ class Musicco {
 						showLoadingInfo("<?php print $this->getString("searchingFor"); ?>" + term);
 						var resultString="&nbsp;";
 						$("#searchResults").html("&nbsp;&nbsp;<i class=\"fas fa-pulse fa-spin fa-spinner\"></i>&nbsp;&nbsp;<?php print $this->getString("searchingLibrary"); ?>");
-						$(".hits").remove();
+						$("#hits ul").remove();
 						$.post('?', {querydb: '', root: term, type: 'search'}, function (data) {
 						var hits= data;
 						if (hits != null) {
@@ -3540,30 +3540,43 @@ class Musicco {
 								if (type == 1) {
 									optionalSlash = slash;
 								}
+								var hitData = " tabindex=\"1\" ";
+								hitData += " data-album=\"" + album + "\" ";
+								hitData += " data-artist=\"" + artist + "\" ";
+								hitData += " data-cover=\"" + cover + "\" ";
+								hitData += " data-year=\"" + year + "\" ";
+								var icon = (isFolder) ? "far fa-folder" : "fas fa-music";
 								var levelUp = parentfolder.substr(0,parentfolder.substr(0,parentfolder.lastIndexOf("/")).lastIndexOf("/")+1);
 								var parentfolderItem = parentfolder.substr(levelUp.length);
 								var parentfolderItemName = parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1).replace(/<?php print Musicco::getConfig('new_marker'); ?>/, "").replace(/\//g, " &gt; ");
 								var parentfolderSongTitle = parentfolderItem.replace("[" + year + "]", "").replace("/", "");
 								var parentfolderTitle = parentfolderItem.replace("/", "");
-								var hitLink="<div class=\"hits\">";
 								if (parentfolderItemName=="") {
 									parentfolderItemName="home";
 								}
-								hitLink+="<a class=\"searchResultParent\"  tabindex=\"1\" data-folder=\"true\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + parentfolderSongTitle + "\" data-year=\"" + year + "\" data-parentfolder=\"" + levelUp + "\" data-title=\"" + parentfolderTitle + "\" data-path=\"" + parentfolderItem + "\">" + parentfolderItemName +"</a> &gt; ";
-								hitLink+="<a class=\"searchResult " + extraClasses + "\" tabindex=\"1\" data-folder=\"" + isFolder + "\" data-album=\"" + album + "\" data-artist=\"" + artist + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + songtitle + "\" data-year=\"" + year + "\" data-parentfolder=\"" + parentfolder + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path +"\">"+ name +"</a></div>";
-								$("#searchResults").before(hitLink);
+								var hitListId = parentfolderItemName.replace(/[^A-Za-z0-9]/g, '');
+								var hitListHeader = "<ul id=\"" + hitListId + "\">";
+								hitListHeader += "<span class=\"searchResultParent\" data-folder=\"true\" data-songtitle=\"" + parentfolderSongTitle + "\" data-parentfolder=\"" + levelUp + "\" data-title=\"" + parentfolderTitle + "\" data-path=\"" + parentfolderItem + "\"" + hitData + ">" + parentfolderItemName + "</span>";
+								hitListHeader += "</ul>";
+								var hitListItem = "<li>";
+								hitListItem += "<i class=\"fa-fw " + icon + "\"></i><span class=\"searchResult " + extraClasses + "\" data-folder=\"" + isFolder + "\" data-songtitle=\"" + songtitle + "\" data-parentfolder=\"" + parentfolder + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path + "\"" + hitData + ">" + name + "</span>";
+								hitListItem += "</li>";
+								if ($("#" + hitListId).length < 1) {
+									$("#hits").append(hitListHeader);
+								}
+								$("#" + hitListId).append(hitListItem);
 							});
 						} else {
 							resultString="<?php print $this->getString("noResultsForThisSearch"); ?>";
 						}
 							$("#searchResults").html(resultString);
-							$('.searchResult').first().focus();
+							$('#clear').focus();
 						}, "json");
 					}
 				});
 
 				$('#clear').on("click", function () {
-					$('.hits').remove();
+					$('#hits ul').remove();
 					$('#searchText').val('');
 					toggleSearch();
 				});
@@ -3708,11 +3721,10 @@ class Musicco {
 										var levelUp = parentfolder.substr(0,parentfolder.substr(0,parentfolder.lastIndexOf("/")).lastIndexOf("/")+1);
 										var parentfolderItem = parentfolder.substr(levelUp.length);
 										var parentfolderItemName = parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1);
-										var hitLink="<div class=\"hits\">";
 									if (parentfolderItemName=="") {
 										parentfolderItemName="home";
 									}
-										hitLink+="<a class=\"searchResult uncoverLink\" id=\"" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\">"+ parentfolderItemName +"</a>";
+										var hitLink ="<a class=\"searchResult uncoverLink\" id=\"" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\">"+ parentfolderItemName +"</a>";
 									$("#searchResults").before(hitLink);
 									var thisHit = "#"+i;
 									queueMusic($(thisHit).data("parentfolder") + $(thisHit).data("path"), $(thisHit).data("title"), Insert.last);
@@ -3951,7 +3963,7 @@ if(!AuthManager::isAccessAllowed()) {
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 					print "<span id=\"logout\"><a href=\"?logout\"><i class=\"fas fa-sign-out-alt fa-fw\"></i>&nbsp;</a></span>";
 				}
-			?> 
+			?>
 		</div>
 		<!-- END: header -->
 		<!-- START: Left Panel -->
@@ -3971,7 +3983,7 @@ if(!AuthManager::isAccessAllowed()) {
 						<div id="filter">
 							<input id="includeOldAlbums" tabindex="0" type="checkbox" checked="true"/>
 							<label for="includeOldAlbums"><i class="fas fa-check-square"></i>&nbsp;<?php print $this->getString("show_all"); ?></label>
-							<input type="text" id="filterText" tabindex="1" class="fill" name="filterText" placeholder="<?php print $this->getString("filter_placeholder"); ?>"/>
+							<input type="text" id="filterText" tabindex="1" name="filterText" placeholder="<?php print $this->getString("filter_placeholder"); ?>"/>
 							<a class="btn" id="filterButton" href="#"><i class="fas fa-border fa-times"></i></a>
 						</div>
 						<div id="favourites">
@@ -3982,13 +3994,14 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="searchPanel" class="panel guestPlay">
 					<form action="?" id="searchForm">
-						<input id="searchText" type="text" class="fill" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
-						<span class="right">
+						<input id="searchText" type="text" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
+						<span>
 							<a class="btn" id="findIt" href="#"><i class="fas fa-border fa-search"></i></a>
-							<a class="btn" id="clear" href="#"><i class="fas fa-border fa-times"></i></a>
+							<a class="btn" id="clear" tabindex="1" href="#"><i class="fas fa-border fa-times"></i></a>
 						</span>
 					</form>
-					<div id="searchResults">&nbsp;</div>
+					<div id="hits" class="card"></div>
+					<div id="searchResults"></div>
 				</div>
 				<div id="playlistPanel" class="panel">
 					<div id="playlist-tools" class="guestPlay">
@@ -4012,7 +4025,7 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="lyricsPanel" class="panel"></div>
 				<div id="historyPanel" class="panel guestPlay">
-					<div id="history">
+					<div id="history" class="card">
 						<ul id="today"><span><?php print $this->getString("today") ?></span></ul>
 						<ul id="yesterday"><span><?php print $this->getString("yesterday") ?></span></ul>
 						<ul id="this-week"><span><?php print $this->getString("this-week") ?></span></ul>

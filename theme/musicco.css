@@ -153,7 +153,10 @@
 		vertical-align: baseline;
 	}
 
-	.fancytree-treefocus span.fancytree-active span.fancytree-title, .fancytree-treefocus span.fancytree-selected span.fancytree-title {
+	.fancytree-treefocus span.fancytree-active span.fancytree-title,
+	.fancytree-treefocus span.fancytree-selected span.fancytree-title,
+	.searchResult:focus,
+	.searchResultParent:focus {
 		outline: 1px dotted var(--text-highlight);
 		color: var(--text-highlight)!important;
 		background-color: transparent;
@@ -569,7 +572,8 @@
 		border-radius: 0 0 4px 4px;
 	}
 
-	#historyPanel {
+	#historyPanel,
+	#searchPanel {
 		width: 100%;
 		margin: 0 auto;
 		padding: 2em;
@@ -577,13 +581,13 @@
 		position: relative;
 	}
 
-	#history {
+	.card {
 	text-align: center;
 	color: var(--text-highlight);
 	width: 80%;
 	}
 
-	#history > ul > span {
+	.card > ul > span {
 		background: var(--background-highlight);
 		display: block;
 		margin-left: -2.8em;
@@ -592,7 +596,7 @@
 		border-radius: 4px 4px 0 0;
 	}
 
-	#history ul {
+	.card ul {
 		border-radius: 4px;
 		list-style-type: none;
 		margin-left: -.75em;
@@ -600,22 +604,22 @@
 		border: 1px solid var(--background-highlight);
 	}
 
-	#history li {
+	.card li {
 		text-align: left;
 		padding-top: .5em;
 		padding-bottom: .5em;
 		color: var(--text);
 	}
 
-	#history li span {
+	.card li span {
 		display: inline-block;
 	}
 
-	#history li span.historyAlbum {
+	.card li span.historyAlbum {
 		text-indent: 1.8em;
 	}
 
-	#history li i:before {
+	.card li i:before {
 		color: var(--text-highlight);
 		padding-right: 1em;
 	}
@@ -631,7 +635,8 @@
 	a:hover,
 	#ham:hover,
 	.historyArtist:hover,
-	.historyAlbum:hover {
+	.historyAlbum:hover,
+	.searchResult:hover {
 		color: var(--text-highlight);
 	}
 
@@ -644,7 +649,9 @@
 	a,
 	#controls > span > i,
 	.historyArtist,
-	.historyAlbum {
+	.historyAlbum,
+	.searchResult,
+	.searchResultParent {
 		cursor: pointer;
 	}
 
@@ -671,12 +678,12 @@
 	a.current,
 	.current .fancytree-title,
 	.fancytree-title:hover,
-	.searchResult a,
+	.searchResult:hover,
 	.new,
 	input,
-	#filterButton,
-	#clear,
-	#findIt,
+	#filterButton:hover,
+	#clear:hover,
+	#findIt:hover,
 	#updateCoverArt,
 	.album,
 	.remove:hover,
@@ -930,8 +937,13 @@
 		width: 95%;
 	}
 
-	.fill {
-		width: 80%;
+	#filterText {
+		width: 85%;
+	}
+
+	#searchText {
+		width: 70%;
+		margin-left: -.5em;
 	}
 
 	#loadingInfo {
@@ -959,7 +971,7 @@
 		font-size: var(--text-larger);
 	}
 
-	.hits,
+	#hits,
 	#updateCoverArt {
 		font-size: var(--text-smaller);
 	}
@@ -995,10 +1007,6 @@
 		font-size: var(--text-big);
 		padding-top: 1em;
 		padding-bottom: 2em;
-	}
-
-	.hits {
-		margin: 0 .3em;
 	}
 
 	#big-player,
@@ -1733,7 +1741,7 @@
 	}
 
 	#filterText {
-		width: 85%;
+		width: 80%;
 	}
 
 	#searchText {
