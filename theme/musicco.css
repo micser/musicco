@@ -866,7 +866,8 @@
 	#lyricsPanel,
 	#settingsPanel,
 	#searchPanel,
-	#playlistPanel > ul {
+	#playlistPanel > ul,
+	#historyPanel {
 		margin-bottom: 5em;
 	}
 
