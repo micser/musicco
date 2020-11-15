@@ -1735,6 +1735,11 @@
 
 @media (max-width: 1024px) {
 
+	.ui-tabs-tab {
+		font-size: var(--text-smaller)!important;
+		padding-top: .25em!important;
+	}
+
 	.panelToggle {
 		padding-left: .75em!important;
 		padding-right: .75em!important;
