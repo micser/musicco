@@ -354,10 +354,15 @@ $_TRANSLATIONS["en"] = array(
 	"your_theme" => "my theme",
 	"today" => "Today",
 	"yesterday" => "Yesterday",
-	"this-week" => "This week",
-	"this-month" => "This month",
-	"this-year" => "This year",
-	"prehistoric" => "Ages ago"
+	"this-week" => "This Week",
+	"last-week" => "Last Week",
+	"this-month" => "This Month",
+	"this-year" => "This Year",
+	"prehistoric" => "Ages ago...",
+	"winter" => "This Winter",
+	"spring" => "This Spring",
+	"summer" => "This Summer",
+	"fall" => "This Fall"
 );
 
 
@@ -451,9 +456,14 @@ $_TRANSLATIONS["fr"] = array(
 	"today" => "Aujourd'hui",
 	"yesterday" => "Hier",
 	"this-week" => "Cette semaine",
+	"last-week" => "La semaine dernière",
 	"this-month" => "Ce mois-ci",
 	"this-year" => "Cette année",
-	"prehistoric" => "Il y a longtemps"
+	"prehistoric" => "Il y a longtemps",
+	"winter" => "Cet hiver",
+	"spring" => "Ce printemps",
+	"summer" => "Cet été",
+	"fall" => "Cet automne"
 );
 
 /***************************************************************************/
@@ -641,7 +651,20 @@ class Musicco {
 	function getString($stringName) {
 		return Musicco::getLangString($stringName, $this->lang);
 	}
-	
+
+	function getSeason() {
+		$currentMonth=DATE("m");
+		$season = "winter";
+		if ($currentMonth>="04" && $currentMonth<="06") {
+			$season = "spring";
+		} elseif ($currentMonth>="07" && $currentMonth<="09") {
+			$season = "summer";
+		} elseif ($currentMonth>="10" && $currentMonth<="12") {
+			$season = "fall";
+		}
+		return $season;
+	}
+
 	//
 	// The function for getting configuration values
 	//
@@ -2258,26 +2281,33 @@ class Musicco {
 			}
 
 			function getRelativeDate(timestamp) {
-				var delta = Math.round((Date.now() /1000 - timestamp));
-
-				var day = 60 * 60 * 24,
-						yesterday = day * 2,
-						week = day * 7,
-						month =  day * 30,
-						year = day * 365;
+				timestamp = timestamp * 1000;
+				var day = 24 * 60 * 60 * 1000;
+				var now = new Date();
+				var today = now.setHours(0, 0, 0, 0);
+				var yesterday = today - day;
+				var thisWeek = new Date(now.setDate(now.getDate() - now.getDay() + (now.getDay() == 0 ? -6:1))).setHours(0, 0, 0, 0);
+				var lastWeek = thisWeek - 7 * day;
+				var thisMonth = new Date(now.getFullYear(), now.getMonth(), 1).setHours(0, 0, 0, 0);
+				var thisSeason = thisMonth - 3 * 31 * day;
+				var thisYear = new Date(now.getFullYear(), 0, 1).setHours(0, 0, 0, 0);
 				var fuzzy;
-				if (delta < day) {
-						fuzzy = '#today';
-				} else if (delta < yesterday) {
-						fuzzy = '#yesterday';
-				} else if (delta < week) {
-						fuzzy = '#this-week';
-				} else if (delta < month) {
-						fuzzy = '#this-month';
-				} else if (delta < year) {
-						fuzzy = '#this-year';
+				if (timestamp < thisYear) {
+					fuzzy = "#prehistoric";
+				} else if (timestamp < thisSeason) {
+					fuzzy = "#this-year";
+				} else if (timestamp < thisMonth) {
+					fuzzy = "#this-season";
+				} else if (timestamp < lastWeek) {
+					fuzzy = "#this-month";
+				} else if (timestamp < thisWeek) {
+					fuzzy = "#last-week";
+				} else if (timestamp < yesterday) {
+					fuzzy = "#this-week";
+				} else if (timestamp < today) {
+					fuzzy = "#yesterday";
 				} else {
-					fuzzy = '#prehistoric';
+					fuzzy = "#today"
 				}
 				return fuzzy;
 			}
@@ -4029,7 +4059,9 @@ if(!AuthManager::isAccessAllowed()) {
 						<ul id="today"><span><?php print $this->getString("today") ?></span></ul>
 						<ul id="yesterday"><span><?php print $this->getString("yesterday") ?></span></ul>
 						<ul id="this-week"><span><?php print $this->getString("this-week") ?></span></ul>
+						<ul id="last-week"><span><?php print $this->getString("last-week") ?></span></ul>
 						<ul id="this-month"><span><?php print $this->getString("this-month") ?></span></ul>
+						<ul id="this-season"><span><?php print $this->getString($this->getSeason()) ?></span></ul>
 						<ul id="this-year"><span><?php print $this->getString("this-year") ?></span></ul>
 						<ul id="prehistoric"><span><?php print $this->getString("prehistoric") ?></span></ul>
 					</div>
