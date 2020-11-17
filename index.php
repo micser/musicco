@@ -3421,7 +3421,7 @@ class Musicco {
 						}
 					} else {
 						var albumIndex = $(target).index("#playlist > li");
-						var fallbackTrack = $("#playlist > li:eq(" + albumIndex + ")").find("li[data-nature=track]:first");
+						var fallbackTrack = $(".nextAlbum").find("li[data-nature=track]:first");
 						var currentAlbumIndex = $(".currentAlbum").index("#playlist > li");
 						var isCurrentAlbum = (currentAlbumIndex == albumIndex);
 						var shift = (e.type === "taphold")? true : e.shiftKey;
@@ -3447,6 +3447,9 @@ class Musicco {
 							}
 							$("#playlist > li").not(":eq(" + albumIndex + ")").remove();
 						} else {
+							if (isCurrentAlbum) {
+								playTrack(fallbackTrack);
+							}
 							target.remove();
 						}
 					}
