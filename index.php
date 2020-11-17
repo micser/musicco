@@ -242,6 +242,13 @@ $_CONFIG['show_donate_button'] = true;
 // Default: $_CONFIG['canRerunWizard'] = false;
 $_CONFIG['canRerunWizard'] = false;
 
+// Chromecast media receiver to use
+// musicco uses the default cast receiver, 
+// but you can specify your own chromecast receiver id
+// for debugging
+// Default: $_CONFIG['receiverApplicationId'] = "chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID";
+$_CONFIG['receiverApplicationId'] = "chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID";
+
 // You can override any of the settings above by copying them into a config.php
 // file which is about to get loaded. This should simplify upgrades by avoiding 
 // losing your personalised settings. If the file does not exist, you'll see a
@@ -795,7 +802,7 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
 		<?php 
 			if ($this->getConfig('isCastAllowed')) {
-				echo '<script src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>';
+				echo '<script type="text/javascript" src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>';
 			}
 		 ?>
 		<script type="text/javascript">
@@ -822,7 +829,7 @@ class Musicco {
 			var initializeCastApi = function() {
 				var castContext = cast.framework.CastContext.getInstance();
 				castContext.setOptions({
-					receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+					receiverApplicationId: <?php print $this->getConfig('receiverApplicationId'); ?>,
 					autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
 				});
 				castContext.addEventListener(
@@ -1023,7 +1030,7 @@ class Musicco {
 
 			function convertPlaylist(autoplay) {
 				var repeat = (playerConfig["shuffled"] == true || playerConfig["loop"] == true) ? true : false;
-				var current = $(".currentTrack").index("#playlist li[data-nature=track]");
+				var current = Math.max($(".currentTrack").index("#playlist li[data-nature=track]"), 0);
 				var queueItems = $("#playlist").find("li[data-nature=track]").map(function() {
 					var isCurrent = $(this).hasClass("currentTrack") ? true : false;
 					var contentId = $(this).index("#playlist li[data-nature=track]");
@@ -1057,7 +1064,7 @@ class Musicco {
 				castSession = cast.framework.CastContext.getInstance().getCurrentSession();
 				disableLocalPlayer();
 				if (!isResuming) {
-					loadCastPlaylist(isPlaying);
+					loadCastQueue(isPlaying);
 				}
 			}
 
@@ -1092,14 +1099,34 @@ class Musicco {
 				castPlayerState["contentId"] = castPlayer.mediaInfo["contentId"];
 			}
 
-			function loadCastPlaylist(autoplay) {
+			function replaceCastQueue() {
+				var playlistLength = $("#playlist li[data-nature=track]").length;
+				var newCastQueue = convertPlaylist(true);
+				var mediaSession = castSession.getMediaSession();
+				if (mediaSession != null) {
+					var currentTrack = mediaSession.currentItemId;
+					var removeQueueItems = [];
+					for (i = currentTrack + 1; i < currentTrack + 1 + playlistLength; i++) {
+						removeQueueItems.push(i);
+					}
+					var items = new chrome.cast.media.QueueRemoveItemsRequest(removeQueueItems);
+					castSession.getMediaSession().queueRemoveItems(items, () => {
+						console.debug("removed items from cast queue");
+						queueCastItems(newCastQueue.slice(1, newCastQueue.length))
+					}, (e) => {
+						console.debug("failed to remove items from cast queue");
+						console.debug(e);
+					});
+				}
+			}
+
+			function loadCastQueue(autoplay) {
 					isResuming = false;
 					var remotePlaylist = convertPlaylist(autoplay);
-					var current = $(".currentTrack").index("#playlist li[data-nature=track]");
 					var playlistRequest = new chrome.cast.media.QueueLoadRequest(remotePlaylist.slice(0, 1));
 					castSession.getSessionObj().queueLoad(playlistRequest, () => {
 						console.debug("queue loaded");
-						queueCastItems(remotePlaylist.slice(1,remotePlaylist.length))
+						queueCastItems(remotePlaylist.slice(1, remotePlaylist.length))
 					}, (e) => {
 						console.warn("queue load error");
 						console.warn(e);
@@ -1359,7 +1386,7 @@ class Musicco {
 				var trackNumber = $(track).index("#playlist li[data-nature=track]");
 				loadTrack(trackNumber);
 				if (isCasting) {
-					loadCastPlaylist(true);
+					loadCastQueue(true);
 				} else {
 					player.play();
 				}
@@ -2423,7 +2450,7 @@ class Musicco {
 								loadTrack(parseInt(response.current, 0));
 								player.currentTime = parseInt(response.time);
 								if (isCasting) {
-									loadCastPlaylist(false);
+									loadCastQueue(false);
 								}
 							}
 						}
@@ -2678,7 +2705,6 @@ class Musicco {
 				function clearPlaylist() {
 					resetPlayer();
 					$("#playlist li").remove();
-					$("#playlist").trigger("updated");
 				}
 
 				function toggleSearch() {
@@ -3250,7 +3276,7 @@ class Musicco {
 				$("#playlist").on("updated", function() {
 					savePlaylist();
 					if (isCasting) {
-						loadCastPlaylist(castPlayer.playerState == chrome.cast.media.PlayerState.PLAYING);
+						replaceCastQueue();
 					}
 				});
 
