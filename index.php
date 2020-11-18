@@ -2288,6 +2288,7 @@ class Musicco {
 				var user = "<?php echo AuthManager::getUserName(); ?>";
 				if (user!="") {
 					$.post('?', {getHistory: '', u: user}, function(response) {
+						$("#history li").remove();
 						var history = JSON.parse(response);
 						$.each(history, function (i, item) {
 							$(getRelativeDate(item.timestamp)).append('<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyArtist">' + item.artist + '</span><br/><span class="historyAlbum">' + item.album + '</span></li>');
@@ -3325,6 +3326,7 @@ class Musicco {
 						$("body").css("background-image", "");
 						$("body").removeClass("magic");
 					}
+					saveSettings();
 				});
 
 				$("#background, #text").on("change", function(e) {
@@ -3458,6 +3460,8 @@ class Musicco {
 
 				$(".obsoleteWarning").on("click", function() {
 					resetPlaylists();
+					loadSettings();
+					getHistory();
 					$("#refreshPanel").dialog("close");
 					startPolling(true);
 				});
