@@ -812,6 +812,8 @@ class Musicco {
 			///////////////
 
 			var clientId = "<?php print bin2hex(random_bytes(5)); ?>";
+			var playlistResfreshDelay = 5000;
+			var lastInteraction;
 			var viewerType = '';
 			var timeUpdates = true;
 			var isInit = false;
@@ -992,6 +994,9 @@ class Musicco {
 			// Functions //
 			//////////////
 
+			function resetLastInteraction() {
+				lastInteraction = Date.now() - playlistResfreshDelay - 1000;
+			}
 
 			function getRepeatMode() {
 				return (playerConfig["shuffled"] == true) ? chrome.cast.media.RepeatMode.ALL_AND_SHUFFLE 
@@ -1004,6 +1009,7 @@ class Musicco {
 			}
 
 			function nextMedia() {
+				resetLastInteraction();
 				if (playerConfig["shuffled"]) {
 					playRandomTrack();
 				} else if ( (playerConfig["loop"] == false) && ($(nextTrack).index("#playlist li[data-nature=track]") == 0) ){
@@ -2716,7 +2722,7 @@ class Musicco {
 				}
 
 				function scrollPlaylist() {
-					if (hasPlaylist() && $("#playlist").is(":visible")) {
+					if (hasPlaylist() && $("#playlist").is(":visible") && Date.now() - lastInteraction > playlistResfreshDelay) {
 						var target = $('#playlistPanel');
 						var elementToView = ($(".currentAlbum").height() < window.innerHeight - 100) ? ".currentAlbum" : ".currentTrack";
 						if (isPortrait() || isMedium()) {
@@ -3132,7 +3138,9 @@ class Musicco {
 				 // ACTIONS //
 				/////////////
 
-			var status = null; startPolling();
+				resetLastInteraction();
+				var status = null;
+				startPolling();
 
 				var watcherTarget = document.getElementById("playlist");
 				if (watcherTarget) {
@@ -3274,6 +3282,10 @@ class Musicco {
 				  ////////////
 				 // EVENTS //
 				////////////
+
+				$("#playlistContainer, #playlistPanel").bind("touchstart touchmove scroll mousedown DOMMouseScroll mousewheel keyup", function(e){
+						lastInteraction = Date.now();
+				});  
 
 				$("#playlist").on("updated", function() {
 					savePlaylist();
