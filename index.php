@@ -2718,10 +2718,11 @@ class Musicco {
 				function scrollPlaylist() {
 					if (hasPlaylist() && $("#playlist").is(":visible")) {
 						var target = $('#playlistPanel');
+						var elementToView = ($(".currentAlbum").height() < window.innerHeight - 100) ? ".currentAlbum" : ".currentTrack";
 						if (isPortrait() || isMedium()) {
 							target = $('#panelContainer');
 						}
-						var y = $(".currentTrack").offset().top - $("#playlist").offset().top - 20 + $(".currentTrack").scrollTop();
+						var y = $(elementToView).offset().top - $("#playlist").offset().top + $(elementToView).scrollTop();
 						target.animate({scrollTop:y});
 					}
 				}
