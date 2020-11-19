@@ -1112,7 +1112,10 @@ class Musicco {
 				if (mediaSession != null) {
 					var currentTrack = mediaSession.currentItemId;
 					var removeQueueItems = [];
-					for (i = currentTrack + 1; i < currentTrack + 1 + playlistLength; i++) {
+					// This is a fix for #168: we are arbitrarily removing 300 items because there is no way
+					// to know the size of the remote queue when using the default web receiver. 
+					// This is probably not ideal...
+					for (i = currentTrack + 1; i < currentTrack + 1 + 300; i++) {
 						removeQueueItems.push(i);
 					}
 					var items = new chrome.cast.media.QueueRemoveItemsRequest(removeQueueItems);
@@ -1560,6 +1563,7 @@ class Musicco {
 				// 65: a
 				// 66: b
 				// 67: c
+				// 69: e
 				// 83: s
 				// 80: p
 				// 84: t
@@ -1600,7 +1604,7 @@ class Musicco {
 				} else if (menuIsFocused || tabIsFocused) {
 					//no keys intercepted on context menu
 				} else {
-					customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 71, 72, 73, 76, 80, 83, 84, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
+					customKeyEvents.push(13, 27, 32, 37, 38, 39, 40, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 69, 71, 72, 73, 76, 80, 83, 84, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 174, 174, 175, 177, 177, 178, 179, 191, 223);
 				}
 				
 				if (customKeyEvents.indexOf(e.keyCode) > -1) {
@@ -1724,14 +1728,14 @@ class Musicco {
 						case 76: //l
 						 togglePanel("#lyricsPanel");
 						break;
-						
+
 						case 71: //g
 						 if (e.ctrlKey) {
 						 } else {
 							togglePanel("#settingsPanel");
 						 }
 						break;
-						
+
 						case 48: //0
 						case 49: //1
 						case 50: //2
@@ -1747,7 +1751,14 @@ class Musicco {
 								jump(e.keyCode - 48);
 							}
 						break;
-						
+
+						case 69: //e
+							if (e.shiftKey || e.ctrlKey) {
+							} else {
+								jump(9.9);
+							}
+						break;
+
 						case 96: //0
 						case 97: //1
 						case 98: //2
@@ -5184,6 +5195,8 @@ function builddb() {
 		$helpString.="<div>&uarr;: volume up</div>";
 		$helpString.="<div>&darr;: volume down</div>";
 		$helpString.="<div>&lt;space&gt;: play/pause</div>";
+		$helpString.="<div>0-9: seek to 0%-90% of current track</div>";
+		$helpString.="<div>e: seek to end of current track</div>";
 		$helpString.="<div>You can also use media keys on <br/>most multimedia keyboards</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='guestPlay yellow bold'>Browser</div>";
