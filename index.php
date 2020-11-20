@@ -2181,8 +2181,10 @@ class Musicco {
 
 			function saveCover(coverURL, path) {
 				$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
-					var imagePath = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
-					setTimeout(function() { if (!isTooLate()) { printCover(imagePath); } }, 4000);
+					if (response) {
+						var imagePath = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
+						if (!isTooLate()) { printCover(imagePath); };
+					}
 				});
 			}
 
@@ -4337,7 +4339,8 @@ if(!AuthManager::isAccessAllowed()) {
 			$url = $_POST['u'];
 			$path = $_POST['p'];
 			logMessage("Saving cover from ".$url." to ".$path);
-			return	file_put_contents($path.Musicco::getConfig('coverFileName').Musicco::getConfig('coverExtension'), file_get_contents($url));
+			$result = file_put_contents($path.Musicco::getConfig('coverFileName').Musicco::getConfig('coverExtension'), file_get_contents($url));
+			return print $result;
 			exit;
 	} elseif (isset($_GET['head'])) {
 			$url =$_GET['url']; 
