@@ -46,7 +46,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
-## v2.1.0 (in development)
+## v3.0.0 (in development)
 * Added casting directly from player
 * Allow viewing listening history
 * Allow re-running the setup wizard
