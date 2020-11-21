@@ -4896,42 +4896,43 @@ function querydb($query_root, $query_type) {
 	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 	$_START_QUERY = microtime(true);
 	logMessage($query);
-	$result = $db->query($query);
+	$result = $db->query($query)->fetchAll();
 	$list = [];
 	logMessage("Queried DB in ".number_format((microtime(true) - $_START_QUERY), 3)." seconds");
 	$_START_DISPLAY = microtime(true);
-	if (sizeOf($result))
-	foreach($result as $row) {
-		$name = $row['name'];
-		$type = $row['type'];
-		$parentfolder = $row['parentfolder'];
-		$cover = $row['cover'];
-		$album = $row['album'];
-		$artist = $row['artist'];
-		$title = $row['title'];
-		$year = $row['year'];
-		$number = $row['number'];
-		$extension = $row['extension'];
-		$folder = ($type == Musicco::TYPE_FOLDER)? true : false;
-		$extraClasses = (preg_match("/".Musicco::getConfig('new_marker')."/", $name))? "current" : "treenode";
-		$list[]= array(
-							"title" => str_replace(Musicco::getConfig('new_marker'), "", $name),
-							"path" => $name,
-							"parentfolder" => $parentfolder,
-							"type" => $type,
-							"cover" => $cover,
-							"album" => $album,
-							"artist" => $artist,
-							"songtitle" => $title,
-							"year" => $year,
-							"number" => $number,
-							"extension" => $extension,
-							//fancytree properties
-							"folder" => $folder,
-							"lazy" => $folder,
-							"extraClasses" => $extraClasses
-							);
-		//logMessage("$name, $type, $parentfolder, $cover, $album, $artist, $title, $year, $number, $extension, $folder, $extraClasses");
+	if (sizeOf($result)) {
+		foreach($result as $row) {
+			$name = $row['name'];
+			$type = $row['type'];
+			$parentfolder = $row['parentfolder'];
+			$cover = $row['cover'];
+			$album = $row['album'];
+			$artist = $row['artist'];
+			$title = $row['title'];
+			$year = $row['year'];
+			$number = $row['number'];
+			$extension = $row['extension'];
+			$folder = ($type == Musicco::TYPE_FOLDER)? true : false;
+			$extraClasses = (preg_match("/".Musicco::getConfig('new_marker')."/", $name))? "current" : "treenode";
+			$list[]= array(
+								"title" => str_replace(Musicco::getConfig('new_marker'), "", $name),
+								"path" => $name,
+								"parentfolder" => $parentfolder,
+								"type" => $type,
+								"cover" => $cover,
+								"album" => $album,
+								"artist" => $artist,
+								"songtitle" => $title,
+								"year" => $year,
+								"number" => $number,
+								"extension" => $extension,
+								//fancytree properties
+								"folder" => $folder,
+								"lazy" => $folder,
+								"extraClasses" => $extraClasses
+								);
+			debugMessage("$name, $type, $parentfolder, $cover, $album, $artist, $title, $year, $number, $extension, $folder, $extraClasses");
+		}
 	}
 	$db = NULL;
 	logMessage("Displayed Data in ".number_format((microtime(true) - $_START_DISPLAY), 3)." seconds");
