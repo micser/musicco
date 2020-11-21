@@ -2936,26 +2936,15 @@ class Musicco {
 				}
 			}
 
-			function updateLyricsPanel(artist, song) {
-				var artist=nowPlaying["artist"];
-				var song=nowPlaying["songtitle"];
-				var searchLyricsExt = "<?php print $this->getString("search"); ?>";
-				searchLyricsExt +=  "<a target=\"blank\" href=\"http://genius.com/search?q=" + song + "+" + artist +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
-				searchLyricsExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
-				searchLyricsExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>"  + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
-				var LRCurl= encodeURI(getBaseURL() + nowPlaying["parentfolder"] + nowPlaying["path"].replace(/.mp3/, ".lrc"));
-				var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
-				var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
-				var searchOnline = "<?php print $this->getConfig('lookUpLyrics') ?>";
-
-				if (loadLrc) {
+			async function getLyricsFromFile(LRCurl, searchLyricsExt) {
+				let promise = new Promise((resolve, reject) => {
 					$.ajax({
 						type: "GET",
 						url: "?head&url="+ LRCurl,
 						dataType: "text",
 						complete: function(text) {
 							if (text.responseText < 400) {
-								searchOnline = false;
+								resolve(false);
 								$.ajax({
 									type: "GET",
 									url: "?fetch&url=" + LRCurl,
@@ -2964,11 +2953,18 @@ class Musicco {
 										$('#lyricsPanel').html(searchLyricsExt + "<br/>" + lyrics.replace(/\[.*\]/g, "<br/>"));
 									}
 								});
+							} else {
+								resolve(true);
 							}
 						}
 					});
-				}
-				else if (searchOnline) {
+				});
+				let hasNoLRC = await promise;
+				return hasNoLRC;
+			}
+
+			async function getLyricsOnline(APIurl, artist, song, searchLyricsExt) {
+				let promise = new Promise((resolve, reject) => {
 					$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
 					$.ajax({
 						type: "GET",
@@ -2986,30 +2982,54 @@ class Musicco {
 									proxyImage(lyricCovertArtUrl)
 									lyricImage = "<img class=\"hidden\" id=\"lyricCoverArt\" src=\"\"/><br/>";
 								}
-								var lyricInfo="<a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a> - " + searchLyricsExt + "<br/><br/>";
+								var lyricInfo="<a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>" + searchLyricsExt + "<br/><br/>";
 								//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.
 								lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
 								$('#lyricsPanel').html(lyricImage + lyricInfo + lyrics);
 							});
-							if (lyrics=="") {
-								noLyricsFound(song, artist, searchLyricsExt);
+							if (lyrics == "") {
+								resolve(true);
+							} else {
+								resolve(false);
 							}
 						},
 						error: function() {
-								noLyricsFound(song, artist, searchLyricsExt);
+							resolve(true);
 						}
 					});
-				}
-				else {
-					noLyricsFound(song, artist, searchLyricsExt);
-				}
+				});
+				let hasNoOnline = await promise;
+				return hasNoOnline;
 			}
 
-			function noLyricsFound(song, artist, searchLyricsExt) {
-				var noLyricsText = "<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist;
-				noLyricsText += "<br/>";
-				noLyricsText += searchLyricsExt;
-				$('#lyricsPanel').html(noLyricsText);
+			async function updateLyricsPanel(artist, song) {
+				var artist=nowPlaying["artist"];
+				var song=nowPlaying["songtitle"];
+				var searchLyricsExt = "<?php print $this->getString("search"); ?>";
+				searchLyricsExt +=  "<a target=\"blank\" href=\"http://genius.com/search?q=" + song + "+" + artist +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
+				searchLyricsExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
+				searchLyricsExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>"  + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
+				var LRCurl= encodeURI(getBaseURL() + nowPlaying["parentfolder"] + nowPlaying["path"].replace(/.mp3/, ".lrc"));
+				var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
+				var canLoadLrc = <?php print $this->getConfig('loadLyricsFromFile') ?>;
+				var canSearchOnline = <?php print $this->getConfig('lookUpLyrics') ?>;
+				var hasNoLRC = true;
+				var hasNoOnline = true;
+
+				if (canLoadLrc) {
+					hasNoLRC = await getLyricsFromFile(LRCurl, searchLyricsExt);
+				}
+
+				if (hasNoLRC && canSearchOnline) {
+					hasNoOnline = await getLyricsOnline(APIurl, artist, song, searchLyricsExt);
+				}
+
+				if (hasNoLRC && hasNoOnline) {
+					var noLyricsText = "<?php print $this->getString("noLyricsFoundFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist;
+					noLyricsText += "<br/>";
+					noLyricsText += searchLyricsExt;
+					$('#lyricsPanel').html(noLyricsText);
+				}
 			}
 
 			function triggerPlayPause() {
