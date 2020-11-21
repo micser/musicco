@@ -2374,20 +2374,22 @@ class Musicco {
 			function checkLibraryRefresh(oldHTML) {
 				(function worker() {
 					$.ajax({
-						url: "<?php print Musicco::getConfig("musicRoot") ?>.lock", 
-						success: function(data) {
-							tempHTML = ("<?php print $this->getString("rebuildingLibrary"); ?>");
-							$("#reset_db").html(tempHTML);
-							setTimeout(worker, 10000);
-						},
-						error: function(data) {
-							tempHTML = oldHTML;
-							$("#reset_db").html(tempHTML);
-							var library = $.ui.fancytree.getTree("#library");
-							if (library && library.length > 0) {
-								initLibraryTree();
+						type: "GET",
+						url: "?head&url=" + getBaseURL() + "<?php print Musicco::getConfig("musicRoot") ?>.lock", 
+						complete: function(data) {
+							if (data.responseText < 400) {
+								tempHTML = ("<?php print $this->getString("rebuildingLibrary"); ?>");
+								$("#reset_db").html(tempHTML);
+								setTimeout(worker, 10000);
+							} else {
+								tempHTML = oldHTML;
+								$("#reset_db").html(tempHTML);
+								var library = $.ui.fancytree.getTree("#library");
+								if (library && library.length > 0) {
+									initLibraryTree();
+								}
+								updateFavourites();
 							}
-							updateFavourites();
 						}
 					});
 				})();
@@ -2941,7 +2943,7 @@ class Musicco {
 				searchLyricsExt +=  "<a target=\"blank\" href=\"http://genius.com/search?q=" + song + "+" + artist +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
 				searchLyricsExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
 				searchLyricsExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>"  + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
-				var LRCurl= encodeURI(nowPlaying["parentfolder"] + nowPlaying["path"].replace(/.mp3/, ".lrc"));
+				var LRCurl= encodeURI(getBaseURL() + nowPlaying["parentfolder"] + nowPlaying["path"].replace(/.mp3/, ".lrc"));
 				var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
 				var loadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
 				var searchOnline = "<?php print $this->getConfig('lookUpLyrics') ?>";
