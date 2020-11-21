@@ -63,7 +63,8 @@ $_CONFIG['defaultPlaylist'] = "Now Playing";
 //											array("#08121d", "#77c0b9", "Contretemps"),
 // 											array("#1d232c", "#f78031", "The Archandroid"),
 //											array("#11304a", "#c0d2e3", "Muscle Museum"),
-// 											array("#600606", "#339317", "77")
+// 											array("#600606", "#339317", "77"),
+// 											array("#14140c", "#edcf85", "Shootenanny")
 // 										);
 $_CONFIG['themes'] = array(
 											array("#121314", "#A7A97F", "musicco"),
@@ -72,7 +73,8 @@ $_CONFIG['themes'] = array(
 											array("#08121d", "#77c0b9", "Contretemps"),
 											array("#1d232c", "#f78031", "The Archandroid"),
 											array("#11304a", "#c0d2e3", "Muscle Museum"),
-											array("#600606", "#339317", "77")
+											array("#600606", "#339317", "77"),
+											array("#14140c", "#edcf85", "Shootenanny")
 										);
 
 
