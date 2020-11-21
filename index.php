@@ -3377,8 +3377,8 @@ class Musicco {
 							$("#filterButton").trigger("click");
 							trimLibrary();
 						}
-						saveSettings();
 					}
+					saveSettings();
 				});
 
 				$(".theme-selector").on("click", function(e) {
@@ -4176,7 +4176,7 @@ if(!AuthManager::isAccessAllowed()) {
 						<ul id="prehistoric"><span><?php print $this->getString("prehistoric") ?></span></ul>
 					</div>
 				</div>
-				<div id="settingsPanel">
+				<div id="settingsPanel" class="panel">
 					<?php
 					if (AuthManager::isAdmin()) {
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-sync\"></i><span id=\"reset_db\"><a>".$this->getString("reset_db")."</a></span></div>";
