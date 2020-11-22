@@ -3026,8 +3026,8 @@ class Musicco {
 				searchLyricsExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>"  + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
 				var LRCurl= encodeURI(getBaseURL() + nowPlaying["parentfolder"] + nowPlaying["path"].replace(/.mp3/, ".lrc"));
 				var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
-				var canLoadLrc = <?php print $this->getConfig('loadLyricsFromFile') ?>;
-				var canSearchOnline = <?php print $this->getConfig('lookUpLyrics') ?>;
+				var canLoadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
+				var canSearchOnline = "<?php print $this->getConfig('lookUpLyrics') ?>";
 				var hasNoLRC = true;
 				var hasNoOnline = true;
 
