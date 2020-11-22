@@ -1114,10 +1114,11 @@ class Musicco {
 				if (mediaSession != null) {
 					var currentTrack = mediaSession.currentItemId;
 					var removeQueueItems = [];
-					// This is a fix for #168: we are arbitrarily removing 300 items because there is no way
+					// This is a fix for #168: we are arbitrarily removing items because there is no way
 					// to know the size of the remote queue when using the default web receiver. 
-					// This is probably not ideal...
-					for (i = currentTrack + 1; i < currentTrack + 1 + 300; i++) {
+					// This is probably not ideal, but at least the cast sdk seems to be able to ignore
+					// item IDs that do not exist in the queue without complaint.
+					for (i = currentTrack + 1; i < currentTrack + 1 + 400; i++) {
 						removeQueueItems.push(i);
 					}
 					var items = new chrome.cast.media.QueueRemoveItemsRequest(removeQueueItems);
