@@ -1361,16 +1361,6 @@ class Musicco {
 				$("#duration, #current_time").html("00:00");
 			}
 
-			function loadTrack(trackNumber) {
-				var track = $("#playlist li[data-nature=track]:eq(" + Math.max(trackNumber, 0) + ")");
-				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
-				$(track).addClass("currentTrack");
-				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
-				player.src = buildMediaSrc($(track).data("parentfolder"), $(track).data("path"));
-				refreshPlaylist();
-				updateUI();
-			}
-
 			function buildMediaSrc(parentfolder, path) {
 				return encodeURI(parentfolder + path).replace("#", "%23");
 			}
@@ -1392,6 +1382,24 @@ class Musicco {
 				updateLyricsPanel(nowPlaying["artist"], nowPlaying["songtitle"]);
 				displayCover();
 				scrollPlaylist();
+			}
+
+			function fallbackTrack(track) {
+				if ($('.play-pause').prop("checked")) {
+					loadTrack($(track).index("#playlist li[data-nature=track]"));
+				} else {
+					playTrack(track);
+				}
+			}
+
+			function loadTrack(trackNumber) {
+				var track = $("#playlist li[data-nature=track]:eq(" + Math.max(trackNumber, 0) + ")");
+				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
+				$(track).addClass("currentTrack");
+				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
+				player.src = buildMediaSrc($(track).data("parentfolder"), $(track).data("path"));
+				refreshPlaylist();
+				updateUI();
 			}
 
 			function playTrack(track) {
@@ -3493,7 +3501,7 @@ class Musicco {
 						numSiblings = target.siblings();
 						if (numSiblings.length) {
 							if ($(target).hasClass("currentTrack")) {
-								playTrack(nextTrack);
+								fallbackTrack(nextTrack);
 							}
 							target.remove();
 						} else {
@@ -3501,7 +3509,7 @@ class Musicco {
 						}
 					} else {
 						var albumIndex = $(target).index("#playlist > li");
-						var fallbackTrack = $(".nextAlbum").find("li[data-nature=track]:first");
+						var fallback = $(".nextAlbum").find("li[data-nature=track]:first");
 						var currentAlbumIndex = $(".currentAlbum").index("#playlist > li");
 						var isCurrentAlbum = (currentAlbumIndex == albumIndex);
 						var shift = (e.type === "taphold")? true : e.shiftKey;
@@ -3509,26 +3517,26 @@ class Musicco {
 						var ctrl = (e.type === "taphold")? false : e.ctrlKey;
 						if (shift) {
 							if (currentAlbumIndex < albumIndex) {
-								playTrack(fallbackTrack);
+								fallbackTrack(fallback);
 							}
 							for (i=0; i < albumIndex; i++) {
 								$("#playlist > li:eq(0)").remove();
 							}
 						} else if (ctrl) {
 							if (currentAlbumIndex > albumIndex) {
-								playTrack(fallbackTrack);
+								fallbackTrack(fallback);
 							}
 							for (i=albumIndex; i < $("#playlist > li").length; i++) {
 								$("#playlist > li:eq(" + (albumIndex + 1) + ")").remove();
 							}
 						} else if (alt) {
 							if (!isCurrentAlbum) {
-								playTrack($(target).find("li[data-nature=track]:first"));
+								fallbackTrack($(target).find("li[data-nature=track]:first"));
 							}
 							$("#playlist > li").not(":eq(" + albumIndex + ")").remove();
 						} else {
 							if (isCurrentAlbum) {
-								playTrack(fallbackTrack);
+								fallbackTrack(fallback);
 							}
 							target.remove();
 						}
