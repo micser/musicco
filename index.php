@@ -798,7 +798,6 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/js-cookie/js.cookie-2.2.1.min.js"></script>
 		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
-		<script type="text/javascript" defer src="lib/clipboard.js/clipboard.min.js"></script>
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
@@ -3217,7 +3216,6 @@ class Musicco {
 				}
 
 				viewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
-				new ClipboardJS(".clip");
 
 				if ($(".landing").is(":visible")) {
 					$("#loading").hide()
@@ -4040,6 +4038,13 @@ class Musicco {
 				adaptUI();
 			});
 
+			$(document).on("click", "#clip", function() {
+				var albumLink = document.getElementById("shared-album-link");
+				albumLink.select();
+				albumLink.setSelectionRange(0, 99999);
+				document.execCommand("copy");
+			});
+
 			$(document).on("click", "#infoPanel a.image", function() {
 				var image = $(this).children("img").attr("srcset").split(',').pop().trim().split(' ')[0];
 				var legend = $(this).children("img").attr("alt");
@@ -4080,7 +4085,7 @@ if(!AuthManager::isAccessAllowed()) {
 			<div id="share-actions" class="spread">
 					<span id="shared-album-show-qr"><i class="fas fa-2x fa-qrcode"></i></span>
 					<span id="shared-album-show-cover"><i class="far fa-2x fa-image"></i></span>
-					<span data-clipboard-target="#shared-album-link" class="clip"><i class="far fa-2x fa-clipboard"></i></span>
+					<span id="clip"><i class="far fa-2x fa-clipboard"></i></span>
 					<span id="shared-album-share"><i class="fas fa-2x fa-external-link-alt"></i></span>
 			</div>
 			<input tabindex="-1" type="text" value="" class="shared-link" id="shared-album-link"/>
