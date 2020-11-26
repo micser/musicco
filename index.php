@@ -3539,6 +3539,9 @@ class Musicco {
 							target.remove();
 						}
 					}
+					if (!$("#playlist li[data-nature=track]").length) {
+						resetPlayer();
+					}
 					$("#playlist").trigger("updated");
 				});
 
