@@ -651,7 +651,8 @@
 	.historyArtist,
 	.historyAlbum,
 	.searchResult,
-	.searchResultParent {
+	.searchResultParent,
+	#share-actions > span {
 		cursor: pointer;
 	}
 
@@ -694,6 +695,7 @@
 	#loadingInfo,
 	.selected,
 	a.infoPanelLink:hover,
+	#share-actions > span:hover,
 	span.current span.fancytree-title mark,
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match.current span.fancytree-title,
 	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title {
