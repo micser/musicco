@@ -1463,9 +1463,8 @@ class Musicco {
 					$(currentAlbum).addClass("currentAlbum");
 					$(nextTrack).addClass("nextTrack");
 					$(nextAlbum).addClass("nextAlbum");
-					//TODO: preloading tracks is blocking the client
-					//var tracks = [ $(previousTrack).data("parentfolder") + $(previousTrack).data("path"),  $(nextTrack).data("parentfolder") + $(nextTrack).data("path") ];
-					//postMessage({command: "preload", tracks: tracks});
+					var tracks = [ $(previousTrack).data("parentfolder") + $(previousTrack).data("path"),  $(nextTrack).data("parentfolder") + $(nextTrack).data("path") ];
+					setTimeout(function(){ postMessage({command: "preload", tracks: tracks}); }, 8000);
 				}
 			}
 
