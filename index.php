@@ -5357,7 +5357,7 @@ function builddb() {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.0 (in development)</div>";
+				$aboutString.="<div class='bold yellow'>3.0 (4th December 2020)</div>";
 				$aboutString.="<li>Added casting directly from player</li>";
 				$aboutString.="<li>Allow viewing listening history</li>";
 				$aboutString.="<li>Allow re-running the setup wizard</li>";
