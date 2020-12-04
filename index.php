@@ -2191,7 +2191,7 @@ class Musicco {
 			function saveCover(coverURL, path) {
 				$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
 					if (response) {
-						var imagePath = (path + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
+						var imagePath = (encodeURIComponent(path) + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
 						if (!isTooLate()) { printCover(imagePath); };
 					}
 				});
