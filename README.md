@@ -46,8 +46,8 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
-## v3.0.1 (in development)
-...
+## v3.1.0 (in development)
+* Read album art from id3 tag
 
 ## v3.0.0
 * Added casting directly from player

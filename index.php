@@ -13,8 +13,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "3.0.0";
-$_CONFIG['appVersion'] = "3.0.0";
+// Default: $_CONFIG['appVersion'] = "3.1.0";
+$_CONFIG['appVersion'] = "3.1.0";
 
 // The database version compatible with this version. This is for information purposes only, since
 // no backwards compatibility really exists
@@ -801,6 +801,7 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
+		<script type="text/javascript" defer src="lib/jsmediatags/jsmediatags.min.js"></script>
 		<?php 
 			if ($this->getConfig('isCastAllowed')) {
 				echo '<script type="text/javascript" src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>';
@@ -2536,15 +2537,35 @@ class Musicco {
 						coverurl = coverurl.replace(/#/g, "%23");
 						printCover(coverurl);
 					} else {
-						$("body").css("background-image", "");
 						var searchAutomatically = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
+						$("body").css("background-image", "");
 						$("#album-art").after(getDefaultPoster());
 						$("#album-art").hide();
 						$('.logo-player').hide();
 					}
-					if (isDefaultPoster() && searchAutomatically) {
-						fetchCover();
-					}
+
+					var fileUrl = buildMediaSrc(getBaseURL() + nowPlaying["parentfolder"], nowPlaying["path"]);
+					new jsmediatags.Reader(fileUrl)
+					.setTagsToRead(["picture"])
+					.read({
+						onSuccess: function(metadata) {
+							var picture = metadata.tags.picture;
+							if (picture != null) {
+								var base64String = "";
+								for (var i = 0; i < picture.data.length; i++) {
+									base64String += String.fromCharCode(picture.data[i]);
+								}
+								var imageUri = "data:" + picture.format + ";base64," + window.btoa(base64String);
+								printCover(imageUri);
+								saveCover(imageUri, nowPlaying["parentfolder"]);
+							}
+						},
+						onError: function(error) {
+							if (isDefaultPoster() && searchAutomatically) {
+								fetchCover();
+							}
+						}
+					});
 				}
 
 				function resetFetchingStatus() {
@@ -5356,6 +5377,10 @@ function builddb() {
 			}
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
+			$aboutString.="<ul>";
+				$aboutString.="<div class='bold yellow'>3.1 (in development)</div>";
+				$aboutString.="<li>Read album art from id3 tag</li>";
+			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.0 (4th December 2020)</div>";
 				$aboutString.="<li>Added casting directly from player</li>";
