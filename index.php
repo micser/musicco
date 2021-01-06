@@ -2193,7 +2193,7 @@ class Musicco {
 				$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
 					if (response) {
 						var imagePath = (encodeURIComponent(path) + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
-						if (!isTooLate()) { printCover(imagePath); };
+						if (isTooLate() != false) { printCover(imagePath); };
 					}
 				});
 			}
@@ -2556,7 +2556,6 @@ class Musicco {
 									base64String += String.fromCharCode(picture.data[i]);
 								}
 								var imageUri = "data:" + picture.format + ";base64," + window.btoa(base64String);
-								printCover(imageUri);
 								saveCover(imageUri, nowPlaying["parentfolder"]);
 							}
 						},
