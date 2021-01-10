@@ -291,6 +291,7 @@ $_TRANSLATIONS["en"] = array(
 	"favourites_added" => "Adding favourite...",
 	"favourites_removed" => "Removing favourite...",
 	"fetchedAlbumArt" => "album art fetched",
+	"extractedFromFile" => "album art loaded from file",
 	"fetchingAlbumArt" => "fetching album art...",
 	"filter_placeholder" => " filter library",
 	"genius" => "genius ",
@@ -392,6 +393,7 @@ $_TRANSLATIONS["fr"] = array(
 	"favourites_added" => "Favouris ajouté",
 	"favourites_removed" => "Favouris retiré",
 	"fetchedAlbumArt" => "couverture mise à jour",
+	"extractedFromFile" => "couverture lue dans le fichier",
 	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
 	"filter_placeholder" => " filtrer la discothèque",
 	"genius" => "genius ",
@@ -2193,7 +2195,7 @@ class Musicco {
 				$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
 					if (response) {
 						var imagePath = (encodeURIComponent(path) + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
-						if (isTooLate() != false) { printCover(imagePath); };
+						if (!isTooLate()) { printCover(imagePath); };
 					}
 				});
 			}
@@ -2537,13 +2539,16 @@ class Musicco {
 						coverurl = coverurl.replace(/#/g, "%23");
 						printCover(coverurl);
 					} else {
-						var searchAutomatically = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
 						$("body").css("background-image", "");
 						$("#album-art").after(getDefaultPoster());
 						$("#album-art").hide();
 						$('.logo-player').hide();
+						lookupCover();
 					}
+				}
 
+				function lookupCover() {
+					var fetchOnlineOnFail = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
 					var fileUrl = buildMediaSrc(getBaseURL() + nowPlaying["parentfolder"], nowPlaying["path"]);
 					new jsmediatags.Reader(fileUrl)
 					.setTagsToRead(["picture"])
@@ -2556,12 +2561,18 @@ class Musicco {
 									base64String += String.fromCharCode(picture.data[i]);
 								}
 								var imageUri = "data:" + picture.format + ";base64," + window.btoa(base64String);
+								$('#statusText').removeClass('canFetch');
 								saveCover(imageUri, nowPlaying["parentfolder"]);
+								setCoverInfoStatus("<?php print $this->getString("extractedFromFile"); ?>");
+							} else {
+								if (fetchOnlineOnFail) {
+									fetchCoverOnline();
+								}
 							}
 						},
 						onError: function(error) {
-							if (isDefaultPoster() && searchAutomatically) {
-								fetchCover();
+							if (fetchOnlineOnFail) {
+								fetchCoverOnline();
 							}
 						}
 					});
@@ -2617,7 +2628,7 @@ class Musicco {
 					})
 				}
 
-				function fetchCover() {
+				function fetchCoverOnline() {
 					var currentAlbum = nowPlaying["album"];
 					var currentArtist = nowPlaying["artist"];
 					var currentPath = nowPlaying["parentfolder"];
@@ -3665,7 +3676,7 @@ class Musicco {
 
 				$('#statusText').on("click", function () {
 					if ($(this).hasClass('canFetch')) {
-						fetchCover();
+						lookupCover();
 					}
 				});
 
