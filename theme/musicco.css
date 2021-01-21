@@ -652,6 +652,8 @@
 	.historyAlbum,
 	.searchResult,
 	.searchResultParent,
+	#lookupOne,
+	#uploadIt,
 	#share-actions > span {
 		cursor: pointer;
 	}

@@ -352,7 +352,8 @@ $_TRANSLATIONS["en"] = array(
 	"searchingFor" => "Searching for ",
 	"searchingLibrary" => "Searching library...",
 	"searchingLyricsFor" => "Searching lyrics for ",
-	"searchOne" => "&nbsp;&bull;&nbsp;search&nbsp;&bull;&nbsp;", 
+	"lookupOne" => "&nbsp;&bull;&nbsp;fetch&nbsp;&bull;&nbsp;", 
+	"searchOne" => "search&nbsp;&bull;&nbsp;", 
 	"seekbackward" => "Previous Album",
 	"seekforward" => "Next Album",
 	"show_all" => "show old",
@@ -453,7 +454,8 @@ $_TRANSLATIONS["fr"] = array(
 	"searchingFor" => "Recherche de ",
 	"searchingLibrary" => "Recherche en cours...",
 	"searchingLyricsFor" => "Recherche de paroles en cours pour ",
-	"searchOne" => "&nbsp;&bull;&nbsp;rechercher&nbsp;&bull;&nbsp;", 
+	"lookupOne" => "&nbsp;&bull;&nbsp;récupérer&nbsp;&bull;&nbsp;", 
+	"searchOne" => "&nbsp;rechercher&nbsp;&bull;&nbsp;", 
 	"seekbackward" => "Album précédent",
 	"seekforward" => "Album suivant",
 	"select_theme" => "Prédéfini",
@@ -3642,6 +3644,10 @@ class Musicco {
 					clearPlaylist();
 				});
 
+				$('#lookupOne').on("click", function () {
+						fetchCoverOnline();
+					});
+
 				$('#uploadIt').on("click", function () {
 						if ($(this).hasClass('canUpload')) {
 							uploadCover();
@@ -4296,6 +4302,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<div class="right" id="big-volume-bar"></div>
 					<div id="updateCoverArt" class="guestPlay">
 						<span id="statusText"><?php print $this->getString("..."); ?></span>
+						<span id="lookupOne" class="coveractions"><?php print $this->getString("lookupOne"); ?></span>
 						<span id="searchOne" class="coveractions"><a id="searchLink" target="_blank" href="<?php print $this->getConfig("imageSearchEngine"); ?>musicco"><?php print $this->getString("searchOne"); ?></a></span>
 						<span id="uploadIt" class="coveractions"><?php print $this->getString("clickToUploadYourOwn"); ?></a></span>
 						</div>
