@@ -3885,18 +3885,23 @@ class Musicco {
 					playRandomAlbum();
 				});
 
-				$(document).on("click taphold", ".uncover", function(e) {
+				$(document).on("click taphold", ".uncover, #feeling_lucky", function(e) {
 					var alt = (e.type === "taphold")? false : e.altKey;
 					var shift = (e.type === "taphold")? true : e.shiftKey;
 					if (alt) {
 						playRandomAlbum();
 					} else {
-						var method="uncover";
+						var method = "uncover";
+						var root = '';
 						if (shift) {
-							method="uncover_new";
+							method = "uncover_new";
+						}
+						if (($(this).attr('id') == "feeling_lucky") && ($('#searchText').val() != '')) {
+							method = "feeling_lucky";
+							root = $('#searchText').val();
 						}
 						showLoadingInfo("<?php print $this->getString("uncovering"); ?>");
-						$.post('?', {querydb: '', root: '', type: method}, function (response) {
+						$.post('?', {querydb: '', root: root, type: method}, function (response) {
 								var hits=response;
 								if (hits != null) {
 									$.each(hits, function (i, elem) {
@@ -4190,6 +4195,7 @@ if(!AuthManager::isAccessAllowed()) {
 						<input id="searchText" type="text" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
 						<span>
 							<a class="btn" id="findIt" href="#"><i class="fas fa-border fa-search"></i></a>
+							<a class="btn" id="feeling_lucky" href="#"><i class="fas fa-border fa-magic"></i></a>
 							<a class="btn" id="clear" tabindex="1" href="#"><i class="fas fa-border fa-times"></i></a>
 						</span>
 					</form>
@@ -4977,6 +4983,9 @@ function querydb($query_root, $query_type) {
 		break;
 		case "uncover_new":
 		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE parentfolder LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		break;
+		case "feeling_lucky":
+		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE type IN (".Musicco::TYPE_FILE.") AND normalised_name LIKE \"%$query_root%\" OR parentfolder LIKE \"%$query_root%\" ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		default:
 	}
