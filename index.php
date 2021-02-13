@@ -3905,10 +3905,7 @@ class Musicco {
 								var hits=response;
 								if (hits != null) {
 									$.each(hits, function (i, elem) {
-										var slash="/";
 										var parentfolder = hits[i].parentfolder;
-										var name = hits[i].title;
-										var type = hits[i].type;
 										var levelUp = parentfolder.substr(0,parentfolder.substr(0,parentfolder.lastIndexOf("/")).lastIndexOf("/")+1);
 										var parentfolderItem = parentfolder.substr(levelUp.length);
 										var parentfolderItemName = parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1);
@@ -4985,7 +4982,7 @@ function querydb($query_root, $query_type) {
 		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE parentfolder LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		case "feeling_lucky":
-		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE type IN (".Musicco::TYPE_FILE.") AND normalised_name LIKE \"%$query_root%\" OR parentfolder LIKE \"%$query_root%\" ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE type IN (".Musicco::TYPE_FILE.") AND (artist LIKE \"%$query_root%\" OR title LIKE \"%$query_root%\") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		default:
 	}
