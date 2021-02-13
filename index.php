@@ -1641,11 +1641,23 @@ class Musicco {
 						break;
 						
 						case 38: //up arrow
+							if (e.shiftKey) {
+								$(".currentAlbum .move-up").trigger("click");
+							} else {
+								volumeUp();
+							}
+						break;
 						case 175: //media volume up
 							volumeUp();
 						break;
 						
 						case 40: //down arrow
+							if (e.shiftKey) {
+								$(".currentAlbum .move-down").trigger("click");
+							} else {
+								volumeDown();
+							}
+						break;
 						case 174: //media volume down
 							volumeDown();
 						break;
@@ -5311,10 +5323,12 @@ function builddb() {
 		$helpString.="<div>shift + &rarr;: next album</div>";
 		$helpString.="<div>&uarr;: volume up</div>";
 		$helpString.="<div>&darr;: volume down</div>";
+		$helpString.="<div>shift + &uarr;: move current album up in playlist</div>";
+		$helpString.="<div>shift + &darr;: move current album down in playlist</div>";
 		$helpString.="<div>&lt;space&gt;: play/pause</div>";
 		$helpString.="<div>0-9: seek to 0%-90% of current track</div>";
 		$helpString.="<div>e: seek to end of current track</div>";
-		$helpString.="<div>You can also use media keys on <br/>most multimedia keyboards</div>";
+		$helpString.="<div>You can also use media keys on most multimedia keyboards</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='guestPlay yellow bold'>Browser</div>";
 		$helpString.="<div class='guestPlay'>j/k: highlight previous/next item</div>";
