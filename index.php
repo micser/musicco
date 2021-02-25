@@ -801,7 +801,7 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
 		<script type="text/javascript" defer src="lib/js-cookie/js.cookie-2.2.1.min.js"></script>
 		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
-		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery.qrcode.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery-qrcode.min.js"></script>
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
@@ -2531,12 +2531,16 @@ class Musicco {
 				}
 				$("#sharing-banner").dialog("open");
 				var link = getBaseURL() + "?guestPlay&u=" + user;
-				var qrW = $("#shared-album-cover").width();
-				var qrH = ($("#shared-album-cover").height()) ? $("#shared-album-cover").height() : $("#shared-album-cover").width();
+				//var size = "800"
+				var size = $("#shared-album-cover").width();
 				var background = window.getComputedStyle(document.body).getPropertyValue('--text-highlight');
-				var foreground = window.getComputedStyle(document.body).getPropertyValue('--background');
+				var fill = window.getComputedStyle(document.body).getPropertyValue('--background');
 				$("#shared-album-link").val(link).select().attr('size', link.length);
-				$("#shared-album-qr").qrcode({width: qrW, height: qrH, text: link, background: background, foreground: foreground});
+				var image = ($("#shared-album-cover img").is(":visible"))? $("#shared-album-cover img").get(0) : $("#hidden img").get(0);
+				window.setTimeout(function() {
+					$("#shared-album-qr").qrcode({minVersion: 8, ecLevel: 'H', size: size, text: link, background: background, fill: fill, radius: 0.5, mode: 4, image: image, mSize: 0.3});
+					$("#shared-album-qr canvas").addClass("boxed");
+				}, 50);
 				if (navigator.share) {
 					$("#shared-album-share").show();
 				} else {
@@ -3421,7 +3425,6 @@ class Musicco {
 					stopPolling();
 				});
 
-
 				$(".panelToggle, #ham").on("click", function() {
 					if ($("#browserPanel").is(":hidden")) {
 						if ($.ui.fancytree.getTree("#library")) {
@@ -4112,6 +4115,7 @@ class Musicco {
 		<title><?php if(Musicco::getConfig('appName') != null) print Musicco::getConfig('appName'); ?></title>
 	</head>
 	<body id="viewer">
+	<div id="hidden"><img src="app/apple-touch-icon-precomposed.png"/></div>
 	<div id="loading"></div>
 <?php 
 if(isset($_ERROR) && strlen($_ERROR) > 0) {

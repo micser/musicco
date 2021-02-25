@@ -73,6 +73,11 @@
 		--disconnected-color: var(--text-highlight);
 	}
 
+	#hidden {
+		position: fixed;
+		top: -500px;
+	}
+
 	#big-unmute {
 		display: none;
 	}
@@ -915,12 +920,17 @@
 	}
 
 	#shared-album-cover,
-	#shared-qr {
+	#shared-album-qr {
 		width: 90%;
 		vertical-align: text-bottom;
 		display: block;
 		margin-left: auto;
 		margin-right: auto;
+	}
+
+	#shared-album-qr canvas {
+		width: 100%;
+		margin-left: -3px;
 	}
 
 	#shared-album-cover img, 
@@ -1107,6 +1117,7 @@
 		vertical-align: middle;
 		border: 0;
 		position: relative;
+		border: 1px solid var(--background-subtle);
 	}
 
 	.album-action,
@@ -1153,6 +1164,7 @@
 
 	.playlist-poster-container {
 		width: 100px;
+		border: 1px solid var(--background-subtle);
 	}
 
 	#big-volume-bar {
