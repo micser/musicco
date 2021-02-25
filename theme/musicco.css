@@ -1107,6 +1107,7 @@
 		vertical-align: middle;
 		border: 0;
 		position: relative;
+		border: 1px solid var(--background-subtle);
 	}
 
 	.album-action,
