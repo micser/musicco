@@ -1154,6 +1154,7 @@
 
 	.playlist-poster-container {
 		width: 100px;
+		border: 1px solid var(--background-subtle);
 	}
 
 	#big-volume-bar {
