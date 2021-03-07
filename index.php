@@ -3919,6 +3919,9 @@ class Musicco {
 						$.post('?', {querydb: '', root: root, type: method}, function (response) {
 								var hits=response;
 								if (hits != null) {
+									existingPaths = $("#playlist li[data-nature=album]").map(function() {
+										return $(this).data("parentfolder");
+									});
 									$.each(hits, function (i, elem) {
 										var parentfolder = hits[i].parentfolder;
 										var levelUp = parentfolder.substr(0,parentfolder.substr(0,parentfolder.lastIndexOf("/")).lastIndexOf("/")+1);
@@ -3930,7 +3933,10 @@ class Musicco {
 										var hitLink ="<a class=\"searchResult uncoverLink\" id=\"" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\">"+ parentfolderItemName +"</a>";
 									$("#searchResults").before(hitLink);
 									var thisHit = "#"+i;
-									queueMusic($(thisHit).data("parentfolder") + $(thisHit).data("path"), $(thisHit).data("title"), Insert.last);
+									if (!Object.values(existingPaths).includes($(thisHit).data("parentfolder") + $(thisHit).data("path"))) {
+										existingPaths.push($(thisHit).data("parentfolder") + $(thisHit).data("path"));
+										queueMusic($(thisHit).data("parentfolder") + $(thisHit).data("path"), $(thisHit).data("title"), Insert.last);
+									}
 									});
 								}
 							$(".uncoverLink").remove(); 
