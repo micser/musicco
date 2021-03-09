@@ -2499,8 +2499,8 @@ class Musicco {
 							var tracksArray = groupBy(JSON.parse(response.playlist), "album");
 							if (Object.keys(tracksArray).length) {
 								insertFirst(tracksArray);
-								loadTrack(parseInt(response.current, 0));
 								player.currentTime = parseInt(response.time);
+								loadTrack(parseInt(response.current, 0));
 								if (isCasting) {
 									loadCastQueue(false);
 								}
