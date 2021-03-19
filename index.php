@@ -1529,7 +1529,16 @@ class Musicco {
 						}
 					$("#playlist").trigger("updated");
 					if (playAfter) {
-						playTrack($("#playlist").find("li[data-nature=track]").first());
+						if (isCasting) {
+							if (!isPlaying) {
+								console.log("playing");
+								playTrack($("#playlist").find("li[data-nature=track]").first());
+								isPlaying = !player.paused;
+							} 
+						} else {
+							console.log("playing");
+							playTrack($("#playlist").find("li[data-nature=track]").first());
+						}
 					}
 				}, "json");
 			}
