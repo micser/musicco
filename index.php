@@ -2815,6 +2815,7 @@ class Musicco {
 				function clearPlaylist() {
 					resetPlayer();
 					$("#playlist li").remove();
+					$("#playlist").trigger("updated");
 				}
 
 				function toggleSearch() {
@@ -3411,7 +3412,7 @@ class Musicco {
 
 				$("#playlist").on("updated", function() {
 					savePlaylist();
-					if (isCasting) {
+					if (isCasting && hasPlaylist()) {
 						replaceCastQueue();
 					}
 				});
