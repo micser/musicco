@@ -284,6 +284,7 @@ $_TRANSLATIONS["en"] = array(
 	"background" => "Background",
 	"colours" => "Theme",
 	"clear_history" => "clear history",
+	"confirm_clear_history" => "Do you really want to clear your listening history?",
 	"clearing_history" => "Clearing your listening history...",
 	"define_theme" => "Custom",
 	"defaultCoverURL" => "http://",
@@ -338,6 +339,7 @@ $_TRANSLATIONS["en"] = array(
 	"rebuildingLibrary" => "library refreshing...",
 	"reload" => "reload",
 	"remove_shared_links" => "delete shared playlists",
+	"confirm_remove_shared_links" => "Do you really want to delete shared playlists?",
 	"remove_temp_files" => "clean temp folder",
 	"removing_shared_links" => "deleting shared playlists...",
 	"removing_temp_files" => "cleaning in progress...",
@@ -387,6 +389,7 @@ $_TRANSLATIONS["fr"] = array(
 	"background" => "Arri&egrave;re plan",
 	"colours" => "Th&egrave;me",
 	"clear_history" => "effacer l'historique",
+	"confirm_clear_history" => "Voulez-vous vraiment effacer votre historique d'écoute ?",
 	"clearing_history" => "Suppression de l'historique en cours...",
 	"defaultCoverURL" => "http://",
 	"define_theme" => "Personnel",
@@ -441,6 +444,7 @@ $_TRANSLATIONS["fr"] = array(
 	"rebuildingLibrary" => "scan en cours...",
 	"reload" => "recharger",
 	"remove_shared_links" => "supprimer les playlists partagées",
+	"confirm_remove_shared_links" => "Voulez-vous vraiment supprimer les playlists partagées ?",
 	"remove_temp_files" => "supprimer les fichiers temporaires",
 	"removing_shared_links" => "suppression des playlists partagées...",
 	"removing_temp_files" => "cleaning in progress",
@@ -3818,24 +3822,30 @@ class Musicco {
 					});
 
 				$(document).on("click", "#remove_shared_links", function() {
-						showLoadingInfo("<?php print $this->getString("removing_shared_links"); ?>");
-						$.ajax({
-							type: "POST",
-							url: "",
-							data: {deleteGuestPlaylists: ""}
-						});
-				});
-
-				$(document).on("click", "#clear_history", function() {
-						$("#history").empty();
-						var user = "<?php echo AuthManager::getUserName(); ?>";
-						if (user != "") {
-							showLoadingInfo("<?php print $this->getString("clearing_history"); ?>");
+						var r = confirm("<?php print $this->getString("confirm_remove_shared_links"); ?>");
+						if (r == true) {
+							showLoadingInfo("<?php print $this->getString("removing_shared_links"); ?>");
 							$.ajax({
 								type: "POST",
 								url: "",
-								data: {clear_history: "", u: user}
+								data: {deleteGuestPlaylists: ""}
 							});
+						}
+				});
+
+				$(document).on("click", "#clear_history", function() {
+						var r = confirm("<?php print $this->getString("confirm_clear_history"); ?>");
+						if (r == true) {
+							$("#history").empty();
+							var user = "<?php echo AuthManager::getUserName(); ?>";
+							if (user != "") {
+								showLoadingInfo("<?php print $this->getString("clearing_history"); ?>");
+								$.ajax({
+									type: "POST",
+									url: "",
+									data: {clear_history: "", u: user}
+								});
+							}
 						}
 				});
 
