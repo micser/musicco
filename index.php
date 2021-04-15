@@ -3765,7 +3765,7 @@ class Musicco {
 								if (parentfolderItemName=="") {
 									parentfolderItemName="home";
 								}
-								var hitListId = parentfolderItemName.replace(/[^A-Za-z0-9]/g, '');
+								var hitListId = "hit_" + parentfolderItemName.replace(/[^A-Za-z0-9]/g, '');
 								var hitListHeader = "<ul id=\"" + hitListId + "\">";
 								hitListHeader += "<span class=\"searchResultParent\" data-folder=\"true\" data-songtitle=\"" + parentfolderSongTitle + "\" data-parentfolder=\"" + levelUp + "\" data-title=\"" + parentfolderTitle + "\" data-path=\"" + parentfolderItem + "\"" + hitData + ">" + parentfolderItemName + "</span>";
 								hitListHeader += "</ul>";
