@@ -2,6 +2,8 @@
 /all_music
 /all_music/*
 /all_music.db
+/music
+/music/*
 /music.db
 /music.lock
 /musicco.log
