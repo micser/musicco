@@ -856,7 +856,17 @@ class Musicco {
 							break;
 							case cast.framework.SessionState.SESSION_RESUMED:
 								console.debug('CastContext: CastSession resumed: ' + event.session.getSessionId());
-								resumeCasting();
+								castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+								var hasPlaylist = castSession.getSessionObj().media.length;
+								if (isAndroid()) {
+									if (hasPlaylist) {
+										resumeCasting();
+									} else {
+										startCasting();
+									}
+								} else {
+									resumeCasting();
+								}
 							break;
 							case cast.framework.SessionState.SESSION_ENDING:
 								console.debug('CastContext: CastSession disconnecting');
@@ -1016,6 +1026,7 @@ class Musicco {
 
 			function updatePlayPauseIcons(isPaused) {
 				$('.play-pause').prop("checked", isPaused);
+				isPlaying = !isPaused;
 			}
 
 			function nextMedia() {
@@ -1068,10 +1079,13 @@ class Musicco {
 					queueItem.preloadTime = 20;
 					return queueItem;
 				}).get();
-				queueItems[0].autoplay = repeat;
-				queueItems[current].startTime = player.currentTime;
-				queueItems[current].autoplay = autoplay;
-				var queueWithCurrentFirst = (queueItems.slice(current, queueItems.length)).concat(queueItems.slice(0, current));
+				var queueWithCurrentFirst = [];
+				if (queueItems.length) {
+					queueItems[0].autoplay = repeat;
+					queueItems[current].startTime = player.currentTime;
+					queueItems[current].autoplay = autoplay;
+					queueWithCurrentFirst = (queueItems.slice(current, queueItems.length)).concat(queueItems.slice(0, current));
+				}
 				return queueWithCurrentFirst;
 			}
 
@@ -1099,12 +1113,14 @@ class Musicco {
 				isResuming = false;
 				castSession.endSession(true);
 				castSession = null;
-				loadTrack(castPlayerState["contentId"]);
-				player.currentTime = castPlayerState["currentTime"];
-				player.duration = castPlayerState["duration"];
-				enableLocalPlayer();
-				if (!castPlayerState["isPaused"]) {
-					player.play();
+				if (hasPlaylist()) {
+					loadTrack(castPlayerState["contentId"]);
+					player.currentTime = castPlayerState["currentTime"];
+					player.duration = castPlayerState["duration"];
+					enableLocalPlayer();
+					if (!castPlayerState["isPaused"]) {
+						player.play();
+					}
 				}
 			}
 
@@ -1112,7 +1128,7 @@ class Musicco {
 				castPlayerState["currentTime"] = castPlayer.currentTime;
 				castPlayerState["duration"] = castPlayer.duration;
 				castPlayerState["isPaused"] = castPlayer.isPaused;
-				castPlayerState["contentId"] = castPlayer.mediaInfo["contentId"];
+				castPlayerState["contentId"] = (castPlayer.mediaInfo != null) ? castPlayer.mediaInfo["contentId"] : 0;
 			}
 
 			function replaceCastQueue() {
@@ -2437,12 +2453,15 @@ class Musicco {
 			function setCastRepeatMode() {
 				// This sets everything as expected but seems to be completely ignored in the end ¯\_(ツ)_/¯
 				if (isCasting) { 
-					castSession.getMediaSession().queueSetRepeatMode(getRepeatMode(), () => {
-						console.debug("set repeat mode");
-					}, (e) => {
-						console.warn("failed to set repeat mode");
-						console.warn(e);
-					});
+					var mediaSession = castSession.getMediaSession();
+					if (mediaSession != null) {
+						castSession.getMediaSession().queueSetRepeatMode(getRepeatMode(), () => {
+							console.debug("set repeat mode");
+						}, (e) => {
+							console.warn("failed to set repeat mode");
+							console.warn(e);
+						});
+					}
 				}
 			}
 
@@ -2855,8 +2874,12 @@ class Musicco {
 				saveSettings();
 			}
 
+			function isAndroid() {
+			return /(android)/i.test(navigator.userAgent);
+			}
+
 			function notificationSupported() {
-				if (!(/Android/i.test(navigator.userAgent)) && ('Notification' in window)) {
+				if (!isAndroid() && ('Notification' in window)) {
 					return true;
 				}
 				return false;
