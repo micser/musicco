@@ -279,7 +279,7 @@ $_TRANSLATIONS["en"] = array(
 	"..." => "...",
 	"about" => "about",
 	"album_sharing" => "Some music for you to try on " . Musicco::getConfig('appName'),
-	"by" => " by ",
+	"by" => " - ",
 	"clickToUploadYourOwn" => "upload", 
 	"background" => "Background",
 	"colours" => "Theme",
@@ -384,7 +384,7 @@ $_TRANSLATIONS["fr"] = array(
 	"..." => "...",
 	"about" => "info",
 	"album_sharing" => "Un peu de musique pour toi sur " . Musicco::getConfig('appName'),
-	"by" => " par ",
+	"by" => " - ",
 	"clickToUploadYourOwn" => "charger", 
 	"background" => "Arri&egrave;re plan",
 	"colours" => "Th&egrave;me",
@@ -4078,7 +4078,7 @@ class Musicco {
 				$(document).on("click", ".share", function() {
 					saveGuestPlaylist(
 						$(this).parents("li").data("parentfolder"),
-						$(this).parents("li").data("album") + " <?php print $this->getString("by"); ?> " + $(this).parents("li").data("artist"),
+						$(this).parents("li").data("album") + "<?php print $this->getString("by"); ?>" + $(this).parents("li").data("artist"),
 						$(this).parents("li").find("img.playlist-poster").attr("src")
 					);
 				});
