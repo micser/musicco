@@ -2554,6 +2554,11 @@ class Musicco {
 				var cover = cover;
 				$("#shared-album-qr").empty();
 				$("#shared-album-title").text(info);
+				$("#share-bandcamp").attr("href", "https://bandcamp.com/search?q=" + info);
+				$("#share-spotify").attr("href", "https://open.spotify.com/search/" + info);
+				$("#share-youtube").attr("href", "https://www.youtube.com/results?search_query=" + info);
+				$("#share-apple").attr("href", "https://music.apple.com/us/search?term=" + info);
+				$("#share-deezer").attr("href", "https://www.deezer.com/search/" + info);
 				if ((cover != "") && (cover != null)) {
 					$("#shared-album-cover img").attr("src", cover).show();
 					$("#shared-album-cover svg").hide();
@@ -4189,12 +4194,19 @@ if(!AuthManager::isAccessAllowed()) {
 			<div id="shared-album-qr"></div>
 			<div id="shared-album-title" class="big"></div>
 			<div id="share-actions" class="spread">
-					<span id="shared-album-show-qr"><i class="fas fa-2x fa-qrcode"></i></span>
-					<span id="shared-album-show-cover"><i class="far fa-2x fa-image"></i></span>
-					<span id="clip"><i class="far fa-2x fa-clipboard"></i></span>
-					<span id="shared-album-share"><i class="fas fa-2x fa-external-link-alt"></i></span>
+				<span id="shared-album-show-qr"><i class="fas fa-2x fa-qrcode"></i></span>
+				<span id="shared-album-show-cover"><i class="far fa-2x fa-image"></i></span>
+				<span id="clip"><i class="far fa-2x fa-clipboard"></i></span>
+				<span id="shared-album-share"><i class="fas fa-2x fa-external-link-alt"></i></span>
 			</div>
 			<input tabindex="-1" type="text" value="" class="shared-link" id="shared-album-link"/>
+			<div id="share-services" class="spread">
+				<span><a id="share-bandcamp" href="" target="_blank"><i class="fab fa-bandcamp"></i></a></span>
+				<span><a id="share-spotify" href="" target="_blank"><i class="fab fa-spotify"></i></a></span>
+				<span><a id="share-youtube" href="" target="_blank"><i class="fab fa-youtube"></i></a></span>
+				<span><a id="share-apple" href="" target="_blank"><i class="fab fa-itunes"></i></a></span>
+				<span><a id="share-deezer" href="" target="_blank"><i class="fab fa-deezer"></i></a></span>
+			</div>
 		</div>
 		<!-- END: Modal Dialogues -->
 		<!-- START: header -->
@@ -5470,6 +5482,11 @@ function builddb() {
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1 (in development)</div>";
 				$aboutString.="<li>Read album art from id3 tag</li>";
+				$aboutString.="<li>Fixed some issues with casting on Android</li>";
+				$aboutString.="<li>Improved QR Code styling</li>";
+				$aboutString.="<li>Fix adding of duplicate albums in playlist</li>";
+				$aboutString.="<li>Added confirmation dialogs before clearing items</li>";
+				$aboutString.="<li>Improved sharing dialog</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.0 (4th December 2020)</div>";

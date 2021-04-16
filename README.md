@@ -48,6 +48,11 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 ## v3.1.0 (in development)
 * Read album art from id3 tag
+* Fixed some issues with casting on Android
+* Improved QR Code styling
+* Fix adding of duplicate albums in playlist
+* Added confirmation dialogs before clearing items
+* Improved sharing dialog
 
 ## v3.0.0
 * Added casting directly from player

@@ -659,7 +659,8 @@
 	.searchResultParent,
 	#lookupOne,
 	#uploadIt,
-	#share-actions > span {
+	#share-actions > span,
+	#share-services > span {
 		cursor: pointer;
 	}
 
@@ -703,6 +704,7 @@
 	.selected,
 	a.infoPanelLink:hover,
 	#share-actions > span:hover,
+	#share-services > span:hover,
 	span.current span.fancytree-title mark,
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match.current span.fancytree-title,
 	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title {
@@ -1367,12 +1369,14 @@
 		margin-right: auto;
 	}
 	
-	#share-actions {
+	#share-actions,
+	#share-services {
 		margin-top: 1em;
 		margin-bottom: 1em;
 	}
 
 	#share-actions,
+	#share-services,
 	#playlist-controls,
 	#big-controls {
 		justify-content: space-evenly;
