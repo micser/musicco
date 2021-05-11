@@ -296,6 +296,7 @@ $_TRANSLATIONS["en"] = array(
 	"fetchingAlbumArt" => "fetching album art...",
 	"filter_placeholder" => " filter library",
 	"genius" => "genius ",
+	"viewOngenius" => "View these lyrics on ",
 	"google" => "the web",
 	"help" => "help",
 	"lastfm" => "last.fm ",
@@ -401,6 +402,7 @@ $_TRANSLATIONS["fr"] = array(
 	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
 	"filter_placeholder" => " filtrer la discothèque",
 	"genius" => "genius ",
+	"viewOngenius" => "Voir les paroles sur ",
 	"google" => "le web",
 	"help" => "aide",
 	"lastfm" => "last.fm ",
@@ -821,6 +823,8 @@ class Musicco {
 			 // VARIABLES //
 			///////////////
 
+			const CHARTLYRICS_BASE_URL = "http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect"
+			const GENIUS_BASE_URL = "https://genius.com/"
 			var clientId = "<?php print bin2hex(random_bytes(5)); ?>";
 			var playlistResfreshDelay = 5000;
 			var lastInteraction;
@@ -3040,6 +3044,25 @@ class Musicco {
 				}
 			}
 
+			function slugify(str) {
+				str = str.replace(/^\s+|\s+$/g, ''); // trim
+				str = str.toLowerCase();
+
+				var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+				var to   = "aaaaeeeeiiiioooouuuunc------";
+				for (var i=0, l=from.length ; i<l ; i++) {
+						str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+				}
+
+				str = str.replace(/&/g, 'and') // replace ampersands
+						.replace(/[^a-z0-9 -]/g, '') // remove invalid chars
+						.replace(/\s+/g, '-') // collapse whitespace and replace by -
+						.replace(/-+/g, '-'); // collapse dashes
+
+				str = str.charAt(0).toUpperCase() + str.slice(1);
+				return str;
+			}
+
 			async function getLyricsFromFile(LRCurl, searchLyricsExt) {
 				let promise = new Promise((resolve, reject) => {
 					$.ajax({
@@ -3067,38 +3090,63 @@ class Musicco {
 				return hasNoLRC;
 			}
 
-			async function getLyricsOnline(APIurl, artist, song, searchLyricsExt) {
+			async function getLyricsOnline(artist, song, searchLyricsExt) {
 				let promise = new Promise((resolve, reject) => {
+					var lyrics="";
 					$('#lyricsPanel').html("<?php print $this->getString("searchingLyricsFor"); ?>" + song + "<?php print $this->getString("by"); ?>" + artist + "<?php print $this->getString("..."); ?>");
+					var geniusUrl = GENIUS_BASE_URL + slugify(artist + " " + song + "-lyrics");
 					$.ajax({
-						type: "GET",
-						url: "?fetch&url=" + APIurl,
-						dataType: "xml",
-						success: function(xml) {
-							var lyrics="";
-							$(xml).find('GetLyricResult').each(function(){
-								var lyricArtist=$(this).find('LyricArtist').text();
-								var lyricSong=$(this).find('LyricSong').text();
-								var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
-								var lyricImage = "";
-								var lyricCovertArtUrl = $(this).find('LyricCovertArtUrl').text();
-								if (lyricCovertArtUrl != "") {
-									proxyImage(lyricCovertArtUrl)
-									lyricImage = "<img class=\"hidden\" id=\"lyricCoverArt\" src=\"\"/><br/>";
-								}
-								var lyricInfo="<a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>" + searchLyricsExt + "<br/><br/>";
-								//replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.
-								lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>");
-								$('#lyricsPanel').html(lyricImage + lyricInfo + lyrics);
-							});
-							if (lyrics == "") {
-								resolve(true);
-							} else {
-								resolve(false);
+						type: "HEAD",
+						url: "?head&url=" + encodeURIComponent(geniusUrl),
+						complete: function(data) {
+							if (data.responseText < 400) {
+								$.ajax({
+									type: "GET",
+									url: "?fetch&url=" + encodeURIComponent(geniusUrl),
+									dataType: "xml",
+									complete: function(html) {
+										var parser = new DOMParser();
+										var htmlDoc = parser.parseFromString(html.responseText, 'text/html');
+										var lyricsDiv = htmlDoc.getElementsByClassName("lyrics")[0];
+										if (lyricsDiv != null) {
+											lyrics = lyricsDiv.textContent.replace(/\n/g, "<br/>");
+											var lyricsInfo = "<?php print $this->getString("viewOngenius"); ?>" + "<a target=\"blank\" href=\"" + geniusUrl +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
+											$('#lyricsPanel').html(lyricsInfo + lyrics);
+											resolve(false);
+										} else {
+											$.ajax({
+												type: "GET",
+												url: "?fetch&url=" + encodeURIComponent(CHARTLYRICS_BASE_URL + "?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song)),
+												dataType: "xml",
+												success: function(xml) {
+													$(xml).find('GetLyricResult').each(function(){
+														var lyricArtist=$(this).find('LyricArtist').text();
+														var lyricSong=$(this).find('LyricSong').text();
+														var lyricCorrectUrl=$(this).find('LyricCorrectUrl').text();
+														var lyricImage = "";
+														var lyricCovertArtUrl = $(this).find('LyricCovertArtUrl').text();
+														if (lyricCovertArtUrl != "") {
+															proxyImage(lyricCovertArtUrl)
+															lyricImage = "<img class=\"hidden\" id=\"lyricCoverArt\" src=\"\"/><br/>";
+														}
+														var lyricInfo="<a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>" + searchLyricsExt + "<br/><br/>";
+														lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>"); //replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.
+														$('#lyricsPanel').html(lyricImage + lyricInfo + lyrics);
+													});
+													if (lyrics == "") {
+														resolve(true);
+													} else {
+														resolve(false);
+													}
+												},
+												error: function() {
+													resolve(true);
+												}
+											});
+										}
+									}
+								});
 							}
-						},
-						error: function() {
-							resolve(true);
 						}
 					});
 				});
@@ -3114,7 +3162,6 @@ class Musicco {
 				searchLyricsExt += "<?php print $this->getString("or"); ?>" + "</a>" ;
 				searchLyricsExt +=  "<a target=\"blank\" href=\"" + "<?php print $this->getConfig("searchEngine"); ?>"  + song + "+" + artist +"+lyrics\">" + "<?php print $this->getString("google"); ?>" + "</a>" ;
 				var LRCurl= encodeURI(getBaseURL() + nowPlaying["parentfolder"] + nowPlaying["path"].replace(/.mp3/, ".lrc"));
-				var APIurl= encodeURIComponent("http://api.chartlyrics.com/apiv1.asmx/SearchLyricDirect?artist="+encodeURIComponent(artist)+"&song="+encodeURIComponent(song));
 				var canLoadLrc = "<?php print $this->getConfig('loadLyricsFromFile') ?>";
 				var canSearchOnline = "<?php print $this->getConfig('lookUpLyrics') ?>";
 				var hasNoLRC = true;
@@ -3125,7 +3172,7 @@ class Musicco {
 				}
 
 				if (hasNoLRC && canSearchOnline) {
-					hasNoOnline = await getLyricsOnline(APIurl, artist, song, searchLyricsExt);
+					hasNoOnline = await getLyricsOnline(artist, song, searchLyricsExt);
 				}
 
 				if (hasNoLRC && hasNoOnline) {
@@ -5487,6 +5534,7 @@ function builddb() {
 				$aboutString.="<li>Fix adding of duplicate albums in playlist</li>";
 				$aboutString.="<li>Added confirmation dialogs before clearing items</li>";
 				$aboutString.="<li>Improved sharing dialog</li>";
+				$aboutString.="<li>Improved lyrics provider</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.0 (4th December 2020)</div>";
