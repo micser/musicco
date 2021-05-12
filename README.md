@@ -53,6 +53,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 * Fix adding of duplicate albums in playlist
 * Added confirmation dialogs before clearing items
 * Improved sharing dialog
+* Improved uncover dialog
 * Improved lyrics provider
 
 ## v3.0.0

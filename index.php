@@ -175,9 +175,9 @@ $_CONFIG['yearPattern'] = "/^.*\[(\d\d\d\d)\]\s.*$/";
 // The number of random albums to add to your playlist
 // when clicking the "uncover!" button in the UI
 // Depending on your server and client's performance really...
-// 5 is safe, 10 is a bit on the heavy side.
-// Default: $_CONFIG['uncover_limit'] = "5";
-$_CONFIG['uncover_limit'] = 5;
+// 6 is safe, 12 is a bit on the heavy side.
+// Default: $_CONFIG['uncover_limit'] = "6";
+$_CONFIG['uncover_limit'] = 6;
 
 // A character combination you use to mark your folders as unlistened in your library.
 // I use the suffix "__" at the end of folders I have not listened to yet.
@@ -331,6 +331,8 @@ $_TRANSLATIONS["en"] = array(
 	"pause" => "Pause", 
 	"play" => "Play", 
 	"playlist_modified" => "Your playlist was modified on another device, click here to reload it.", 
+	"queue_all" => "Queue all", 
+	"uncover_more" => "Uncover more", 
 	"previoustrack" => "Previous",
 	"promptCoverURL" => "Album art URL", 
 	"promptPlaylistName" => "New Playlist Name", 
@@ -437,6 +439,8 @@ $_TRANSLATIONS["fr"] = array(
 	"pause" => "Pause", 
 	"play" => "Lecture", 
 	"playlist_modified" => "La playlist a été modifiée sur un autre appareil, cliquez ici pour la recharger.", 
+	"queue_all" => "Ajouter tous les albums", 
+	"uncover_more" => "En chercher d'autres", 
 	"previoustrack" => "Précédent",
 	"promptCoverURL" => "Adresse de la couverture", 
 	"promptPlaylistName" => "Nom de la playlist", 
@@ -3479,6 +3483,16 @@ class Musicco {
 					show: { effect: "fade", duration: 400 },
 					hide: { effect: "fold", duration: 200 }
 				});
+				$( "#uncoverPanel" ).dialog({
+					modal: true,
+					autoOpen: false,
+					width: "unset",
+					height: $(window).height() * 0.8,
+					width: $(window).width() * 0.8,
+					show: { effect: "fade", duration: 400 },
+					hide: { effect: "fold", duration: 200 },
+					close: function( event, ui ) { $(".uncoverLink").remove();  }
+				});
 			}
 
 				  ////////////
@@ -4018,25 +4032,46 @@ class Musicco {
 										return $(this).data("parentfolder");
 									});
 									$.each(hits, function (i, elem) {
+										var artist = hits[i].artist;
+										var album = hits[i].album;
 										var parentfolder = hits[i].parentfolder;
 										var levelUp = parentfolder.substr(0,parentfolder.substr(0,parentfolder.lastIndexOf("/")).lastIndexOf("/")+1);
 										var parentfolderItem = parentfolder.substr(levelUp.length);
 										var parentfolderItemName = parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length, parentfolder.substr("<?php print Musicco::getConfig('musicRoot'); ?>/".length).length -1);
-									if (parentfolderItemName=="") {
-										parentfolderItemName="home";
-									}
-										var hitLink ="<a class=\"searchResult uncoverLink\" id=\"" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\">"+ parentfolderItemName +"</a>";
-									$("#searchResults").before(hitLink);
-									var thisHit = "#"+i;
+										if (parentfolderItemName=="") {
+											parentfolderItemName="home";
+										}
+										var coverUrl = hits[i].cover;
+										var hitLink ="<span class=\"uncoverLink\" id=\"uncoverLink" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\">";
+										hitLink += (coverUrl) ? "<img src=\"" + coverUrl + "\"/>" : getDefaultPoster();
+										hitLink += "<br/>";
+										hitLink += artist + " - " + album;
+										hitLink += "</span>";
+									$("#uncoverLinks").append(hitLink);
+									var thisHit = "#uncoverLink"+i;
 									if (!Object.values(existingPaths).includes($(thisHit).data("parentfolder") + $(thisHit).data("path"))) {
 										existingPaths.push($(thisHit).data("parentfolder") + $(thisHit).data("path"));
-										queueMusic($(thisHit).data("parentfolder") + $(thisHit).data("path"), $(thisHit).data("title"), Insert.last);
+									} else {
+										$(thisHit).remove();
 									}
 									});
 								}
-							$(".uncoverLink").remove(); 
+							$("#uncoverPanel").dialog("open");
 						}, "json");
 					}
+				});
+
+				$(document).on("click", "#addAll", function(event) {
+					$(".uncoverLink").trigger("click");
+					$("#uncoverPanel").dialog("close");
+				});
+
+				$(document).on("click", "#uncover_more", function(event) {
+					$(".uncoverLink").remove();
+				});
+
+				$(document).on("click", ".uncoverLink", function(event) {
+					queueMusic($(this).data("parentfolder") + $(this).data("path"), $(this).data("title"), Insert.last);
 				});
 
 				$(document).on("click", ".infoPanelAnchor", function(event) {
@@ -4233,6 +4268,13 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="refreshPanel" class="modal"><a class="obsoleteWarning"><?php print $this->getString("playlist_modified"); ?></a></div>
 		<div id="aboutPanel" class="modal"><?php print getAbout(); ?></div>
 		<div id="imageViewerPanel" class="modal"><img src=""/><div></div></div>
+		<div id="uncoverPanel" class="modal">
+			<div id="uncover_top_row">
+			<span id="addAll"><i class="fas fa-plus"></i><?php print $this->getString("queue_all"); ?></span>
+			<span id="uncover_more" class="uncover"><i class="fas fa-magic"></i><?php print $this->getString("uncover_more"); ?></span>
+			</div>
+			<div id="uncoverLinks"></div>
+		</div>
 		<div id="sharing-banner" class="modal">
 			<div id="shared-album-cover" class="boxed">
 				<?php print Musicco::logo("logo-share"); ?>
@@ -5100,13 +5142,13 @@ function querydb($query_root, $query_type) {
 		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE normalised_name LIKE \"%$query_root%\" AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY parentfolder, name COLLATE NOCASE";
 		break;
 		case "uncover":
-		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		case "uncover_new":
-		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE parentfolder LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		case "feeling_lucky":
-		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE type IN (".Musicco::TYPE_FILE.") AND (artist LIKE \"%$query_root%\" OR title LIKE \"%$query_root%\") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.type IN (".Musicco::TYPE_FILE.") AND (main.artist LIKE \"%$query_root%\" OR main.title LIKE \"%$query_root%\") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		default:
 	}
@@ -5534,6 +5576,7 @@ function builddb() {
 				$aboutString.="<li>Fix adding of duplicate albums in playlist</li>";
 				$aboutString.="<li>Added confirmation dialogs before clearing items</li>";
 				$aboutString.="<li>Improved sharing dialog</li>";
+				$aboutString.="<li>Improved uncover dialog</li>";
 				$aboutString.="<li>Improved lyrics provider</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
