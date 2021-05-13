@@ -213,7 +213,6 @@
 		margin: .5em;
 	}
 
-	#uncoverLinks span:hover,
 	#uncover_top_row span:hover {
 		background: var(--text);
 	}
@@ -229,12 +228,33 @@
 		font-size: var(--text-small);
 	}
 
+	.uncoverLink {
+		position: relative;
+	}
+
 	.uncoverLink img,
 	.uncoverLink .default-poster {
 		border: 1px solid var(--background-subtle);
 		width: 95%;
 		max-width: 250px;
-		max-height: unset;
+		max-height: 250px;
+	}
+
+	.uncoverLink .play-last {
+		display: none;
+		position: absolute;
+		top: 15%;
+		left: 22%;
+		max-width: 60%;
+	}
+
+	.uncoverLink:hover > .play-last {
+		display: block;
+	}
+
+	.uncoverLink:hover > .default-poster,
+	.uncoverLink:hover > img {
+		opacity: .1;
 	}
 
 	/* Infopanel Styling */
@@ -710,7 +730,8 @@
 	#uploadIt,
 	#share-actions > span,
 	#share-services > span,
-	#uncover_top_row span {
+	#uncover_top_row span,
+	.uncoverLink {
 		cursor: pointer;
 	}
 

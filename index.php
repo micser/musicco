@@ -4045,6 +4045,7 @@ class Musicco {
 										var coverUrl = hits[i].cover;
 										var hitLink ="<span class=\"uncoverLink\" id=\"uncoverLink" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\">";
 										hitLink += (coverUrl) ? "<img src=\"" + coverUrl + "\"/>" : getDefaultPoster();
+										hitLink += playLastIcon();
 										hitLink += "<br/>";
 										hitLink += artist + " - " + album;
 										hitLink += "</span>";
