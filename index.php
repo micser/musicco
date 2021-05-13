@@ -4066,7 +4066,7 @@ class Musicco {
 					$("#uncoverPanel").dialog("close");
 				});
 
-				$(document).on("click", "#uncover_more", function(event) {
+				$(document).on("click taphold", "#uncover_more", function(event) {
 					$(".uncoverLink").remove();
 				});
 
