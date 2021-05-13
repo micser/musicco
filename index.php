@@ -5353,20 +5353,14 @@ function builddb() {
 
 			// Update non-temp tables and reindex the DB
 			$db->exec("DELETE FROM item;");
-			$db->exec("DROP INDEX item_idx;");
-			$db->exec("DROP INDEX item_idx2;");
-			$db->exec("DROP INDEX item_idx3;");
-			$db->exec("DROP INDEX item_idx4;");
-			$db->exec("DROP INDEX users_idx;");
-			$db->exec("DROP INDEX playlists_idx;");
 			$db->exec("INSERT INTO item (name, normalised_name, type, parentfolder, cover, album, artist, title, year, number, extension) SELECT name, normalised_name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item_tmp;");
+			$db->exec("DELETE FROM item_tmp;");
 			$db->exec("REINDEX item_idx;");
 			$db->exec("REINDEX item_idx2;");
 			$db->exec("REINDEX item_idx3;");
 			$db->exec("REINDEX item_idx4;");
 			$db->exec("REINDEX users_idx;");
 			$db->exec("REINDEX playlists_idx;");
-			$db->exec("DELETE FROM item_tmp;");
 
 			printf("%.1s s",(microtime(true) - $_START_INSERT));
 			logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
