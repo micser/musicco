@@ -3227,8 +3227,8 @@ class Musicco {
 										+ "<div class=\"info\">"
 										+ "<div class=\"remove fas fa-times\"></div>"
 										+ "<div class=\"align-right\">"
-										+ "<span class=\"move-up fas fa-arrow-up\"></span>"
-										+ "<span class=\"move-down fas fa-arrow-down\"></span>"
+										+ "<span class=\"move-up fas fa-arrow-up\" oncontextmenu=\"return false;\"></span>"
+										+ "<span class=\"move-down fas fa-arrow-down\" oncontextmenu=\"return false;\"></span>"
 										+ "<br/>"
 										+ "<br/>"
 										+ "<span class=\"guestPlay favouriteAlbum album-action fas fa-heart\"></span>"
@@ -3491,6 +3491,7 @@ class Musicco {
 					width: $(window).width() * 0.8,
 					show: { effect: "fade", duration: 400 },
 					hide: { effect: "fold", duration: 200 },
+					open: function( event, ui ) { $("#uncoverPanel").dialog('widget').attr("oncontextmenu", "return false;"); },
 					close: function( event, ui ) { $(".uncoverLink").remove();  }
 				});
 			}
@@ -4271,7 +4272,7 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="uncoverPanel" class="modal">
 			<div id="uncover_top_row">
 			<span id="addAll"><i class="fas fa-plus"></i><?php print $this->getString("queue_all"); ?></span>
-			<span id="uncover_more" class="uncover"><i class="fas fa-magic"></i><?php print $this->getString("uncover_more"); ?></span>
+			<span id="uncover_more" oncontextmenu="return false;" class="uncover"><i class="fas fa-magic"></i><?php print $this->getString("uncover_more"); ?></span>
 			</div>
 			<div id="uncoverLinks"></div>
 		</div>
@@ -4303,14 +4304,14 @@ if(!AuthManager::isAccessAllowed()) {
 			<span>
 				<span id="ham"><i class="fas fa-bars fa-fw"></i></span>
 				<span id="mini-controls" class="big-controls">
-					<span class="big-jp-previous-album">&nbsp;</span>
-					<span class="big-jp-previous"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
-					<input type="checkbox" class="play-pause"/><label><i class="far fa-fw"></i></label>
-					<span class="big-jp-next"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
-					<span class="big-jp-next-album">&nbsp;</span>
+					<span class="big-jp-previous-album" oncontextmenu="return false;">&nbsp;</span>
+					<span class="big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
+					<input type="checkbox" class="play-pause" /><label oncontextmenu="return false;"><i class="far fa-fw"></i></label>
+					<span class="big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-next-album" oncontextmenu="return false;">&nbsp;</span>
 					&nbsp;
 					&nbsp;
-					<span class="uncover guestPlay toggles"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
+					<span class="uncover guestPlay toggles" oncontextmenu="return false;"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
 					&nbsp;
 					&nbsp;
 					<span class="big-volume-down toggles"><i class="fas fa-volume-down fa-fw"></i>&nbsp;</span>
@@ -4358,7 +4359,7 @@ if(!AuthManager::isAccessAllowed()) {
 						<input id="searchText" type="text" name="s" value="" placeholder="<?php print $this->getString("search_placeholder"); ?>" />
 						<span>
 							<a class="btn" id="findIt" href="#"><i class="fas fa-border fa-search"></i></a>
-							<a class="btn" id="feeling_lucky" href="#"><i class="fas fa-border fa-magic"></i></a>
+							<a class="btn" id="feeling_lucky" href="#" oncontextmenu="return false;"><i class="fas fa-border fa-magic"></i></a>
 							<a class="btn" id="clear" tabindex="1" href="#"><i class="fas fa-border fa-times"></i></a>
 						</span>
 					</form>
@@ -4500,18 +4501,18 @@ if(!AuthManager::isAccessAllowed()) {
 						<span id="big-unmute" class="toggles selected"><i class="fas fa-volume-mute fa-2x fa-fw"></i></span>
 						<span id="big-mute" class="toggles"><i class="fas fa-volume-mute fa-2x fa-fw"></i></span>
 						<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
-						<span class="guestPlay uncover toggles"><i class="fas fa-magic fa-2x fa-fw"></i></span>
+						<span class="guestPlay uncover toggles" oncontextmenu="return false;"><i class="fas fa-magic fa-2x fa-fw"></i></span>
 						<span id="shuffled" class="toggles"><i class="fas fa-random fa-2x fa-fw"></i></span>
 						<span id="loop" class="toggles"><i class="fas fa-redo fa-2x fa-fw"></i></span>
 						<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x fa-fw"></i></span>
 						<span id="big-volume-up" class="toggles"><i class="fas fa-volume-up fa-2x fa-fw"></i></span>
 					</div>
 					<div id="controls" class="spread big-controls">
-						<span class="big-jp-previous-album"></span>
-						<span class="left big-jp-previous"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
-						<input type="checkbox" class="play-pause" /><label><i class="far fa-5x fa-fw"></i></label>
-						<span class="right big-jp-next"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
-						<span class="big-jp-next-album"></span>
+						<span class="big-jp-previous-album" oncontextmenu="return false;"></span>
+						<span class="left big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
+						<input type="checkbox" class="play-pause" /><label oncontextmenu="return false;"><i class="far fa-5x fa-fw"></i></label>
+						<span class="right big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
+						<span class="big-jp-next-album" oncontextmenu="return false;"></span>
 					</div>
 				</div>
 			</div>
