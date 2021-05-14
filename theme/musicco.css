@@ -196,7 +196,8 @@
 		flex-wrap: wrap;
 		flex-direction: row;
 		justify-content: space-around;
-		margin: 2em;
+		margin: 1em;
+		margin-top: 0;
 	}
 
 	#uncover_top_row span i{
