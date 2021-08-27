@@ -27,6 +27,15 @@
 		outline: none;
 	}
 
+
+	input:-webkit-autofill {
+		font-family: Montserrat, Verdana, sans-serif;
+		color: var(--text) !important;
+		-webkit-text-fill-color: var(--text) !important;
+		-webkit-box-shadow: 0 0 0 100px white inset !important;
+	}
+
+
 	@keyframes blink1 {
 		 0% { opacity: 0; }
 		 33% { opacity: 1; }
