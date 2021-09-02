@@ -1752,9 +1752,53 @@
 
 	@media (max-height: 480px) {
 
-		#big-player {
-			max-width: 60vh;
+		/* special cases for landscape mode on skinny mobiles */
+
+	#leftPanel {
+		width: 50%;
+	}
+
+	#big-player {
+		top: 2.6em;
+		left: 58%;
+		width: 45%;
+		max-width: 85vh;
+	}
+
+		#big-timer,
+		#big-info,
+		#big-player-bottom,
+		.big-volume-down,
+		.big-volume-up {
+			display: none !important;
 		}
+
+		#mini-controls {
+			display: inline!important;
+			z-index: 3;
+			position: fixed;
+			top: 1em;
+			right: 48%;
+		}
+
+		.playlist-poster-container {
+			width: 85px;
+		}
+
+		.playlist-poster {
+			max-width: 85px;
+			max-height: 85px;
+		}
+
+	#uncoverLinks span {
+		width: 150px;
+	}
+
+	#uncover_top_row span {
+		padding: .5em;
+		margin: .5em;
+		font-size: var(--text-large);
+	}
 
 		#big-volume-bar {
 			width: .05em;

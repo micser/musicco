@@ -1227,14 +1227,14 @@ class Musicco {
 
 			function blurPlayer() {
 				if (isPortrait()) {
-				if ($("#leftPanel").is(":visible")) {
-					$("#big-player").addClass("blur");
-					$("#mini-controls").show();
+					if ($("#leftPanel").is(":visible")) {
+						$("#big-player").addClass("blur");
+						$("#mini-controls").show();
+					} else {
+						$("#big-player").removeClass("blur");
+						$("#mini-controls").hide();
+					}
 				} else {
-					$("#big-player").removeClass("blur");
-					$("#mini-controls").hide();
-				}
-			} else {
 					$("#big-player").removeClass("blur");
 					$("#mini-controls").hide();
 				}
@@ -5575,6 +5575,7 @@ function builddb() {
 				$aboutString.="<li>Improved sharing dialog</li>";
 				$aboutString.="<li>Improved uncover dialog</li>";
 				$aboutString.="<li>Improved lyrics provider</li>";
+				$aboutString.="<li>Improved landscape view on mobile</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.0 (4th December 2020)</div>";

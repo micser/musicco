@@ -55,6 +55,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 * Improved sharing dialog
 * Improved uncover dialog
 * Improved lyrics provider
+* Improved landscape view on mobile
 
 ## v3.0.0
 * Added casting directly from player
