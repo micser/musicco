@@ -2941,6 +2941,8 @@ class Musicco {
 						navigator.mediaSession.setActionHandler('nexttrack', function() { triggerButton("next"); playTrack(nextTrack);});
 						navigator.mediaSession.setActionHandler('seekbackward', function() { triggerButton("previous"); playTrack($(previousAlbum).find("li").first()) });
 						navigator.mediaSession.setActionHandler('seekforward', function() { triggerButton("next"); playTrack($(nextAlbum).find("li").first()) });
+						navigator.mediaSession.setActionHandler('play', function() {triggerPlayPause()});
+						navigator.mediaSession.setActionHandler('pause', function() {triggerPlayPause()});
 					} else if (musiccoService != null) {
 						var actions = [];
 						if (status == "isPaused") {
