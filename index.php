@@ -4061,7 +4061,11 @@ class Musicco {
 									}
 									});
 								}
-							$("#uncoverPanel").dialog("open");
+							if (method == "feeling_lucky") {
+								$(".uncoverLink").trigger("click");
+							} else {
+								$("#uncoverPanel").dialog("open");
+							}
 						}, "json");
 					}
 				});
