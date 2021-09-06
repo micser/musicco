@@ -3514,6 +3514,18 @@ class Musicco {
 					}
 				});
 
+				$("#fullscreen").on("click", function() {
+					if (!document.fullscreenElement) {
+							document.documentElement.requestFullscreen();
+							$("#fullscreen").html('<i class="fas fa-compress fa-fw\"></i>');
+					} else {
+						if (document.exitFullscreen) {
+							document.exitFullscreen();
+							$("#fullscreen").html('<i class="fas fa-expand fa-fw\"></i>');
+						}
+					}
+				});
+
 				$("google-cast-launcher").on("click", function() {
 					isPlaying = !player.paused;
 				});
@@ -4320,6 +4332,7 @@ if(!AuthManager::isAccessAllowed()) {
 					&nbsp;
 					&nbsp;
 					<span class="uncover guestPlay toggles" oncontextmenu="return false;"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
+					<span id="fullscreen"><i class="fas fa-expand fa-fw\"></i></span>
 					&nbsp;
 					&nbsp;
 					<span class="big-volume-down toggles"><i class="fas fa-volume-down fa-fw"></i>&nbsp;</span>
