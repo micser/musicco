@@ -3508,10 +3508,12 @@ class Musicco {
 				});  
 
 				$("#playlist").on("updated", function() {
-					savePlaylist();
-					if (isCasting && hasPlaylist()) {
-						replaceCastQueue();
-					}
+					setTimeout(function() { 
+						savePlaylist();
+						if (isCasting && hasPlaylist()) {
+							replaceCastQueue();
+						}
+					 }, 400);
 				});
 
 				$("#fullscreen").on("click", function() {
