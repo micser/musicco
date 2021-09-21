@@ -287,6 +287,7 @@ $_TRANSLATIONS["en"] = array(
 	"confirm_clear_history" => "Do you really want to clear your listening history?",
 	"clearing_history" => "Clearing your listening history...",
 	"define_theme" => "Custom",
+	"keep_screen_on" => "Keep screen on",
 	"defaultCoverURL" => "http://",
 	"downloadSuccessful" => "album art saved",
 	"favourites_added" => "Adding favourite...",
@@ -396,6 +397,7 @@ $_TRANSLATIONS["fr"] = array(
 	"clearing_history" => "Suppression de l'historique en cours...",
 	"defaultCoverURL" => "http://",
 	"define_theme" => "Personnel",
+	"keep_screen_on" => "Garder l'écran allumé",
 	"downloadSuccessful" => "Couverture sauvegardée",
 	"favourites_added" => "Favouris ajouté",
 	"favourites_removed" => "Favouris retiré",
@@ -846,6 +848,64 @@ class Musicco {
 			var castContentUrl = "";
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
+
+			var initWakeLock = function() {
+				if ('WakeLock' in window && 'request' in window.WakeLock) {
+					let wakeLock = null;
+
+					const requestWakeLock = () => {
+						const controller = new AbortController();
+						const signal = controller.signal;
+						window.WakeLock.request('screen', {signal})
+						.catch((e) => {
+							if (e.name === 'AbortError') {
+								console.log('Wake Lock was aborted');
+							} else {
+								console.error(`${e.name}, ${e.message}`);
+							}
+						});
+						console.debug('Wake Lock is active');
+						return controller;
+					};
+
+					const handleVisibilityChange = () => {
+						if (wakeLock !== null && document.visibilityState === 'visible') {
+							wakeLock = requestWakeLock();
+						}
+					};
+
+					document.addEventListener('visibilitychange', handleVisibilityChange);
+					requestWakeLock();
+
+				} else if ('wakeLock' in navigator && 'request' in navigator.wakeLock) {
+					let wakeLock = null;
+
+					const requestWakeLock = async () => {
+						try {
+							wakeLock = await navigator.wakeLock.request('screen');
+							wakeLock.addEventListener('release', (e) => {
+								console.log(e);
+								console.debug('Wake Lock was released');
+							});
+							console.debug('Wake Lock is active');
+						} catch (e) {
+							console.error(`${e.name}, ${e.message}`);
+						} 
+					};
+
+					const handleVisibilityChange = () => {
+						if (wakeLock !== null && document.visibilityState === 'visible') {
+							requestWakeLock();
+						}
+					};
+
+					document.addEventListener('visibilitychange', handleVisibilityChange);
+					requestWakeLock();
+
+				} else {
+					console.error('Wake Lock API not supported.');
+				}
+			}
 
 			var initializeCastApi = function() {
 				var castContext = cast.framework.CastContext.getInstance();
@@ -2483,12 +2543,13 @@ class Musicco {
 						var volume = $("#big-volume-bar").slider("option", "value");
 						var loop = playerConfig["loop"];
 						var shuffled = playerConfig["shuffled"];
+						var wakelock = $("#wakelock").prop("checked");
 						var theme = $("#theme_settings input[name=option_theme]:checked").attr("id");
 						var background = $("#background").val();
 						var text = $("#text").val();
 						var custom_background = $("#my_theme").data("background");
 						var custom_text = $("#my_theme").data("text");
-						$.post('?', {saveSettings: '', u: user, p: panel, v: volume, l: loop, s: shuffled, m: theme, b: background, t: text, cb: custom_background, ct: custom_text}, function(response) {
+						$.post('?', {saveSettings: '', u: user, p: panel, v: volume, l: loop, s: shuffled, w: wakelock, m: theme, b: background, t: text, cb: custom_background, ct: custom_text}, function(response) {
 						});
 					}
 				}
@@ -2508,6 +2569,11 @@ class Musicco {
 							$('#shuffled').trigger("click");
 						}
 						setCastRepeatMode();
+						if (options.wakelock === "true") {
+							$('#wakelock').prop("checked", true);
+							$('label[for=wakelock] i').toggleClass("fa-toggle-off fa-toggle-on");
+							initWakeLock();
+						}
 						$("#theme_settings input[id=" + options.theme + "]").prop("checked", true).trigger("click");
 						$("#background").val(options.background).trigger("change");
 						$("#text").val(options.text).trigger("change");
@@ -2841,12 +2907,12 @@ class Musicco {
 
 				function resetCheckbox() {
 					$('#includeOldAlbums').prop("checked", true);
-					$("label[for='includeOldAlbums'] i").removeClass("fa-square");
-					$("label[for='includeOldAlbums'] i").addClass("fa-check-square");
+					$("label[for='includeOldAlbums'] i").removeClass("fa-toggle-off");
+					$("label[for='includeOldAlbums'] i").addClass("fa-toggle-on");
 				}
 
-				function toggleCheckbox() {
-					$("label[for='includeOldAlbums'] i").toggleClass("fa-check-square fa-square");
+				function toggleCheckbox(checkboxId) {
+					$("label[for='" + checkboxId + "'] i").toggleClass("fa-toggle-on fa-toggle-off");
 				}
 
 				function clearPlaylist() {
@@ -3738,8 +3804,18 @@ class Musicco {
 					flashInfo();
 				});
 
+				$("#wakelock").on("click", function () {
+					var newStatus = !$("#wakelock").prop("checked");
+					$("#wakelock").prop("checked", newStatus);
+					toggleCheckbox("wakelock");
+					saveSettings();
+					if (newStatus) {
+						initWakeLock();
+					}
+				});
+
 				$("#includeOldAlbums").on("click", function () {
-					toggleCheckbox();
+					toggleCheckbox("includeOldAlbums");
 					filterTree();
 				});
 
@@ -4367,7 +4443,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<div class="table">
 						<div id="filter">
 							<input id="includeOldAlbums" tabindex="0" type="checkbox" checked="true"/>
-							<label for="includeOldAlbums"><i class="fas fa-check-square"></i>&nbsp;<?php print $this->getString("show_all"); ?></label>
+							<label for="includeOldAlbums"><i class="fas fa-toggle-on"></i>&nbsp;<?php print $this->getString("show_all"); ?></label>
 							<input type="text" id="filterText" tabindex="1" name="filterText" placeholder="<?php print $this->getString("filter_placeholder"); ?>"/>
 							<a class="btn" id="filterButton" href="#"><i class="fas fa-border fa-times"></i></a>
 						</div>
@@ -4482,6 +4558,11 @@ if(!AuthManager::isAccessAllowed()) {
 							</div>
 						</div>
 					</form>
+					<hr/>
+					<div class="settings">
+						<input type="ckeckbox" id="wakelock" class="fa-input" name="wakelock" />
+						<label for="wakelock"><i class="space-after fas fa-fw fa-toggle-off"></i><span><?php print $this->getString("keep_screen_on"); ?></span></label>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -4600,7 +4681,7 @@ if(!AuthManager::isAccessAllowed()) {
 			return print loadSettings($_POST['u']);
 			exit;
 	} elseif (isset($_POST['saveSettings'])) {
-		saveSettings($_POST['u'], $_POST['p'], $_POST['v'], $_POST['l'], $_POST['s'], $_POST['m'], $_POST['b'], $_POST['t'], $_POST['cb'], $_POST['ct']);
+		saveSettings($_POST['u'], $_POST['p'], $_POST['v'], $_POST['l'], $_POST['s'], $_POST['w'], $_POST['m'], $_POST['b'], $_POST['t'], $_POST['cb'], $_POST['ct']);
 		exit;
 	} elseif (isset($_POST['getFavourites'])) {
 			$user = $_POST['u'];
@@ -4995,11 +5076,11 @@ function isUser($user) {
 	return $found;
 }
 
-function saveSettings($user, $panel, $volume, $loop, $shuffled, $theme, $background, $text, $custom_background, $custom_text) {
+function saveSettings($user, $panel, $volume, $loop, $shuffled, $wakelock, $theme, $background, $text, $custom_background, $custom_text) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
-		$query = "UPDATE users set option_panel=\"$panel\", option_volume=$volume, option_loop=\"$loop\", option_shuffled=\"$shuffled\", option_theme=\"$theme\", theme_background=\"$background\", theme_text=\"$text\", custom_background=\"$custom_background\", custom_text=\"$custom_text\" WHERE id=$userId;";
+		$query = "UPDATE users set option_panel=\"$panel\", option_volume=$volume, option_loop=\"$loop\", option_shuffled=\"$shuffled\", option_wakelock=\"$wakelock\", option_theme=\"$theme\", theme_background=\"$background\", theme_text=\"$text\", custom_background=\"$custom_background\", custom_text=\"$custom_text\" WHERE id=$userId;";
 		debugMessage($query);
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$update_settings_query = $db->prepare($query);
@@ -5007,7 +5088,7 @@ function saveSettings($user, $panel, $volume, $loop, $shuffled, $theme, $backgro
 		$update_settings_query = NULL;
 		$db = NULL;
 		logMessage("Saved settings for $user");
-		debugMessage("Saved settings: ".$panel.$volume.$loop.$shuffled.$theme.$background.$text.$custom_background.$custom_text);
+		debugMessage("Saved settings: ".$panel.$volume.$loop.$shuffled.$wakelock,$theme.$background.$text.$custom_background.$custom_text);
 	}
 }
 
@@ -5017,7 +5098,7 @@ function loadSettings($user) {
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$settings_query = $db->prepare("SELECT option_panel, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text, custom_background, custom_text FROM users WHERE id=$userId;");
+		$settings_query = $db->prepare("SELECT option_panel, option_volume, option_loop, option_shuffled, option_wakelock, option_theme, theme_background, theme_text, custom_background, custom_text FROM users WHERE id=$userId;");
 		$settings_query->execute();
 		$result = $settings_query->fetchAll();
 		$settings_query = NULL;
@@ -5028,6 +5109,7 @@ function loadSettings($user) {
 										"volume" => $row['option_volume'],
 										"loop" => $row['option_loop'],
 										"shuffled" => $row['option_shuffled'],
+										"wakelock" => $row['option_wakelock'],
 										"theme" => $row['option_theme'],
 										"background" => $row['theme_background'],
 										"text" => $row['theme_text'],
@@ -5037,7 +5119,7 @@ function loadSettings($user) {
 		}
 	}
 	logMessage("Loaded settings for $user");
-	debugMessage("Loaded settings: ".$row['option_panel'].$row['option_volume'].$row['option_loop'].$row['option_shuffled'].$row['option_theme'].$row['theme_background'].$row['theme_text'].$row['custom_background'].$row['custom_text']);
+	debugMessage("Loaded settings: ".$row['option_panel'].$row['option_volume'].$row['option_loop'].$row['option_shuffled'].$row['option_wakelock'].$row['option_theme'].$row['theme_background'].$row['theme_text'].$row['custom_background'].$row['custom_text']);
 	return json_encode($settings);
 }
 
@@ -5112,7 +5194,7 @@ function createUser($user, $force) {
 	}
 	if ($isValidUser || $force) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_panel, option_volume, option_loop, option_shuffled, option_theme, theme_background, theme_text, custom_background, custom_text) VALUES (\"" . $user . "\", 0, 0, \"\", \"infoPanel\", 100, \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
+		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_panel, option_volume, option_loop, option_shuffled, option_wakelock, option_theme, theme_background, theme_text, custom_background, custom_text) VALUES (\"" . $user . "\", 0, 0, \"\", \"infoPanel\", 100, \"false\", \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
 		$create_user_query->execute();
 		$id = $db->lastInsertId();
 		$create_user_query = NULL;
@@ -5268,7 +5350,7 @@ function cleanDB($db) {
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
-	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_panel TEXT NOT NULL, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL, custom_background TEXT NOT NULL, custom_text TEXT NOT NULL);");
+	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_panel TEXT NOT NULL, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_wakelock TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL, custom_background TEXT NOT NULL, custom_text TEXT NOT NULL);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
 	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, data TEXT, unique(userId, name));");
 	$db->exec("CREATE TABLE history (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , artist TEXT, album TEXT, timestamp INTEGER, unique(userId, artist, album));");
@@ -5589,6 +5671,7 @@ function builddb() {
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1 (in development)</div>";
 				$aboutString.="<li>Read album art from id3 tag</li>";
+				$aboutString.="<li>Added an option to keep screen on</li>";
 				$aboutString.="<li>Fixed some issues with casting on Android</li>";
 				$aboutString.="<li>Improved QR Code styling</li>";
 				$aboutString.="<li>Fix adding of duplicate albums in playlist</li>";
@@ -5730,7 +5813,7 @@ function builddb() {
 		$wizard .= "<legend>Access</legend>";
 		$wizard .= "<div>";
 		$wizard .= "<input id='require_login' class='fa-input' name='require_login' type='checkbox' value='true' onclick='$(&apos;#users&apos;).toggle();' ".getCheckboxStatus(Musicco::getConfig('require_login')).">";
-		$wizard .= "<label for='require_login'><i class='fa fa-fw fa-check-square'></i>Require login</label>";
+		$wizard .= "<label for='require_login'><i class='fas fa-fw fa-toggle-on'></i>Require login</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you require a login, you can have several users listening to their own playlists. If you want your installation to be completely open and all your user sharing the same playlists, leave this box unchecked.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div id='users' style='display:none;'>";
@@ -5762,22 +5845,22 @@ function builddb() {
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='loadLyricsFromFile' class='fa-input' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('loadLyricsFromFile')).">";
-		$wizard .= "<label for='loadLyricsFromFile'><i class='fa fa-fw fa-check-square'></i>Load lyrics from local .lrc files</label>";
+		$wizard .= "<label for='loadLyricsFromFile'><i class='fas fa-fw fa-toggle-on'></i>Load lyrics from local .lrc files</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to load .lrc lyrics files from disk. If a .lrc file with the same name as the audio  file exists in the same folder, its contents  will be loaded into the lyrics panel before  searching online for it.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='lookUpLyrics' class='fa-input' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('lookUpLyrics')).">";
-		$wizard .= "<label for='lookUpLyrics'><i class='fa fa-fw fa-check-square'></i>Lookup lyrics online</label>";
+		$wizard .= "<label for='lookUpLyrics'><i class='fas fa-fw fa-toggle-on'></i>Lookup lyrics online</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to lookup lyrics online to display them in the lyrics panel. When disabled, the lyrics panel only shows links to search for lyrics manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='downLoadMissingCovers' class='fa-input' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('downLoadMissingCovers')).">";
-		$wizard .= "<label for='downLoadMissingCovers'><i class='fa fa-fw fa-check-square'></i>Download album art</label>";
+		$wizard .= "<label for='downLoadMissingCovers'><i class='fas fa-fw fa-toggle-on'></i>Download album art</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to automatically download missing covers online. New covers will be saved to disk in the folder containing the song currently playing. Even when turning this off, you can still  trigger cover art search manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='isCastAllowed' class='fa-input' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('isCastAllowed')).">";
-		$wizard .= "<label for='isCastAllowed'><i class='fa fa-fw fa-check-square'></i>Enable casting to compatible devices</label>";
+		$wizard .= "<label for='isCastAllowed'><i class='fas fa-fw fa-toggle-on'></i>Enable casting to compatible devices</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>When checked, the google chromecast library is loaded and will enable casting to compatible devices on your network.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
@@ -5800,7 +5883,7 @@ function builddb() {
 		$wizard .= "<legend>System</legend>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='canRerunWizard' class='fa-input' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('canRerunWizard')).">";
-		$wizard .= "<label for='canRerunWizard'><i class='fa fa-fw fa-check-square'></i>Allow running this wizard from the web UI again</label>";
+		$wizard .= "<label for='canRerunWizard'><i class='fas fa-fw fa-toggle-on'></i>Allow running this wizard from the web UI again</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you uncheck this box, you will need physical access to the server to edit the configuration in the future. It is recommended to uncheck this box on installations where no login is required to avoid unwanted setup changes.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";

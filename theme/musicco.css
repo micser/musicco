@@ -488,6 +488,8 @@
 
 	input[type="checkbox"] + .fa,
 	input[type="checkbox"] + label > .fa,
+	input[type="checkbox"] + .fas,
+	input[type="checkbox"] + label > .fas,
 	input[type="radio"] + .fa,
 	input[type="radio"] + label > .fa { cursor: pointer; }
 
@@ -512,6 +514,10 @@
 	input[type="checkbox"] + label > .fa-check-square-o:before { content: "\f096"; } /* .fa-square-o */
 	input[type="checkbox"] + .fa-check-square:before,
 	input[type="checkbox"] + label > .fa-check-square:before { content: "\f0c8"; } /* .fa-square */
+	input[type="checkbox"] + .fa-toggle-off:before,
+	input[type="checkbox"] + label > .fa-toggle-off:before,
+	input[type="checkbox"] + .fa-toggle-on:before,
+	input[type="checkbox"] + label > .fa-toggle-on:before { content: "\f204"; } /* .fa-toggle-off */
 
 	/* Checked */
 	input[type="checkbox"]:checked + .fa-check:before,
@@ -534,9 +540,15 @@
 	input[type="checkbox"]:checked + label > .fa-dot-circle-o:before,
 	input[type="radio"]:checked + .fa-dot-circle-o:before,
 	input[type="radio"]:checked + label > .fa-dot-circle-o:before { content: "\f192"; }
+	input[type="checkbox"]:checked + .fa-toggle-off:before,
+	input[type="checkbox"]:checked + label > .fa-toggle-off:before,
+	input[type="checkbox"]:checked + .fa-toggle-on:before,
+	input[type="checkbox"]:checked + label > .fa-toggle-on:before { content: "\f205"; } /* .fa-toggle-on */
 
 	.fa-square,
-	.fa-check-square {
+	.fa-check-square,
+	.fa-toggle-on,
+	.fa-toggle-off {
 		color: var(--text);
 	}
 
