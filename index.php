@@ -5783,7 +5783,7 @@ function builddb() {
 	}
 
 	function getCheckboxStatus($optionName) {
-		$checkboxStatus = ($optionName == "true")? "checked" : "";
+		$checkboxStatus = (($optionName == "true") || ($optionName == "on"))? "checked" : "";
 		return $checkboxStatus;
 	}
 
@@ -5791,12 +5791,16 @@ function builddb() {
 		$wizard = "<html>";
 		$wizard .= "<body>";
 		$wizard .= "<head>";
+		$wizard .= "<link rel='icon' type='image/png' href='app/icon-192x192.png' sizes='192x192'>";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='lib/font-awesome/css/all.min.css'>";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Montserrat' >";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='theme/musicco.css' >";
 		$wizard .= "<script type='text/javascript' src='lib/jquery/jquery-3.5.0.min.js'></script>";
 		$wizard .= "<script type='text/javascript'>";
-		$wizard .= "$(document).ready(function() { if ($('#require_login').is(':checked')) { $('#users').toggle(); } $('#lang').val('".Musicco::getConfig('lang')."'); });";
+		$wizard .= "$(document).ready(function() {\n";
+		$wizard .= "\t$('#lang').val('".Musicco::getConfig('lang')."');\n";
+		$wizard .= "\t$('label').on('click', function() { checkbox = 'input[name=\"' + $(this).attr('for') + '\"]'; $(checkbox).prop('checked', !($(checkbox).is(':checked'))); });\n";
+		$wizard .= "});";
 		$wizard .= "</script>";
 		$wizard .= "</head>";
 		$wizard .= "<div class='landing'>";
@@ -5812,15 +5816,15 @@ function builddb() {
 		$wizard .= "<fieldset>";
 		$wizard .= "<legend>Access</legend>";
 		$wizard .= "<div>";
-		$wizard .= "<input id='require_login' class='fa-input' name='require_login' type='checkbox' value='true' onclick='$(&apos;#users&apos;).toggle();' ".getCheckboxStatus(Musicco::getConfig('require_login')).">";
+		$wizard .= "<input class='fa-input' name='require_login' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('require_login')).">";
 		$wizard .= "<label for='require_login'><i class='fas fa-fw fa-toggle-on'></i>Require login</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you require a login, you can have several users listening to their own playlists. If you want your installation to be completely open and all your user sharing the same playlists, leave this box unchecked.</span></i>";
-		$wizard .= "</div>";
-		$wizard .= "<div id='users' style='display:none;'>";
+		$wizard .= "<div id='users'>";
 		$wizard .= "<label for='users'>Users</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Type in a list of user/password/isAdmin sets.</span></i>";
 		$wizard .= "<br/>";
 		$wizard .= "<textarea name='users' rows='5' cols='60'>".printUsers()."</textarea>";
+		$wizard .= "</div>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
 		$wizard .= "<fieldset>";
@@ -5844,22 +5848,22 @@ function builddb() {
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>The name you give to your covert art files in your music library. This is used to find covers on your disk and also to as a file name to  save covers found by the cover art downloader.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='loadLyricsFromFile' class='fa-input' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('loadLyricsFromFile')).">";
+		$wizard .= "<input name='loadLyricsFromFile' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('loadLyricsFromFile')).">";
 		$wizard .= "<label for='loadLyricsFromFile'><i class='fas fa-fw fa-toggle-on'></i>Load lyrics from local .lrc files</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to load .lrc lyrics files from disk. If a .lrc file with the same name as the audio  file exists in the same folder, its contents  will be loaded into the lyrics panel before  searching online for it.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='lookUpLyrics' class='fa-input' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('lookUpLyrics')).">";
+		$wizard .= "<input name='lookUpLyrics' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('lookUpLyrics')).">";
 		$wizard .= "<label for='lookUpLyrics'><i class='fas fa-fw fa-toggle-on'></i>Lookup lyrics online</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to lookup lyrics online to display them in the lyrics panel. When disabled, the lyrics panel only shows links to search for lyrics manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='downLoadMissingCovers' class='fa-input' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('downLoadMissingCovers')).">";
+		$wizard .= "<input name='downLoadMissingCovers' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('downLoadMissingCovers')).">";
 		$wizard .= "<label for='downLoadMissingCovers'><i class='fas fa-fw fa-toggle-on'></i>Download album art</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to automatically download missing covers online. New covers will be saved to disk in the folder containing the song currently playing. Even when turning this off, you can still  trigger cover art search manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='isCastAllowed' class='fa-input' type='checkbox' value='true'".getCheckboxStatus(Musicco::getConfig('isCastAllowed')).">";
+		$wizard .= "<input name='isCastAllowed' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('isCastAllowed')).">";
 		$wizard .= "<label for='isCastAllowed'><i class='fas fa-fw fa-toggle-on'></i>Enable casting to compatible devices</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>When checked, the google chromecast library is loaded and will enable casting to compatible devices on your network.</span></i>";
 		$wizard .= "</div>";
@@ -5882,7 +5886,7 @@ function builddb() {
 		$wizard .= "<fieldset>";
 		$wizard .= "<legend>System</legend>";
 		$wizard .= "<div>";
-		$wizard .= "<input name='canRerunWizard' class='fa-input' type='checkbox' value='true' ".getCheckboxStatus(Musicco::getConfig('canRerunWizard')).">";
+		$wizard .= "<input name='canRerunWizard' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('canRerunWizard')).">";
 		$wizard .= "<label for='canRerunWizard'><i class='fas fa-fw fa-toggle-on'></i>Allow running this wizard from the web UI again</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you uncheck this box, you will need physical access to the server to edit the configuration in the future. It is recommended to uncheck this box on installations where no login is required to avoid unwanted setup changes.</span></i>";
 		$wizard .= "</div>";

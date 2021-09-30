@@ -552,6 +552,9 @@
 		color: var(--text);
 	}
 
+	input[name="require_login"] ~ #users { display: none; }
+	input[name="require_login"]:checked ~ #users { display: block; }
+
 	.ui-tabs .ui-tabs-nav {
 		border-bottom: 1px solid var(--text);
 		border-bottom-left-radius: 0;
