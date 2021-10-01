@@ -1083,6 +1083,10 @@ class Musicco {
 			// Functions //
 			//////////////
 
+			function regexEscape(string) {
+				return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+			}
+
 			function resetLastInteraction() {
 				lastInteraction = Date.now() - playlistResfreshDelay - 1000;
 			}
@@ -1637,7 +1641,7 @@ class Musicco {
 				tree.reload(library);
 				var filterText = normalise($("#filterText").val().toLowerCase());
 				var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
-				var isMatching = new RegExp(filterText, "i");
+				var isMatching = new RegExp(regexEscape(filterText), "i");
 				if ($("#includeOldAlbums").is(':checked')) {
 					tree.filterBranches(function(node) {
 						return isMatching.test(normalise(node.data.path));
