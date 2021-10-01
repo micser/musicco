@@ -735,7 +735,8 @@
 	.historyArtist:hover,
 	.historyAlbum:hover,
 	.searchResult:hover,
-	#uncover_top_row span:hover {
+	#uncover_top_row span:hover,
+	.settings > label:hover > i {
 		color: var(--text-highlight);
 	}
 
@@ -758,7 +759,11 @@
 	#uncover_top_row span,
 	.uncoverLink,
 	#fullscreen,
-	#history > ul > span {
+	#history > ul > span,
+	.settings-sub label,
+	.settings > label:hover,
+	.fa-input ~ label:hover,
+	i.tooltip {
 		cursor: pointer;
 	}
 
@@ -781,6 +786,7 @@
 	.playlist-tools:hover,
 	.toggles:hover,
 	.settings:hover,
+	.settings-sub label:hover,
 	.current,
 	a.current,
 	.current .fancytree-title,
@@ -1319,6 +1325,7 @@
 
 	.indent {
 		margin-left: 1em;
+		margin-right: 1em;
 	}
 
 	#config input,
