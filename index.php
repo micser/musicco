@@ -807,12 +807,12 @@ class Musicco {
 		<meta name="msapplication-TileColor" content="#a7a97f">
 		<meta name="msapplication-TileImage" content="app/mstile-310x310.png">
 		<meta name="theme-color" content="#a7a97f">
-		<script type="text/javascript" src="lib/jquery/jquery-3.5.0.min.js"></script>
-		<script type="text/javascript" defer src="lib/jquery-mobile/jquery-migrate-3.2.0.min.js"></script>
-		<script type="text/javascript" defer src="lib/jquery-mobile/jquery.mobile-1.4.5.swipe.min.js"></script>
+		<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-mobile/jquery-migrate.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-mobile/jquery.mobile.swipe.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui/jquery-ui.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
-		<script type="text/javascript" defer src="lib/js-cookie/js.cookie-2.2.1.min.js"></script>
+		<script type="text/javascript" defer src="lib/js-cookie/js.cookie.min.js"></script>
 		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery-qrcode.min.js"></script>
 		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>

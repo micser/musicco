@@ -44,6 +44,22 @@ Check out https://www.musicco.app for more information or try the demo at https:
 * zip (optional, for download support)
 
 
+# Libraries
+
+* <a href="https://github.com/lokesh/color-thief">color-thief 2.3.2</a>
+* <a href="https://github.com/mar10/fancytree">fancytree 2.38.0</a>
+* <a href="https://fontawesome.com">fontawesome 5.15.4</a>
+* <a href="https://github.com/jquery/jquery">jquery 3.6.0</a>
+* <a href="https://github.com/jquery/jquery-mobile">jQuery mobile 1.4.5</a>
+* <a href="https://github.com/jquery/jquery-migrate">jQuery migrate 3.2.2</a>
+* <a href="https://github.com/lrsjng/jquery-qrcode">jQuery-qrcode 0.18.0</a>
+* <a href="https://github.com/jquery/jquery-ui">jQuery-ui 1.12.1</a>
+* <a href="https://github.com/mar10/jquery-ui-contextmenu">jQuery-ui-contextmenu 1.18.1</a>
+* <a href="https://github.com/js-cookie/js-cookie">js-cookie 3.0.1</a>
+* <a href="https://github.com/aadsm/jsmediatags">jsmediatags 3.9.5</a>
+* <a href="https://stackoverflow.com/questions/227950/programatic-accent-reduction-in-javascript-aka-text-normalization-or-unaccentin">normalise</a>
+* <a href="https://stackoverflow.com/questions/29559102/how-to-get-swipeup-and-swipedown-event/29638289#29638289">swipe</a>
+
 # Changelog
 
 ## v3.1.0 (in development)
