@@ -376,10 +376,10 @@ $_TRANSLATIONS["en"] = array(
 	"this-month" => "This Month",
 	"this-year" => "This Year",
 	"prehistoric" => "Ages ago...",
-	"winter" => "This Winter",
-	"spring" => "This Spring",
-	"summer" => "This Summer",
-	"fall" => "This Fall"
+	"winter" => "Last Winter",
+	"spring" => "Last Spring",
+	"summer" => "Last Summer",
+	"fall" => "Last Fall"
 );
 
 
@@ -680,11 +680,11 @@ class Musicco {
 	function getSeason() {
 		$currentMonth=DATE("m");
 		$season = "winter";
-		if ($currentMonth>="04" && $currentMonth<="06") {
+		if ($currentMonth>="05" && $currentMonth<="07") {
 			$season = "spring";
-		} elseif ($currentMonth>="07" && $currentMonth<="09") {
+		} elseif ($currentMonth>="08" && $currentMonth<="10") {
 			$season = "summer";
-		} elseif ($currentMonth>="10" && $currentMonth<="12") {
+		} elseif ($currentMonth>="11") {
 			$season = "fall";
 		}
 		return $season;
@@ -3568,6 +3568,10 @@ class Musicco {
 				  ////////////
 				 // EVENTS //
 				////////////
+
+				$("#history ul").on("click", function() {
+					$(this).children("li").toggle();
+				});
 
 				$("#playlistContainer, #playlistPanel").bind("touchstart touchmove scroll mousedown DOMMouseScroll mousewheel keyup", function(e){
 						lastInteraction = Date.now();

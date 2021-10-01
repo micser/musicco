@@ -757,7 +757,8 @@
 	#share-services > span,
 	#uncover_top_row span,
 	.uncoverLink,
-	#fullscreen {
+	#fullscreen,
+	#history > ul > span {
 		cursor: pointer;
 	}
 
