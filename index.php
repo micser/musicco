@@ -5688,6 +5688,7 @@ function builddb() {
 				$aboutString.="<li>Improved uncover dialog</li>";
 				$aboutString.="<li>Improved lyrics provider</li>";
 				$aboutString.="<li>Improved landscape view on mobile</li>";
+				$aboutString.="<li>Dependency updates</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.0 (4th December 2020)</div>";

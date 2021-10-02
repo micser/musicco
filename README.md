@@ -5,7 +5,9 @@ musicco is a web player for your music library Host it on a NAS and start stream
 This is especially great on low-spec NAS that don't have enough power to host Squeezebox, Subsonic or an ITunes Server.  
 Check out https://www.musicco.app for more information or try the demo at https://www.musicco.app/demo.
 
-![Twitter Follow](https://img.shields.io/twitter/follow/musiccoapp?style=social)
+<a href="https://twitter.com/musiccoapp">
+  <img src="https://img.shields.io/twitter/follow/musiccoapp?style=social" alt="Follow @musiccoapp"></img>
+</a>
 
 # Features
 
@@ -45,19 +47,22 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Libraries
 
-* [color-thief 2.3.2](https://github.com/lokesh/color-thief) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/lokesh/color-thief))
-* [fancytree 2.38.0](https://github.com/mar10/fancytree) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/fancytree))
-* [fontawesome 5.15.4](https://github.com/FortAwesome/Font-Awesome)(latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/FortAwesome/Font-Awesome))
-* [jQuery 3.6.0](https://github.com/jquery/jquery) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery))
-* [jQuery mobile 1.4.5](https://github.com/jquery/jquery-mobile) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-mobile))
-* [jQuery migrate 3.2.2](https://github.com/jquery/jquery-migrate) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-migrate))
-* [jQuery-qrcode 0.18.0](https://github.com/lrsjng/jquery-qrcode) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/lrsjng/jquery-qrcode))
-* [jQuery-ui 1.12.1](https://github.com/jquery/jquery-ui) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-ui))
-* [jQuery-ui-contextmenu 1.18.1](https://github.com/mar10/jquery-ui-contextmenu) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/jquery-ui-contextmenu))
-* [js-cookie 3.0.1](https://github.com/js-cookie/js-cookie) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/js-cookie/js-cookie))
-* [jsmediatags 3.9.5](https://github.com/aadsm/jsmediatags) (latest: ![GitHub release (latest by date)](https://img.shields.io/github/v/release/aadsm/jsmediatags))
-* [normalise](https://stackoverflow.com/questions/227950/programatic-accent-reduction-in-javascript-aka-text-normalization-or-unaccentin)
-* [swipe](https://stackoverflow.com/questions/29559102/how-to-get-swipeup-and-swipedown-event/29638289#29638289)
+
+| Library                                                                  | Included | Latest                                                                                                              |
+|:------------------------------------------------------------------------ |:--------:| -------------------------------------------------------------------------------------------------------------------:|
+| [color-thief](https://github.com/lokesh/color-thief)                     | 2.3.2    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/lokesh/color-thief) |
+| [fancytree](https://github.com/mar10/fancytree)                          | 2.38.0   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/fancytree) |
+| [fontawesome](https://github.com/FortAwesome/Font-Awesome)               | 5.15.4   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/FortAwesome/Font-Awesome) |
+| [jQuery](https://github.com/jquery/jquery)                               | 3.6.0    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery) |
+| [jQuery mobile](https://github.com/jquery/jquery-mobile)                 | 1.4.5    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-mobile) |
+| [jQuery migrate](https://github.com/jquery/jquery-migrate)               | 3.2.2    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-migrate) |
+| [jQuery-qrcode](https://github.com/lrsjng/jquery-qrcode)                 | 0.18.0   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/lrsjng/jquery-qrcode) |
+| [jQuery-ui](https://github.com/jquery/jquery-ui)                         | 1.12.1   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-ui) |
+| [jQuery-ui-contextmenu](https://github.com/mar10/jquery-ui-contextmenu)  | 1.18.1   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/jquery-ui-contextmenu) |
+| [js-cookie](https://github.com/js-cookie/js-cookie)                      | 3.0.1    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/js-cookie/js-cookie) |
+| [jsmediatags](https://github.com/aadsm/jsmediatags)                      | 3.9.5    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/aadsm/jsmediatags) |
+| [normalise](https://stackoverflow.com/questions/227950/programatic-accent-reduction-in-javascript-aka-text-normalization-or-unaccentin) | - | - |
+| [swipe](https://stackoverflow.com/questions/29559102/how-to-get-swipeup-and-swipedown-event/29638289#29638289) | - | - |
 
 # Changelog
 
@@ -72,6 +77,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 * Improved uncover dialog
 * Improved lyrics provider
 * Improved landscape view on mobile
+* Dependency updates
 
 ## v3.0.0
 * Added casting directly from player
