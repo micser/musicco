@@ -4410,7 +4410,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<span id="mini-controls" class="big-controls">
 					<span class="big-jp-previous-album" oncontextmenu="return false;">&nbsp;</span>
 					<span class="big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
-					<input type="checkbox" class="play-pause" /><label oncontextmenu="return false;"><i class="far fa-fw"></i></label>
+					<input type="checkbox" class="play-pause" /><label oncontextmenu="return false;"><i class="fas fa-fw"></i></label>
 					<span class="big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
 					<span class="big-jp-next-album" oncontextmenu="return false;">&nbsp;</span>
 					&nbsp;
@@ -4620,7 +4620,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="controls" class="spread big-controls">
 						<span class="big-jp-previous-album" oncontextmenu="return false;"></span>
 						<span class="left big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
-						<input type="checkbox" class="play-pause" /><label oncontextmenu="return false;"><i class="far fa-5x fa-fw"></i></label>
+						<input type="checkbox" class="play-pause" /><label oncontextmenu="return false;"><i class="fas fa-5x fa-fw"></i></label>
 						<span class="right big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
 						<span class="big-jp-next-album" oncontextmenu="return false;"></span>
 					</div>
