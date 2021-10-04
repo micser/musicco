@@ -859,7 +859,7 @@ class Musicco {
 						window.WakeLock.request('screen', {signal})
 						.catch((e) => {
 							if (e.name === 'AbortError') {
-								console.log('Wake Lock was aborted');
+								console.error('Wake Lock was aborted');
 							} else {
 								console.error(`${e.name}, ${e.message}`);
 							}
@@ -884,7 +884,7 @@ class Musicco {
 						try {
 							wakeLock = await navigator.wakeLock.request('screen');
 							wakeLock.addEventListener('release', (e) => {
-								console.log(e);
+								console.debug(e);
 								console.debug('Wake Lock was released');
 							});
 							console.debug('Wake Lock is active');
@@ -1621,18 +1621,18 @@ class Musicco {
 							}
 						}
 					$("#playlist").trigger("updated");
-					if (playAfter) {
-						if (isCasting) {
-							if (!isPlaying) {
-								console.log("playing");
+					setTimeout(function() {
+						if (playAfter) {
+							if (isCasting) {
+								if (!isPlaying) {
+									playTrack($("#playlist").find("li[data-nature=track]").first());
+									isPlaying = !player.paused;
+								} 
+							} else {
 								playTrack($("#playlist").find("li[data-nature=track]").first());
-								isPlaying = !player.paused;
-							} 
-						} else {
-							console.log("playing");
-							playTrack($("#playlist").find("li[data-nature=track]").first());
+							}
 						}
-					}
+					}, 400);
 				}, "json");
 			}
 
@@ -3582,12 +3582,10 @@ class Musicco {
 				});  
 
 				$("#playlist").on("updated", function() {
-					setTimeout(function() { 
-						savePlaylist();
-						if (isCasting && hasPlaylist()) {
-							replaceCastQueue();
-						}
-					 }, 400);
+					savePlaylist();
+					if (isCasting && hasPlaylist()) {
+						replaceCastQueue();
+					}
 				});
 
 				$("#fullscreen").on("click", function() {
