@@ -407,6 +407,7 @@
 		flex-direction: column;
 		height: 20vh;
 		justify-content: space-evenly;
+		margin-top: 5%;
 	}
 
 	#playlist_select {
@@ -1305,7 +1306,7 @@
 
 	#big-timer,
 	#big-info {
-		margin: 0 .2em 0 .2em;
+		margin: 0 .2em 3% .2em;
 	}
 
 	.nowrap {
@@ -1683,6 +1684,7 @@
 			position: absolute;
 			background: rgba(0, 0, 0, 0.3);
 			bottom: 0;
+			margin-bottom: 5%;
 			left: -3px;
 			width: 100%;
 			opacity: 0;
