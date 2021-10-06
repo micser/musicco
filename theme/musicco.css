@@ -456,7 +456,7 @@
 	.ui-slider-range {
 		background: var(--text-highlight);
 		transition: opacity 1s;
-		opacity: 0.5;
+		opacity: 0.7;
 	}
 
 	.ui-slider-range:hover {
@@ -1118,14 +1118,19 @@
 		font-size: var(--text-smaller);
 	}
 
-
 	#nowPlaying_songtitle {
-		height: var(--text-larger);
+		font-weight: bold;
+		color: var(--text-highlight);
 	}
 
-	#nowPlaying_artist,
+	#nowPlaying_songtitle,
 	.album-details {
-		height: var(--text-normal);
+		height: var(--text-quite-big);
+		font-size: var(--text-normal);
+	}
+
+	#nowPlaying_songtitle {
+		font-size: var(--text-larger);
 	}
 
 	#infoPanelTitle {
@@ -1657,10 +1662,13 @@
 		}
 
 		#nowPlaying_songtitle,
-		#nowPlaying_artist, 
-		.album-details{
+		.album-details {
+			height: var(--text-big);
 			font-size: var(--text-larger);
-			height: var(--text-larger);
+		}
+
+		#nowPlaying_songtitle {
+			font-size: var(--text-big);
 		}
 
 		#big-info:hover,
@@ -1677,7 +1685,6 @@
 			bottom: 0;
 			left: -3px;
 			width: 100%;
-			text-align: left;
 			opacity: 0;
 			transition: backdrop-filter 1s ease-in, opacity 1s ease-in;
 			padding: .5em 0 .5em .5em;
@@ -1689,13 +1696,6 @@
 			#big-info {
 				background: rgba(0, 0, 0, 0.8);
 			}
-		}
-
-		#nowPlaying_album,
-		#nowPlaying_year,
-		#nowPlaying_artist,
-		#nowPlaying_title {
-			padding-left: 1em;
 		}
 	}
 }
@@ -1847,19 +1847,6 @@
 			padding-top: .7em;
 		}
 
-		#nowPlaying_songtitle,
-		#nowPlaying_artist,
-		#nowPlaying_album,
-		.album-details {
-			font-size: var(--text-small);
-			height: var(--text-normal);
-		}
-
-		#current_time,
-		#duration {
-			font-size: var(--text-minuscule);
-			height: var(--text-tiny);
-		}
 		.fa-5x {
 			font-size: 3em;
 		}
