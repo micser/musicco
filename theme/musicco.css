@@ -785,7 +785,6 @@
 	}
 
 	.playlist-tools:hover,
-	.toggles:hover,
 	.settings:hover,
 	.settings-sub label:hover,
 	.current,
@@ -1550,14 +1549,17 @@
 		display: inline-block;
 	}
 
-	#mini-controls span:hover,
-	#mini-controls input + label:hover {
-		color: var(--text-highlight);
-	}
+	@media (hover: hover) and (pointer: fine) {
+		.toggles.hover,
+		#mini-controls span:hover,
+		#mini-controls input + label:hover {
+			color: var(--text-highlight);
+		}
 
-	.big-controls span:hover,
-	.big-controls input + label:hover {
-		color: var(--text);
+		.big-controls span:hover,
+		.big-controls input + label:hover {
+			color: var(--text);
+		}
 	}
 
 	.ui-button {
