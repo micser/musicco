@@ -4597,7 +4597,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="nowPlaying_songtitle" class="nowrap">&nbsp;</div>
 					<div class="album-details nowrap">
 						<span id="nowPlaying_artist" class="nowrap">&nbsp;</span>
-						<span>&nbsp;-&nbsp;</span>
+						<span>&nbsp;&bull;&nbsp;</span>
 						<span id="nowPlaying_album" class="nowrap">&nbsp;</span>
 						<span id="nowPlaying_year" class="nowrap">&nbsp;</span>
 					</div>
