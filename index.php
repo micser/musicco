@@ -808,11 +808,9 @@ class Musicco {
 		<meta name="msapplication-TileImage" content="app/mstile-310x310.png">
 		<meta name="theme-color" content="#a7a97f">
 		<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
-		<script type="text/javascript" defer src="lib/jquery-mobile/jquery-migrate.min.js"></script>
-		<script type="text/javascript" defer src="lib/jquery-mobile/jquery.mobile.swipe.min.js"></script>
-		<script type="text/javascript" defer src="lib/jquery-mobile/jquerymobile-swipeupdown.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui/jquery-ui.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
+		<script type="text/javascript" defer src="lib/detect-swipe/jquery.detect_swipe.js"></script>
 		<script type="text/javascript" defer src="lib/js-cookie/js.cookie.min.js"></script>
 		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery-qrcode.min.js"></script>
@@ -4279,15 +4277,15 @@ class Musicco {
 					triggerPlayPause();
 				});
 
-				$(document).on("swipeup", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
+				$("#album-art, #big-cover .default-poster, .logo-player").on("swipedown", function(e) {
 					volumeUp();
 				});
 
-				$(document).on("swipedown", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
+				$("#album-art, #big-cover .default-poster, .logo-player").on("swipeup", function(e) {
 					volumeDown();
 				});
 
-				$(document).on("swipeleft", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
+				$("#album-art, #big-cover .default-poster, .logo-player").on("swipeleft", function(e) {
 					triggerButton("next");
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
@@ -4296,7 +4294,7 @@ class Musicco {
 					}
 				});
 
-				$(document).on("swiperight", "#album-art, #big-cover .default-poster, .logo-player", function(e) {
+				$("#album-art, #big-cover .default-poster, .logo-player").on("swiperight", function(e) {
 					triggerButton("previous");
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
