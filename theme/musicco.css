@@ -764,7 +764,8 @@
 	.settings-sub label,
 	.settings > label:hover,
 	.fa-input ~ label:hover,
-	i.tooltip {
+	i.tooltip,
+	i.polling {
 		cursor: pointer;
 	}
 
@@ -805,6 +806,8 @@
 	.currentTrack:before,
 	#searchLink,
 	#loadingInfo,
+	#refreshPanel,
+	.obsoleteWarning,
 	.selected,
 	a.infoPanelLink:hover,
 	#share-actions > span:hover,
@@ -813,6 +816,30 @@
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match.current span.fancytree-title,
 	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title {
 		color: var(--text-highlight);
+	}
+
+	.obsoleteWarning {
+		margin-right: 1em;
+		margin-left: 1em;
+		vertical-align: middle;
+	}
+
+	#refreshPanel {
+		width: 100vw;
+		height: 1.5em;
+		text-align: center;
+		background-color: var(--text);
+		border: 1px solid var(--text-highlight);
+		border-radius: 3px;
+		margin-top: .4em;
+		margin-left: .4em;
+		padding: 0 .2em;
+	}
+
+	i.polling {
+		float: right;
+		margin-right: .5em;
+		margin-top: .4em;
 	}
 
 	@keyframes stretch {
@@ -1071,7 +1098,8 @@
 		margin-left: -.5em;
 	}
 
-	#loadingInfo {
+	#loadingInfo,
+	#refreshPanel {
 		display: none;
 		z-index: 3;
 		margin-right: 1em;
@@ -1601,6 +1629,10 @@
 		height:;
 	}
 
+	#refreshPanel {
+		margin-right: 0;
+	}
+
 	@supports (backdrop-filter: blur(10px)) {
 		ui-tabs .ui-widget-header {
 			border: 1px solid var(--background-neutral);
@@ -1633,6 +1665,21 @@
 
 		#header {
 			height: 1em;
+		}
+
+		#refreshPanel {
+			height: 1em;
+			font-size: var(--text-small);
+			margin: 0;
+		}
+
+		.obsoleteWarning {
+			position: fixed;
+			top: 0;
+		}
+
+		i.polling {
+			margin-top: .1em;
 		}
 
 		#mini-controls {
@@ -1814,6 +1861,25 @@
 			top: 1em;
 			right: 48%;
 		}
+
+		#refreshPanel {
+			height: 1.1em;
+			font-size: var(--text-smaller);
+			position: fixed;
+			top: 0;
+			margin: 0;
+			padding: 0;
+		}
+
+	.obsoleteWarning {
+			position: fixed;
+			top: 0;
+	}
+
+	i.polling {
+		position: relative;
+		top: -.2em;
+	}
 
 		.playlist-poster-container {
 			width: 85px;

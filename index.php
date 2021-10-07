@@ -331,7 +331,7 @@ $_TRANSLATIONS["en"] = array(
 	"password" => "Password",
 	"pause" => "Pause", 
 	"play" => "Play", 
-	"playlist_modified" => "Your playlist was modified on another device, click here to reload it.", 
+	"playlist_modified" => "refresh playlist", 
 	"queue_all" => "Queue all", 
 	"uncover_more" => "Uncover more", 
 	"previoustrack" => "Previous",
@@ -440,7 +440,7 @@ $_TRANSLATIONS["fr"] = array(
 	"password" => "Mot de passe",
 	"pause" => "Pause", 
 	"play" => "Lecture", 
-	"playlist_modified" => "La playlist a été modifiée sur un autre appareil, cliquez ici pour la recharger.", 
+	"playlist_modified" => "recharger la playlist", 
 	"queue_all" => "Ajouter tous les albums", 
 	"uncover_more" => "En chercher d'autres", 
 	"previoustrack" => "Précédent",
@@ -3497,7 +3497,7 @@ class Musicco {
 							var data = JSON.parse(e.data);
 							if (check && (data.client != clientId)) {
 								stopPolling();
-								$("#refreshPanel").dialog("open");
+								$("#refreshPanel").show();
 							}
 							check = true;
 						}, false);
@@ -3542,15 +3542,6 @@ class Musicco {
 					autoOpen: false,
 					width: isPortrait() ? "100%": "40%",
 					height: $(window).height(),
-					show: { effect: "fade", duration: 400 },
-					hide: { effect: "fold", duration: 200 }
-				});
-				$( "#refreshPanel" ).dialog({
-					modal: true,
-					autoOpen: false,
-					dialogClass: "polling",
-					width: "unset",
-					height: $(window).height() / 2,
 					show: { effect: "fade", duration: 400 },
 					hide: { effect: "fold", duration: 200 }
 				});
@@ -3612,7 +3603,8 @@ class Musicco {
 						}
 				});
 
-				$(".polling .ui-dialog-titlebar-close").on("click", function() {
+				$(".polling").on("click", function() {
+					$("#refreshPanel").hide();
 					stopPolling();
 				});
 
@@ -3787,7 +3779,7 @@ class Musicco {
 					resetPlaylists();
 					loadSettings();
 					getHistory();
-					$("#refreshPanel").dialog("close");
+					$("#refreshPanel").hide();
 					startPolling(true);
 				});
 
@@ -4368,7 +4360,6 @@ if(!AuthManager::isAccessAllowed()) {
 	<div id="musiccoplayer">
 		<!-- START: Modal Dialogues -->
 		<div id="helpPanel" class="modal"><?php print getHelp(); ?></div>
-		<div id="refreshPanel" class="modal"><a class="obsoleteWarning"><?php print $this->getString("playlist_modified"); ?></a></div>
 		<div id="aboutPanel" class="modal"><?php print getAbout(); ?></div>
 		<div id="imageViewerPanel" class="modal"><img src=""/><div></div></div>
 		<div id="uncoverPanel" class="modal">
@@ -4420,6 +4411,9 @@ if(!AuthManager::isAccessAllowed()) {
 					<span class="big-volume-down toggles"><i class="fas fa-volume-down fa-fw"></i>&nbsp;</span>
 					<span class="big-volume-down toggles"><i class="fas fa-volume-up fa-fw"></i>&nbsp;</span>
 				</span>
+			</span>
+			<span id="refreshPanel">
+				<a class="obsoleteWarning"><?php print $this->getString("playlist_modified"); ?></a><sub><i class="polling fa fa-times"></i></sub>
 			</span>
 			<span id="loadingInfo">
 				<span class="blink1">&#9834;</span><span class="blink2">&#9834;</span><span class="blink3">&#9834;</span>&nbsp;<span id="toast_text"></span>
