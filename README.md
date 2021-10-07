@@ -48,21 +48,21 @@ Check out https://www.musicco.app for more information or try the demo at https:
 # Libraries
 
 
-| Library                                                                             | Included | Latest                                                                                                           |
-|:----------------------------------------------------------------------------------- |:--------:| ----------------------------------------------------------------------------------------------------------------:|
-| [color-thief](https://github.com/lokesh/color-thief)                                | 2.3.2    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/lokesh/color-thief)                   |
-| [fancytree](https://github.com/mar10/fancytree)                                     | 2.38.0   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/fancytree)                      |
-| [fontawesome](https://github.com/FortAwesome/Font-Awesome)                          | 5.15.4   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/FortAwesome/Font-Awesome)             |
-| [jQuery](https://github.com/jquery/jquery)                                          | 3.6.0    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery)                        |
-| [jQuery mobile](https://github.com/jquery/jquery-mobile)                            | 1.4.5    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-mobile)                 |
-| [jQuery migrate](https://github.com/jquery/jquery-migrate)                          | 3.2.2    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-migrate)                |
-| [jQuery-qrcode](https://github.com/lrsjng/jquery-qrcode)                            | 0.18.0   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/lrsjng/jquery-qrcode)                 |
-| [jQuery-ui](https://github.com/jquery/jquery-ui)                                    | 1.13.0   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-ui)                     |
-| [jQuery-ui-contextmenu](https://github.com/mar10/jquery-ui-contextmenu)             | 1.18.1   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/jquery-ui-contextmenu)          |
-| [js-cookie](https://github.com/js-cookie/js-cookie)                                 | 3.0.1    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/js-cookie/js-cookie)                  |
-| [jsmediatags](https://github.com/aadsm/jsmediatags)                                 | 3.9.5    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/aadsm/jsmediatags)                    |
-| [jquerymobile-swipeupdown](https://github.com/blackdynamo/jquerymobile-swipeupdown) | n/a      | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/blackdynamo/jquerymobile-swipeupdown) |
-| [normalise](https://stackoverflow.com/questions/227950/programatic-accent-reduction-in-javascript-aka-text-normalization-or-unaccentin) | n/a | n/a                                                               |
+| Library                                                                             | Included | Latest                                                                                                  |
+|:----------------------------------------------------------------------------------- |:--------:| -------------------------------------------------------------------------------------------------------:|
+| [color-thief](https://github.com/lokesh/color-thief)                                | 2.3.2    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/lokesh/color-thief)          |
+| [fancytree](https://github.com/mar10/fancytree)                                     | 2.38.0   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/fancytree)             |
+| [fontawesome](https://github.com/FortAwesome/Font-Awesome)                          | 5.15.4   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/FortAwesome/Font-Awesome)    |
+| [jQuery](https://github.com/jquery/jquery)                                          | 3.6.0    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery)               |
+| [jQuery mobile](https://github.com/jquery/jquery-mobile)                            | 1.4.5    | ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/jquery/jquery-mobile)                |
+| [jQuery migrate](https://github.com/jquery/jquery-migrate)                          | 3.2.2    | ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/jquery/jquery-migrate)               |
+| [jQuery-qrcode](https://github.com/lrsjng/jquery-qrcode)                            | 0.18.0   | ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/lrsjng/jquery-qrcode)                |
+| [jQuery-ui](https://github.com/jquery/jquery-ui)                                    | 1.13.0   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-ui)            |
+| [jQuery-ui-contextmenu](https://github.com/mar10/jquery-ui-contextmenu)             | 1.18.1   | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/jquery-ui-contextmenu) |
+| [js-cookie](https://github.com/js-cookie/js-cookie)                                 | 3.0.1    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/js-cookie/js-cookie)         |
+| [jsmediatags](https://github.com/aadsm/jsmediatags)                                 | 3.9.5    | ![GitHub release (latest by date)](https://img.shields.io/github/v/release/aadsm/jsmediatags)           |
+| [jquerymobile-swipeupdown](https://github.com/blackdynamo/jquerymobile-swipeupdown) | n/a      | n/a                                                                                                     |
+| [normalise](https://stackoverflow.com/questions/227950/programatic-accent-reduction-in-javascript-aka-text-normalization-or-unaccentin) | n/a | n/a                                                      |
 
 # Changelog
 
