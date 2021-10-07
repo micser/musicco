@@ -810,12 +810,12 @@ class Musicco {
 		<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-mobile/jquery-migrate.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-mobile/jquery.mobile.swipe.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-mobile/jquerymobile-swipeupdown.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui/jquery-ui.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
 		<script type="text/javascript" defer src="lib/js-cookie/js.cookie.min.js"></script>
 		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery-qrcode.min.js"></script>
-		<script type="text/javascript" defer src="lib/swipe/swipe.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
 		<script type="text/javascript" defer src="lib/jsmediatags/jsmediatags.min.js"></script>
