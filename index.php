@@ -4269,11 +4269,11 @@ class Musicco {
 					triggerPlayPause();
 				});
 
-				$("#album-art, #big-cover .default-poster, .logo-player").on("swipedown", function(e) {
+				$("#album-art, #big-cover .default-poster, .logo-player").on("swipeup", function(e) {
 					volumeUp();
 				});
 
-				$("#album-art, #big-cover .default-poster, .logo-player").on("swipeup", function(e) {
+				$("#album-art, #big-cover .default-poster, .logo-player").on("swipedown", function(e) {
 					volumeDown();
 				});
 
