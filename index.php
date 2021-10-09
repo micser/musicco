@@ -337,6 +337,7 @@ $_TRANSLATIONS["en"] = array(
 	"previoustrack" => "Previous",
 	"promptCoverURL" => "Album art URL", 
 	"promptPlaylistName" => "New Playlist Name", 
+	"newPlaylistName" => "Mood from ", 
 	"promptFolderName" => "Folder name", 
 	"queueing" => "Queueing ",
 	"quick_scan" => "quick scan folder",
@@ -446,6 +447,7 @@ $_TRANSLATIONS["fr"] = array(
 	"previoustrack" => "Précédent",
 	"promptCoverURL" => "Adresse de la couverture", 
 	"promptPlaylistName" => "Nom de la playlist", 
+	"newPlaylistName" => "Humeur du ", 
 	"promptFolderName" => "Nome du dossier", 
 	"queueing" => "Ajout de ",
 	"quick_scan" => "ajout rapide...",
@@ -4210,7 +4212,8 @@ class Musicco {
 				);
 
 				$(document).on("click", "#newPlaylist", function() {
-					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>");
+					var now = new Date(Date.now());
+					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>", "<?php print $this->getString("newPlaylistName"); ?>" + now.toLocaleDateString() + " - " + now.toLocaleTimeString());
 					if ((newPlaylistName != '') &&  (newPlaylistName != null)) {
 						createNewPlaylist(newPlaylistName);
 					}
@@ -4218,7 +4221,7 @@ class Musicco {
 
 				$(document).on("click", "#renamePlaylist", function() {
 					var oldPlaylistName = $("#playlist_select").find(":selected").text();
-					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>");
+					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>", oldPlaylistName);
 					if ((newPlaylistName != '') &&  (newPlaylistName != null) && (newPlaylistName != oldPlaylistName)) {
 						$("#playlist_select").find(":selected").text(newPlaylistName);
 						renamePlaylist(oldPlaylistName, newPlaylistName);
