@@ -4212,8 +4212,7 @@ class Musicco {
 				);
 
 				$(document).on("click", "#newPlaylist", function() {
-					var now = new Date(Date.now());
-					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>", "<?php print $this->getString("newPlaylistName"); ?>" + now.toLocaleDateString() + " - " + now.toLocaleTimeString());
+					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>", "<?php print $this->getString("newPlaylistName"); ?>" + (new Date(Date.now())).toLocaleString());
 					if ((newPlaylistName != '') &&  (newPlaylistName != null)) {
 						createNewPlaylist(newPlaylistName);
 					}
