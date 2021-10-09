@@ -5797,7 +5797,7 @@ function builddb() {
 		$wizard .= "<link rel='stylesheet' type='text/css' href='lib/font-awesome/css/all.min.css'>";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Montserrat' >";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='theme/musicco.css' >";
-		$wizard .= "<script type='text/javascript' src='lib/jquery/jquery-3.5.0.min.js'></script>";
+		$wizard .= "<script type='text/javascript' src='lib/jquery/jquery.min.js'></script>";
 		$wizard .= "<script type='text/javascript'>";
 		$wizard .= "$(document).ready(function() {\n";
 		$wizard .= "\t$('#lang').val('".Musicco::getConfig('lang')."');\n";
