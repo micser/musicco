@@ -5614,6 +5614,7 @@ function builddb() {
 		$helpString.="<div class='guestPlay'>alt + <i class='fas fa-times'></i>: remove all other albums</div>";
 		$helpString.="<div><br/></div>";
 		$helpString.="<div class='bold big'><i class='fas fa-mobile-alt'></i>&nbsp;Mobile</div>";
+		$helpString.="<div><br/></div>";
 		$helpString.="<div class='yellow bold'>Swipe Album Art</div>";
 		$helpString.="<div>&larr;: previous track</div>";
 		$helpString.="<div>&rarr;: next track</div>";
