@@ -5390,7 +5390,7 @@ function insertResults($library, $db, $background) {
 		$target =  ($type == Musicco::TYPE_FOLDER)? $name : $parentfolder;
 		if (preg_match(Musicco::getConfig('yearPattern'), $target, $year_matches)) {
 			$year = $year_matches[1];
-		}				
+		}
 
 		// compute title and track info
 		if ($type == Musicco::TYPE_FILE) {
@@ -5511,15 +5511,15 @@ function builddb() {
 }
 
 	function normalise($name) {
-    $normalised_name = strtolower(utf8_decode($name));
-    $patterns[0] = '/[á|â|à|å|ä]/';
-    $patterns[1] = '/[ð|é|ê|è|ë]/';
-    $patterns[2] = '/[í|î|ì|ï]/';
-    $patterns[3] = '/[ó|ô|ò|ø|õ|ö]/';
-    $patterns[4] = '/[ú|û|ù|ü]/';
-    $patterns[5] = '/æ/';
-    $patterns[6] = '/ç/';
-    $patterns[7] = '/ß/';
+    $normalised_name = strtolower($name);
+    $patterns[0] = '/[á|â|à|å|ä]/u';
+    $patterns[1] = '/[ð|é|ê|è|ë]/u';
+    $patterns[2] = '/[í|î|ì|ï]/u';
+    $patterns[3] = '/[ó|ô|ò|ø|õ|ö]/u';
+    $patterns[4] = '/[ú|û|ù|ü]/u';
+    $patterns[5] = '/æ/u';
+    $patterns[6] = '/ç/u';
+    $patterns[7] = '/ß/u';
     $replacements[0] = 'a';
     $replacements[1] = 'e';
     $replacements[2] = 'i';
