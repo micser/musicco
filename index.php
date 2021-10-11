@@ -286,6 +286,7 @@ $_TRANSLATIONS["en"] = array(
 	"clear_history" => "clear history",
 	"confirm_clear_history" => "Do you really want to clear your listening history?",
 	"clearing_history" => "Clearing your listening history...",
+	"clearing_favourites" => "Clearing favourites...",
 	"define_theme" => "Custom",
 	"keep_screen_on" => "Keep screen on",
 	"defaultCoverURL" => "http://",
@@ -315,6 +316,7 @@ $_TRANSLATIONS["en"] = array(
 	"menu_play_before" => "Play before",
 	"menu_next_track" => "next track",
 	"menu_remove_favourite" => "Remove",
+	"menu_clear_favourites" => "Remove all",
 	"menu_right_now" => "Play",
 	"menu_share" => "Share",
 	"my_favourites" => "My Favourites",
@@ -396,6 +398,7 @@ $_TRANSLATIONS["fr"] = array(
 	"clear_history" => "effacer l'historique",
 	"confirm_clear_history" => "Voulez-vous vraiment effacer votre historique d'écoute ?",
 	"clearing_history" => "Suppression de l'historique en cours...",
+	"clearing_favourites" => "Suppression des favouris...",
 	"defaultCoverURL" => "http://",
 	"define_theme" => "Personnel",
 	"keep_screen_on" => "Garder l'écran allumé",
@@ -425,6 +428,7 @@ $_TRANSLATIONS["fr"] = array(
 	"menu_play_before" => "Jouer avant",
 	"menu_next_track" => "piste suivante",
 	"menu_remove_favourite" => "Retirer",
+	"menu_clear_favourites" => "Retirer tout",
 	"menu_right_now" => "Jouer",
 	"menu_share" => "Partager",
 	"my_favourites" => "Mes Favouris",
@@ -1051,7 +1055,8 @@ class Musicco {
 				{title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "fas fa-download"},
 				{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
 				{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"},
-				{title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fas fa-times"}
+				{title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fas fa-times"},
+				{title: "<?php print $this->getString("menu_clear_favourites"); ?>", cmd: "clearFavourites", uiIcon: "fas fa-heart-broken"}
 			];
 
 			var customTreeIcons = { 
@@ -1930,8 +1935,10 @@ class Musicco {
 				 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
 				 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 				 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
+				 var clearFavourites = ($(target).get(0).id === "favourites");
 				 var removeFavourite = ($(target).get(0) === $("#favourites").get(0));
 				 var favourite = !removeFavourite;
+				 $(target).contextmenu("updateEntry", "clearFavourites", {setClass: clearFavourites.toString()});
 				 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
 				 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
 				 $(target).contextmenu("updateEntry", "playAsNextAlbum", {setClass: playAsNextAlbum.toString()});
@@ -1994,6 +2001,9 @@ class Musicco {
 					break;
 					case "removeFavourite":
 						deleteFavourite(node.data.parentfolder + node.data.path);
+					break;
+					case "clearFavourites":
+						clearFavourites();
 					break;
 				}
 			}
@@ -2130,12 +2140,8 @@ class Musicco {
 					menu: menuOptions,
 					beforeOpen: function(event, ui) {
 						var node = $.ui.fancytree.getNode(ui.target);
-						if (node.title=="<?php print Musicco::getString('my_favourites'); ?>" ) {
-							event.preventDefault();
-							} else {
-							setMenuEntries(node.isFolder(), $("#favourites"));
-							node.setActive();
-						}
+						setMenuEntries(node.isFolder(), $("#favourites"));
+						node.setActive();
 					},
 					select: function(event, ui) {
 						var node = $.ui.fancytree.getNode(ui.target);
@@ -2278,6 +2284,14 @@ class Musicco {
 				var user = "<?php echo AuthManager::getUserName(); ?>";
 				showLoadingInfo("<?php print $this->getString("favourites_added"); ?>");
 				$.post('?', {addFavourite: '', u: user, p: path}, function (response) {
+					updateFavourites();
+				});
+			}
+
+			function clearFavourites() {
+				var user = "<?php echo AuthManager::getUserName(); ?>";
+				showLoadingInfo("<?php print $this->getString("clearing_favourites"); ?>");
+				$.post('?', {clear_favourites: '', u: user}, function (response) {
 					updateFavourites();
 				});
 			}
@@ -4776,6 +4790,10 @@ if(!AuthManager::isAccessAllowed()) {
 			logMessage("User requested library rebuild");
 			builddb();
 			exit;
+	} elseif (isset($_POST['clear_favourites'])) {
+			logMessage("Clearing user favourites");
+			clearFavourites($_POST['u']);
+			exit;
 	} elseif (isset($_POST['clear_history'])) {
 			logMessage("Clearing user history");
 			clearHistory($_POST['u']);
@@ -4887,6 +4905,19 @@ function deleteFavourite($user, $path) {
 		$favourites_query->execute();
 		$children = $favourites_query->fetchAll();
 		$favourites_query = NULL;
+		$db = NULL;
+	}
+}
+
+function clearFavourites($user) {
+	debugMessage(__FUNCTION__);
+	$userId = getId($user);
+	if ($userId != 0) {
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$history_query = $db->prepare("DELETE FROM favourites WHERE userId=$userId;");
+		$history_query->execute();
+		$children = $history_query->fetchAll();
+		$history_query = NULL;
 		$db = NULL;
 	}
 }
