@@ -66,6 +66,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 ## v3.1.0 (in development)
 * Read album art from id3 tag
+* Save "Show old albums" option between sessions
 * Added an option to keep screen on
 * Fixed some issues with casting on Android
 * Improved QR Code styling

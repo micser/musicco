@@ -2062,6 +2062,8 @@ class Musicco {
 						});
 						if (isLargeLib) {
 							addPagingNode(libraryOffset, libraryThreshold);
+						} else {
+							libraryVisible = getTreeContent();
 						}
 						libraryInit = getTreeContent();
 					});
@@ -2547,13 +2549,14 @@ class Musicco {
 						var volume = $("#big-volume-bar").slider("option", "value");
 						var loop = playerConfig["loop"];
 						var shuffled = playerConfig["shuffled"];
+						var includeOldAlbums = playerConfig["includeOldAlbums"];
 						var wakelock = $("#wakelock").prop("checked");
 						var theme = $("#theme_settings input[name=option_theme]:checked").attr("id");
 						var background = $("#background").val();
 						var text = $("#text").val();
 						var custom_background = $("#my_theme").data("background");
 						var custom_text = $("#my_theme").data("text");
-						$.post('?', {saveSettings: '', u: user, p: panel, v: volume, l: loop, s: shuffled, w: wakelock, m: theme, b: background, t: text, cb: custom_background, ct: custom_text}, function(response) {
+						$.post('?', {saveSettings: '', u: user, p: panel, v: volume, l: loop, s: shuffled, o: includeOldAlbums, w: wakelock, m: theme, b: background, t: text, cb: custom_background, ct: custom_text}, function(response) {
 						});
 					}
 				}
@@ -2571,6 +2574,10 @@ class Musicco {
 						}
 						if (options.shuffled === "true") {
 							$('#shuffled').trigger("click");
+						}
+						playerConfig["includeOldAlbums"] = options.includeOldAlbums;
+						if (playerConfig["includeOldAlbums"] === "false") {
+							$("#includeOldAlbums").trigger("click");
 						}
 						setCastRepeatMode();
 						if (options.wakelock === "true") {
@@ -4309,7 +4316,7 @@ class Musicco {
 					$("#user_name").focus();
 				}
 
-				$("#shuffled, #loop, #theme_settings input").on("click", function() {
+				$("#shuffled, #loop, #theme_settings input, #includeOldAlbums").on("click", function() {
 					playerConfig[$(this).attr("id")] = !playerConfig[$(this).attr("id")];
 					$(this).toggleClass("selected");
 					saveSettings();
@@ -4682,7 +4689,7 @@ if(!AuthManager::isAccessAllowed()) {
 			return print loadSettings($_POST['u']);
 			exit;
 	} elseif (isset($_POST['saveSettings'])) {
-		saveSettings($_POST['u'], $_POST['p'], $_POST['v'], $_POST['l'], $_POST['s'], $_POST['w'], $_POST['m'], $_POST['b'], $_POST['t'], $_POST['cb'], $_POST['ct']);
+		saveSettings($_POST['u'], $_POST['p'], $_POST['v'], $_POST['l'], $_POST['s'], $_POST['o'], $_POST['w'], $_POST['m'], $_POST['b'], $_POST['t'], $_POST['cb'], $_POST['ct']);
 		exit;
 	} elseif (isset($_POST['getFavourites'])) {
 			$user = $_POST['u'];
@@ -5077,11 +5084,11 @@ function isUser($user) {
 	return $found;
 }
 
-function saveSettings($user, $panel, $volume, $loop, $shuffled, $wakelock, $theme, $background, $text, $custom_background, $custom_text) {
+function saveSettings($user, $panel, $volume, $loop, $shuffled, $includeOldAlbums, $wakelock, $theme, $background, $text, $custom_background, $custom_text) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
-		$query = "UPDATE users set option_panel=\"$panel\", option_volume=$volume, option_loop=\"$loop\", option_shuffled=\"$shuffled\", option_wakelock=\"$wakelock\", option_theme=\"$theme\", theme_background=\"$background\", theme_text=\"$text\", custom_background=\"$custom_background\", custom_text=\"$custom_text\" WHERE id=$userId;";
+		$query = "UPDATE users set option_panel=\"$panel\", option_volume=$volume, option_loop=\"$loop\", option_shuffled=\"$shuffled\", option_old=\"$includeOldAlbums\", option_wakelock=\"$wakelock\", option_theme=\"$theme\", theme_background=\"$background\", theme_text=\"$text\", custom_background=\"$custom_background\", custom_text=\"$custom_text\" WHERE id=$userId;";
 		debugMessage($query);
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$update_settings_query = $db->prepare($query);
@@ -5089,7 +5096,7 @@ function saveSettings($user, $panel, $volume, $loop, $shuffled, $wakelock, $them
 		$update_settings_query = NULL;
 		$db = NULL;
 		logMessage("Saved settings for $user");
-		debugMessage("Saved settings: ".$panel.$volume.$loop.$shuffled.$wakelock,$theme.$background.$text.$custom_background.$custom_text);
+		debugMessage("Saved settings: ".$panel.$volume.$loop.$shuffled.$includeOldAlbums.$wakelock,$theme.$background.$text.$custom_background.$custom_text);
 	}
 }
 
@@ -5099,7 +5106,7 @@ function loadSettings($user) {
 	$userId = getId($user);
 	if ($userId != 0) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$settings_query = $db->prepare("SELECT option_panel, option_volume, option_loop, option_shuffled, option_wakelock, option_theme, theme_background, theme_text, custom_background, custom_text FROM users WHERE id=$userId;");
+		$settings_query = $db->prepare("SELECT option_panel, option_volume, option_loop, option_shuffled, option_old, option_wakelock, option_theme, theme_background, theme_text, custom_background, custom_text FROM users WHERE id=$userId;");
 		$settings_query->execute();
 		$result = $settings_query->fetchAll();
 		$settings_query = NULL;
@@ -5110,6 +5117,7 @@ function loadSettings($user) {
 										"volume" => $row['option_volume'],
 										"loop" => $row['option_loop'],
 										"shuffled" => $row['option_shuffled'],
+										"includeOldAlbums" => $row['option_old'],
 										"wakelock" => $row['option_wakelock'],
 										"theme" => $row['option_theme'],
 										"background" => $row['theme_background'],
@@ -5120,7 +5128,7 @@ function loadSettings($user) {
 		}
 	}
 	logMessage("Loaded settings for $user");
-	debugMessage("Loaded settings: ".$row['option_panel'].$row['option_volume'].$row['option_loop'].$row['option_shuffled'].$row['option_wakelock'].$row['option_theme'].$row['theme_background'].$row['theme_text'].$row['custom_background'].$row['custom_text']);
+	debugMessage("Loaded settings: ".$row['option_panel'].$row['option_volume'].$row['option_loop'].$row['option_shuffled'].$row['option_old'].$row['option_wakelock'].$row['option_theme'].$row['theme_background'].$row['theme_text'].$row['custom_background'].$row['custom_text']);
 	return json_encode($settings);
 }
 
@@ -5195,7 +5203,7 @@ function createUser($user, $force) {
 	}
 	if ($isValidUser || $force) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_panel, option_volume, option_loop, option_shuffled, option_wakelock, option_theme, theme_background, theme_text, custom_background, custom_text) VALUES (\"" . $user . "\", 0, 0, \"\", \"infoPanel\", 100, \"false\", \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
+		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_panel, option_volume, option_loop, option_shuffled, option_old, option_wakelock, option_theme, theme_background, theme_text, custom_background, custom_text) VALUES (\"" . $user . "\", 0, 0, \"\", \"infoPanel\", 100, \"false\", \"false\", \"false\", \"true\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
 		$create_user_query->execute();
 		$id = $db->lastInsertId();
 		$create_user_query = NULL;
@@ -5351,7 +5359,7 @@ function cleanDB($db) {
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE data (key TEXT PRIMARY KEY, value TEXT);");
-	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_panel TEXT NOT NULL, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_wakelock TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL, custom_background TEXT NOT NULL, custom_text TEXT NOT NULL);");
+	$db->exec("CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, current_playlist INTEGER, save_time INTEGER, client TEXT, option_panel TEXT NOT NULL, option_volume INTEGER, option_loop TEXT NOT NULL, option_shuffled TEXT NOT NULL, option_old TEXT NOT NULL, option_wakelock TEXT NOT NULL, option_theme TEXT NOT NULL, theme_background TEXT NOT NULL, theme_text TEXT NOT NULL, custom_background TEXT NOT NULL, custom_text TEXT NOT NULL);");
 	$db->exec("CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , path TEXT, unique(userId, path));");
 	$db->exec("CREATE TABLE playlists (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , name TEXT, data TEXT, unique(userId, name));");
 	$db->exec("CREATE TABLE history (id INTEGER PRIMARY KEY AUTOINCREMENT, userId INTEGER , artist TEXT, album TEXT, timestamp INTEGER, unique(userId, artist, album));");
@@ -5673,6 +5681,7 @@ function builddb() {
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1 (in development)</div>";
 				$aboutString.="<li>Read album art from id3 tag</li>";
+				$aboutString.="<li>Save \"Show old albums\" option between sessions</li>";
 				$aboutString.="<li>Added an option to keep screen on</li>";
 				$aboutString.="<li>Fixed some issues with casting on Android</li>";
 				$aboutString.="<li>Improved QR Code styling</li>";
