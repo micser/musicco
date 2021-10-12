@@ -5698,7 +5698,7 @@ function builddb() {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.1 (in development)</div>";
+				$aboutString.="<div class='bold yellow'>3.1 (12th October 2021)</div>";
 				$aboutString.="<li>Read album art from id3 tag</li>";
 				$aboutString.="<li>Save \"Show old albums\" option between sessions</li>";
 				$aboutString.="<li>Added an option to keep screen on</li>";
