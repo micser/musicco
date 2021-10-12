@@ -62,6 +62,9 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
+## v3.1.1
+* No fixes yet!
+
 ## v3.1.0
 * Read album art from id3 tag
 * Save "Show old albums" option between sessions
