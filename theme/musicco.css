@@ -759,7 +759,6 @@
 	#share-services > span,
 	#uncover_top_row span,
 	.uncoverLink,
-	#fullscreen,
 	#history > ul > span,
 	.settings-sub label,
 	.settings > label:hover,
@@ -1691,8 +1690,7 @@
 		}
 
 		#ham i,
-		#logout a,
-		#fullscreen i {
+		#logout a {
 			font-size: var(--text-small);
 		}
 

@@ -58,9 +58,9 @@
 		}
 	],
 	"background_color": "#A7A97F",
-	"theme_color": "rgba(10, 11, 12, 0.8)",
+	"theme_color": "#A7A97F",
 	"start_url": ".",
-	"display": "standalone",
+	"display": "fullscreen",
 	"shortcuts": [
 			{
 				"name": "Rebuild Library",

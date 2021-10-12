@@ -782,7 +782,6 @@ class Musicco {
 			.nextAlbum { border-right: 1px green dashed; }
 		</style>
 		-->
-		<meta name="theme-color" content="rgba(10, 11, 12, 0.8)">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/all.min.css">
 		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
@@ -3602,18 +3601,6 @@ class Musicco {
 					}
 				});
 
-				$("#fullscreen").on("click", function() {
-					if (!document.fullscreenElement) {
-							document.documentElement.requestFullscreen();
-							$("#fullscreen").html('<i class="fas fa-compress fa-fw\"></i>');
-					} else {
-						if (document.exitFullscreen) {
-							document.exitFullscreen();
-							$("#fullscreen").html('<i class="fas fa-expand fa-fw\"></i>');
-						}
-					}
-				});
-
 				$("google-cast-launcher").on("click", function() {
 					isPlaying = !player.paused;
 				});
@@ -4430,7 +4417,6 @@ if(!AuthManager::isAccessAllowed()) {
 					&nbsp;
 					&nbsp;
 					<span class="uncover guestPlay toggles" oncontextmenu="return false;"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
-					<span id="fullscreen"><i class="fas fa-expand fa-fw\"></i></span>
 					&nbsp;
 					&nbsp;
 					<span class="big-volume-down toggles"><i class="fas fa-volume-down fa-fw"></i>&nbsp;</span>
