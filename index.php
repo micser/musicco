@@ -1055,8 +1055,7 @@ class Musicco {
 				{title: "<?php print $this->getString("menu_download"); ?>", cmd: "downloadAlbum", uiIcon: "fas fa-download"},
 				{title: "<?php print $this->getString("menu_share"); ?>", cmd: "share", uiIcon: "fas fa-external-link-alt"},
 				{title: "<?php print $this->getString("menu_favourite"); ?>", cmd: "favourite", uiIcon: "fas fa-heart"},
-				{title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fas fa-times"},
-				{title: "<?php print $this->getString("menu_clear_favourites"); ?>", cmd: "clearFavourites", uiIcon: "fas fa-heart-broken"}
+				{title: "<?php print $this->getString("menu_remove_favourite"); ?>", cmd: "removeFavourite", uiIcon: "fas fa-times"}
 			];
 
 			var customTreeIcons = { 
@@ -1935,7 +1934,6 @@ class Musicco {
 				 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
 				 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 				 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
-				 var clearFavourites = ($(target).get(0).id === "favourites");
 				 var removeFavourite = ($(target).get(0) === $("#favourites").get(0));
 				 var favourite = !removeFavourite;
 				 $(target).contextmenu("updateEntry", "clearFavourites", {setClass: clearFavourites.toString()});
@@ -2140,8 +2138,12 @@ class Musicco {
 					menu: menuOptions,
 					beforeOpen: function(event, ui) {
 						var node = $.ui.fancytree.getNode(ui.target);
-						setMenuEntries(node.isFolder(), $("#favourites"));
-						node.setActive();
+						if (node.title=="<?php print Musicco::getString('my_favourites'); ?>" ) {
+							$("#favourites").contextmenu("replaceMenu", [{title: "<?php print $this->getString("menu_clear_favourites"); ?>", cmd: "clearFavourites", uiIcon: "fas fa-heart-broken"}]);
+							} else {
+							setMenuEntries(node.isFolder(), $("#favourites"));
+							node.setActive();
+						}
 					},
 					select: function(event, ui) {
 						var node = $.ui.fancytree.getNode(ui.target);
