@@ -63,6 +63,9 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
+## v3.1.3
+* No fixes yet!
+
 ## v3.1.2
 * Fixed script error when displaying uncover dialogue
 
