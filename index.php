@@ -819,6 +819,7 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/js-cookie/js.cookie.min.js"></script>
 		<script type="text/javascript" defer src="lib/fancytree/jquery.fancytree-all.min.js"></script>
 		<script type="text/javascript" defer src="lib/jquery-qrcode/jquery-qrcode.min.js"></script>
+		<script type="text/javascript" defer src="lib/jquery-taphold/taphold.js"></script>
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
 		<script type="text/javascript" defer src="lib/jsmediatags/jsmediatags.min.js"></script>
@@ -3734,7 +3735,7 @@ class Musicco {
 					player.volume = 1;
 				});
 
-				$("#playlist").on("click", ".remove", function(e) {
+				$("#playlist").on("click taphold", ".remove", function(e) {
 					e.stopPropagation();
 					var target = $(this).closest("li");
 					if ($(target).data("nature") == "track") {
@@ -5700,6 +5701,7 @@ function builddb() {
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1.1 (13th October 2021)</div>";
 				$aboutString.="<li>Fixed cover art display in uncover dialogue</li>";
+				$aboutString.="<li>Fixed taphold events</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1 (12th October 2021)</div>";
