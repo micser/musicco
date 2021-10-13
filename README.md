@@ -64,7 +64,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 # Changelog
 
 ## v3.1.2
-* No fixes yet!
+* Fixed script error when displaying uncover dialogue
 
 ## v3.1.1
 * Fixed cover art display in uncover dialogue
