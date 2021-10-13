@@ -5702,6 +5702,7 @@ function builddb() {
 				$aboutString.="<div class='bold yellow'>3.1.1 (13th October 2021)</div>";
 				$aboutString.="<li>Fixed cover art display in uncover dialogue</li>";
 				$aboutString.="<li>Fixed taphold events</li>";
+				$aboutString.="<li>Minor UI fixes</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1 (12th October 2021)</div>";

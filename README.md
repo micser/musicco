@@ -66,6 +66,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 ## v3.1.1
 * Fixed cover art display in uncover dialogue
 * Fixed taphold events
+* Minor UI Fixes
 
 ## v3.1.0
 * Read album art from id3 tag
