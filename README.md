@@ -63,6 +63,9 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
+## v3.1.2
+* No fixes yet!
+
 ## v3.1.1
 * Fixed cover art display in uncover dialogue
 * Fixed taphold events
