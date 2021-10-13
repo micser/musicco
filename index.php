@@ -4143,7 +4143,7 @@ class Musicco {
 										if (parentfolderItemName=="") {
 											parentfolderItemName="home";
 										}
-										var coverUrl = hits[i].cover;
+										var coverUrl = hits[i].cover.replace("#", "%23");
 										var hitLink ="<span class=\"uncoverLink\" id=\"uncoverLink" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\">";
 										hitLink += (coverUrl) ? "<img src=\"" + coverUrl + "\"/>" : getDefaultPoster();
 										hitLink += playLastIcon();
@@ -5698,8 +5698,8 @@ function builddb() {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.1.1 (in development)</div>";
-				$aboutString.="<li>no fixes yet!</li>";
+				$aboutString.="<div class='bold yellow'>3.1.1 (13th October 2021)</div>";
+				$aboutString.="<li>Fixed cover art display in uncover dialogue</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1 (12th October 2021)</div>";
