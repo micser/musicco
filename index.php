@@ -18,8 +18,8 @@ $_CONFIG['appVersion'] = "3.1.2";
 
 // The database version compatible with this version. This is for information purposes only, since
 // no backwards compatibility really exists
-// Default: $_CONFIG['dbVersion'] = "3";
-$_CONFIG['dbVersion'] = "3";
+// Default: $_CONFIG['dbVersion'] = "4";
+$_CONFIG['dbVersion'] = "4";
 
 // Additional application information. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
