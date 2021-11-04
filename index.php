@@ -5706,7 +5706,7 @@ function builddb() {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1.3 (in development)</div>";
-				$aboutString.="<li>No fixes yet!</li>";
+				$aboutString.="<li>Improved rotation detection</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1.2 (13th October 2021)</div>";
