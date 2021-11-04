@@ -3544,6 +3544,7 @@ class Musicco {
 				function adaptUI(init) {
 				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
 				var viewerTypeHasChanged = (newViewerType != viewerType);
+				var wasRotated = (viewerType == '"medium"' && (newViewerType == '"tall"' || newViewerType == '"square"' || newViewerType == '"widescreen"'));
 				var panelIsOpen = (($("#leftPanel").is(":visible") && isPortrait()) || (viewerTypeHasChanged && !(isPortrait())));
 				console.debug(newViewerType);
 				if (viewerTypeHasChanged || init) {
@@ -3560,7 +3561,9 @@ class Musicco {
 					}
 					$("#leftPanel").tabs("refresh");
 				}
-				restorePanel(panelIsOpen);
+				if (!wasRotated) {
+					restorePanel(panelIsOpen);
+				}
 				blurPlayer();
 				$( ".modal" ).dialog({
 					modal: true,
