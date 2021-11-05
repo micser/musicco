@@ -839,6 +839,7 @@ class Musicco {
 			var clientId = "<?php print bin2hex(random_bytes(5)); ?>";
 			var playlistResfreshDelay = 5000;
 			var lastInteraction;
+			var lastUserChoiceIncludeOldAlbums;
 			var viewerType = '';
 			var timeUpdates = true;
 			var isInit = false;
@@ -1648,7 +1649,11 @@ class Musicco {
 				var isMatching = new RegExp(regexEscape(filterText), "i");
 				if ($("#includeOldAlbums").is(':checked')) {
 					tree.filterBranches(function(node) {
-						return isMatching.test(normalise(node.data.path));
+						if (node.data.path != null) {
+							return isMatching.test(normalise(node.data.path));
+						} else {
+							return false;
+						}
 					});
 				} else {
 					tree.filterBranches(function(node) {
@@ -2936,6 +2941,9 @@ class Musicco {
 					$('#includeOldAlbums').prop("checked", true);
 					$("label[for='includeOldAlbums'] i").removeClass("fa-toggle-off");
 					$("label[for='includeOldAlbums'] i").addClass("fa-toggle-on");
+					if (!lastUserChoiceIncludeOldAlbums) {
+						$('#includeOldAlbums').trigger("click");
+					}
 				}
 
 				function toggleCheckbox(checkboxId) {
@@ -3828,6 +3836,7 @@ class Musicco {
 
 				$("#includeOldAlbums").on("click", function () {
 					toggleCheckbox("includeOldAlbums");
+					lastUserChoiceIncludeOldAlbums = ($("#includeOldAlbums").is(':checked'));
 					filterTree();
 				});
 
@@ -5707,6 +5716,7 @@ function builddb() {
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1.3 (in development)</div>";
 				$aboutString.="<li>Improved rotation detection</li>";
+				$aboutString.="<li>Improved show old filter state</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1.2 (13th October 2021)</div>";
