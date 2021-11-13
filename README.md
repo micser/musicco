@@ -63,9 +63,11 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
-## v3.1.3
+## v3.2.0
+* Quickly refresh newly renamed albums
 * Improved rotation detection
 * Improved show old filter state
+* Improved dynamic theme colours
 
 ## v3.1.2
 * Fixed script error when displaying uncover dialogue
