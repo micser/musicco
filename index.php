@@ -1337,8 +1337,8 @@ class Musicco {
 						backgroundRGB = imagePalette[1];
 						textRGB = imagePalette[0];
 					}
-					if (luminance(textRGB[0], textRGB[1], textRGB[2]) < .4) {
-						textRGB = [Math.min(200, textRGB[0] + 60), Math.min(200, textRGB[1] + 60), Math.min(200, textRGB[2] + 60)];
+					if (luminance(textRGB[0], textRGB[1], textRGB[2]) < .3) {
+						textRGB = [Math.min(167, textRGB[0] + 60), Math.min(169, textRGB[1] + 60), Math.min(127, textRGB[2] + 60)];
 					} else if (luminance(textRGB[0], textRGB[1], textRGB[2]) > .7) {
 						textRGB = [Math.max(0, textRGB[0] - 60), Math.max(0, textRGB[1] - 60), Math.max(0, textRGB[2] - 60)];
 					}
