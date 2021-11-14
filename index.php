@@ -350,8 +350,9 @@ $_TRANSLATIONS["en"] = array(
 	"remove_temp_files" => "clean temp folder",
 	"removing_shared_links" => "deleting shared playlists...",
 	"removing_temp_files" => "cleaning in progress...",
-	"reset_db" => "update library",
+	"reset_db" => "rebuild library",
 	"refresh_db" => "quick refresh",
+	"refresh_db_tip" => "This quick refresh allows updating recently-renamed new albums without rebuilding the entire library.",
 	"run_setup" => "setup wizard",
 	"select_theme" => "Preset",
 	"scanning" => "Scanning ",
@@ -465,6 +466,7 @@ $_TRANSLATIONS["fr"] = array(
 	"removing_temp_files" => "cleaning in progress",
 	"reset_db" => "réinitialiser la discothèque",
 	"refresh_db" => "rafraichissement rapide",
+	"refresh_db_tip" => "Cette action rapide permet de mettre à jour les nouveaux albums récemment renommés sans reconstruire la bibliothèque complète.",
 	"run_setup" => "assistant de configuration",
 	"scanning" => "Scan de ",
 	"scanning_ko" => "échec du scan",
@@ -2532,11 +2534,11 @@ class Musicco {
 						complete: function(data) {
 							if (data.responseText < 400) {
 								tempHTML = ("<?php print $this->getString("rebuildingLibrary"); ?>");
-								$("#reset_db").html(tempHTML);
+								$("#library_tools").html(tempHTML);
 								setTimeout(worker, 10000);
 							} else {
 								tempHTML = oldHTML;
-								$("#reset_db").html(tempHTML);
+								$("#library_tools").html(tempHTML);
 								var library = $.ui.fancytree.getTree("#library");
 								if (library && library.length > 0) {
 									initLibraryTree();
@@ -3485,7 +3487,7 @@ class Musicco {
 						initFavouriteTree();
 						initLibraryTree();
 						initContextMenus();
-						checkLibraryRefresh($("#reset_db").html());
+						checkLibraryRefresh($("#library_tools").html());
 					}
 
 					$("#big-jp-progress").slider({
@@ -4097,13 +4099,14 @@ class Musicco {
 					}
 				});
 
-				$(document).on("click", "#reset_db", function() {
-					var oldHTML = $("#reset_db").html();
-					$(this).html("<?php print $this->getString("rebuildingLibrary"); ?>");
+				$(document).on("click", "#build_db, #refresh_db", function() {
+					var oldHTML = $("#library_tools").html();
+					$("#library_tools").html("<?php print $this->getString("rebuildingLibrary"); ?>");
 					var tempHTML = "";
+					var target = ($(this).attr('id')).replace(/_/, "");
 					$.ajax({
 						type: "GET",
-						url: "?builddb",
+						url: "?" + target,
 						success: function(response) {
 							if (parseInt(response) > -1) {
 								tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response;
@@ -4113,35 +4116,8 @@ class Musicco {
 							} else {
 								checkLibraryRefresh(oldHTML);
 							}
-							$("#reset_db").html(tempHTML).delay(10000).queue(function(n) {
-								$("#reset_db").html(oldHTML);
-								n();
-							}).fadeIn(500);
-							setTimeout(function() { togglePanel("#browserPanel"); }, 1000);
-						}
-					});
-				});
-
-				$(document).on("click", "#refresh_db", function() {
-					// TODO: add tooltip
-					// TODO: check for refreshed div
-					var oldHTML = $("#refresh_db").html();
-					$(this).html("<?php print $this->getString("rebuildingLibrary"); ?>");
-					var tempHTML = "";
-					$.ajax({
-						type: "GET",
-						url: "?refreshdb",
-						success: function(response) {
-							if (parseInt(response) > -1) {
-								tempHTML="<?php print $this->getString("libraryRebuiltIn"); ?>"+response;
-								$("#library").fancytree("destroy");
-								initLibraryTree();
-								updateFavourites();
-							} else {
-								checkLibraryRefresh(oldHTML);
-							}
-							$("#refresh_db").html(tempHTML).delay(10000).queue(function(n) {
-								$("#refresh_db").html(oldHTML);
+							$("#library_tools").html(tempHTML).delay(10000).queue(function(n) {
+								$("#library_tools").html(oldHTML);
 								n();
 							}).fadeIn(500);
 							setTimeout(function() { togglePanel("#browserPanel"); }, 1000);
@@ -4555,7 +4531,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="settingsPanel" class="panel">
 					<?php
 					if (AuthManager::isAdmin()) {
-						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-sync\"></i><span id=\"reset_db\"><a>".$this->getString("reset_db")."</a></span><span> / </span><span id=\"refresh_db\"><a>".$this->getString("refresh_db")."</a></span></div>";
+						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-sync\"></i><span id=\"library_tools\"><span id=\"build_db\"><a>".$this->getString("reset_db")."</a></span><span> &bull; </span><span id=\"refresh_db\"><a>".$this->getString("refresh_db")."</a>&nbsp;</span><i class='tooltip fa fa-question-circle'><span class='tooltiptext'>".$this->getString("refresh_db_tip")."</span></i></span></div>";
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
 						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
@@ -4825,7 +4801,7 @@ if(!AuthManager::isAccessAllowed()) {
 			exit;
 	} elseif (isset($_GET['refreshdb']) || ((defined('STDIN')) && $argv[1]=="refreshdb")) {
 			logMessage("User requested library refresh");
-			refreshdb();
+			refreshdb(false);
 			exit;
 	} elseif (isset($_POST['clear_favourites'])) {
 			logMessage("Clearing user favourites");
@@ -4855,6 +4831,7 @@ if(!AuthManager::isAccessAllowed()) {
 }
 
 function file_get_contents_utf8($fn) {
+	debugMessage(__FUNCTION__);
 	$content = file_get_contents($fn);
 	return mb_convert_encoding($content, 'UTF-8', mb_detect_encoding($content, 'UTF-8, GB2312, ISO-8859-1', true));
 }
@@ -5414,17 +5391,20 @@ debugMessage(__FUNCTION__);
 }
 
 function lockDB() {
+	debugMessage(__FUNCTION__);
 	$lock_file = fopen(Musicco::getConfig('musicRoot').".lock", "w") or die("Unable to create lock file.");
 	fclose($lock_file);
 }
 
 function initDB() {
+	debugMessage(__FUNCTION__);
 	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 	cleanDB($db);
 	$db = NULL;
 }
 
 function cleanDB($db) {
+	debugMessage(__FUNCTION__);
 	$db->exec("DELETE FROM item_tmp;");
 	$db->exec("DELETE FROM data;");
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
@@ -5447,6 +5427,7 @@ function cleanDB($db) {
 }
 
 function insertResults($library, $db, $background) {
+	debugMessage(__FUNCTION__);
 	$destTable = "item";
 	if ($background) {
 		$destTable = "item_tmp";
@@ -5521,7 +5502,7 @@ function builddb() {
 			printf("-1");
 			logMessage("Aborting, another library refresh is already in progress.");
 	} else {
-		refreshdb();
+		refreshdb(true);
 		// write lock file
 		lockDB();
 		try {
@@ -5563,7 +5544,7 @@ function builddb() {
 	}
 }
 
-function refreshdb() {
+function refreshdb($quiet) {
 	debugMessage(__FUNCTION__);
 	if (file_exists(Musicco::getConfig('musicRoot').".lock")) {
 			printf("-1");
@@ -5587,8 +5568,8 @@ function refreshdb() {
 			$_START_QUERY = microtime(true);
 			$new_folders_query->execute();
 			logMessage("Found new albums in ".number_format((microtime(true) - $_START_QUERY), 3)." seconds");
-			printf("%.1s s",(microtime(true) - $_START_QUERY));
 			// Get all new folders
+			$_START_UPDATES = microtime(true);
 			$new_folders = $new_folders_query->fetchAll();
 			$new_folders_query = NULL;
 			foreach($new_folders as $row) {
@@ -5604,19 +5585,19 @@ function refreshdb() {
 					$newParentFolder = preg_replace("/".Musicco::getConfig('new_marker')."/", "", $parentFolder);
 					$targetFolderExists = is_dir($newParentFolder);
 					if ($targetFolderExists) {
-						debugMessage("newalbumcheck: updating file path from ".$parentFolder." to ".$newParentFolder);
+						logMessage("[refreshdb] updating file path from ".$parentFolder." to ".$newParentFolder);
 						$update_children->execute(array($newParentFolder, $parentFolder));
 						$path_array = explode("/", $parentFolder);
 						$depth = sizeOf($path_array) - 2;
-						debugMessage("newalbumcheck: depth is: ".$depth);
+						logMessage("[refreshdb] depth is: ".$depth);
 						for($i=$depth; $i> 1; $i--) {
 							$node = implode("/", array_slice($path_array, $i, 1));
 							$parentNode = implode("/", array_slice($path_array, 0, $i))."/";
 							$newParentNode = preg_replace("/".Musicco::getConfig('new_marker')."/", "", $parentNode);
-							debugMessage("newalbumcheck: updating folder path from ".$parentNode." to ".$newParentNode." for ".$node);
+							logMessage("[refreshdb] updating folder path from ".$parentNode." to ".$newParentNode." for ".$node);
 							$update_parentfolder->execute(array($newParentNode, $parentNode, $node));
 						}
-						debugMessage("newAlbumCheck: updating playlists containing ".$parentFolder);
+						logMessage("[refreshdb] updating playlists containing ".$parentFolder);
 						updatePlaylists($db, $parentFolder, $newParentFolder);
 					}
 				}
@@ -5627,21 +5608,21 @@ function refreshdb() {
 				$stillOnDisk = is_dir(Musicco::getConfig('musicRoot')."/".$folderName);
 				$targetExists = is_dir(Musicco::getConfig('musicRoot')."/".$newFolderName);
 				$isDuplicate = $parent_exists->fetchColumn();
-				debugMessage("newalbumcheck: processing: ".$folderName);
-				debugMessage("newalbumcheck: isParent: ".$isParent);
-				debugMessage("newalbumcheck: isDuplicate: ".$isDuplicate);
-				debugMessage("newalbumcheck: stillOnDisk: ".var_export($stillOnDisk, true));
-				debugMessage("newalbumcheck: targetExists: ".var_export($targetExists, true));
+				logMessage("[refreshdb] processing: ".$folderName);
+				logMessage("[refreshdb] isParent: ".$isParent);
+				logMessage("[refreshdb] isDuplicate: ".$isDuplicate);
+				logMessage("[refreshdb] stillOnDisk: ".var_export($stillOnDisk, true));
+				logMessage("[refreshdb] targetExists: ".var_export($targetExists, true));
 				 
 				 if ($stillOnDisk) {
-					debugMessage("newalbumcheck: will PRESERVE ".$folderName);
+					logMessage("[refreshdb] will PRESERVE ".$folderName);
 				 } else {
 					if ($targetExists) {
 						if ($isDuplicate && !$isParent) {
-							debugMessage("newalbumcheck: will DELETE ".$folderName);
+							logMessage("[refreshdb] will DELETE ".$folderName);
 							$delete_parent->execute(array($folderName));
 						} else {
-							debugMessage("newalbumcheck: will UPDATE ".$folderName);
+							logMessage("[refreshdb] will UPDATE ".$folderName);
 							$update_parent->execute(array($newFolderName, $folderName));
 						}
 					}
@@ -5658,6 +5639,10 @@ function refreshdb() {
 			$db = NULL;
 			cleanupFavourites();
 			unlink(Musicco::getConfig('musicRoot').".lock");
+			logMessage("Processed all new albums changes ".number_format((microtime(true) - $_START_UPDATES), 3)." seconds");
+			if (!$quiet) {
+				printf("%.1s s",(microtime(true) - $_START_QUERY));
+			}
 		} catch(PDOException $e) {
 			print 'Exception : '.$e->getMessage();
 			unlink(Musicco::getConfig('musicRoot').".lock");
@@ -5675,10 +5660,8 @@ function refreshdb() {
 			$id = $playlist["id"];
 			$data = $playlist["data"];
 			$newData = str_replace($folder, $newFolder, $data);
-			debugMessage("newAlbumCheck: updating playlist id ".$id);
 			$db->exec("UPDATE playlists SET data = \"".$newData."\" WHERE id=".$id.";");
 			$db->exec("UPDATE users SET save_time=".time().", client=\"".time()."\" WHERE current_playlist=".$id.";");
-			debugMessage("newAlbumCheck: done");
 		}
 	}
 
@@ -5714,6 +5697,7 @@ function refreshdb() {
 	}
 
 	function normalise($name) {
+    debugMessage(__FUNCTION__);
     $normalised_name = strtolower($name);
     $patterns[0] = '/[á|â|à|å|ä]/u';
     $patterns[1] = '/[ð|é|ê|è|ë]/u';
@@ -5736,6 +5720,7 @@ function refreshdb() {
 	}
 
 	function build_library($dir, $extension) {
+		debugMessage(__FUNCTION__);
 		if (!isset($item)) {
 			$item = array();
 		}
@@ -5761,16 +5746,19 @@ function refreshdb() {
 	 }
 	 
 	 function is_song($file) {
+		debugMessage(__FUNCTION__);
 		$song_pattern = "/.*.mp3/i";
 		return (preg_match($song_pattern, $file));
 	 }
 	 
 	 function is_cover($file) {
+		debugMessage(__FUNCTION__);
 		$cover_pattern = "/".Musicco::getConfig('coverFileName')."\.(png|jpg|gif|jpeg)$/i";
 		return (preg_match($cover_pattern, $file));
 	 }
 	 
 	 function getHelp() {
+		debugMessage(__FUNCTION__);
 		$helpString="<div id='helpBox' autofocus>";
 		$helpString.="<div class='bold big'><i class='fas fa-keyboard'></i>&nbsp;Keyboard Shortcuts</div>";
 		$helpString.="<div><br/></div>";
@@ -5842,6 +5830,7 @@ function refreshdb() {
 	 }
 	 
 		function getAbout() {
+		debugMessage(__FUNCTION__);
 		$aboutString="<div id='aboutBox' autofocus>";
 			$aboutString.="<div class='bold'><a tabindex='-1' target='_blank' href='//musicco.app'>".Musicco::logo("logo-about")."</a></div>";
 			$aboutString.="<div class='bold big'><a tabindex='-1' target='_blank' href='//musicco.app'>musicco</a></div>";
@@ -5996,6 +5985,7 @@ function refreshdb() {
 	 }
 
 	function printUsers() {
+		debugMessage(__FUNCTION__);
 		$userArray="array(\n";
 		foreach(Musicco::getConfig("users") as $user) {
 			$userArray .= "\t array('";
@@ -6007,11 +5997,13 @@ function refreshdb() {
 	}
 
 	function getCheckboxStatus($optionName) {
+		debugMessage(__FUNCTION__);
 		$checkboxStatus = (($optionName == "true") || ($optionName == "on"))? "checked" : "";
 		return $checkboxStatus;
 	}
 
 	 function getWizardUI() {
+		debugMessage(__FUNCTION__);
 		$wizard = "<html>";
 		$wizard .= "<body>";
 		$wizard .= "<head>";
