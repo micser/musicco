@@ -5516,12 +5516,12 @@ function insertResults($library, $db, $background) {
 }
 
 function builddb() {
-// TODO: refresh new albums first?
-debugMessage(__FUNCTION__);
+	debugMessage(__FUNCTION__);
 	if (file_exists(Musicco::getConfig('musicRoot').".lock")) {
 			printf("-1");
 			logMessage("Aborting, another library refresh is already in progress.");
 	} else {
+		refreshdb();
 		// write lock file
 		lockDB();
 		try {
@@ -5554,7 +5554,6 @@ debugMessage(__FUNCTION__);
 
 			// close the database connection
 			$db = NULL;
-			cleanupFavourites();
 			unlink(Musicco::getConfig('musicRoot').".lock");
 			printf("%.1s s",(microtime(true) - $_START_SCAN));
 		} catch(PDOException $e) {
@@ -5658,7 +5657,6 @@ function refreshdb() {
 			// close the database connection
 			$db = NULL;
 			cleanupFavourites();
-			// TODO: scan for new folder?
 			unlink(Musicco::getConfig('musicRoot').".lock");
 		} catch(PDOException $e) {
 			print 'Exception : '.$e->getMessage();
