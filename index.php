@@ -5617,6 +5617,8 @@ function refreshdb() {
 							debugMessage("newalbumcheck: updating folder path from ".$parentNode." to ".$newParentNode." for ".$node);
 							$update_parentfolder->execute(array($newParentNode, $parentNode, $node));
 						}
+						debugMessage("newAlbumCheck: updating playlists containing ".$parentFolder);
+						updatePlaylists($db, $parentFolder, $newParentFolder);
 					}
 				}
 				// Delete or update folder from DB
@@ -5656,7 +5658,6 @@ function refreshdb() {
 			// close the database connection
 			$db = NULL;
 			cleanupFavourites();
-			// TODO: update playlists
 			// TODO: scan for new folder?
 			unlink(Musicco::getConfig('musicRoot').".lock");
 		} catch(PDOException $e) {
@@ -5666,8 +5667,24 @@ function refreshdb() {
 	}
 }
 
+	function updatePlaylists($db, $folder, $newFolder) {
+		debugMessage(__FUNCTION__);
+		$get_playlists = $db->prepare("SELECT id, data FROM playlists where data LIKE ? ESCAPE '\';");
+		$get_playlists->execute(array("%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $folder)."%"));
+		$playlists = $get_playlists->fetchAll();
+		$get_playlists = NULL;
+		foreach($playlists as $playlist) {
+			$id = $playlist["id"];
+			$data = $playlist["data"];
+			$newData = str_replace($folder, $newFolder, $data);
+			debugMessage("newAlbumCheck: updating playlist id ".$id);
+			$db->exec("UPDATE playlists SET data = \"".$newData."\" WHERE id=".$id.";");
+			debugMessage("newAlbumCheck: done");
+		}
+	}
+
 	function cleanupFavourites() {
-debugMessage(__FUNCTION__);
+		debugMessage(__FUNCTION__);
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$_START_FAVOURITES = microtime(true);
 		$get_favourites_query = $db->prepare("SELECT path from favourites;");
