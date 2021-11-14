@@ -5679,6 +5679,7 @@ function refreshdb() {
 			$newData = str_replace($folder, $newFolder, $data);
 			debugMessage("newAlbumCheck: updating playlist id ".$id);
 			$db->exec("UPDATE playlists SET data = \"".$newData."\" WHERE id=".$id.";");
+			$db->exec("UPDATE users SET save_time=".time().", client=\"".time()."\" WHERE current_playlist=".$id.";");
 			debugMessage("newAlbumCheck: done");
 		}
 	}
