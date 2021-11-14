@@ -55,6 +55,12 @@ $_CONFIG['tempFolder'] = "temp";
 // Default: $_CONFIG['defaultPlaylist'] = "Now Playing";
 $_CONFIG['defaultPlaylist'] = "Now Playing";
 
+// The name to use for a user's smart playlist containing all new music
+// Default: $_CONFIG['smartPlaylistNewMusic'] = "New Music";
+$_CONFIG['smartPlaylistNewMusic'] = "New Music";
+
+
+
 // Themes available by default in the Settings panel
 // Default: $_CONFIG['themes'] = array(
 // 											array("#121314", "#A7A97F", "musicco"),
@@ -1324,6 +1330,16 @@ class Musicco {
 			function isDefaultPoster() {
 				return (nowPlaying["cover"] == null);
 			
+			}
+
+
+			function adjustPlaylistControls() {
+				var isReadOnly = ($("#playlist_select").find(":selected").text() == "<?php print $this->getConfig('smartPlaylistNewMusic'); ?>");
+				if (isReadOnly) {
+					$("#renamePlaylist, #deletePlaylist").hide();
+				} else {
+					$("#renamePlaylist, #deletePlaylist").show();
+				}
 			}
 
 			function resetPlaylists() {
@@ -2649,6 +2665,7 @@ class Musicco {
 								}
 							}
 						}
+						adjustPlaylistControls();
 						$("#loading").hide();
 						hideSpinner();
 						if (isGuestPlay()) {
@@ -4696,7 +4713,7 @@ if(!AuthManager::isAccessAllowed()) {
 			$path = str_replace("\"", "\\\"", $_POST['p']);
 			$data = "[{\"build\": true , \"path\": \"".$path."\"}]";
 			createUser($user, true);
-			savePlaylist($user, "guestPlay", "guestPlay", $data, "0", "0", "true", "false");
+			savePlaylist($user, "guestPlay", "guestPlay", $data, "0", "0");
 			logMessage("Saved guest playlist $path for $user");
 			exit;
 	} elseif (isset($_POST['saveHistory'])) {
@@ -4976,6 +4993,47 @@ function createDefaultPlaylist($user) {
 	savePlaylist($user, "", Musicco::getConfig('defaultPlaylist'), "[]", 0, 0);
 }
 
+function updateSmartPlaylists($user, $newAlbumsJSON) {
+	debugMessage(__FUNCTION__);
+	if ($newAlbumsJSON != "") {
+		$track = 0;
+		$time = 0;
+		$playlist = "";
+		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+		$userId = getId($user);
+		$getExistingPlaylist = $db->prepare("SELECT data from playlists WHERE name=\"".Musicco::getConfig('smartPlaylistNewMusic')."\" AND userId=".$userId.";");
+		$getExistingPlaylist->execute();
+		$existingPlaylist = $getExistingPlaylist->fetchAll();
+		$getExistingPlaylist = NULL;
+		$db = NULL;
+
+		foreach($existingPlaylist as $row) {
+			$playlist = json_decode(preg_replace("/\\\'/", '"', $row['data']));
+		}
+
+		if ($playlist != "") {
+			$time = $playlist->time;
+			$playlistData = json_decode($playlist->playlist);
+			$path = $playlistData[$playlist->current]->path;
+			logMessage("time is: ".$time);
+			logMessage("path is: ".$path);
+			$i = 0;
+			$notFound = true;
+			$trackList = json_decode($newAlbumsJSON, true);
+			while ($notFound && $i < count($trackList)) {
+				if ($trackList[$i]["path"] == $path) {
+					$track = $i;
+					logMessage("track is: ".$track);
+					$notFound = false;
+				}
+				$i ++;
+			}
+		}
+
+		savePlaylist($user, time(), Musicco::getConfig('smartPlaylistNewMusic'), $newAlbumsJSON, $track, $time);
+	}
+}
+
 function getPlaylists($user) {
 	debugMessage(__FUNCTION__);
 	$playlists = [];
@@ -5100,10 +5158,16 @@ function getCurrentPlaylistName($userId) {
 		return $name;
 }
 
+function isCurrentPlaylist($userId, $playlistName) {
+	debugMessage(__FUNCTION__);
+	return (getCurrentPlaylistName($userId) === $playlistName);
+}
+
 function savePlaylist($user, $clientId, $name, $playlist, $current, $time) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
+		$setCurrent = (isCurrentPlaylist($userId, $name) || $name === "guestPlay");
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$data = preg_replace('/"/', '\\\'', "{\"current\": \"$current\" , \"time\": \"$time\" , \"playlist\": \"".preg_replace('/"/', '\\"', $playlist)."\"}");
 		$update_playlist_query = $db->prepare("REPLACE INTO playlists (userId, name, data) VALUES ($userId, \"$name\", \"$data\")");
@@ -5113,7 +5177,9 @@ function savePlaylist($user, $clientId, $name, $playlist, $current, $time) {
 		$db = NULL;
 		logMessage("Saved playlist $name for $user");
 		debugMessage("Saved playlist: ".$data);
-		setCurrentPlaylistId($userId, $clientId, $playlistId);
+		if ($setCurrent) {
+			setCurrentPlaylistId($userId, $clientId, $playlistId);
+		}
 	}
 }
 
@@ -5281,6 +5347,7 @@ function getId($user) {
 
 function querydb($query_root, $query_type) {
 	debugMessage(__FUNCTION__);
+	$response = "";
 	try	{
 		switch ($query_type) {
 		case "browse":
@@ -5297,11 +5364,11 @@ function querydb($query_root, $query_type) {
 			$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder = \"$parentfolder\" AND main.name = \"$filename\"  AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE";
 			}
 		} else {
-			$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE \"$query_root%\"  AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE";
+			$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE \"".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE";
 		}
 		break;
 		case "search":
-		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE normalised_name LIKE \"%$query_root%\" AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY parentfolder, name COLLATE NOCASE";
+		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE normalised_name LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY parentfolder, name COLLATE NOCASE";
 		break;
 		case "uncover":
 		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
@@ -5310,7 +5377,10 @@ function querydb($query_root, $query_type) {
 		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
 		break;
 		case "feeling_lucky":
-		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.type IN (".Musicco::TYPE_FILE.") AND (main.artist LIKE \"%$query_root%\" OR main.title LIKE \"%$query_root%\") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.type IN (".Musicco::TYPE_FILE.") AND (main.artist LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' OR main.title LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\') ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		break;
+		case "smart_playlist_new":
+		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE";
 		break;
 		default:
 	}
@@ -5358,11 +5428,13 @@ function querydb($query_root, $query_type) {
 	}
 	$db = NULL;
 	logMessage("Displayed Data in ".number_format((microtime(true) - $_START_DISPLAY), 3)." seconds");
-	return print_r(json_encode($list));
+	$response = json_encode($list);
+	print_r($response);
 	}
 	catch(PDOException $e) {
 		print 'Exception : '.$e->getMessage();
 	}
+	return $response;
 	exit;
 }
 
@@ -5532,6 +5604,16 @@ function builddb() {
 			$db->exec("REINDEX playlists_idx;");
 
 			logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
+
+			// Update smart playlists
+			$newAlbumsJSON = querydb(Musicco::getConfig('new_marker'), "smart_playlist_new");
+			$users_query = $db->prepare("SELECT username FROM users;");
+			$users_query->execute();
+			$users = $users_query->fetchAll();
+			$users_query = NULL;
+			foreach($users as $row) {
+				updateSmartPlaylists($row["username"], $newAlbumsJSON);
+			}
 
 			// close the database connection
 			$db = NULL;
@@ -5864,6 +5946,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.0 (in development)</div>";
+				$aboutString.="<li>Automatically build a smart playlist of all new music</li>";
 				$aboutString.="<li>Quickly refresh newly renamed albums</li>";
 				$aboutString.="<li>Improved rotation detection</li>";
 				$aboutString.="<li>Improved show old filter state</li>";

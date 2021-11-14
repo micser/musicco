@@ -65,6 +65,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 ## v3.2.0
 * Quickly refresh newly renamed albums
+* Automatically build a smart playlist of all new music
 * Improved rotation detection
 * Improved show old filter state
 * Improved dynamic theme colours
