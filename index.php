@@ -5163,11 +5163,22 @@ function isCurrentPlaylist($userId, $playlistName) {
 	return (getCurrentPlaylistName($userId) === $playlistName);
 }
 
+function isNewUser($userId) {
+	debugMessage(__FUNCTION__);
+	$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
+	$query = $db->prepare("SELECT COUNT(id) FROM playlists WHERE userId=$userId;");
+	$query->execute();
+	$count = $query->fetchColumn();
+	$query = NULL;
+	$db = NULL;
+	return !$count;
+}
+
 function savePlaylist($user, $clientId, $name, $playlist, $current, $time) {
 	debugMessage(__FUNCTION__);
 	$userId = getId($user);
 	if ($userId != 0) {
-		$setCurrent = (isCurrentPlaylist($userId, $name) || $name === "guestPlay");
+		$setCurrent = (isCurrentPlaylist($userId, $name) || $name === "guestPlay" || isNewUser($userId));
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
 		$data = preg_replace('/"/', '\\\'', "{\"current\": \"$current\" , \"time\": \"$time\" , \"playlist\": \"".preg_replace('/"/', '\\"', $playlist)."\"}");
 		$update_playlist_query = $db->prepare("REPLACE INTO playlists (userId, name, data) VALUES ($userId, \"$name\", \"$data\")");
