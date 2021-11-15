@@ -853,7 +853,6 @@ class Musicco {
 			var viewerType = '';
 			var timeUpdates = true;
 			var isInit = false;
-			var library = [];
 			var libraryInit = [];
 			var libraryVisible = [];
 			var isPlaying = false;
@@ -1663,22 +1662,24 @@ class Musicco {
 
 			function filterTree() {
 				var tree = $.ui.fancytree.getTree("#library");
-				tree.reload(library);
-				var filterText = normalise($("#filterText").val().toLowerCase());
-				var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
-				var isMatching = new RegExp(regexEscape(filterText), "i");
-				if ($("#includeOldAlbums").is(':checked')) {
-					tree.filterBranches(function(node) {
-						if (node.data.path != null) {
-							return isMatching.test(normalise(node.data.path));
-						} else {
-							return false;
-						}
-					});
-				} else {
-					tree.filterBranches(function(node) {
-						return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
-					});
+				if (tree != null) {
+					tree.reload();
+					var filterText = normalise($("#filterText").val().toLowerCase());
+					var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
+					var isMatching = new RegExp(regexEscape(filterText), "i");
+					if ($("#includeOldAlbums").is(':checked')) {
+						tree.filterBranches(function(node) {
+							if (node.data.path != null) {
+								return isMatching.test(normalise(node.data.path));
+							} else {
+								return false;
+							}
+						});
+					} else {
+						tree.filterBranches(function(node) {
+							return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
+						});
+					}
 				}
 			}
 
