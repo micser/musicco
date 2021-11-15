@@ -5506,7 +5506,7 @@ function initDB() {
 
 function cleanDB($db) {
 	debugMessage(__FUNCTION__);
-	$db->exec("DELETE FROM item_tmp;");
+	$db->exec("DELETE FROM item_tmp IF EXISTS;");
 	$db->exec("DELETE FROM data;");
 	$db->exec("CREATE TABLE item (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
 	$db->exec("CREATE TABLE item_tmp (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, normalised_name TEXT, type TEXT, parentfolder TEXT, cover TEXT, album TEXT, artist TEXT, title TEXT, year TEXT, number TEXT, extension TEXT);");
@@ -5619,12 +5619,12 @@ function builddb() {
 			logMessage("Scanned drive in ".number_format((microtime(true) - $_START_SCAN), 3)." seconds");
 
 			$_START_INSERT = microtime(true);
+			$db->exec("PRAGMA journal_mode=OFF;");
 			insertResults($library, $db, true);
 
 			// Update non-temp tables and reindex the DB
-			$db->exec("DELETE FROM item;");
-			$db->exec("INSERT INTO item (name, normalised_name, type, parentfolder, cover, album, artist, title, year, number, extension) SELECT name, normalised_name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item_tmp;");
-			$db->exec("DELETE FROM item_tmp;");
+			$db->exec("DROP TABLE item;");
+			$db->exec("ALTER TABLE item_tmp RENAME TO item;");
 			$db->exec("REINDEX item_idx;");
 			$db->exec("REINDEX item_idx2;");
 			$db->exec("REINDEX item_idx3;");
@@ -5980,6 +5980,7 @@ function refreshdb($quiet) {
 				$aboutString.="<li>Improved rotation detection</li>";
 				$aboutString.="<li>Improved show old filter state</li>";
 				$aboutString.="<li>Improved dynamic theme colours</li>";
+				$aboutString.="<li>Improved library rebuild speed</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1.2 (13th October 2021)</div>";

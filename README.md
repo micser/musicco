@@ -69,6 +69,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 * Improved rotation detection
 * Improved show old filter state
 * Improved dynamic theme colours
+* Improved library rebuild speed
 
 ## v3.1.2
 * Fixed script error when displaying uncover dialogue
