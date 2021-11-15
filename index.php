@@ -1331,13 +1331,16 @@ class Musicco {
 			
 			}
 
+			function currentPlaylistIsReadOnly() {
+				return ($("#playlist_select").find(":selected").text() == "<?php print $this->getConfig('smartPlaylistNewMusic'); ?>");
+			}
 
 			function adjustPlaylistControls() {
-				var isReadOnly = ($("#playlist_select").find(":selected").text() == "<?php print $this->getConfig('smartPlaylistNewMusic'); ?>");
+				var isReadOnly = currentPlaylistIsReadOnly();
 				if (isReadOnly) {
-					$("#renamePlaylist, #deletePlaylist").hide();
+					$(".editTools").hide();
 				} else {
-					$("#renamePlaylist, #deletePlaylist").show();
+					$(".editTools").show();
 				}
 			}
 
@@ -1556,7 +1559,9 @@ class Musicco {
 
 			var refreshPlaylist = function(mutationsList) {
 				$("#playlist li").removeClass("previousAlbum previousTrack currentAlbum nextTrack nextAlbum ");
-				$(".move-up, .move-down").show();
+				if (!currentPlaylistIsReadOnly()) {
+					$(".move-up, .move-down").show();
+				}
 				$("#playlist > li:first .move-up, #playlist > li:last .move-down").hide();
 				$("#playlist").find("li").each(function() {
 					$(this).on("dragstart", function() { dragStart(event) });
@@ -3343,20 +3348,30 @@ class Musicco {
 				return timeString;
 			}
 
+			function makeDraggable() {
+				var markup = "";
+				if (!currentPlaylistIsReadOnly()) {
+					markup = "draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\"";
+				}
+				return markup;
+			}
+
 			function parsePlaylist(tracksArray) {
 				var html = [];
 				var header = ""
-										+ "<li data-nature=\"album\" draggable=\"true\" ondragstart\"dragStart(event)\" ondragover=\"dragOver(event)\" ondragend=\"dragEnd()\">"
+										+ "<li data-nature=\"album\" "
+										+ makeDraggable()
+										+ ">"
 										+ "<div class=\"spread\">"
 										+ "<div class=\"playlist-poster-container\">"
 										+ "<img class=\"playlist-poster\" draggable=\"false\" src=\"\"/>"
 										+ getDefaultPoster()
 										+ "</div>"
 										+ "<div class=\"info\">"
-										+ "<div class=\"remove fas fa-times\"></div>"
+										+ "<div class=\"editTools remove fas fa-times\"></div>"
 										+ "<div class=\"align-right\">"
-										+ "<span class=\"move-up fas fa-arrow-up\" oncontextmenu=\"return false;\"></span>"
-										+ "<span class=\"move-down fas fa-arrow-down\" oncontextmenu=\"return false;\"></span>"
+										+ "<span class=\"editTools move-up fas fa-arrow-up\" oncontextmenu=\"return false;\"></span>"
+										+ "<span class=\"editTools move-down fas fa-arrow-down\" oncontextmenu=\"return false;\"></span>"
 										+ "<br/>"
 										+ "<br/>"
 										+ "<span class=\"guestPlay favouriteAlbum album-action fas fa-heart\"></span>"
@@ -3382,7 +3397,7 @@ class Musicco {
 								albumTracks += ' data-' + k + '="' + v + '"';
 							});
 							albumTracks += ">" + track.songtitle;
-							albumTracks += "<div class=\"remove fas fa-times small\"></div>";
+							albumTracks += "<div class=\"editTools remove fas fa-times small\"></div>";
 							albumTracks += "</li>";
 						});
 					if ($thisAlbum.data("cover") != null) {
@@ -4518,9 +4533,9 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="playlistPanel" class="panel">
 					<div id="playlist-tools" class="guestPlay">
 						<select id="playlist_select"></select>
-						<span id="renamePlaylist" class="playlist-tools"><i class="fa fa-edit"></i></span>
+						<span id="renamePlaylist" class="editTools playlist-tools"><i class="fa fa-edit"></i></span>
 						<span id="newPlaylist" class="playlist-tools"><i class="fa fa-plus"></i></span>
-						<span id="deletePlaylist" class="playlist-tools"><i class="fa fa-trash"></i></span>
+						<span id="deletePlaylist" class="editTools playlist-tools"><i class="fa fa-trash"></i></span>
 					</div>
 					<div id="playlistSpinner">
 						<span class="current"><i class="fas fa-spin fa-5x fa-spinner fa-pulse"></i></span>
@@ -4655,8 +4670,8 @@ if(!AuthManager::isAccessAllowed()) {
 						 ?>
 						<span id="big-unmute" class="toggles selected"><i class="fas fa-volume-mute fa-2x fa-fw"></i></span>
 						<span id="big-mute" class="toggles"><i class="fas fa-volume-mute fa-2x fa-fw"></i></span>
-						<span id="clear-playlist" class="guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
-						<span class="guestPlay uncover toggles" oncontextmenu="return false;"><i class="fas fa-magic fa-2x fa-fw"></i></span>
+						<span id="clear-playlist" class="editTools guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
+						<span class="editTools guestPlay uncover toggles" oncontextmenu="return false;"><i class="fas fa-magic fa-2x fa-fw"></i></span>
 						<span id="shuffled" class="toggles"><i class="fas fa-random fa-2x fa-fw"></i></span>
 						<span id="loop" class="toggles"><i class="fas fa-redo fa-2x fa-fw"></i></span>
 						<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x fa-fw"></i></span>
