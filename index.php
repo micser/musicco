@@ -5636,10 +5636,6 @@ function builddb() {
 
 			// Update smart playlists
 			$newAlbumsJSON = querydb(Musicco::getConfig('new_marker'), "smart_playlist_new");
-			$users_query = $db->prepare("SELECT username FROM users;");
-			$users_query->execute();
-			$users = $users_query->fetchAll();
-			$users_query = NULL;
 			foreach(Musicco::getConfig("users") as $user) {
 				updateSmartPlaylists($user[0], $newAlbumsJSON);
 			}
