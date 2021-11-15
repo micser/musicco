@@ -2617,8 +2617,10 @@ class Musicco {
 							$('#shuffled').trigger("click");
 						}
 						playerConfig["includeOldAlbums"] = options.includeOldAlbums;
-						if (playerConfig["includeOldAlbums"] === "false") {
-							$("#includeOldAlbums").trigger("click");
+						if (!isGuestPlay()) {
+							if (playerConfig["includeOldAlbums"] === "false") {
+								$("#includeOldAlbums").trigger("click");
+							}
 						}
 						setCastRepeatMode();
 						if (options.wakelock === "true") {
