@@ -5611,8 +5611,8 @@ function builddb() {
 			$users_query->execute();
 			$users = $users_query->fetchAll();
 			$users_query = NULL;
-			foreach($users as $row) {
-				updateSmartPlaylists($row["username"], $newAlbumsJSON);
+			foreach(Musicco::getConfig("users") as $user) {
+				updateSmartPlaylists($user[0], $newAlbumsJSON);
 			}
 
 			// close the database connection
