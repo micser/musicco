@@ -5519,6 +5519,11 @@ function cleanDB($db) {
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_FILE', ".Musicco::TYPE_FILE.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('TYPE_COVER', ".Musicco::TYPE_COVER.");");
 	$db->exec("INSERT INTO data (key, value) VALUES ('version', '".Musicco::getConfig('dbVersion')."');");
+	indexDB($db);
+}
+
+function indexDB($db) {
+	debugMessage(__FUNCTION__);
 	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx ON item (parentfolder, name);");
 	$db->exec("CREATE UNIQUE INDEX IF NOT EXISTS item_idx2 ON item (parentfolder, name, type);");
 	$db->exec("CREATE INDEX IF NOT EXISTS item_idx3 ON item (name, type);");
@@ -5625,12 +5630,7 @@ function builddb() {
 			// Update non-temp tables and reindex the DB
 			$db->exec("DROP TABLE item;");
 			$db->exec("ALTER TABLE item_tmp RENAME TO item;");
-			$db->exec("REINDEX item_idx;");
-			$db->exec("REINDEX item_idx2;");
-			$db->exec("REINDEX item_idx3;");
-			$db->exec("REINDEX item_idx4;");
-			$db->exec("REINDEX users_idx;");
-			$db->exec("REINDEX playlists_idx;");
+			indexDB($db);
 
 			logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
 
