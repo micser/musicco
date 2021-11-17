@@ -1387,7 +1387,7 @@
 		font-family: Montserrat;
 		font-size: var(--text-small);
 		visibility: hidden;
-		width: 300px;
+		width: 250px;
 		background-color: var(--text);
 		color: var(--text-highlight);
 		padding: 5px;
