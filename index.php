@@ -5538,6 +5538,7 @@ function insertResults($library, $db, $background) {
 	if ($background) {
 		$destTable = "item_tmp";
 	}
+	$db->beginTransaction();
 	$insert_item = $db->prepare('INSERT INTO '.$destTable.' (name, normalised_name, type, parentfolder, cover, album, artist, title, year, number, extension) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);');
 
 	foreach ($library as $item) {
@@ -5599,6 +5600,7 @@ function insertResults($library, $db, $background) {
 		// insert all info in DB
 		$insert_item->execute(array($name, $normalised_name, $type, $parentfolder, $cover, $album, $artist, $title, $year, $number, $extension));
 	}
+	$db->commit();
 	$insert_item = NULL;
 }
 
@@ -5625,6 +5627,7 @@ function builddb() {
 
 			$_START_INSERT = microtime(true);
 			$db->exec("PRAGMA journal_mode=OFF;");
+			$db->exec("PRAGMA synchronous = OFF");
 			insertResults($library, $db, true);
 
 			// Update non-temp tables and reindex the DB
