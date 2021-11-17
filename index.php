@@ -1590,7 +1590,7 @@ class Musicco {
 					$(currentAlbum).addClass("currentAlbum");
 					$(nextTrack).addClass("nextTrack");
 					$(nextAlbum).addClass("nextAlbum");
-					var tracks = [ $(previousTrack).data("parentfolder") + $(previousTrack).data("path"),  $(nextTrack).data("parentfolder") + $(nextTrack).data("path") ];
+					var tracks = [ encodeURIComponent($(previousTrack).data("parentfolder") + $(previousTrack).data("path")),  encodeURIComponent($(nextTrack).data("parentfolder") + $(nextTrack).data("path")) ];
 					setTimeout(function(){ postMessage({command: "preload", tracks: tracks}); }, 8000);
 				}
 			}
