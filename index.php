@@ -5390,7 +5390,7 @@ function querydb($query_root, $query_type) {
 	try	{
 		switch ($query_type) {
 		case "browse":
-		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE parentfolder = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE";
+		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE parentfolder = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE;";
 		break;
 		case "queue":
 		$query = "";
@@ -5400,26 +5400,26 @@ function querydb($query_root, $query_type) {
 			$parentfolder = "";
 			for($i=0; $i<sizeOf($query_root)-1; $i++) {
 				$parentfolder.=$query_root[$i]."/";
-			$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder = \"$parentfolder\" AND main.name = \"$filename\"  AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE";
+			$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder = \"$parentfolder\" AND main.name = \"$filename\"  AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE;";
 			}
 		} else {
-			$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE \"".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE";
+			$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE \"".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE;";
 		}
 		break;
 		case "search":
-		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE normalised_name LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY parentfolder, name COLLATE NOCASE";
+		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE normalised_name LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY parentfolder, name COLLATE NOCASE;";
 		break;
 		case "uncover":
-		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit').";";
 		break;
 		case "uncover_new":
-		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE '%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), Musicco::getConfig('new_marker'))."%' ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit').";";
 		break;
 		case "feeling_lucky":
-		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.type IN (".Musicco::TYPE_FILE.") AND (main.artist LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' OR main.title LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\') ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit');
+		$query = "SELECT * FROM (SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.type IN (".Musicco::TYPE_FILE.") AND (main.artist LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' OR main.title LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\') ORDER BY RANDOM() LIMIT ".Musicco::getConfig('uncover_limit').") GROUP BY parentfolder;";
 		break;
 		case "smart_playlist_new":
-		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE";
+		$query = "SELECT main.name, main.type, main.parentfolder, (SELECT (parentfolder || name) FROM item sub WHERE sub.parentfolder = main.parentfolder AND sub.type IN (".Musicco::TYPE_COVER.") LIMIT 1) as cover, main.album, main.artist, main.title, main.year, main.number, main.extension FROM item main WHERE main.parentfolder LIKE \"%".preg_replace(array("/_/", "/%/"), array("\_", "\%"), $query_root)."%\" ESCAPE '\' AND main.type IN (".Musicco::TYPE_FILE.") ORDER BY main.parentfolder, main.name COLLATE NOCASE;";
 		break;
 		default:
 	}
