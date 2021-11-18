@@ -4226,7 +4226,9 @@ class Musicco {
 									});
 								}
 							if (method == "feeling_lucky") {
-								$(".uncoverLink").trigger("click");
+								$.when($(".uncoverLink").trigger("click")).done(function() {
+									$(".uncoverLink").remove();
+								});
 							} else {
 								$("#uncoverPanel").dialog("open");
 							}
