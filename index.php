@@ -3647,8 +3647,8 @@ class Musicco {
 				 // EVENTS //
 				////////////
 
-				$("#history ul").on("click", function() {
-					$(this).children("li").toggle();
+				$("#history > ul > span").on("click", function() {
+					$(this).parent("ul").children("li").toggle();
 				});
 
 				$("#playlistContainer, #playlistPanel").bind("touchstart touchmove scroll mousedown DOMMouseScroll mousewheel keyup", function(e){
