@@ -857,12 +857,10 @@ class Musicco {
 			var clientId = "<?php print bin2hex(random_bytes(5)); ?>";
 			var playlistResfreshDelay = 5000;
 			var lastInteraction;
-			var lastUserChoiceIncludeOldAlbums;
 			var viewerType = '';
 			var timeUpdates = true;
 			var isInit = false;
 			var libraryInit = [];
-			var libraryVisible = [];
 			var isPlaying = false;
 			var isResuming = false;
 			var isCasting = false;
@@ -1682,11 +1680,7 @@ class Musicco {
 					var isMatching = new RegExp(regexEscape(filterText), "i");
 					if ($("#includeOldAlbums").is(':checked')) {
 						tree.filterBranches(function(node) {
-							if (node.data.path != null) {
 								return isMatching.test(normalise(node.data.path));
-							} else {
-								return false;
-							}
 						});
 					} else {
 						tree.filterBranches(function(node) {
@@ -2064,7 +2058,7 @@ class Musicco {
 										$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
 									}, 50);
 									if (!$("#includeOldAlbums").is(':checked')) {
-										resetCheckbox();
+										forceCheckbox();
 										filterTree();
 										setTimeout(function() {
 											$(".fancytree-statusnode-nodata").hide();
@@ -2107,10 +2101,9 @@ class Musicco {
 								});
 							}
 						});
+						filterTree();
 						if (isLargeLib) {
 							addPagingNode(libraryOffset, libraryThreshold);
-						} else {
-							libraryVisible = getTreeContent();
 						}
 						libraryInit = getTreeContent();
 					});
@@ -2129,7 +2122,6 @@ class Musicco {
 					title: "<?php print Musicco::getString('load_more'); ?>",
 					data: {offset: offset, limit: limit, path: ''}
 				});
-				libraryVisible = getTreeContent();
 			}
 
 			function positionSafe(ui) {
@@ -2634,7 +2626,7 @@ class Musicco {
 						playerConfig["includeOldAlbums"] = options.includeOldAlbums;
 						if (!isGuestPlay()) {
 							if (playerConfig["includeOldAlbums"] === "false") {
-								$("#includeOldAlbums").trigger("click");
+								resetCheckbox();
 							}
 						}
 						setCastRepeatMode();
@@ -2976,12 +2968,19 @@ class Musicco {
 				}
 
 				function resetCheckbox() {
+					if ((playerConfig["includeOldAlbums"] === "true") || (playerConfig["includeOldAlbums"] == true)) {
+						forceCheckbox();
+					} else {
+						$('#includeOldAlbums').prop("checked", false);
+						$("label[for='includeOldAlbums'] i").removeClass("fa-toggle-on");
+						$("label[for='includeOldAlbums'] i").addClass("fa-toggle-off");
+					}
+				}
+
+				function forceCheckbox() {
 					$('#includeOldAlbums').prop("checked", true);
 					$("label[for='includeOldAlbums'] i").removeClass("fa-toggle-off");
 					$("label[for='includeOldAlbums'] i").addClass("fa-toggle-on");
-					if (!lastUserChoiceIncludeOldAlbums) {
-						$('#includeOldAlbums').trigger("click");
-					}
 				}
 
 				function toggleCheckbox(checkboxId) {
@@ -3886,15 +3885,20 @@ class Musicco {
 
 				$("#includeOldAlbums").on("click", function () {
 					toggleCheckbox("includeOldAlbums");
-					lastUserChoiceIncludeOldAlbums = ($("#includeOldAlbums").is(':checked'));
+					playerConfig["includeOldAlbums"] = ($("#includeOldAlbums").is(':checked'));
 					filterTree();
+					saveSettings();
 				});
 
 				$("#filterText").on("keyup", function() {
 					setTimeout( function() {
 						if (userIsStillTyping) {
 							userIsStillTyping = false;
-							filterTree();
+							if ($("#filterText").val() != "") {
+								filterTree();
+							} else {
+								$("#filterButton").trigger("click");
+							}
 						}
 					}, 400);
 				});
@@ -3905,10 +3909,9 @@ class Musicco {
 
 				$("#filterButton").on("click", function(event) {
 					event.preventDefault();
-					$.ui.fancytree.getTree("#library").clearFilter();
-					$.ui.fancytree.getTree("#library").reload(libraryVisible);
 					$("#filterText").val('');
 					resetCheckbox();
+					filterTree();
 				});
 
 				$("#ham").on("click", function() {
@@ -4388,7 +4391,7 @@ class Musicco {
 					$("#user_name").focus();
 				}
 
-				$("#shuffled, #loop, #theme_settings input, #includeOldAlbums").on("click", function() {
+				$("#shuffled, #loop, #theme_settings input").on("click", function() {
 					playerConfig[$(this).attr("id")] = !playerConfig[$(this).attr("id")];
 					$(this).toggleClass("selected");
 					saveSettings();
