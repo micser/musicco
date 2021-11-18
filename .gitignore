@@ -5,12 +5,9 @@
 /musicco.log
 /music-demo
 /music-demo.db
-/music-demo.lock
-/music-playable
-/music-playable.db
-/music-playable.lock
 /musicco_receiver.html
 /music-after
 /music-before
-/music-a
-/music-b
+/music-after.db
+/music-before.db
+

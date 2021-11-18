@@ -206,6 +206,14 @@ $_CONFIG['debug_queries'] = false;
 // Default: $_CONFIG['debug_stack'] = false;
 $_CONFIG['debug_stack'] = false;
 
+// Whether or not to poll the database periodically  
+// to check if the current playlist has been updated 
+// on another client. You should basically leave this on
+// for normal operation, but it's handy to turn if off 
+// here when you are debugging something
+// Default: $_CONFIG['enable_polling'] = true;
+$_CONFIG['enable_polling'] = true;
+
 /*
 * PERMISSIONS
 */
@@ -3490,7 +3498,9 @@ class Musicco {
 
 				resetLastInteraction();
 				var status = null;
-				startPolling();
+				if ("<?php print $this->getConfig('enable_polling') ?>") {
+					startPolling();
+				}
 
 				var watcherTarget = document.getElementById("playlist");
 				if (watcherTarget) {
