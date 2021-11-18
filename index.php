@@ -2570,7 +2570,8 @@ class Musicco {
 								tempHTML = oldHTML;
 								$("#library_tools").html(tempHTML);
 								var library = $.ui.fancytree.getTree("#library");
-								if (library && library.length > 0) {
+								if (library) {
+									$("#library").fancytree("destroy");
 									initLibraryTree();
 								}
 								updateFavourites();
