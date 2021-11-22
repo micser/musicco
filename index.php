@@ -2449,7 +2449,7 @@ class Musicco {
 			}
 
 			function insertHistoryItem(artist, album) {
-					var markup = '<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyArtist">' + artist + '</span><br/><span class="historyAlbum">' + album + '</span></li>';
+					var markup = '<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyAlbum">' + album + '</span><br/><span class="historyArtist">' + artist + '</span></li>';
 					$('#history li:contains("' + album + '")').remove();
 					if ( $('#today li').length > 0 ) {
 						$("#today li:first").before(markup);
@@ -2477,7 +2477,7 @@ class Musicco {
 						$("#history li").remove();
 						var history = JSON.parse(response);
 						$.each(history, function (i, item) {
-							$(getRelativeDate(item.timestamp)).append('<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyArtist">' + item.artist + '</span><br/><span class="historyAlbum">' + item.album + '</span></li>');
+							$(getRelativeDate(item.timestamp)).append('<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyAlbum">' + item.album + '</span><br/><span class="historyArtist">' + item.artist + '</span></li>');
 							});
 					});
 				}
@@ -4063,7 +4063,7 @@ class Musicco {
 				$(document).on("click", "#clear_history", function() {
 						var r = confirm("<?php print $this->getString("confirm_clear_history"); ?>");
 						if (r == true) {
-							$("#history").empty();
+							$("#history li").empty();
 							var user = "<?php echo AuthManager::getUserName(); ?>";
 							if (user != "") {
 								showLoadingInfo("<?php print $this->getString("clearing_history"); ?>");
@@ -4486,7 +4486,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<li id="playlistToggle"><a href="#playlistPanel" class="panelToggle"><i class="fas fa-list"></i></a></li>
 				<li id="infoToggle"><a href="#infoPanel" class="panelToggle"><i class="fas fa-info-circle"></i></a></li>
 				<li id="lyricsToggle"><a href="#lyricsPanel" class="panelToggle"><i class="fas fa-microphone"></i></a></li>
-				<li id="historyToggle"><a href="#historyPanel" class="guestPlay panelToggle"><i class="fas fa-clock"></i></a></li>
+				<li id="historyToggle"><a href="#historyPanel" class="guestPlay panelToggle"><i class="fas fa-history"></i></a></li>
 				<li id="settingsToggle"><a href="#settingsPanel" class="panelToggle"><i class="fas fa-cogs"></i></a></li>
 			</ul>
 			<div id="panelContainer">
@@ -4565,7 +4565,7 @@ if(!AuthManager::isAccessAllowed()) {
 						<i class="space-after fas fa-fw fa-bath"></i><span id="reload"><a><?php print $this->getString("reload"); ?></a></span>
 					</div>
 					<div class="guestPlay settings">
-						<i class="space-after fas fa-fw fa-clock"></i><span id="clear_history"><a><?php print $this->getString("clear_history"); ?></a></span>
+						<i class="space-after fas fa-fw fa-history"></i><span id="clear_history"><a><?php print $this->getString("clear_history"); ?></a></span>
 					</div>
 					<div class="settings">
 						<i class="space-after fas fa-fw fa-question"></i><span id="help"><a><?php print $this->getString("help"); ?></a></span>
@@ -5966,6 +5966,8 @@ function refreshdb($quiet) {
 				$aboutString.="<li>Improved show old filter state</li>";
 				$aboutString.="<li>Improved dynamic theme colours</li>";
 				$aboutString.="<li>Improved library rebuild speed</li>";
+				$aboutString.="<li>Minor Listening History improvements</li>";
+				$aboutString.="<li>Minor bug fixes</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.1.2 (13th October 2021)</div>";

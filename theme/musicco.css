@@ -720,8 +720,12 @@
 		display: inline-block;
 	}
 
+	.card li span.historyArtist {
+		text-indent: 1.2em;
+	}
+
 	.card li span.historyAlbum {
-		text-indent: 1.8em;
+		color: var(--text-highlight);
 	}
 
 	.card li i:before {

@@ -70,6 +70,8 @@ Check out https://www.musicco.app for more information or try the demo at https:
 * Improved show old filter state
 * Improved dynamic theme colours
 * Improved library rebuild speed
+* Minor Listening History improvements
+* Minor bug fixes
 
 ## v3.1.2
 * Fixed script error when displaying uncover dialogue
