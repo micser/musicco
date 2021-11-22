@@ -1951,10 +1951,10 @@ class Musicco {
 
 			function setMenuEntries(isFolder, target) {
 				 $(target).contextmenu("replaceMenu", menuOptions);
-				 var playRightNow = !hasPlaylist();
-				 var queue = hasPlaylist();
-				 var playAsNextAlbum = hasPlaylist();
-				 var playBefore = hasPlaylist();
+				 var playRightNow = !hasPlaylist() && !currentPlaylistIsReadOnly();
+				 var queue = hasPlaylist() && !currentPlaylistIsReadOnly();
+				 var playAsNextAlbum = hasPlaylist() && !currentPlaylistIsReadOnly();
+				 var playBefore = hasPlaylist() && !currentPlaylistIsReadOnly();
 				 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
 				 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 				 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
@@ -4458,7 +4458,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<span class="big-jp-next-album" oncontextmenu="return false;">&nbsp;</span>
 					&nbsp;
 					&nbsp;
-					<span class="uncover guestPlay toggles" oncontextmenu="return false;"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
+					<span class="uncover guestPlay toggles editTools" oncontextmenu="return false;"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
 					&nbsp;
 					&nbsp;
 					<span class="big-volume-down toggles"><i class="fas fa-volume-down fa-fw"></i>&nbsp;</span>
