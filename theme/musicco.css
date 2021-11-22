@@ -546,6 +546,12 @@
 	input[type="checkbox"]:checked + .fa-toggle-on:before,
 	input[type="checkbox"]:checked + label > .fa-toggle-on:before { content: "\f205"; } /* .fa-toggle-on */
 
+	/* disabled toggles */
+	#includeOldAlbums:disabled + label > i:before {
+		color: var(--background);
+		cursor: not-allowed;
+	}
+
 	.fa-square,
 	.fa-check-square,
 	.fa-toggle-on,

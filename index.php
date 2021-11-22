@@ -858,9 +858,10 @@ class Musicco {
 			var playlistResfreshDelay = 5000;
 			var lastInteraction;
 			var viewerType = '';
+			var fullLibrary = [];
+			var newAlbums = [];
 			var timeUpdates = true;
 			var isInit = false;
-			var libraryInit = [];
 			var isPlaying = false;
 			var isResuming = false;
 			var isCasting = false;
@@ -1673,21 +1674,11 @@ class Musicco {
 
 			function filterTree() {
 				var tree = $.ui.fancytree.getTree("#library");
-				if (tree != null) {
-					tree.reload();
-					var filterText = normalise($("#filterText").val().toLowerCase());
-					var isNew = new RegExp("<?php print $this->getConfig('new_marker'); ?>", "i");
-					var isMatching = new RegExp(regexEscape(filterText), "i");
-					if ($("#includeOldAlbums").is(':checked')) {
-						tree.filterBranches(function(node) {
-								return isMatching.test(normalise(node.data.path));
-						});
-					} else {
-						tree.filterBranches(function(node) {
-							return isNew.test(node.data.path) && isMatching.test(normalise(node.data.path));
-						});
-					}
-				}
+				var filterText = normalise($("#filterText").val().toLowerCase());
+				var isMatching = new RegExp(regexEscape(filterText), "i");
+				tree.filterBranches(function(node) {
+						return isMatching.test(normalise(node.data.path));
+				});
 			}
 
 			function triggerButton(button) {
@@ -2040,81 +2031,80 @@ class Musicco {
 			}
 
 			function initLibraryTree() {
-					var libraryThreshold = <?php print $this->getConfig('libraryThreshold'); ?>;
-					var libraryOffset = libraryThreshold;
-					$.post('?', {querydb: '', root: decodeURI(musicRoot), type: 'browse'}, function(response) {
-						library = JSON.parse(response);
-						var isLargeLib = (library.length > libraryThreshold) ? true : false ;
+				$.post('?', {querydb: '', root: decodeURI(musicRoot), type: 'browse'}, function(response) {
+					fullLibrary = JSON.parse(response);
+					newAlbums = fullLibrary.filter(function(p) {return p.extraClasses == "current"});
+					loadLibrary($("#includeOldAlbums").prop("checked") ? fullLibrary : newAlbums);
+				});
+			}
 
-						$("#library").fancytree({
-							extensions: ["glyph", "filter", "persist"],
-							glyph: customTreeIcons,
-							filter: {
-								mode: "hide",
-								fuzzy: true,
-								hideExpanders: false,
-								nodata: function() { 
-									setTimeout(function() {
-										$(".fancytree-statusnode-nodata > span.fancytree-title").text("<?php print $this->getString('nodata'); ?>");
-									}, 50);
-									if (!$("#includeOldAlbums").is(':checked')) {
-										forceCheckbox();
-										filterTree();
-										setTimeout(function() {
-											$(".fancytree-statusnode-nodata").hide();
-										}, 50);
-									}
-								}
-							},
-							autoScroll: true,
-							clickFolderMode: 3,
-							keyboard: true,
-							tabindex: "0",
-							titlesTabbable: true,
-							tooltip: true,
-							selectMode: 1,
-							source: (isLargeLib) ? library.slice(0,libraryThreshold) : library,
-							beforeExpand: function(event, data) {
-								if (event.which === 3) {
-									return false;
-								}
-							},
-							lazyLoad: function(event, data) {
-								var node = data.node;
-								var root = node.data.parentfolder + node.data.path + "/";
-								data.result = {
-									url: "?",
-									type: "POST",
-									data: {querydb: '', root: decodeURI(root), type: 'browse'},
-									cache: true
-								}
-							},
-							clickPaging: function(event, data) {
-								var nodes = library.slice(libraryOffset, libraryOffset + libraryThreshold);
-								data.node.replaceWith(nodes).done(function(){
-									if (nodes.length < libraryThreshold) {
-										//data.node.remove(); // unnecessary, add a control to clear instead?
-									} else {
-										libraryOffset = libraryOffset + libraryThreshold;
-										addPagingNode(libraryOffset, libraryThreshold);
-									}
-								});
+			function loadLibrary(source) {
+				var libraryThreshold = <?php print $this->getConfig('libraryThreshold'); ?>;
+				var libraryOffset = libraryThreshold;
+				var isLargeLib = (source.length > libraryThreshold) ? true : false ;
+				if ($.ui.fancytree.getTree("#library")) {
+					$.ui.fancytree.getTree("#library").destroy();
+				}
+				$("#library").fancytree({
+					extensions: ["glyph", "filter", "persist"],
+					glyph: customTreeIcons,
+					filter: {
+						mode: "hide",
+						fuzzy: true,
+						hideExpanders: false,
+						nodata: function() {
+							setTimeout(function() {
+								$(".fancytree-statusnode-nodata > span.fancytree-title").text("I did not find anything! :-o");
+							}, 50);
+							if ($("#includeOldAlbums").is(':enabled')) {
+								$("#includeOldAlbums").attr("disabled", true);
+								var tree = $.ui.fancytree.getTree("#library");
+								tree.reload(fullLibrary);
+								tree.updateFilter();
+								setTimeout(function() {
+									$(".fancytree-statusnode-nodata").hide();
+								}, 50);
+							}
+						}
+					},
+					autoScroll: true,
+					clickFolderMode: 3,
+					keyboard: true,
+					tabindex: "0",
+					titlesTabbable: true,
+					tooltip: true,
+					selectMode: 1,
+					source: (isLargeLib) ? source.slice(0,libraryThreshold) : source,
+					beforeExpand: function(event, data) {
+						if (event.which === 3) {
+							return false;
+						}
+					},
+					lazyLoad: function(event, data) {
+						var node = data.node;
+						var root = node.data.parentfolder + node.data.path + "/";
+						data.result = {
+							url: "?",
+							type: "POST",
+							data: {querydb: '', root: decodeURI(root), type: 'browse'},
+							cache: true
+						}
+					},
+					clickPaging: function(event, data) {
+						var nodes = source.slice(libraryOffset, libraryOffset + libraryThreshold);
+						data.node.replaceWith(nodes).done(function(){
+							if (nodes.length < libraryThreshold) {
+								//data.node.remove(); // unnecessary, add a control to clear instead?
+							} else {
+								libraryOffset = libraryOffset + libraryThreshold;
+								addPagingNode(libraryOffset, libraryThreshold);
 							}
 						});
-						filterTree();
-						if (isLargeLib) {
-							addPagingNode(libraryOffset, libraryThreshold);
-						}
-						libraryInit = getTreeContent();
-					});
-			}
-
-			function getTreeContent() {
-				return $.ui.fancytree.getTree("#library").getRootNode().children;
-			}
-
-			function trimLibrary() {
-				$.ui.fancytree.getTree("#library").reload(libraryInit);
+					}
+				});
+				if (isLargeLib) {
+					addPagingNode(libraryOffset, libraryThreshold);
+				}
 			}
 
 			function addPagingNode(offset, limit) {
@@ -2597,7 +2587,7 @@ class Musicco {
 						var volume = $("#big-volume-bar").slider("option", "value");
 						var loop = playerConfig["loop"];
 						var shuffled = playerConfig["shuffled"];
-						var includeOldAlbums = playerConfig["includeOldAlbums"];
+						var includeOldAlbums = $("#includeOldAlbums").prop("checked");
 						var wakelock = $("#wakelock").prop("checked");
 						var theme = $("#theme_settings input[name=option_theme]:checked").attr("id");
 						var background = $("#background").val();
@@ -2623,10 +2613,10 @@ class Musicco {
 						if (options.shuffled === "true") {
 							$('#shuffled').trigger("click");
 						}
-						playerConfig["includeOldAlbums"] = options.includeOldAlbums;
 						if (!isGuestPlay()) {
-							if (playerConfig["includeOldAlbums"] === "false") {
-								resetCheckbox();
+							if (options.includeOldAlbums === "false") {
+								$('#includeOldAlbums').prop("checked", false);
+								$('label[for=includeOldAlbums] i').toggleClass("fa-toggle-on fa-toggle-off");
 							}
 						}
 						setCastRepeatMode();
@@ -2965,22 +2955,6 @@ class Musicco {
 						+ '</g>'
 					+ '</svg>';
 					return playLastIcon;
-				}
-
-				function resetCheckbox() {
-					if ((playerConfig["includeOldAlbums"] === "true") || (playerConfig["includeOldAlbums"] == true)) {
-						forceCheckbox();
-					} else {
-						$('#includeOldAlbums').prop("checked", false);
-						$("label[for='includeOldAlbums'] i").removeClass("fa-toggle-on");
-						$("label[for='includeOldAlbums'] i").addClass("fa-toggle-off");
-					}
-				}
-
-				function forceCheckbox() {
-					$('#includeOldAlbums').prop("checked", true);
-					$("label[for='includeOldAlbums'] i").removeClass("fa-toggle-off");
-					$("label[for='includeOldAlbums'] i").addClass("fa-toggle-on");
 				}
 
 				function toggleCheckbox(checkboxId) {
@@ -3496,6 +3470,7 @@ class Musicco {
 				 // ACTIONS //
 				/////////////
 
+				loadSettings();
 				resetLastInteraction();
 				var status = null;
 				if ("<?php print $this->getConfig('enable_polling') ?>") {
@@ -3555,7 +3530,6 @@ class Musicco {
 					});
 
 					enableLocalPlayer();
-					loadSettings();
 					getHistory();
 					loadPlaylist();
 					adaptUI(true);
@@ -3685,7 +3659,6 @@ class Musicco {
 					if ($("#browserPanel").is(":hidden")) {
 						if ($.ui.fancytree.getTree("#library")) {
 							$("#filterButton").trigger("click");
-							trimLibrary();
 						}
 					}
 					saveSettings();
@@ -3874,19 +3847,16 @@ class Musicco {
 				});
 
 				$("#wakelock").on("click", function () {
-					var newStatus = !$("#wakelock").prop("checked");
-					$("#wakelock").prop("checked", newStatus);
 					toggleCheckbox("wakelock");
 					saveSettings();
-					if (newStatus) {
+					if ($("#wakelock").prop("checked")) {
 						initWakeLock();
 					}
 				});
 
 				$("#includeOldAlbums").on("click", function () {
 					toggleCheckbox("includeOldAlbums");
-					playerConfig["includeOldAlbums"] = ($("#includeOldAlbums").is(':checked'));
-					filterTree();
+					loadLibrary($("#includeOldAlbums").prop("checked") ? fullLibrary : newAlbums);
 					saveSettings();
 				});
 
@@ -3909,9 +3879,9 @@ class Musicco {
 
 				$("#filterButton").on("click", function(event) {
 					event.preventDefault();
-					$("#filterText").val('');
-					resetCheckbox();
-					filterTree();
+					$("#filterText").val("");
+					$("#includeOldAlbums").attr("disabled", false);
+					loadLibrary($("#includeOldAlbums").prop("checked") ? fullLibrary : newAlbums);
 				});
 
 				$("#ham").on("click", function() {
@@ -4523,7 +4493,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="browserPanel" class="panel guestPlay">
 					<div class="table">
 						<div id="filter">
-							<input id="includeOldAlbums" tabindex="0" type="checkbox" checked="true"/>
+							<input id="includeOldAlbums" tabindex="0" type="checkbox" checked />
 							<label for="includeOldAlbums"><i class="fas fa-toggle-on"></i>&nbsp;<?php print $this->getString("show_all"); ?></label>
 							<input type="text" id="filterText" tabindex="1" name="filterText" placeholder="<?php print $this->getString("filter_placeholder"); ?>"/>
 							<a class="btn" id="filterButton" href="#"><i class="fas fa-border fa-times"></i></a>
@@ -4641,7 +4611,7 @@ if(!AuthManager::isAccessAllowed()) {
 					</form>
 					<hr/>
 					<div class="settings">
-						<input type="ckeckbox" id="wakelock" class="fa-input" name="wakelock" />
+						<input type="checkbox" id="wakelock" class="fa-input" />
 						<label for="wakelock"><i class="space-after fas fa-fw fa-toggle-off"></i><span><?php print $this->getString("keep_screen_on"); ?></span></label>
 					</div>
 				</div>
@@ -5360,7 +5330,7 @@ function createUser($user, $force) {
 	}
 	if ($isValidUser || $force) {
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_panel, option_volume, option_loop, option_shuffled, option_old, option_wakelock, option_theme, theme_background, theme_text, custom_background, custom_text) VALUES (\"" . $user . "\", 0, 0, \"\", \"infoPanel\", 100, \"false\", \"false\", \"false\", \"true\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
+		$create_user_query = $db ->prepare("INSERT into users (username, current_playlist, save_time, client, option_panel, option_volume, option_loop, option_shuffled, option_old, option_wakelock, option_theme, theme_background, theme_text, custom_background, custom_text) VALUES (\"" . $user . "\", 0, 0, \"\", \"infoPanel\", 100, \"false\", \"false\", \"false\", \"false\", \"dynamic\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\", \"".Musicco::getConfig('themes')[0][0]."\", \"".Musicco::getConfig('themes')[0][1]."\");");
 		$create_user_query->execute();
 		$id = $db->lastInsertId();
 		$create_user_query = NULL;
