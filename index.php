@@ -1339,7 +1339,7 @@ class Musicco {
 			}
 
 			function currentPlaylistIsReadOnly() {
-				return ($("#playlist_select").find(":selected").text() == "<?php print $this->getConfig('smartPlaylistNewMusic'); ?>");
+				return (isGuestPlay() || $("#playlist_select").find(":selected").text() == "<?php print $this->getConfig('smartPlaylistNewMusic'); ?>");
 			}
 
 			function adjustPlaylistControls() {
