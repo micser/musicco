@@ -870,35 +870,9 @@ class Musicco {
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
-			var initWakeLock = function() {
-				if ('WakeLock' in window && 'request' in window.WakeLock) {
-					let wakeLock = null;
-
-					const requestWakeLock = () => {
-						const controller = new AbortController();
-						const signal = controller.signal;
-						window.WakeLock.request('screen', {signal})
-						.catch((e) => {
-							if (e.name === 'AbortError') {
-								console.error('Wake Lock was aborted');
-							} else {
-								console.error(`${e.name}, ${e.message}`);
-							}
-						});
-						console.debug('Wake Lock is active');
-						return controller;
-					};
-
-					const handleVisibilityChange = () => {
-						if (wakeLock !== null && document.visibilityState === 'visible') {
-							wakeLock = requestWakeLock();
-						}
-					};
-
-					document.addEventListener('visibilitychange', handleVisibilityChange);
-					requestWakeLock();
-
-				} else if ('wakeLock' in navigator && 'request' in navigator.wakeLock) {
+			var initWakeLock = function(enable) {
+				console.debug("wakelock request: enabled = " + enable);
+				if ('wakeLock' in navigator && 'request' in navigator.wakeLock) {
 					let wakeLock = null;
 
 					const requestWakeLock = async () => {
@@ -921,7 +895,13 @@ class Musicco {
 					};
 
 					document.addEventListener('visibilitychange', handleVisibilityChange);
-					requestWakeLock();
+					requestWakeLock().then(() => {
+						if (!enable) {
+							wakeLock.release().then(() => { 
+								wakeLock = null;
+							});
+						}
+					});
 
 				} else {
 					console.error('Wake Lock API not supported.');
@@ -2623,8 +2603,8 @@ class Musicco {
 						if (options.wakelock === "true") {
 							$('#wakelock').prop("checked", true);
 							$('label[for=wakelock] i').toggleClass("fa-toggle-off fa-toggle-on");
-							initWakeLock();
 						}
+						initWakeLock($('#wakelock').prop("checked"));
 						$("#theme_settings input[id=" + options.theme + "]").prop("checked", true).trigger("click");
 						$("#background").val(options.background).trigger("change");
 						$("#text").val(options.text).trigger("change");
@@ -3848,10 +3828,8 @@ class Musicco {
 
 				$("#wakelock").on("click", function () {
 					toggleCheckbox("wakelock");
+					initWakeLock($("#wakelock").prop("checked"));
 					saveSettings();
-					if ($("#wakelock").prop("checked")) {
-						initWakeLock();
-					}
 				});
 
 				$("#includeOldAlbums").on("click", function () {
