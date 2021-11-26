@@ -1044,6 +1044,7 @@ class Musicco {
 
 			var userIsStillTyping = false;
 			var menuOptions = [
+				{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "sendToNewPlaylist"},
 				{title: "<?php print $this->getString("menu_right_now"); ?>", uiIcon: "fas fa-play", cmd: "playRightNow"},
 				{title: "<?php print $this->getString("menu_next_album"); ?>", uiIcon: "fa-play-next", cmd: "playAsNextAlbum"},
 				{title: "<?php print $this->getString("menu_play_before"); ?>", uiIcon: "fa-play-before", cmd: "playBefore"},
@@ -1933,6 +1934,7 @@ class Musicco {
 
 			function setMenuEntries(isFolder, target) {
 				 $(target).contextmenu("replaceMenu", menuOptions);
+				 var sendToNewPlaylist = currentPlaylistIsReadOnly();
 				 var playRightNow = !hasPlaylist() && !currentPlaylistIsReadOnly();
 				 var queue = hasPlaylist() && !currentPlaylistIsReadOnly();
 				 var playAsNextAlbum = hasPlaylist() && !currentPlaylistIsReadOnly();
@@ -1943,6 +1945,7 @@ class Musicco {
 				 var removeFavourite = ($(target).get(0) === $("#favourites").get(0));
 				 var favourite = !removeFavourite;
 				 $(target).contextmenu("updateEntry", "clearFavourites", {setClass: clearFavourites.toString()});
+				 $(target).contextmenu("updateEntry", "sendToNewPlaylist", {setClass: sendToNewPlaylist.toString()});
 				 $(target).contextmenu("updateEntry", "playRightNow", {setClass: playRightNow.toString()});
 				 $(target).contextmenu("updateEntry", "queue", {setClass: queue.toString()});
 				 $(target).contextmenu("updateEntry", "playAsNextAlbum", {setClass: playAsNextAlbum.toString()});
@@ -1967,6 +1970,11 @@ class Musicco {
 					case "queue":
 						var slash = node.isFolder()? "/": "" ;
 						queueMusic(node.data.parentfolder + node.data.path + slash, node.data.songtitle, Insert.last);
+					break;
+					case "sendToNewPlaylist":
+						createNewPlaylist("<?php print $this->getString("newPlaylistName"); ?>" + (new Date(Date.now())).toLocaleString());
+						var slash = node.isFolder()? "/": "" ;
+						queueMusic(node.data.parentfolder + node.data.path + slash, node.data.songtitle, Insert.top);
 					break;
 					case "playRightNow":
 						var slash = node.isFolder()? "/": "" ;
