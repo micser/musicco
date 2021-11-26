@@ -867,18 +867,19 @@ class Musicco {
 			var isCasting = false;
 			var castPlayerState = {};
 			var castContentUrl = "";
+			var wakeLock = null;
 
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
 			var initWakeLock = function(enable) {
 				console.debug("wakelock request: enabled = " + enable);
 				if ('wakeLock' in navigator && 'request' in navigator.wakeLock) {
-					let wakeLock = null;
 
 					const requestWakeLock = async () => {
 						try {
 							wakeLock = await navigator.wakeLock.request('screen');
 							wakeLock.addEventListener('release', (e) => {
+								wakeLock = null;
 								console.debug(e);
 								console.debug('Wake Lock was released');
 							});
@@ -894,14 +895,15 @@ class Musicco {
 						}
 					};
 
-					document.addEventListener('visibilitychange', handleVisibilityChange);
-					requestWakeLock().then(() => {
-						if (!enable) {
-							wakeLock.release().then(() => { 
-								wakeLock = null;
-							});
+					if (enable) {
+						document.addEventListener('visibilitychange', handleVisibilityChange);
+						requestWakeLock();
+					} else {
+						if (wakeLock) {
+							document.removeEventListener('visibilitychange', handleVisibilityChange);
+							wakeLock.release();
 						}
-					});
+					}
 
 				} else {
 					console.error('Wake Lock API not supported.');
