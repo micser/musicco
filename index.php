@@ -4016,7 +4016,9 @@ class Musicco {
 					});
 
 					$(document).on("dblclick", ".artist, #nowPlaying_artist", function() {
-						goToArtist($(this).text());
+						if (!isGuestPlay()) {
+							goToArtist($(this).text());
+						}
 					});
 
 					$(document).on("click", ".historyAlbum", function() {
@@ -4024,7 +4026,9 @@ class Musicco {
 					});
 
 					$(document).on("dblclick", ".album, .year, .songtitle, #nowPlaying_album, #nowPlaying_year, #nowPlaying_songtitle", function() {
-						goToAlbum($(this).text().replace("(", "").replace(")", ""));
+						if (!isGuestPlay()) {
+							goToAlbum($(this).text().replace("(", "").replace(")", ""));
+						}
 					});
 
 					$(document).on("click", ".downloadAlbum", function(event) {
