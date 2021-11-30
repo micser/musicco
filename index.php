@@ -883,14 +883,15 @@ class Musicco {
 								console.debug(e);
 								console.debug('Wake Lock was released');
 							});
-							console.debug('Wake Lock is active');
+							console.debug('Wake Lock was requested');
 						} catch (e) {
 							console.error(`${e.name}, ${e.message}`);
 						} 
 					};
 
 					const handleVisibilityChange = () => {
-						if (wakeLock !== null && document.visibilityState === 'visible') {
+						if (document.getElementById("wakelock").checked && document.visibilityState === 'visible') {
+							console.debug("Window is visible again, requesting Wake Lock");
 							requestWakeLock();
 						}
 					};
