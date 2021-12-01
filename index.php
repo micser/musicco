@@ -2409,6 +2409,7 @@ class Musicco {
 				$("#playlist_select").append('<option value="' + name + '">' + name  + '</option>');
 				$("#playlist_select").val(name);
 				clearPlaylist();
+				adjustPlaylistControls();
 			}
 
 			function deletePlaylist(name) {
