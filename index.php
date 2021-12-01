@@ -1353,7 +1353,7 @@ class Musicco {
 					if (luminance(textRGB[0], textRGB[1], textRGB[2]) < .3) {
 						textRGB = [Math.min(167, textRGB[0] + 60), Math.min(169, textRGB[1] + 60), Math.min(127, textRGB[2] + 60)];
 					} else if (luminance(textRGB[0], textRGB[1], textRGB[2]) > .7) {
-						textRGB = [Math.max(0, textRGB[0] - 60), Math.max(0, textRGB[1] - 60), Math.max(0, textRGB[2] - 60)];
+						textRGB = [Math.max(0, textRGB[0] - 40), Math.max(0, textRGB[1] - 40), Math.max(0, textRGB[2] - 40)];
 					}
 					$("#background").val(rgbToHex(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2])).trigger("change");
 					$("#text").val(rgbToHex(textRGB[0], textRGB[1], textRGB[2])).trigger("change");
