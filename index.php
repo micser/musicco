@@ -5044,7 +5044,7 @@ function getPlaylists($user) {
 			}
 		array_push($playlists, getCurrentPlaylistName($userId));
 		$db = new PDO('sqlite:'.Musicco::getConfig('musicRoot').'.db');
-		$playlist_query = $db->prepare("SELECT name FROM playlists WHERE userId=$userId;");
+		$playlist_query = $db->prepare("SELECT name FROM playlists WHERE userId=$userId AND name != \"\" ORDER BY name COLLATE NOCASE;");
 		$playlist_query->execute();
 		$result = $playlist_query->fetchAll();
 		$playlist_query = NULL;
