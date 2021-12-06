@@ -5436,7 +5436,7 @@ function querydb($query_root, $query_type) {
 								"lazy" => $folder,
 								"extraClasses" => $extraClasses
 								);
-			debugMessage("$name, $type, $parentfolder, $cover, $album, $artist, $title, $year, $number, $extension, $folder, $extraClasses");
+			logMessage("$name, $type, $parentfolder, $cover, $album, $artist, $title, $year, $number, $extension, $folder, $extraClasses");
 		}
 	}
 	$db = NULL;
@@ -5479,6 +5479,11 @@ function lockDB() {
 	debugMessage(__FUNCTION__);
 	$lock_file = fopen(Musicco::getConfig('musicRoot').".lock", "w") or die("Unable to create lock file.");
 	fclose($lock_file);
+}
+
+function unlockDB() {
+	debugMessage(__FUNCTION__);
+	unlink(Musicco::getConfig('musicRoot').".lock");
 }
 
 function initDB() {
@@ -5629,11 +5634,11 @@ function builddb() {
 
 			// close the database connection
 			$db = NULL;
-			unlink(Musicco::getConfig('musicRoot').".lock");
+			unlockDB();
 			printf("%.1s s",(microtime(true) - $_START_SCAN));
 		} catch(PDOException $e) {
 			print 'Exception : '.$e->getMessage();
-			unlink(Musicco::getConfig('musicRoot').".lock");
+			unlockDB();
 		}
 	}
 }
@@ -5732,14 +5737,14 @@ function refreshdb($quiet) {
 			// close the database connection
 			$db = NULL;
 			cleanupFavourites();
-			unlink(Musicco::getConfig('musicRoot').".lock");
+			unlockDB();
 			logMessage("Processed all new albums changes ".number_format((microtime(true) - $_START_UPDATES), 3)." seconds");
 			if (!$quiet) {
 				printf("%.1s s",(microtime(true) - $_START_QUERY));
 			}
 		} catch(PDOException $e) {
 			print 'Exception : '.$e->getMessage();
-			unlink(Musicco::getConfig('musicRoot').".lock");
+			unlockDB();
 		}
 	}
 }
