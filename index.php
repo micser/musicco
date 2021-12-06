@@ -2030,6 +2030,7 @@ class Musicco {
 			}
 
 			function loadLibrary(source) {
+				var isFiltered = $("#filterText").val() != "";
 				var libraryThreshold = <?php print $this->getConfig('libraryThreshold'); ?>;
 				var libraryOffset = libraryThreshold;
 				var isLargeLib = (source.length > libraryThreshold) ? true : false ;
@@ -2095,6 +2096,9 @@ class Musicco {
 				});
 				if (isLargeLib) {
 					addPagingNode(libraryOffset, libraryThreshold);
+				}
+				if (isFiltered) {
+					filterTree();
 				}
 			}
 
