@@ -5361,7 +5361,7 @@ function getId($user) {
 function querydb($query_root, $query_type) {
 	debugMessage(__FUNCTION__);
 	$response = "";
-	try	{
+	try {
 		switch ($query_type) {
 		case "browse":
 		$query = "SELECT name, type, parentfolder, cover, album, artist, title, year, number, extension FROM item WHERE parentfolder = \"$query_root\"  AND type NOT IN (".Musicco::TYPE_COVER.") ORDER BY type, name COLLATE NOCASE;";
@@ -5625,6 +5625,7 @@ function builddb() {
 			indexDB($db);
 
 			logMessage("Built library in ".number_format((microtime(true) - $_START_INSERT), 3)." seconds");
+			unlockDB();
 
 			// Update smart playlists
 			$newAlbumsJSON = querydb(Musicco::getConfig('new_marker'), "smart_playlist_new");
@@ -5634,7 +5635,6 @@ function builddb() {
 
 			// close the database connection
 			$db = NULL;
-			unlockDB();
 			printf("%.1s s",(microtime(true) - $_START_SCAN));
 		} catch(PDOException $e) {
 			print 'Exception : '.$e->getMessage();
