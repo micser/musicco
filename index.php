@@ -4321,15 +4321,15 @@ class Musicco {
 					triggerPlayPause();
 				});
 
-				$("#album-art, #big-cover .default-poster, .logo-player").on("swipeup", function(e) {
+				$("#big-cover").on("swipeup", function(e) {
 					volumeUp();
 				});
 
-				$("#album-art, #big-cover .default-poster, .logo-player").on("swipedown", function(e) {
+				$("#big-cover").on("swipedown", function(e) {
 					volumeDown();
 				});
 
-				$("#album-art, #big-cover .default-poster, .logo-player").on("swipeleft", function(e) {
+				$("#big-cover").on("swipeleft", function(e) {
 					triggerButton("next");
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
@@ -4338,7 +4338,7 @@ class Musicco {
 					}
 				});
 
-				$("#album-art, #big-cover .default-poster, .logo-player").on("swiperight", function(e) {
+				$("#big-cover").on("swiperight", function(e) {
 					triggerButton("previous");
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
