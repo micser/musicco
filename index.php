@@ -53,11 +53,11 @@ $_CONFIG['tempFolder'] = "temp";
 
 // The name to use for a user's default playlist
 // Default: $_CONFIG['defaultPlaylist'] = "Now Playing";
-$_CONFIG['defaultPlaylist'] = "Now Playing";
+$_CONFIG['defaultPlaylist'] = "♫  Now Playing";
 
 // The name to use for a user's smart playlist containing all new music
 // Default: $_CONFIG['smartPlaylistNewMusic'] = "New Music";
-$_CONFIG['smartPlaylistNewMusic'] = "New Music";
+$_CONFIG['smartPlaylistNewMusic'] = "♫ New Music";
 
 
 
@@ -4993,6 +4993,7 @@ function createDefaultPlaylist($user) {
 	debugMessage(__FUNCTION__);
 	logMessage("Creating a new playlist for ".$user);
 	savePlaylist($user, "", Musicco::getConfig('defaultPlaylist'), "[]", 0, 0);
+	savePlaylist($user, "", Musicco::getConfig('smartPlaylistNewMusic'), "[]", 0, 0);
 }
 
 function updateSmartPlaylists($user, $newAlbumsJSON) {
