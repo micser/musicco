@@ -398,7 +398,9 @@ $_TRANSLATIONS["en"] = array(
 	"winter" => "Last Winter",
 	"spring" => "Last Spring",
 	"summer" => "Last Summer",
-	"fall" => "Last Fall"
+	"fall" => "Last Fall",
+	"wiki_band" => " (band)",
+	"wiki_musician" => " (musician)"
 );
 
 
@@ -512,7 +514,9 @@ $_TRANSLATIONS["fr"] = array(
 	"winter" => "Cet hiver",
 	"spring" => "Ce printemps",
 	"summer" => "Cet été",
-	"fall" => "Cet automne"
+	"fall" => "Cet automne",
+	"wiki_band" => " (groupe)",
+	"wiki_musician" => " (musicien)"
 );
 
 /***************************************************************************/
@@ -1493,7 +1497,7 @@ class Musicco {
 				flashInfo();
 				showNotification();
 				$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying["artist"] + " " + nowPlaying["album"]);
-				updateInfoPanel(wikiLink(nowPlaying["artist"]), nowPlaying["artist"], false, false);
+				updateInfoPanel(nowPlaying["artist"], false, false);
 				updateLyricsPanel(nowPlaying["artist"], nowPlaying["songtitle"]);
 				displayCover();
 				scrollPlaylist();
@@ -1930,7 +1934,7 @@ class Musicco {
 			}
 
 			function displayInfo(query) {
-				updateInfoPanel(wikiLink(query), query, true, true);
+				updateInfoPanel(query, true, true);
 			}
 
 			function setMenuEntries(isFolder, target) {
@@ -3089,15 +3093,11 @@ class Musicco {
 				}
 			}
 
-			function wikiLink(page) {
-				return '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page='+page;
+			function updateInfoPanel(artist, show) {
+				updateInfoPanel(artist, show, false);
 			}
 
-			function updateInfoPanel(url, artist, show) {
-				updateInfoPanel(url, artist, show, false);
-			}
-
-			function updateInfoPanel(url, artist, show, force) {
+			function updateInfoPanel(artist, show, force) {
 				var resyncText = "&nbsp;&nbsp;" + nowPlaying["artist"] + "&nbsp;<i class=\"fas fa-arrow-right\"></i>";
 				$("#resync").html(resyncText);
 				if (show) {
@@ -3115,18 +3115,17 @@ class Musicco {
 					wikiHistoryPos += 1;
 					
 					var hasHistory = ((wikiHistoryPos > 0)) ? true : false;
-					var prevUrl = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].href : "";
 					var prevTitle = (hasHistory) ? wikiHistory[wikiHistoryPos - 1 ].title : "";
 					var isCurrentArtist = (artist ===  nowPlaying["artist"]);
 
-					if ((url != "") && (url != prevUrl)) {
-						wikiHistory.push({seq: wikiHistoryPos, title: artist, href: url})
+					if (artist != prevTitle) {
+						wikiHistory.push({seq: wikiHistoryPos, title: artist})
 					} else {
 						wikiHistoryPos -= 1;
 					}
 					
 					if ((hasHistory) && (wikiHistoryPos >= 0)) {
-						$('#wikiPrev').html("<a href=\"" + prevUrl + "\" class=\"historyLink\" title=\"" + prevTitle + "\"><i class=\"fas fa-arrow-left\">&nbsp;</i>" + prevTitle + "</a>&nbsp;");
+						$('#wikiPrev').html("<a href=\"" + prevTitle + "\" class=\"historyLink\" title=\"" + prevTitle + "\"><i class=\"fas fa-arrow-left\">&nbsp;</i>" + prevTitle + "</a>&nbsp;");
 					} else if (isCurrentArtist) {
 						$("#resync").hide();
 					} else if (!isCurrentArtist) {
@@ -3135,22 +3134,48 @@ class Musicco {
 
 					$('#infoPanelTitle').html(artist);
 					$('#infoPanelText').html("");
+
 					$.ajax({
 						type: "GET",
 						dataType: "jsonP",
-						url: url,
-						success: function(json) {
-							if (json.parse) {
-								$('#infoPanelText').html(searchArtistExt + json.parse.text['*']);
-								$("#infoPanelText").find("*").removeAttr("style"); 
-								$("#infoPanelText").find("#toctogglecheckbox").hide(); 
-								$("#infoPanelText").find(".mw-editsection").hide(); 
-								$("#infoPanelText").find('.image').removeAttr("href", ""); 
-								$("#infoPanelText").find('.new').removeAttr("href", ""); 
-								$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
-								$("#infoPanelText").find('a').removeClass("new"); 
-								$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
-								$("#infoPanelText").find('a[href^="#"]').addClass("infoPanelAnchor");
+						url: '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=opensearch&search='+artist,
+						complete: function(data){
+							var numResults = data.responseJSON[1].length;
+							var resultLocation = 0;
+							if (numResults && numResults == 1) {
+								if (data.responseJSON[1][0] != artist) {
+									numResults = 0;
+								}
+							}
+							if (numResults && numResults > 1) {
+								var json = data.responseJSON[1]
+								for (let i = 0; i < json.length; i++) {
+									if ((json[i] == artist + "<?php print $this->getString("wiki_band"); ?>") || (json[i] == artist + "<?php print $this->getString("wiki_musician"); ?>")) {
+										resultLocation = i;
+									}
+									
+								}
+							}
+							if (numResults) {
+								var result = data.responseJSON[3][resultLocation];
+								var targetUrl = '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=parse&redirects&prop=text&format=json&callback=?&page=' + result.substr(result.lastIndexOf("/") + 1)
+								$.ajax({
+									type: "GET",
+									dataType: "jsonP",
+									url: targetUrl,
+									success: function(json) {
+										$('#infoPanelText').html(searchArtistExt + json.parse.text['*']);
+										$("#infoPanelText").find("*").removeAttr("style"); 
+										$("#infoPanelText").find("#toctogglecheckbox").hide(); 
+										$("#infoPanelText").find(".mw-editsection").hide(); 
+										$("#infoPanelText").find('.image').removeAttr("href", ""); 
+										$("#infoPanelText").find('.new').removeAttr("href", ""); 
+										$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
+										$("#infoPanelText").find('a').removeClass("new"); 
+										$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
+										$("#infoPanelText").find('a[href^="#"]').addClass("infoPanelAnchor");
+									}
+								});
 							} else {
 								$('#infoPanelText').html("<?php print $this->getString("noInfoFoundFor"); ?>" + artist + " - " + searchArtistExt);
 							}
@@ -4297,7 +4322,7 @@ class Musicco {
 				$(document).on("click", "#resync", function(event) { 
 					event.preventDefault();
 					$("#resync").hide();
-					updateInfoPanel(wikiLink(nowPlaying["artist"]), nowPlaying["artist"], false, false);
+					updateInfoPanel(nowPlaying["artist"], false, false);
 				});
 
 				$(document).on("click", "#playlistToggle", function(event) { 
