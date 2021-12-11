@@ -3138,7 +3138,7 @@ class Musicco {
 					$.ajax({
 						type: "GET",
 						dataType: "jsonP",
-						url: '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=opensearch&search='+artist,
+						url: '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=opensearch&limit=50&search='+artist,
 						complete: function(data){
 							var numResults = data.responseJSON[1].length;
 							var resultLocation = 0;
