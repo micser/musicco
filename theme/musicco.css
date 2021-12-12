@@ -649,10 +649,6 @@
 		margin-top: 50%;
 	}
 
-	#resync {
-		display: none;
-	}
-
 	#playlist li[data-nature="album"]:first-of-type {
 		margin-top: 0.5em;
 	}
