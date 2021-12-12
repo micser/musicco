@@ -2151,6 +2151,7 @@ class Musicco {
 
 				$("#favourites").contextmenu({
 					open: function(event, ui){ positionSafe(ui) },
+					taphold: true,
 					delegate: "span.fancytree-title",
 					autoFocus: true,
 					closeOnWindowBlur: false,
@@ -2173,6 +2174,7 @@ class Musicco {
 
 				$("#library").contextmenu({
 					open: function(event, ui){ positionSafe(ui) },
+					taphold: true,
 					delegate: ".fancytree-node:not('.fancytree-statusnode-paging, .fancytree-statusnode-nodata') > span.fancytree-title",
 					autoFocus: true,
 					closeOnWindowBlur: false,
