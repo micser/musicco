@@ -3231,11 +3231,11 @@ class Musicco {
 									complete: function(html) {
 										var parser = new DOMParser();
 										var htmlDoc = parser.parseFromString(html.responseText, 'text/html');
-										var lyricsDiv = htmlDoc.getElementsByClassName("lyrics")[0];
+										var lyricsDiv = htmlDoc.querySelector('div[data-lyrics-container="true"]');
 										if (lyricsDiv != null) {
-											lyrics = lyricsDiv.textContent.replace(/\n/g, "<br/>");
+											lyrics = lyricsDiv.innerHTML;
 											var lyricsInfo = "<?php print $this->getString("viewOngenius"); ?>" + "<a target=\"blank\" href=\"" + geniusUrl +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
-											$('#lyricsPanel').html(lyricsInfo + lyrics);
+											$('#lyricsPanel').html(lyricsInfo + "<br/><br/>" + lyrics);
 											resolve(false);
 										} else {
 											$.ajax({
