@@ -1152,6 +1152,10 @@
 		font-size: var(--text-smaller);
 	}
 
+	#geniuslyrics a {
+		background-color: var(--background-subtle);
+	}
+
 	#nowPlaying_songtitle {
 		font-weight: bold;
 		color: var(--text-highlight);

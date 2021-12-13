@@ -3233,9 +3233,9 @@ class Musicco {
 										var htmlDoc = parser.parseFromString(html.responseText, 'text/html');
 										var lyricsDiv = htmlDoc.querySelector('div[data-lyrics-container="true"]');
 										if (lyricsDiv != null) {
-											lyrics = lyricsDiv.innerHTML;
+											lyrics = lyricsDiv.innerHTML.replaceAll('href="/', 'target="blank" href="' + GENIUS_BASE_URL + '');
 											var lyricsInfo = "<?php print $this->getString("viewOngenius"); ?>" + "<a target=\"blank\" href=\"" + geniusUrl +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
-											$('#lyricsPanel').html(lyricsInfo + "<br/><br/>" + lyrics);
+											$('#lyricsPanel').html(lyricsInfo + '<br/><br/><span id="geniuslyrics">' + lyrics + '</span>');
 											resolve(false);
 										} else {
 											$.ajax({
