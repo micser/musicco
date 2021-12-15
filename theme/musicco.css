@@ -349,6 +349,14 @@
 		color: var(--text-highlight);
 	}
 
+	.portalbox.tright {
+		border: 0!important;
+	}
+
+	.portalbox > ul {
+		background-color: unset!important;
+	}
+
 	.toc ul,
 	.toc ol {
 		list-style-type: none;

@@ -3147,13 +3147,16 @@ class Musicco {
 								url: targetUrl,
 								success: function(json) {
 									$('#infoPanelText').html(searchArtistExt + json.parse.text['*']);
-									$("#infoPanelText").find("*").removeAttr("style"); 
-									$("#infoPanelText").find("#toctogglecheckbox").hide(); 
-									$("#infoPanelText").find(".mw-editsection").hide(); 
+									$("#infoPanelText").find("*").removeAttr("style");
+									$("#infoPanelText").find("#toctogglecheckbox").hide();
+									$("#infoPanelText").find(".mw-editsection").hide();
+									$("#infoPanelText").find(".navbox").hide();
 									$("#infoPanelText").find('.image').removeAttr("href", ""); 
 									$("#infoPanelText").find('.new').removeAttr("href", ""); 
 									$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
 									$("#infoPanelText").find('a').removeClass("new"); 
+									$("#infoPanelText").find('.infobox-subheader').removeClass("infobox-subheader"); 
+									$("#infoPanelText").find('.sidebar').removeClass("sidebar"); 
 									$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
 									$("#infoPanelText").find('a[href^="#"]').addClass("infoPanelAnchor");
 								}
