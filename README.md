@@ -71,6 +71,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 * Improved dynamic theme colours
 * Improved library rebuild speed
 * Minor Listening History improvements
+* Improved Uncover dialogue
 * Minor bug fixes
 
 ## v3.1.2

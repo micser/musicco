@@ -238,8 +238,25 @@
 		font-size: var(--text-small);
 	}
 
+	.onTop {
+		z-index: 101!important;
+	}
 	.uncoverLink {
 		position: relative;
+	}
+
+	.uncoverLink > .uncover_actions,
+	.uncoverLink > label > i {
+		top: .5em;
+		position: absolute;
+	}
+
+	.uncoverLink > .uncover_actions {
+		right: .5em;
+	}
+
+	.uncoverLink > label > i {
+		left: .5em;
 	}
 
 	.uncoverLink img,
@@ -258,12 +275,13 @@
 		max-width: 60%;
 	}
 
-	.uncoverLink:hover > .play-last {
+	.uncoverLink > .default-poster:hover ~ .play-last,
+	.uncoverLink > img:hover ~ .play-last {
 		display: block;
 	}
 
-	.uncoverLink:hover > .default-poster,
-	.uncoverLink:hover > img {
+	.uncoverLink > .default-poster:hover,
+	.uncoverLink > img:hover {
 		opacity: .1;
 	}
 
@@ -772,7 +790,9 @@
 	#share-actions > span,
 	#share-services > span,
 	#uncover_top_row span,
-	.uncoverLink,
+	.uncoverLink img,
+	.uncoverLink svg,
+	.uncover_actions,
 	#history > ul > span,
 	.settings-sub label,
 	.settings > label:hover,

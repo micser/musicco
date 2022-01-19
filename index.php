@@ -348,7 +348,7 @@ $_TRANSLATIONS["en"] = array(
 	"pause" => "Pause", 
 	"play" => "Play", 
 	"playlist_modified" => "refresh playlist", 
-	"queue_all" => "Queue all", 
+	"queue_selected" => "Queue selected", 
 	"uncover_more" => "Uncover more", 
 	"previoustrack" => "Previous",
 	"promptCoverURL" => "Album art URL", 
@@ -464,7 +464,7 @@ $_TRANSLATIONS["fr"] = array(
 	"pause" => "Pause", 
 	"play" => "Lecture", 
 	"playlist_modified" => "recharger la playlist", 
-	"queue_all" => "Ajouter tous les albums", 
+	"queue_selected" => "Ajouter les albums sélectionés", 
 	"uncover_more" => "En chercher d'autres", 
 	"previoustrack" => "Précédent",
 	"promptCoverURL" => "Adresse de la couverture", 
@@ -1944,7 +1944,7 @@ class Musicco {
 				 var queue = hasPlaylist() && !currentPlaylistIsReadOnly();
 				 var playAsNextAlbum = hasPlaylist() && !currentPlaylistIsReadOnly();
 				 var playBefore = hasPlaylist() && !currentPlaylistIsReadOnly();
-				 var goto_artist = ($(target).get(0) === $("#searchPanel").get(0));
+				 var goto_artist = (($(target).get(0) === $("#searchPanel").get(0)) || ($(target).get(0) === $("#uncoverLinks").get(0)));
 				 var download = (!isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 				 var downloadAlbum = (isFolder && <?php print (AuthManager::isAdmin()?"true":"false"); ?>);
 				 var removeFavourite = ($(target).get(0) === $("#favourites").get(0));
@@ -2145,6 +2145,38 @@ class Musicco {
 							},
 							'isFolder': function() { return ui.target.data("folder"); }
 						};
+						handleMenuSelection(node, ui.cmd);
+					}
+				});
+
+				$("#uncoverLinks").contextmenu({
+					open: function(event, ui){ positionSafe(ui) },
+					delegate: ".uncover_actions",
+					addClass: "onTop",
+					autoFocus: true,
+					closeOnWindowBlur: false,
+					preventContextMenuForPopup: true,
+					menu: menuOptions,
+					select: function(event, ui) {
+						var link = ui.target.closest(".uncoverLink");
+						var node = {
+							folder: true,
+							title: link.data("title").replace("/", ""),
+							data: {
+								album: link.data("album"),
+								artist: (link.data("artist").length > 0 ? link.data("artist") : link.data("path")),
+								cover: link.data("cover"),
+								parentfolder: link.data("parentfolder"),
+								path: link.data("path").replace(/^(.*)\/$/, "$1"),
+								songtitle: link.data("songtitle"),
+								type: link.data("type"),
+								year: link.data("year")
+							},
+							'isFolder': function() { return link.data("folder"); }
+						};
+						if ((ui.cmd == "goto_artist") || (ui.cmd == "info")) {
+							$("#uncoverPanel").dialog("close");
+						}
 						handleMenuSelection(node, ui.cmd);
 					}
 				});
@@ -4183,6 +4215,8 @@ class Musicco {
 									$.each(hits, function (i, elem) {
 										var artist = hits[i].artist;
 										var album = hits[i].album;
+										var cover = hits[i].cover;
+										var year = hits[i].year;
 										var parentfolder = hits[i].parentfolder;
 										var levelUp = parentfolder.substr(0,parentfolder.substr(0,parentfolder.lastIndexOf("/")).lastIndexOf("/")+1);
 										var parentfolderItem = parentfolder.substr(levelUp.length);
@@ -4190,12 +4224,15 @@ class Musicco {
 										if (parentfolderItemName=="") {
 											parentfolderItemName="home";
 										}
-										var coverUrl = hits[i].cover;
+										var coverUrl = cover;
 										if (coverUrl) { 
 											coverUrl = coverUrl.replace("#", "%23");
 										}
-										var hitLink ="<span class=\"uncoverLink\" id=\"uncoverLink" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\">";
+										var hitLink ="<span class=\"uncoverLink\" id=\"uncoverLink" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\" data-artist=\"" + artist + "\" data-album=\"" + album + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + artist + "\" data-type=\"1\" data-year=\"" + year + "\">";
+										hitLink += "<input type=\"checkbox\" class=\"fa-input\" checked id=\"uncoverLink_select" + i +"\" onclick='toggleCheckbox(\"uncoverLink_select" + i +"\")' />";
+										hitLink += "<label for=\"uncoverLink_select" + i + "\"><i class=\"fas fa-toggle-on\"></i></label>";
 										hitLink += (coverUrl) ? "<img src=\"" + coverUrl + "\"/>" : getDefaultPoster();
+										hitLink += "<i class=\"fas fa-bars fa-fw uncover_actions\"></i>";
 										hitLink += playLastIcon();
 										hitLink += "<br/>";
 										hitLink += artist + " - " + album;
@@ -4210,7 +4247,7 @@ class Musicco {
 									});
 								}
 							if (method == "feeling_lucky") {
-								$.when($(".uncoverLink").trigger("click")).done(function() {
+								$.when($(".fa-toggle-on").closest(".uncoverLink").children(".default-poster, img").trigger("click")).done(function() {
 									$(".uncoverLink").remove();
 								});
 							} else {
@@ -4220,17 +4257,18 @@ class Musicco {
 					}
 				});
 
-				$(document).on("click", "#addAll", function(event) {
-					$(".uncoverLink").trigger("click");
-					$("#uncoverPanel").dialog("close");
+				$(document).on("click", "#queueSelected", function(event) {
+					console.log($(".fa-toggle-on").closest(".uncoverLink").children(".default-poster, img"));
+					$(".fa-toggle-on").closest(".uncoverLink").children(".default-poster, img").trigger("click");
 				});
 
 				$(document).on("click taphold", "#uncover_more", function(event) {
 					$(".uncoverLink").remove();
 				});
 
-				$(document).on("click", ".uncoverLink", function(event) {
-					queueMusic($(this).data("parentfolder") + $(this).data("path"), $(this).data("title"), Insert.last);
+				$(document).on("click", ".uncoverLink > svg, .uncoverLink > img", function(event) {
+					var parent = $(this).parent(".uncoverLink");
+					queueMusic(parent.data("parentfolder") + parent.data("path"), parent.data("title"), Insert.last);
 				});
 
 				$(document).on("click", ".infoPanelAnchor", function(event) {
@@ -4321,6 +4359,11 @@ class Musicco {
 						$(this).parents("li").data("album") + "<?php print $this->getString("by"); ?>" + $(this).parents("li").data("artist"),
 						$(this).parents("li").find("img.playlist-poster").attr("src")
 					);
+				});
+
+				$(document).on("mouseup", ".uncover_actions", function(event) {
+					setMenuEntries(true, $("#uncoverLinks"));
+					$("#uncoverLinks").contextmenu("open", $(this));
 				});
 
 				$(document).on("mouseup", ".searchResult, .searchResultParent", function(event) {
@@ -4427,7 +4470,7 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="imageViewerPanel" class="modal"><img src=""/><div></div></div>
 		<div id="uncoverPanel" class="modal">
 			<div id="uncover_top_row">
-			<span id="addAll"><i class="fas fa-plus"></i><?php print $this->getString("queue_all"); ?></span>
+			<span id="queueSelected"><i class="fas fa-plus"></i><?php print $this->getString("queue_selected"); ?></span>
 			<span id="uncover_more" oncontextmenu="return false;" class="uncover"><i class="fas fa-magic"></i><?php print $this->getString("uncover_more"); ?></span>
 			</div>
 			<div id="uncoverLinks"></div>
@@ -5982,6 +6025,7 @@ function refreshdb($quiet) {
 				$aboutString.="<li>Improved dynamic theme colours</li>";
 				$aboutString.="<li>Improved library rebuild speed</li>";
 				$aboutString.="<li>Minor Listening History improvements</li>";
+				$aboutString.="<li>Improved Uncover dialogue</li>";
 				$aboutString.="<li>Minor bug fixes</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
