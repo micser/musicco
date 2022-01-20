@@ -199,6 +199,11 @@
 */
 
 	/* uncover panel styling */
+
+	#uncoverPanel {
+		padding-top: 0;
+	}
+
 	#uncover_top_row,
 	#uncoverLinks {
 		display: flex;
@@ -207,6 +212,13 @@
 		justify-content: space-around;
 		margin: 1em;
 		margin-top: 0;
+	}
+
+	#uncover_top_row {
+		background: var(--background);
+		position: sticky;
+		top: 0;
+		z-index: 100;
 	}
 
 	#uncover_top_row span i{
