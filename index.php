@@ -2011,7 +2011,7 @@ class Musicco {
 						downloadTrack(node.data.parentfolder, node.data.path)
 					break;
 					case "downloadAlbum":
-						downloadAlbum(node.data.parentfolder + node.data.album, node.data.album);
+						downloadAlbum(node.data.parentfolder + node.data.path, node.data.album);
 					break;
 					case "favourite":
 						addFavourite(node.data.parentfolder + node.data.path);
