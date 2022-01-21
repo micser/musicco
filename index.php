@@ -4281,7 +4281,7 @@ class Musicco {
 				$(document).on("click", ".infoPanelLink", function(event) {
 					event.preventDefault();
 					var title = $(this).attr('title');
-					displayInfo(title);
+					updateInfoPanel(title, false);
 				});
 
 				$(document).on("click", ".historyLink", function(event) {
