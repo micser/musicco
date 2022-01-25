@@ -277,6 +277,8 @@
 		width: 95%;
 		max-width: 250px;
 		max-height: 250px;
+		margin-top: 1em;
+		margin-bottom: .5em;
 	}
 
 	.uncoverLink .play-last {
