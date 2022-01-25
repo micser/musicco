@@ -3269,7 +3269,7 @@ class Musicco {
 										var lyricsDiv = htmlDoc.querySelector('div[data-lyrics-container="true"]');
 										if (lyricsDiv != null) {
 											lyrics = lyricsDiv.innerHTML.replaceAll('href="/', 'target="blank" href="' + GENIUS_BASE_URL + '');
-											var lyricsInfo = "<?php print $this->getString("viewOngenius"); ?>" + "<a target=\"blank\" href=\"" + geniusUrl +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
+											var lyricsInfo = song + " - " + artist + "<br/>" + "<?php print $this->getString("viewOngenius"); ?>" + "<a target=\"blank\" href=\"" + geniusUrl +"\">" + "<?php print $this->getString("genius"); ?>" + "</a>" ;
 											$('#lyricsPanel').html(lyricsInfo + '<br/><br/><span id="geniuslyrics">' + lyrics + '</span>');
 											resolve(false);
 										} else {
@@ -3288,7 +3288,7 @@ class Musicco {
 															proxyImage(lyricCovertArtUrl)
 															lyricImage = "<img class=\"hidden\" id=\"lyricCoverArt\" src=\"\"/><br/>";
 														}
-														var lyricInfo="<a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>" + searchLyricsExt + "<br/><br/>";
+														var lyricInfo = song + " - " + artist + "<br/>" + "<a target=\"_blank\" href=\""+lyricCorrectUrl+"\">"+lyricSong+"<?php print $this->getString("by"); ?>"+lyricArtist+"</a><br/>" + searchLyricsExt + "<br/><br/>";
 														lyrics=$(this).find('Lyric').text().replace(/\s([\(\[A-Z])/g, "<br/>$1").replace(/([\.\?!])\s/g, "$1<br/>"); //replace what needs to be prefixed by a new line, then what needs to be suffixed by a new line.
 														$('#lyricsPanel').html(lyricImage + lyricInfo + lyrics);
 													});
