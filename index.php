@@ -6017,7 +6017,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.0 (in development)</div>";
+				$aboutString.="<div class='bold yellow'>3.2.0</div>";
 				$aboutString.="<li>Automatically build a smart playlist of all new music</li>";
 				$aboutString.="<li>Quickly refresh newly renamed albums</li>";
 				$aboutString.="<li>Improved rotation detection</li>";
