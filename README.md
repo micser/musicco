@@ -63,6 +63,9 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
+## v3.2.1 (in development)
+* No fixes yet!
+
 ## v3.2.0
 * Quickly refresh newly renamed albums
 * Automatically build a smart playlist of all new music
