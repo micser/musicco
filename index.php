@@ -6017,11 +6017,11 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.1</div>";
+				$aboutString.="<div class='bold yellow'>3.2.1 (9th May 2022)</div>";
 				$aboutString.="<li>Fixed library refresh on successful quick scan</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.0</div>";
+				$aboutString.="<div class='bold yellow'>3.2.0 (26th January 2022)</div>";
 				$aboutString.="<li>Automatically build a smart playlist of all new music</li>";
 				$aboutString.="<li>Quickly refresh newly renamed albums</li>";
 				$aboutString.="<li>Improved rotation detection</li>";
