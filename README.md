@@ -63,6 +63,9 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
+## v3.2.2 (in development)
+* No fixes yet!
+
 ## v3.2.1
 * Fixed library refresh on successful quick scan
 * Upgrade to font-awesome 6.1.0
