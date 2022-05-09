@@ -46,7 +46,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 # Libraries
 
 
-| Library                                                                             | Included | Latest                                                                                                                                                                    |
+| Library                                                                             | Bundled | Latest                                                                                                                                                                    |
 |:----------------------------------------------------------------------------------- |:--------:| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [color-thief](https://github.com/lokesh/color-thief)                                | 2.3.2    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/lokesh/color-thief)](https://github.com/lokesh/color-thief/releases/latest)                   |
 | [detect_swipe](https://github.com/micser/detect_swipe)                              | 2.1.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/detect_swipe)](https://github.com/micser/detect_swipe/releases/latest)                 |
@@ -63,8 +63,8 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 # Changelog
 
-## v3.2.1 (in development)
-* No fixes yet!
+## v3.2.1
+* Fixed library refresh on successful quick scan
 
 ## v3.2.0
 * Quickly refresh newly renamed albums
