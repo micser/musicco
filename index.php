@@ -4141,7 +4141,7 @@ class Musicco {
 									if (scannedNode !=null) {
 										scannedNode.load(true);
 									} else {
-										library.push({
+										fullLibrary.push({
 											title: folderName,
 											tooltip: folderName,
 											folder: true,
