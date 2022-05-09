@@ -6019,6 +6019,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.1 (9th May 2022)</div>";
 				$aboutString.="<li>Fixed library refresh on successful quick scan</li>";
+				$aboutString.="<li>Upgrade to font-awesome 6.1.0</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.0 (26th January 2022)</div>";
