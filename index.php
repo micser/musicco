@@ -6017,8 +6017,8 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.1 (in development)</div>";
-				$aboutString.="<li>No fixes yet...</li>";
+				$aboutString.="<div class='bold yellow'>3.2.1</div>";
+				$aboutString.="<li>Fixed library refresh on successful quick scan</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.0</div>";
