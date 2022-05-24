@@ -64,11 +64,11 @@ Check out https://www.musicco.app for more information or try the demo at https:
 # Changelog
 
 ## v3.2.2 (in development)
-* No fixes yet!
+* Added visible icons to trigger Player Panel shortcuts
 
 ## v3.2.1
 * Fixed library refresh on successful quick scan
-* Upgrade to font-awesome 6.1.0
+* Upgrade to font-awesome 6.1.1
 
 ## v3.2.0
 * Quickly refresh newly renamed albums

@@ -6028,7 +6028,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.2 (in development)</div>";
-				$aboutString.="<li>No fixes yet!</li>";
+				$aboutString.="<li>* Added visible icons to trigger Player Panel shortcuts</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 			$aboutString.="<ul>";
