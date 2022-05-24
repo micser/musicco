@@ -3655,6 +3655,15 @@ class Musicco {
 					open: function( event, ui ) { $("#uncoverPanel").dialog('widget').attr("oncontextmenu", "return false;"); },
 					close: function( event, ui ) { $(".uncoverLink").remove();  }
 				});
+				//$("#lyricsViewerPanel").dialog({
+				//	modal: true,
+				//	autoOpen: false,
+				//	width: "unset",
+				//	height: $(window).height() * 0.9,
+				//	width: $(window).width() * 0.9,
+				//	show: { effect: "fade", duration: 400 },
+				//	hide: { effect: "fold", duration: 200 }
+				//});
 			}
 
 				  ////////////
@@ -4451,6 +4460,12 @@ class Musicco {
 				$("#imageViewerPanel").dialog("open");
 			});
 
+			//$(document).on("click", "#geniuslyrics a", function(event) {
+			//	event.preventDefault()
+			//	$("#lyricsIframe").attr("src", $(this).attr("href"));
+			//	$('#lyricsViewerPanel').dialog('open');
+			//});
+
 	});
 //]]>
 		</script>
@@ -4473,6 +4488,9 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="helpPanel" class="modal"><?php print getHelp(); ?></div>
 		<div id="aboutPanel" class="modal"><?php print getAbout(); ?></div>
 		<div id="imageViewerPanel" class="modal"><img src=""/><div></div></div>
+		<!--
+		<div id="lyricsViewerPanel" class="modal"><iframe id="lyricsIframe" src=""></iframe></div>
+		-->
 		<div id="uncoverPanel" class="modal">
 			<div id="uncover_top_row">
 			<span id="queueSelected"><i class="fas fa-plus"></i><?php print $this->getString("queue_selected"); ?></span>
@@ -6029,6 +6047,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.2 (in development)</div>";
 				$aboutString.="<li>* Added visible icons to trigger Player Panel shortcuts</li>";
+				$aboutString.="<li>* Improved annotated lyrics styling</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 			$aboutString.="<ul>";

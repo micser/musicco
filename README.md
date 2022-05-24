@@ -65,6 +65,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 ## v3.2.2 (in development)
 * Added visible icons to trigger Player Panel shortcuts
+* Improved annotated lyrics styling
 
 ## v3.2.1
 * Fixed library refresh on successful quick scan
