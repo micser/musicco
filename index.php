@@ -4075,6 +4075,11 @@ class Musicco {
 						goToAlbum($(this).text().replace("(", "").replace(")", ""));
 					});
 
+					$(document).on("click", ".shortcut", function() {
+						var target = ($(this).attr('id')).replace(/_shortcut/, "");
+						$("#" + target).trigger("dblclick");
+					});
+
 					$(document).on("dblclick", ".album, .year, .songtitle, #nowPlaying_album, #nowPlaying_year, #nowPlaying_songtitle", function() {
 						if (!isGuestPlay()) {
 							goToAlbum($(this).text().replace("(", "").replace(")", ""));
@@ -4691,12 +4696,17 @@ if(!AuthManager::isAccessAllowed()) {
 					<span id="duration" class="right"></span>
 				</div>
 				<div id="big-info">
-					<div id="nowPlaying_songtitle" class="nowrap">&nbsp;</div>
+					<div>
+						<span id="nowPlaying_songtitle" class="nowrap">&nbsp;</span>
+						<span id="nowPlaying_songtitle_shortcut" class="nowrap shortcut"><i class="fa-solid fa-circle-chevron-right"></i></span>
+					</div>
 					<div class="album-details nowrap">
 						<span id="nowPlaying_artist" class="nowrap">&nbsp;</span>
+						<span id="nowPlaying_artist_shortcut" class="nowrap shortcut"><i class="fa-solid fa-circle-chevron-right"></i></span>
 						<span>&nbsp;&bull;&nbsp;</span>
 						<span id="nowPlaying_album" class="nowrap">&nbsp;</span>
 						<span id="nowPlaying_year" class="nowrap">&nbsp;</span>
+						<span id="nowPlaying_album_shortcut" class="nowrap shortcut"><i class="fa-solid fa-circle-chevron-right"></i></span>
 					</div>
 				</div>
 				<div id="big-player-bottom">

@@ -438,6 +438,13 @@
 		font-size: var(--text-tiny);
 	}
 
+	.shortcut {
+		font-size: var(--text-tiny);
+		color: var(--text);
+		opacity: .2;
+		margin-left: .3em;
+	}
+
 	#big-player {
 		height: 100vh;
 	}
@@ -812,7 +819,8 @@
 	.settings > label:hover,
 	.fa-input ~ label:hover,
 	i.tooltip,
-	i.polling {
+	i.polling,
+	.shortcut {
 		cursor: pointer;
 	}
 
@@ -828,7 +836,8 @@
 	.remove:hover,
 	.move-up:hover,
 	.move-down:hover,
-	.album-action:hover {
+	.album-action:hover,
+	.shortcut:hover {
 		opacity: 1;
 	}
 
@@ -861,7 +870,8 @@
 	#share-services > span:hover,
 	span.current span.fancytree-title mark,
 	.fancytree-ext-filter-hide span.fancytree-node.fancytree-match.current span.fancytree-title,
-	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title {
+	.fancytree-ext-filter-hidetr.fancytree-match.current span.fancytree-title,
+	.shortcut:hover {
 		color: var(--text-highlight);
 	}
 
