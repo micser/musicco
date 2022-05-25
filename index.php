@@ -3655,15 +3655,6 @@ class Musicco {
 					open: function( event, ui ) { $("#uncoverPanel").dialog('widget').attr("oncontextmenu", "return false;"); },
 					close: function( event, ui ) { $(".uncoverLink").remove();  }
 				});
-				//$("#lyricsViewerPanel").dialog({
-				//	modal: true,
-				//	autoOpen: false,
-				//	width: "unset",
-				//	height: $(window).height() * 0.9,
-				//	width: $(window).width() * 0.9,
-				//	show: { effect: "fade", duration: 400 },
-				//	hide: { effect: "fold", duration: 200 }
-				//});
 			}
 
 				  ////////////
@@ -4459,12 +4450,6 @@ class Musicco {
 				$("#imageViewerPanel div").text(legend);
 				$("#imageViewerPanel").dialog("open");
 			});
-
-			//$(document).on("click", "#geniuslyrics a", function(event) {
-			//	event.preventDefault()
-			//	$("#lyricsIframe").attr("src", $(this).attr("href"));
-			//	$('#lyricsViewerPanel').dialog('open');
-			//});
 
 	});
 //]]>
