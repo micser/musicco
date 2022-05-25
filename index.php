@@ -353,7 +353,7 @@ $_TRANSLATIONS["en"] = array(
 	"previoustrack" => "Previous",
 	"promptCoverURL" => "Album art URL", 
 	"promptPlaylistName" => "New Playlist Name", 
-	"newPlaylistName" => "Mood from ", 
+	"newPlaylistName" => "📀 Mood from ", 
 	"promptFolderName" => "Folder name", 
 	"queueing" => "Queueing ",
 	"quick_scan" => "quick scan folder",
@@ -469,7 +469,7 @@ $_TRANSLATIONS["fr"] = array(
 	"previoustrack" => "Précédent",
 	"promptCoverURL" => "Adresse de la couverture", 
 	"promptPlaylistName" => "Nom de la playlist", 
-	"newPlaylistName" => "Humeur du ", 
+	"newPlaylistName" => "📀 Humeur du ", 
 	"promptFolderName" => "Nome du dossier", 
 	"queueing" => "Ajout de ",
 	"quick_scan" => "ajout rapide...",
@@ -4317,7 +4317,7 @@ class Musicco {
 				);
 
 				$(document).on("click", "#newPlaylist", function() {
-					var newPlaylistName = window.prompt("<?php print $this->getString("promptPlaylistName"); ?>", "<?php print $this->getString("newPlaylistName"); ?>" + (new Date(Date.now())).toLocaleString());
+					var newPlaylistName = "<?php print $this->getString("newPlaylistName"); ?>" + (new Date(Date.now())).toLocaleString();
 					if ((newPlaylistName != '') &&  (newPlaylistName != null)) {
 						createNewPlaylist(newPlaylistName);
 					}
