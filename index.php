@@ -2452,6 +2452,7 @@ class Musicco {
 				$("#playlist_select").val(name);
 				clearPlaylist();
 				adjustPlaylistControls();
+				$("#playlist_select").trigger("change");
 			}
 
 			function deletePlaylist(name) {
