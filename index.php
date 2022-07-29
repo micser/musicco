@@ -6051,7 +6051,8 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.2 (in development)</div>";
 				$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
-				$aboutString.="<li>Upgraded fancytree to latest release</li>";
+				$aboutString.="<li>Upgraded to fancytree 2.38.2</li>";
+				$aboutString.="<li>Upgraded jquery-ui 1.13.2</li>";
 				$aboutString.="<li>Added visible icons to trigger Player Panel shortcuts</li>";
 				$aboutString.="<li>Improved annotated lyrics styling</li>";
 			$aboutString.="</ul>";
