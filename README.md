@@ -64,6 +64,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 # Changelog
 
 ## v3.2.2 (in development)
+* Load album art when queing musinc instead of when playing it
 * Upgraded fancytree to latest release
 * Added visible icons to trigger Player Panel shortcuts
 * Improved annotated lyrics styling

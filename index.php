@@ -2379,11 +2379,15 @@ class Musicco {
 				return path;
 			}
 
-			function saveCover(coverURL, path) {
+			function saveCover(coverURL, path, playlistOnly) {
 				$.post('?', {saveCover: '', u: coverURL, p: path}, function (response) {
 					if (response) {
 						var imagePath = (encodeURIComponent(path) + "<?php print $this->getConfig('coverFileName'); ?><?php print $this->getConfig("coverExtension"); ?>").replace(/#/g, "%23") + "?" + Math.floor(Date.now());
-						if (!isTooLate()) { printCover(imagePath); };
+						if (playlistOnly == null) {
+							if (!isTooLate()) { printCover(imagePath); };
+						} else {
+							printPlaylistCover(path, imagePath)
+						}
 					}
 				});
 			}
@@ -2764,9 +2768,11 @@ class Musicco {
 					}
 				}
 
-				function lookupCover() {
-					var fetchOnlineOnFail = "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
-					var fileUrl = buildMediaSrc(getBaseURL() + nowPlaying["parentfolder"], nowPlaying["path"]);
+				function lookupCover(parent, path, fetchOnlineOnFail, playlistOnly) {
+					parent = (parent != null) ? parent : nowPlaying["parentfolder"];
+					path = (path != null) ? path : nowPlaying["path"];
+					fetchOnlineOnFail = (fetchOnlineOnFail != null) ? false : "<?php print $this->getConfig('downLoadMissingCovers'); ?>";
+					var fileUrl = buildMediaSrc(getBaseURL() + parent, path);
 					new jsmediatags.Reader(fileUrl)
 					.setTagsToRead(["picture"])
 					.read({
@@ -2778,9 +2784,11 @@ class Musicco {
 									base64String += String.fromCharCode(picture.data[i]);
 								}
 								var imageUri = "data:" + picture.format + ";base64," + window.btoa(base64String);
-								$('#statusText').removeClass('canFetch');
-								saveCover(imageUri, nowPlaying["parentfolder"]);
-								setCoverInfoStatus("<?php print $this->getString("extractedFromFile"); ?>");
+								saveCover(imageUri, parent, playlistOnly);
+								if (fetchOnlineOnFail) { 
+									$('#statusText').removeClass('canFetch');
+									setCoverInfoStatus("<?php print $this->getString("extractedFromFile"); ?>"); 
+								}
 							} else {
 								if (fetchOnlineOnFail) {
 									fetchCoverOnline();
@@ -2813,6 +2821,15 @@ class Musicco {
 					if (isDynamicTheme()) {
 						setTheme(coverUrl);
 					}
+					savePlaylist();
+				}
+
+				function printPlaylistCover(path, coverUrl) {
+					var album = $("#playlist").find("li[data-nature='album'][data-parentfolder='" + path + "']");
+					album.find(".default-poster").hide();
+					album.find("img.playlist-poster").attr("src", coverUrl).show();
+					album.find("li").data("cover", coverUrl);
+					album.find(".playlist-poster").attr("src", coverUrl);
 					savePlaylist();
 				}
 
@@ -3428,6 +3445,7 @@ class Musicco {
 						$thisAlbum.find(".default-poster").remove();
 					} else {
 						$thisAlbum.find("img.playlist-poster").hide();
+						lookupCover($thisAlbum.data("parentfolder"), album[0].path, false, true);
 					}
 					$thisAlbum.find(".artist").html($thisAlbum.data("artist"));
 					$thisAlbum.find(".album").html($thisAlbum.data("album"));
@@ -6032,8 +6050,10 @@ function refreshdb($quiet) {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.2 (in development)</div>";
-				$aboutString.="<li>* Added visible icons to trigger Player Panel shortcuts</li>";
-				$aboutString.="<li>* Improved annotated lyrics styling</li>";
+				$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
+				$aboutString.="<li>Upgraded fancytree to latest release</li>";
+				$aboutString.="<li>Added visible icons to trigger Player Panel shortcuts</li>";
+				$aboutString.="<li>Improved annotated lyrics styling</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 			$aboutString.="<ul>";
