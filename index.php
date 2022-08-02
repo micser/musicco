@@ -6050,6 +6050,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.2 (in development)</div>";
+				$aboutString.="<li>Fix medium viewer css not being triggered</li>";
 				$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
 				$aboutString.="<li>Upgraded to fancytree 2.38.2</li>";
 				$aboutString.="<li>Upgraded to jquery-ui 1.13.2</li>";

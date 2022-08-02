@@ -64,6 +64,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 # Changelog
 
 ## v3.2.2 (in development)
+* Fix medium viewer css not being triggered
 * Load album art when queing musinc instead of when playing it
 * Upgraded to fancytree 2.38.2
 * Upgraded to jquery-ui 1.13.2

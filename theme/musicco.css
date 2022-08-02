@@ -1845,7 +1845,7 @@
 		place-content: flex-end;
 	}
 
-	@media (min-width: 1000px) {
+	@media (min-width: 1025px) {
 
 		#viewer:after {
 			content: 'widescreen';
