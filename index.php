@@ -2825,7 +2825,7 @@ class Musicco {
 				}
 
 				function printPlaylistCover(path, coverUrl) {
-					var album = $("#playlist").find("li[data-nature='album'][data-parentfolder='" + path + "']");
+					var album = $("#playlist").find("li[data-nature='album'][data-parentfolder='" + path.replace("'", "\\'") + "']");
 					album.find(".default-poster").hide();
 					album.find("img.playlist-poster").attr("src", coverUrl).show();
 					album.find("li").data("cover", coverUrl);
