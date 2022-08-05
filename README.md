@@ -69,7 +69,7 @@ musicco is in great part inspired by / technically relies or has relied on the f
 * [Encode Explorer](https://github.com/marekrei/encode-explorer)
 * [katastrophos.net's cover art downloader](https://coverart.katastrophos.net/)
 
-musicco scans your music folder and builds a database of your music collection, retrieving missing cover art from [coverartarchive.org](www.coverartarchive.org), artist information from [wikipedia.org](https://wikipedia.org) and song lyrics from [chartlyrics.com](http://www.chartlyrics.com).
+musicco scans your music folder and builds a database of your music collection, retrieving missing cover art from [coverartarchive.org](https://coverartarchive.org), artist information from [wikipedia.org](https://wikipedia.org) and song lyrics from [chartlyrics.com](http://www.chartlyrics.com).
 
 
 # 📒 Changelog
