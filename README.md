@@ -1,4 +1,4 @@
-# musicco
+# 🎶  musicco
 [![GitHub Release Date](https://img.shields.io/github/release-date/micser/musicco)](https://github.com/micser/musicco/releases/latest) [![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/micser/musicco/latest)](https://github.com/micser/musicco/commits) [![GitHub last commit](https://img.shields.io/github/last-commit/micser/musicco)](https://github.com/micser/musicco/commit) [![GitHub issues](https://img.shields.io/github/issues/micser/musicco)](https://github.com/micser/musicco/issues)
 ![musicco](/doc/img/header-bg.png?raw=true "musicco")
 musicco is a web player for your music library Host it on a NAS and start streaming your music from any browser.  
@@ -7,13 +7,13 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 [![Follow @musiccoapp](https://img.shields.io/twitter/follow/musiccoapp?style=social)](https://twitter.com/musiccoapp)
 
-# Features
+# 💡 Features
 
-## Fully responsive player for all your devices
+## 📱 Fully responsive player for all your devices
 
 ![musicco](/doc/img/readme/responsive.png?raw=true "Fully responsive player for all your devices")
 
-## Browsing, filtering and searching the music library
+## 🔎 Browsing, filtering and searching the music library
 
 ![musicco](/doc/img/readme/browsing-searching.png?raw=true "Browsing, filtering and searching the music library")
 
@@ -21,20 +21,20 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 ![musicco](/doc/img/readme/artistInfo-lyrics.png?raw=true "Artist information and lyrics for currently playing track")
 
-## Keyboard support
+## ⌨️ Keyboard support
 
 ![musicco](/doc/img/readme/keyboard.png?raw=true "Keyboard support")
 
-## Optional authentication and multi-user support for saving everybody's playlists
+## 🔐 Optional authentication and multi-user support for saving everybody's playlists
 
 ![musicco](/doc/img/readme/auth-playlist.png?raw=true "Optional authentication and multi-user support for saving everybody's playlists")
 
-## Showcase that beautiful album art
+## 🖼️ Showcase that beautiful album art
 
 ![musicco](/doc/img/readme/square.png?raw=true "Showcase that beautiful album art")
 
 
-# Required php extensions
+# ⚙️ Required php extensions
 
 * pdo_sqlite (mandatory)
 * php7.0-xml (mandatory)
@@ -43,7 +43,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 * zip (optional, for download support)
 
 
-# Libraries
+# 📚 Libraries
 
 
 | Library                                                                             | Bundled | Latest                                                                                                                                                                    |
@@ -61,7 +61,18 @@ Check out https://www.musicco.app for more information or try the demo at https:
 | [jsmediatags](https://github.com/aadsm/jsmediatags)                                 | 3.9.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/aadsm/jsmediatags)](https://github.com/aadsm/jsmediatags/releases/latest)                     |
 | [normalise](https://github.com/micser/normalise)                                    | 1.0.0    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/normalise)](https://github.com/micser/normalise/releases/latest)                       |
 
-# Changelog
+
+# 💗 Love
+
+musicco is in great part inspired by / technically relies or has relied on the following great projects:
+* [musicbrowser](https://github.com/henrik242/musicbrowser)
+* [Encode Explorer](https://github.com/marekrei/encode-explorer)
+* [katastrophos.net's cover art downloader](https://coverart.katastrophos.net/)
+
+musicco scans your music folder and builds a database of your music collection, retrieving missing cover art from [coverartarchive.org](www.coverartarchive.org), artist information from [wikipedia.org](https://wikipedia.org) and song lyrics from [chartlyrics.com](http://www.chartlyrics.com).
+
+
+# 📒 Changelog
 
 ## v3.2.2 (in development)
 * Fix medium viewer css not being triggered
