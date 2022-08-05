@@ -17,7 +17,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 ![musicco](/doc/img/readme/browsing-searching.png?raw=true "Browsing, filtering and searching the music library")
 
-## Artist information and lyrics for currently playing track
+## ℹ️ Artist information and lyrics for currently playing track
 
 ![musicco](/doc/img/readme/artistInfo-lyrics.png?raw=true "Artist information and lyrics for currently playing track")
 
