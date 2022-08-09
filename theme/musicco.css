@@ -824,6 +824,16 @@
 		cursor: pointer;
 	}
 
+	#history > #today > span ~ li,
+	#history > #yesterday > span ~ li,
+	#history > #this-week > span ~ li {
+		display: list-item;
+	}
+
+	#history > ul > span ~ li {
+		display: none;
+	}
+
 	.is-admin- {
 		display:none;
 	}
