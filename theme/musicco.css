@@ -525,7 +525,7 @@
 		#big-cover:hover #big-volume-bar {
 		opacity: 1;
 		border: 1px solid var(--text-highlight);
-		transition: opacity 2s ease, border 2s ease;
+		transition: opacity 3s ease, border 3s ease;
 		}
 	}
 
@@ -792,6 +792,24 @@
 	#uncover_top_row span:hover,
 	.settings > label:hover > i {
 		color: var(--text-highlight);
+	}
+
+	#waveform-container {
+		height: 50px;
+		overflow: hidden;
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		}
+
+	#waveform {
+		opacity: .4;
+		transition: opacity 3s ease;
+	}
+
+	#waveform:hover {
+		opacity: 1;
+		transition: opacity .1s ease;
 	}
 
 	#waveform > wave {
@@ -1363,20 +1381,6 @@
 		position: relative;
 	}
 
-	#big-jp-progress {
-		width: 100%;
-		margin: 0;
-		background: transparent;
-		color: var(--text-highlight);
-		height: .2em;
-		border: 1px solid #bebec1;
-		border: 0;
-		border-radius: 0;
-		position: relative;
-		bottom: 0px;
-		z-index: 1;
-	}
-
 	.hovered,
 	#big-volume-bar:hover {
 		opacity: 1!important;
@@ -1739,6 +1743,14 @@
 			display: none;
 		}
 
+		@media (hover: hover) {
+			#big-cover:hover ~ #big-info {
+				backdrop-filter: blur(5px)!important;
+				transition: backdrop-filter .5s ease-in, opacity .5s ease-out!important;
+				opacity: 1!important;
+			}
+		}
+	
 		#header {
 			height: 1em;
 		}
@@ -1796,6 +1808,7 @@
 			font-size: var(--text-big);
 		}
 
+		#waveform:hover #big-info,
 		#big-info:hover,
 		.flash {
 			backdrop-filter: blur(5px)!important;
@@ -1807,15 +1820,16 @@
 			backdrop-filter: unset;
 			position: absolute;
 			background: rgba(0, 0, 0, 0.3);
-			bottom: 0;
-			margin-bottom: 5%;
-			left: -3px;
-			width: 100%;
+			top: 5em;
+			right: 4em;
+			width: 33%;
 			opacity: 0;
 			transition: backdrop-filter 1s ease-in, opacity 1s ease-in;
 			padding: .5em 0 .5em .5em;
 			color: var(--text-highlight);
 			text-shadow: -1px -1px 0 var(--background), 1px -1px 0 var(--background), -1px 1px 0 var(--background), 1px 1px 0 var(--background);
+			border-radius: 5px;
+			box-shadow: 0 0 black;
 		}
 
 		@supports not (backdrop-filter: blur(10px)) {
@@ -1856,6 +1870,7 @@
 
 	#header {
 		place-content: flex-end;
+		width: calc(100% - 1em);
 	}
 
 	@media (min-width: 1025px) {
@@ -1982,10 +1997,6 @@
 
 		#updateCoverArt {
 			font-size: var(--text-tiny);
-		}
-
-		#big-jp-progress {
-			height: .05em;
 		}
 
 		#big-player-bottom {

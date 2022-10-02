@@ -1520,6 +1520,7 @@ class Musicco {
 			}
 
 			function loadTrack(trackNumber) {
+				$("#waveform").hide();
 				var track = $("#playlist li[data-nature=track]:eq(" + Math.max(trackNumber, 0) + ")");
 				$("#playlist li").removeClass("currentTrack currentAlbum previousAlbum previousTrack nextTrack nextAlbum ");
 				$(track).addClass("currentTrack");
@@ -3551,7 +3552,8 @@ class Musicco {
 					responsive: true,
 					barGap: 1,
 					barWidth: 1,
-    				barRadius: 1
+    				barRadius: 1,
+					height: 100
 				});
 
 				var watcherTarget = document.getElementById("playlist");
@@ -3801,9 +3803,15 @@ class Musicco {
 				});
 
 				wavesurfer.drawer.on('click', function (e, progress) {
-				    jump(progress);
+					jump(progress);
+					$("#waveform").trigger("blur");
 				});
 
+				wavesurfer.on('loading', function(progress) {
+					if (progress > 90) {
+						$("#waveform").fadeIn();
+					}
+				});
 				$(document).on("click taphold", ".big-jp-previous", function(e) {
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
@@ -4724,7 +4732,9 @@ if(!AuthManager::isAccessAllowed()) {
 						<span id="uploadIt" class="coveractions"><?php print $this->getString("clickToUploadYourOwn"); ?></a></span>
 						</div>
 					<div class="dummy">&nbsp;</div>
-					<div id="waveform"></div>
+					<div id="waveform-container">
+						<div id="waveform"></div>
+					</div>
 				</div>
 				<div id="big-timer" class="spread">
 					<span id="current_time" class="left"></span>
