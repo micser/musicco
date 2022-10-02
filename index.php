@@ -845,6 +845,7 @@ class Musicco {
 		<script type="text/javascript" defer src="lib/normalise/normalise.js"></script>
 		<script type="text/javascript" defer src="lib/color-thief/color-thief.min.js"></script>
 		<script type="text/javascript" defer src="lib/jsmediatags/jsmediatags.min.js"></script>
+		<script type="text/javascript" defer src="lib/wavesurfer/wavesurfer.min.js"></script>
 		<?php 
 			if ($this->getConfig('isCastAllowed')) {
 				echo '<script type="text/javascript" src="//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>';
@@ -967,7 +968,7 @@ class Musicco {
 								durationChange(event.value);
 							break;
 							case "currentTime":
-								timeUpdate(event.value);
+								timeUpdate(event.value, null);
 							break;
 							case "mediaInfo":
 								if (event.value != null) {
@@ -1040,6 +1041,8 @@ class Musicco {
 			var player = new Audio();
 			player.autoplay = false;
 			var localVolume = 1;
+
+			var wavesurfer = null;
 
 			var castSession = null;
 			var castPlayer = null;
@@ -1126,14 +1129,14 @@ class Musicco {
 			function durationChange(provided) {
 				var duration = (provided != null) ? provided : player.duration;
 				$("#duration").html(getDuration(duration));
-				$("#big-jp-progress").slider( "option", "max", parseInt(duration) );
 			}
 
-			function timeUpdate(provided) {
-				var currentTime = (provided != null) ? provided : player.currentTime;
+			function timeUpdate(providedCurrent, providedDuration) {
+				var currentTime = (providedCurrent != null) ? providedCurrent : player.currentTime;
+				var duration = (providedDuration != null) ? providedDuration : player.duration;
 				$("#current_time").html(getDuration(currentTime));
-				if (timeUpdates) {
-					$("#big-jp-progress").slider( "option", "value", parseInt(currentTime) );
+				if (timeUpdates && !isNaN(duration)) {
+					wavesurfer.seekTo(currentTime/duration);
 				}
 			}
 
@@ -1381,9 +1384,13 @@ class Musicco {
 			}
 
 			function setColour(id, value) {
+				var transparentValue = value + 80;
+				var highlightValue = increase_brightness(value, (id == "background")? 10: 70)
 				document.documentElement.style.setProperty("--" + id, value);
-				document.documentElement.style.setProperty("--" + id + "-transparent", value + "80");
-				document.documentElement.style.setProperty("--" + id + "-highlight", increase_brightness(value, (id == "background")? 10: 70));
+				document.documentElement.style.setProperty("--" + id + "-transparent", transparentValue);
+				document.documentElement.style.setProperty("--" + id + "-highlight", highlightValue);
+				wavesurfer.setWaveColor(value);
+				wavesurfer.setProgressColor(highlightValue);
 			}
 
 			function componentToHex(c) {
@@ -1478,6 +1485,7 @@ class Musicco {
 				$(".logo-player").show();
 				$("#nowPlaying_songtitle, #nowPlaying_artist, #nowPlaying_album, #nowPlaying_year").html("");
 				$("#duration, #current_time").html("00:00");
+				wavesurfer.empty();
 			}
 
 			function buildMediaSrc(parentfolder, path) {
@@ -1517,6 +1525,7 @@ class Musicco {
 				$(track).addClass("currentTrack");
 				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
 				player.src = buildMediaSrc($(track).data("parentfolder"), $(track).data("path"));
+				wavesurfer.load(player);
 				refreshPlaylist();
 				updateUI();
 			}
@@ -3535,6 +3544,15 @@ class Musicco {
 				if ("<?php print $this->getConfig('enable_polling') ?>") {
 					startPolling();
 				}
+				
+				wavesurfer = WaveSurfer.create({
+					container: '#waveform',
+					cursorWidth: 0,
+					responsive: true,
+					barGap: 1,
+					barWidth: 1,
+    				barRadius: 1
+				});
 
 				var watcherTarget = document.getElementById("playlist");
 				if (watcherTarget) {
@@ -3568,15 +3586,6 @@ class Musicco {
 						initContextMenus();
 						checkLibraryRefresh($("#library_tools").html());
 					}
-
-					$("#big-jp-progress").slider({
-						range: "min",
-						min: 0,
-						max: 100,
-						value: 0,
-						start: function(event, ui) { timeUpdates = false; },
-						stop: function(event, ui) { setCurrentTime(ui.value); timeUpdates = true; }
-					});
 
 					$("#big-volume-bar").slider({
 						orientation: "vertical",
@@ -3789,6 +3798,10 @@ class Musicco {
 
 				$("#shared-album-show-qr, #shared-album-show-cover").on("click", function() {
 					$("#shared-album-cover, #shared-album-qr, #shared-album-show-qr, #shared-album-show-cover").toggle();
+				});
+
+				wavesurfer.drawer.on('click', function (e, progress) {
+				    jump(progress);
 				});
 
 				$(document).on("click taphold", ".big-jp-previous", function(e) {
@@ -4711,7 +4724,7 @@ if(!AuthManager::isAccessAllowed()) {
 						<span id="uploadIt" class="coveractions"><?php print $this->getString("clickToUploadYourOwn"); ?></a></span>
 						</div>
 					<div class="dummy">&nbsp;</div>
-					<div id="big-jp-progress"></div>
+					<div id="waveform"></div>
 				</div>
 				<div id="big-timer" class="spread">
 					<span id="current_time" class="left"></span>
@@ -6050,6 +6063,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.2 (in development)</div>";
+				$aboutString.="<li>Display progress bar as a waveform</li>";
 				$aboutString.="<li>Fix medium viewer css not being triggered</li>";
 				$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
 				$aboutString.="<li>Upgraded to fancytree 2.38.2</li>";

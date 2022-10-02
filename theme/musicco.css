@@ -794,11 +794,14 @@
 		color: var(--text-highlight);
 	}
 
+	#waveform > wave {
+		cursor: pointer!important;
+	}
+
 	.toggles,
 	.play-pause + label i,
 	.big-jp-previous,
 	.big-jp-next,
-	#big-jp-progress, 
 	.go,
 	a,
 	#controls > span > i,
