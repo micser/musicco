@@ -3545,16 +3545,6 @@ class Musicco {
 				if ("<?php print $this->getConfig('enable_polling') ?>") {
 					startPolling();
 				}
-				
-				wavesurfer = WaveSurfer.create({
-					container: '#waveform',
-					cursorWidth: 0,
-					responsive: true,
-					barGap: 1,
-					barWidth: 1,
-    				barRadius: 1,
-					height: 100
-				});
 
 				var watcherTarget = document.getElementById("playlist");
 				if (watcherTarget) {
@@ -3577,6 +3567,18 @@ class Musicco {
 						ui.newPanel.addClass("shown");
 					}
 				});
+
+				if (document.getElementById("waveform")) {
+					wavesurfer = WaveSurfer.create({
+						container: '#waveform',
+						cursorWidth: 0,
+						responsive: true,
+						barGap: 1,
+						barWidth: 1,
+							barRadius: 1,
+						height: 100
+					});
+				}
 
 				if (!document.getElementsByClassName("landing").length) {
 					if (isGuestPlay()) {
@@ -3802,16 +3804,19 @@ class Musicco {
 					$("#shared-album-cover, #shared-album-qr, #shared-album-show-qr, #shared-album-show-cover").toggle();
 				});
 
-				wavesurfer.drawer.on('click', function (e, progress) {
-					jump(progress);
-					$("#waveform").trigger("blur");
-				});
+				if (wavesurfer != null) {
+					wavesurfer.drawer.on('click', function (e, progress) {
+						jump(progress);
+						$("#waveform").trigger("blur");
+					});
 
-				wavesurfer.on('loading', function(progress) {
-					if (progress > 90) {
-						$("#waveform").fadeIn();
-					}
-				});
+					wavesurfer.on('loading', function(progress) {
+						if (progress > 90) {
+							$("#waveform").fadeIn();
+						}
+					});
+				}
+
 				$(document).on("click taphold", ".big-jp-previous", function(e) {
 					if (playerConfig["shuffled"]) {
 						playRandomTrack();
