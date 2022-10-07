@@ -84,6 +84,7 @@ musicco scans your music folder and builds a database of your music collection, 
 * Upgraded to font-awesome 6.2.0
 * Added visible icons to trigger Player Panel shortcuts
 * Improved annotated lyrics styling
+* Remove icon clutter on smaller screens
 
 ## v3.2.1
 * Fixed library refresh on successful quick scan

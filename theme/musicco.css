@@ -1873,6 +1873,13 @@
 		width: calc(100% - 1em);
 	}
 
+	@media (max-width: 1024px) {
+		#big-volume-up,
+		#big-volume-down {
+			display: none;
+		}
+	}
+
 	@media (min-width: 1025px) {
 
 		#viewer:after {
@@ -1939,8 +1946,8 @@
 		#big-timer,
 		#big-info,
 		#big-player-bottom,
-		.big-volume-down,
-		.big-volume-up {
+		#big-volume-down,
+		#big-volume-up {
 			display: none !important;
 		}
 

@@ -6087,6 +6087,7 @@ function refreshdb($quiet) {
 				$aboutString.="<li>Upgraded to font-awesome 6.2.0</li>";
 				$aboutString.="<li>Added visible icons to trigger Player Panel shortcuts</li>";
 				$aboutString.="<li>Improved annotated lyrics styling</li>";
+				$aboutString.="<li>Remove icon clutter on smaller screens</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
 			$aboutString.="<ul>";
