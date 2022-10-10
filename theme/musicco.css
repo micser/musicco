@@ -1946,8 +1946,8 @@
 		#big-timer,
 		#big-info,
 		#big-player-bottom,
-		#big-volume-down,
-		#big-volume-up {
+		.big-volume-down,
+		.big-volume-up {
 			display: none !important;
 		}
 
