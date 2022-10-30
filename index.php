@@ -3575,8 +3575,12 @@ class Musicco {
 						responsive: true,
 						barGap: 1,
 						barWidth: 1,
-							barRadius: 1,
-						height: 100
+						barRadius: 1,
+						height: 100,
+						normalize: true,
+						pixelRatio: 1,
+						partialRender: true,
+						maxCanvasWidth: 100
 					});
 				}
 
@@ -3811,7 +3815,7 @@ class Musicco {
 					});
 
 					wavesurfer.on('loading', function(progress) {
-						if (progress > 90) {
+						if (progress == 100) {
 							$("#waveform").fadeIn();
 						}
 					});
