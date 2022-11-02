@@ -87,6 +87,10 @@
 		top: -500px;
 	}
 
+	.filteredOut {
+		display: none!important;
+	}
+
 	#big-unmute {
 		display: none;
 	}
@@ -882,7 +886,7 @@
 	.searchResult:hover,
 	.new,
 	input,
-	#filterButton:hover,
+	.filterToolButton:hover,
 	#clear:hover,
 	#findIt:hover,
 	#updateCoverArt,
@@ -1016,7 +1020,7 @@
 	#helpBox,
 	#clear,
 	.remove,
-	#filterButton,
+	.filterToolButton,
 	#includeOldAlbums,
 	#findIt,
 	#big-player,
@@ -1178,7 +1182,7 @@
 		width: 95%;
 	}
 
-	#filterText {
+	.filterTool {
 		width: 85%;
 	}
 
@@ -2071,7 +2075,7 @@
 		padding-right: .75em!important;
 	}
 
-	#filterText {
+	.filterTool {
 		width: 80%;
 	}
 
