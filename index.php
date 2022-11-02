@@ -311,6 +311,7 @@ $_TRANSLATIONS["en"] = array(
 	"extractedFromFile" => "album art loaded from file",
 	"fetchingAlbumArt" => "fetching album art...",
 	"filter_placeholder" => " filter library",
+	"history_filter_placeholder" => " filter history",
 	"genius" => "genius ",
 	"viewOngenius" => "View these lyrics on ",
 	"google" => "the web",
@@ -427,6 +428,7 @@ $_TRANSLATIONS["fr"] = array(
 	"extractedFromFile" => "couverture lue dans le fichier",
 	"fetchingAlbumArt" => "téléchargement de la couverture en cours...",
 	"filter_placeholder" => " filtrer la discothèque",
+	"history_filter_placeholder" => " filtrer l'historique",
 	"genius" => "genius ",
 	"viewOngenius" => "Voir les paroles sur ",
 	"google" => "le web",
@@ -1343,7 +1345,7 @@ class Musicco {
 			}
 
 			function resetPlaylists() {
-				getPlaylists(loadPlaylist);
+				loadPlaylists(loadPlaylist);
 			}
 
 			function setTheme(coverUrl) {
@@ -2481,10 +2483,10 @@ class Musicco {
 				});
 			}
 
-			function getPlaylists(callback) {
+			function loadPlaylists(callback) {
 				var user = "<?php echo AuthManager::getUserName(); ?>";
 				if (user!="") {
-					$.post('?', {getPlaylists: '', u: user}, function(response) {
+					$.post('?', {loadPlaylists: '', u: user}, function(response) {
 						$("#playlist_select").children().remove().end();
 						var playlists = JSON.parse(response);
 						$.each(playlists, function (i, name) {
@@ -2519,18 +2521,22 @@ class Musicco {
 				updateHistoryCategories();
 			}
 
-			function getHistory() {
+			function loadHistory() {
 				var user = "<?php echo AuthManager::getUserName(); ?>";
 				if (user!="") {
-					$.post('?', {getHistory: '', u: user}, function(response) {
-						$("#history li").remove();
+					$.post('?', {loadHistory: '', u: user}, function(response) {
 						var history = JSON.parse(response);
 						$.each(history, function (i, item) {
-							$(getRelativeDate(item.timestamp)).append('<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyAlbum">' + item.album + '</span><br/><span class="historyArtist">' + item.artist + '</span></li>');
+							$(getRelativeDate(item.timestamp)).append('<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyAlbum">' + item.album + '</span><span class="right">' + printDate(item.timestamp) + '</span><br/><span class="historyArtist">' + item.artist + '</span></li>');
 							});
 					});
 				}
 				updateHistoryCategories();
+			}
+
+			function printDate(timestamp) {
+				var date = new Date(timestamp * 1000);
+				return date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
 			}
 
 			function randomIcon() {
@@ -2541,6 +2547,13 @@ class Musicco {
 			function updateHistoryCategories() {
 				$("#history ul:not(:has(li))").hide();
 				$("#history ul:has(li)").show();
+			}
+
+			function resetHistoryCategories() {
+				$("#history > ul > span ~ li").css("display", "none");
+				$("#history > #today > span ~ li").css("display", "list-item");
+				$("#history > #yesterday > span ~ li").css("display", "list-item");
+				$("#history > #this-week > span ~ li").css("display", "list-item");
 			}
 
 			function getRelativeDate(timestamp) {
@@ -3588,7 +3601,7 @@ class Musicco {
 					if (isGuestPlay()) {
 						$('.guestPlay').hide();
 					} else {
-						getPlaylists();
+						loadPlaylists();
 						initFavouriteTree();
 						initLibraryTree();
 						initContextMenus();
@@ -3606,7 +3619,7 @@ class Musicco {
 					});
 
 					enableLocalPlayer();
-					getHistory();
+					loadHistory();
 					loadPlaylist();
 					adaptUI(true);
 				}
@@ -3913,7 +3926,7 @@ class Musicco {
 				$(".obsoleteWarning").on("click", function() {
 					resetPlaylists();
 					loadSettings();
-					getHistory();
+					loadHistory();
 					$("#refreshPanel").hide();
 					startPolling(true);
 				});
@@ -3959,8 +3972,26 @@ class Musicco {
 						}
 					}, 400);
 				});
-				
-				$("#filterText").on("keydown", function() {
+
+				$("#historyFilterText").on("keyup", function() {
+					setTimeout( function() {
+						if (userIsStillTyping) {
+							userIsStillTyping = false;
+							if ($("#historyFilterText").val() != "") {
+								var isMatching = new RegExp(regexEscape($("#historyFilterText").val()), "i");
+								$('#history li').removeClass("filteredOut");
+								$('#history li').filter(function(item) {
+									return !(isMatching.test(normalise($(this).text())));
+								}).addClass("filteredOut");
+								$("#history > ul > li").show();
+							} else {
+								$("#historyFilterButton").trigger("click");
+							}
+						}
+					}, 400);
+				});
+
+				$(".filterTool").on("keydown", function() {
 					userIsStillTyping = true;
 				});
 
@@ -3969,6 +4000,13 @@ class Musicco {
 					$("#filterText").val("");
 					$("#includeOldAlbums").attr("disabled", false);
 					loadLibrary($("#includeOldAlbums").prop("checked") ? fullLibrary : newAlbums);
+				});
+
+				$("#historyFilterButton").on("click", function(event) {
+					event.preventDefault();
+					$("#historyFilterText").val("");
+					$('#history li').removeClass("filteredOut");
+					resetHistoryCategories();
 				});
 
 				$("#ham").on("click", function() {
@@ -4604,8 +4642,8 @@ if(!AuthManager::isAccessAllowed()) {
 						<div id="filter">
 							<input id="includeOldAlbums" tabindex="0" type="checkbox" checked />
 							<label for="includeOldAlbums"><i class="fas fa-toggle-on"></i>&nbsp;<?php print $this->getString("show_all"); ?></label>
-							<input type="text" id="filterText" tabindex="1" name="filterText" placeholder="<?php print $this->getString("filter_placeholder"); ?>"/>
-							<a class="btn" id="filterButton" href="#"><i class="fas fa-border fa-times"></i></a>
+							<input type="text" id="filterText" class="filterTool" tabindex="1" name="filterText" placeholder="<?php print $this->getString("filter_placeholder"); ?>"/>
+							<a class="btn" id="filterButton" class="filterToolButton" href="#"><i class="fas fa-border fa-times"></i></a>
 						</div>
 						<div id="favourites">
 							<?php if (!AuthManager::isGuestPlay()) { print getFavourites(AuthManager::getUserName()); } ?>
@@ -4647,6 +4685,10 @@ if(!AuthManager::isAccessAllowed()) {
 				</div>
 				<div id="lyricsPanel" class="panel"></div>
 				<div id="historyPanel" class="panel guestPlay">
+						<div id="historyFilter">
+							<input type="text" id="historyFilterText" class="filterTool" tabindex="1" name="historyFilterText" placeholder="<?php print $this->getString("history_filter_placeholder"); ?>"/>
+							<a class="btn" id="historyFilterButton" class="filterToolButton" href="#"><i class="fas fa-border fa-times"></i></a>
+						</div>
 					<div id="history" class="card">
 						<ul id="today"><span><?php print $this->getString("today") ?></span></ul>
 						<ul id="yesterday"><span><?php print $this->getString("yesterday") ?></span></ul>
@@ -4839,11 +4881,11 @@ if(!AuthManager::isAccessAllowed()) {
 	} elseif (isset($_POST['saveHistory'])) {
 			return print saveHistory($_POST['u'], $_POST['i'], $_POST['a']);
 			exit;
-	} elseif (isset($_POST['getHistory'])) {
-			return print getHistory($_POST['u']);
+	} elseif (isset($_POST['loadHistory'])) {
+			return print loadHistory($_POST['u']);
 			exit;
-	} elseif (isset($_POST['getPlaylists'])) {
-			return print getPlaylists($_POST['u']);
+	} elseif (isset($_POST['loadPlaylists'])) {
+			return print loadPlaylists($_POST['u']);
 			exit;
 	} elseif (isset($_POST['loadSettings'])) {
 			return print loadSettings($_POST['u']);
@@ -5155,7 +5197,7 @@ function updateSmartPlaylists($user, $newAlbumsJSON) {
 	}
 }
 
-function getPlaylists($user) {
+function loadPlaylists($user) {
 	debugMessage(__FUNCTION__);
 	$playlists = [];
 	$userId = getId($user);
@@ -5210,7 +5252,7 @@ function getFavourites($user) {
 	return $favourites_list;
 }
 
-function getHistory($user) {
+function loadHistory($user) {
 	debugMessage(__FUNCTION__);
 	$history = [];
 	$userId = getId($user);
@@ -6082,6 +6124,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.2 (in development)</div>";
+				$aboutString.="<li>Allow filtering listening history</li>";
 				$aboutString.="<li>Display progress bar as a waveform</li>";
 				$aboutString.="<li>Fix medium viewer css not being triggered</li>";
 				$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
