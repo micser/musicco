@@ -780,6 +780,10 @@
 		padding-right: 1em;
 	}
 
+	.card .right {
+		margin-right: .5em;
+	}
+
 	/* tabs */
 	.ui-widget-header { }
 
@@ -1182,8 +1186,13 @@
 		width: 95%;
 	}
 
-	.filterTool {
+	#filterText{
 		width: 85%;
+	}
+
+	.filterTool {
+		width: 80.5%;
+		margin-left: -.75em;
 	}
 
 	#searchText {
@@ -2075,7 +2084,7 @@
 		padding-right: .75em!important;
 	}
 
-	.filterTool {
+	#filterText {
 		width: 80%;
 	}
 
