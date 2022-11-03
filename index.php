@@ -4638,7 +4638,7 @@ if(!AuthManager::isAccessAllowed()) {
 						<div id="filter">
 							<input id="includeOldAlbums" tabindex="0" type="checkbox" checked />
 							<label for="includeOldAlbums"><i class="fas fa-toggle-on"></i>&nbsp;<?php print $this->getString("show_all"); ?></label>
-							<input type="text" id="filterText" class="filterTool" tabindex="1" name="filterText" placeholder="<?php print $this->getString("filter_placeholder"); ?>"/>
+							<input type="text" id="filterText" tabindex="1" name="filterText" placeholder="<?php print $this->getString("filter_placeholder"); ?>"/>
 							<a class="btn" id="filterButton" class="filterToolButton" href="#"><i class="fas fa-border fa-times"></i></a>
 						</div>
 						<div id="favourites">
