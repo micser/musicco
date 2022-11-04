@@ -3987,7 +3987,7 @@ class Musicco {
 					}, 400);
 				});
 
-				$(".filterTool").on("keydown", function() {
+				$(".filterTool, #filterText").on("keydown", function() {
 					userIsStillTyping = true;
 				});
 
