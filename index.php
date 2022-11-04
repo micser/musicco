@@ -3584,6 +3584,7 @@ class Musicco {
 				if (document.getElementById("waveform")) {
 					wavesurfer = WaveSurfer.create({
 						container: '#waveform',
+						maxBufferSize: (isAndroid())? 30 * 1000 * 1000 : null,
 						cursorWidth: 0,
 						responsive: true,
 						barGap: 1,
