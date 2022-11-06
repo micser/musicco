@@ -60,7 +60,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 | [js-cookie](https://github.com/js-cookie/js-cookie)                                 | 3.0.1    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/js-cookie/js-cookie)](https://github.com/js-cookie/js-cookie/releases/latest)                 |
 | [jsmediatags](https://github.com/aadsm/jsmediatags)                                 | 3.9.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/aadsm/jsmediatags)](https://github.com/aadsm/jsmediatags/releases/latest)                     |
 | [normalise](https://github.com/micser/normalise)                                    | 1.0.0    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/normalise)](https://github.com/micser/normalise/releases/latest)                       |
-| [wavesurfer](https://github.com/micser/wavesurfer.js)                         | 1.0.0    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/wavesurfer.js)](https://github.com/micser/wavesurfer.js/releases/latest)                       |
+| [wavesurfer](https://github.com/micser/wavesurfer.js)                         | 6.4.0@micser    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/katspaugh/wavesurfer.js)](https://github.com/katspaugh/wavesurfer.js/releases/latest)                       |
 
 # 💗 Love
 
