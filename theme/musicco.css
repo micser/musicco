@@ -805,7 +805,7 @@
 	#waveform-container {
 		height: 50px;
 		overflow: hidden;
-		position: relative;
+		position: absolute;
 		bottom: 0;
 		width: 100%;
 		}
