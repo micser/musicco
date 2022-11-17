@@ -6132,7 +6132,7 @@ function refreshdb($quiet) {
 				$aboutString.="<li>Upgraded to fancytree 2.38.2</li>";
 				$aboutString.="<li>Upgraded to jquery-ui 1.13.2</li>";
 				$aboutString.="<li>Upgraded to jquery 3.6.1</li>";
-				$aboutString.="<li>Upgraded to font-awesome 6.2.0</li>";
+				$aboutString.="<li>Upgraded to font-awesome 6.2.1</li>";
 				$aboutString.="<li>Added visible icons to trigger Player Panel shortcuts</li>";
 				$aboutString.="<li>Improved annotated lyrics styling</li>";
 				$aboutString.="<li>Remove icon clutter on smaller screens</li>";
