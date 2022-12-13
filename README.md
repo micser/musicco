@@ -52,7 +52,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 | [detect_swipe](https://github.com/micser/detect_swipe)                              | 2.1.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/detect_swipe)](https://github.com/micser/detect_swipe/releases/latest)                 |
 | [fancytree](https://github.com/mar10/fancytree)                                     | 2.38.2   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/fancytree)](https://github.com/mar10/fancytree/releases/latest)                         |
 | [fontawesome](https://github.com/FortAwesome/Font-Awesome)                          | 6.2.1   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/FortAwesome/Font-Awesome)](https://github.com/FortAwesome/Font-Awesome/releases/latest)       |
-| [jQuery](https://github.com/jquery/jquery)                                          | 3.6.1    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery)](https://github.com/jquery/jquery/releases/latest)                             |
+| [jQuery](https://github.com/jquery/jquery)                                          | 3.6.2    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery)](https://github.com/jquery/jquery/releases/latest)                             |
 | [jQuery-qrcode](https://github.com/lrsjng/jquery-qrcode)                            | 0.18.0   | [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/lrsjng/jquery-qrcode)](https://github.com/lrsjng/jquery-qrcode/tags)                                  |
 | [jQuery-ui](https://github.com/jquery/jquery-ui)                                    | 1.13.2   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-ui)](https://github.com/jquery/jquery-ui/releases/latest)                       |
 | [jQuery-ui-contextmenu](https://github.com/mar10/jquery-ui-contextmenu)             | 1.18.1   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/jquery-ui-contextmenu)](https://github.com/mar10/jquery-ui-contextmenu/releases/latest) |
@@ -81,7 +81,7 @@ musicco scans your music folder and builds a database of your music collection, 
 * Load album art when queing musinc instead of when playing it
 * Upgraded to fancytree 2.38.2
 * Upgraded to jquery-ui 1.13.2
-* Upgraded to jquery 3.6.1
+* Upgraded to jquery 3.6.2
 * Upgraded to font-awesome 6.2.1
 * Added visible icons to trigger Player Panel shortcuts
 * Improved annotated lyrics styling

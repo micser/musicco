@@ -6131,7 +6131,7 @@ function refreshdb($quiet) {
 				$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
 				$aboutString.="<li>Upgraded to fancytree 2.38.2</li>";
 				$aboutString.="<li>Upgraded to jquery-ui 1.13.2</li>";
-				$aboutString.="<li>Upgraded to jquery 3.6.1</li>";
+				$aboutString.="<li>Upgraded to jquery 3.6.2</li>";
 				$aboutString.="<li>Upgraded to font-awesome 6.2.1</li>";
 				$aboutString.="<li>Added visible icons to trigger Player Panel shortcuts</li>";
 				$aboutString.="<li>Improved annotated lyrics styling</li>";
