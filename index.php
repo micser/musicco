@@ -6129,7 +6129,7 @@ function refreshdb($quiet) {
 				$aboutString.="<li>Display progress bar as a waveform</li>";
 				$aboutString.="<li>Fix medium viewer css not being triggered</li>";
 				$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
-				$aboutString.="<li>Upgraded to fancytree 2.38.2</li>";
+				$aboutString.="<li>Upgraded to fancytree 2.38.3</li>";
 				$aboutString.="<li>Upgraded to jquery-ui 1.13.2</li>";
 				$aboutString.="<li>Upgraded to jquery 3.6.3</li>";
 				$aboutString.="<li>Upgraded to font-awesome 6.2.1</li>";
