@@ -6124,7 +6124,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.2 (in development)</div>";
+				$aboutString.="<div class='bold yellow'>3.2.2</div>";
 				$aboutString.="<li>Allow filtering listening history</li>";
 				$aboutString.="<li>Display progress bar as a waveform</li>";
 				$aboutString.="<li>Fix medium viewer css not being triggered</li>";

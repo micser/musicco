@@ -15,7 +15,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 ## 🔎 Browsing, filtering and searching the music library
 
-![musicco](/doc/img/readme/browsing-searching.png?raw=true "Browsing, filtering and searching the music library")
+![musicco](/doc/img/readme/search.png?raw=true "Browsing, filtering and searching the music library")
 
 ## ℹ️ Artist information and lyrics for currently playing track
 
@@ -74,7 +74,7 @@ musicco scans your music folder and builds a database of your music collection, 
 
 # 📒 Changelog
 
-## v3.2.2 (in development)
+## v3.2.2
 * Allow filtering listening history
 * Display progress bar as a waveform
 * Fix medium viewer css not being triggered
