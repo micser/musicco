@@ -74,6 +74,9 @@ musicco scans your music folder and builds a database of your music collection, 
 
 # 📒 Changelog
 
+## v3.2.3 (in development)
+* No changes yet!
+
 ## v3.2.2
 * Allow filtering listening history
 * Display progress bar as a waveform
