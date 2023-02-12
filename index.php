@@ -13,8 +13,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "3.2.3";
-$_CONFIG['appVersion'] = "3.2.3";
+// Default: $_CONFIG['appVersion'] = "3.3.0";
+$_CONFIG['appVersion'] = "3.3.0";
 
 // The database version compatible with this version. This is for information purposes only, since
 // no backwards compatibility really exists
@@ -4619,6 +4619,7 @@ if(!AuthManager::isAccessAllowed()) {
 			<span id="loadingInfo">
 				<span class="blink1">&#9834;</span><span class="blink2">&#9834;</span><span class="blink3">&#9834;</span>&nbsp;<span id="toast_text"></span>
 			</span>
+			<span id="pipToggle" class="toggle"><a href="#"><i class="fa-regular fa-clone fa-fw"></i>&nbsp;</a></span>
 			<?php
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 					print "<span id=\"logout\"><a href=\"?logout\"><i class=\"fas fa-sign-out-alt fa-fw\"></i>&nbsp;</a></span>";
@@ -6124,7 +6125,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.3 (in development)</div>";
+				$aboutString.="<div class='bold yellow'>3.3.0 (in development)</div>";
 				$aboutString.="<li>No changes yet!</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
@@ -6132,7 +6133,7 @@ function refreshdb($quiet) {
 				$aboutString.="<li>Allow filtering listening history</li>";
 				$aboutString.="<li>Display progress bar as a waveform</li>";
 				$aboutString.="<li>Fix medium viewer css not being triggered</li>";
-				$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
+				$aboutString.="<li>Load album art when queing music instead of when playing it</li>";
 				$aboutString.="<li>Upgraded to fancytree 2.38.3</li>";
 				$aboutString.="<li>Upgraded to jquery-ui 1.13.2</li>";
 				$aboutString.="<li>Upgraded to jquery 3.6.3</li>";

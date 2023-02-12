@@ -74,14 +74,14 @@ musicco scans your music folder and builds a database of your music collection, 
 
 # 📒 Changelog
 
-## v3.2.3 (in development)
+## v3.3.0 (in development)
 * No changes yet!
 
 ## v3.2.2
 * Allow filtering listening history
 * Display progress bar as a waveform
 * Fix medium viewer css not being triggered
-* Load album art when queing musinc instead of when playing it
+* Load album art when queing music instead of when playing it
 * Upgraded to fancytree 2.38.3
 * Upgraded to jquery-ui 1.13.2
 * Upgraded to jquery 3.6.3
