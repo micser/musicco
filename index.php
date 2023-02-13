@@ -876,6 +876,12 @@ class Musicco {
 			var castContentUrl = "";
 			var wakeLock = null;
 
+			const canvas = document.createElement('canvas');
+			canvas.width = canvas.height = 512;
+			const video = document.createElement('video');
+			video.srcObject = canvas.captureStream();
+			video.muted = true;
+
 			var Insert = Object.freeze({"top": 0, "last": 1, "next": 2, "now": 3});
 
 			var initWakeLock = function(enable) {
@@ -1114,6 +1120,13 @@ class Musicco {
 			function updatePlayPauseIcons(isPaused) {
 				$('.play-pause').prop("checked", isPaused);
 				isPlaying = !isPaused;
+				if (document.pictureInPictureElement) {
+					if (isPlaying) {
+						document.pictureInPictureElement.pause();
+					} else {
+						document.pictureInPictureElement.play();
+					}
+				}
 			}
 
 			function nextMedia() {
@@ -1506,6 +1519,9 @@ class Musicco {
 				}
 				flashInfo();
 				showNotification();
+				if (document.pictureInPictureElement) {
+					$(document).trigger("updatePip");
+				}
 				$('#searchLink').attr("href", "<?php print $this->getConfig("imageSearchEngine"); ?>" + nowPlaying["artist"] + " " + nowPlaying["album"]);
 				updateInfoPanel(nowPlaying["artist"], false);
 				updateLyricsPanel(nowPlaying["artist"], nowPlaying["songtitle"]);
@@ -3391,9 +3407,15 @@ class Musicco {
 				} else {
 					if (player.paused) {
 						player.play();
+						if (document.pictureInPictureElement) {
+							document.pictureInPictureElement.play();
+						}
 						$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 500);
 					} else {
 						status = "isPaused";
+						if (document.pictureInPictureElement) {
+							document.pictureInPictureElement.pause();
+						}
 						$(player).animate({volume: 0}, 200, function(){player.pause()});
 					}
 					updatePlayPauseIcons((status == "isPaused") ? true : false);
@@ -3623,6 +3645,7 @@ class Musicco {
 					loadHistory();
 					loadPlaylist();
 					adaptUI(true);
+					initPipSupport();
 				}
 
 				  ///////////////
@@ -3658,9 +3681,47 @@ class Musicco {
 					status.close();
 				}
 
+				function initPipSupport() {
+					if (!("pictureInPictureEnabled" in document)) {
+						$(".pipToggles").hide();
+					}
+				}
+
 				function makeJqSafe(id) {
 					return id.replace( /(:|\.|\[|\]|,|=|@)/g, "\\$1" );
 				}
+
+				function updatePipIconState() {
+					$(".pipToggles").toggle();
+				}
+
+				function hidePictureInPictureWindow() {
+					video.removeEventListener('leavepictureinpicture', updatePipIconState);
+					document.exitPictureInPicture();
+				}
+
+				async function showPictureInPictureWindow() {
+					console.log(navigator.mediaSession);
+					const image = new Image();
+					image.src = [...navigator.mediaSession.metadata.artwork].pop().src;
+					await image.decode();
+
+					canvas.getContext('2d').drawImage(image, 0, 0, 512, 512);
+					await video.play();
+					await video.requestPictureInPicture();
+
+					updatePipIconState();
+					video.addEventListener('leavepictureinpicture', updatePipIconState);
+					if (navigator.mediaSession.playbackState = "none") {
+						console.log("not playing with musicco");
+					}
+					if (isPlaying) {
+						console.log("we are playing");
+					} else {
+						console.log("we are not playing");
+					}
+				}
+
 
 				function adaptUI(init) {
 				var newViewerType = window.getComputedStyle(document.getElementById('viewer') ,':after').getPropertyValue('content');
@@ -3738,6 +3799,19 @@ class Musicco {
 							$(".fancytree-statusnode-paging").click();
 							}
 						}
+				});
+
+				$(".pipToggles").on("click", function(e) {
+					e.preventDefault();
+					try {
+						if (document.pictureInPictureElement) {
+							hidePictureInPictureWindow();
+						} else {
+							showPictureInPictureWindow();
+						}
+					} catch (error) {
+						console.log("Error initialising pip: " + error);
+					}
 				});
 
 				$(".polling").on("click", function() {
@@ -4351,7 +4425,6 @@ class Musicco {
 				});
 
 				$(document).on("click", "#queueSelected", function(event) {
-					console.log($(".fa-toggle-on").closest(".uncoverLink").children(".default-poster, img"));
 					$(".fa-toggle-on").closest(".uncoverLink").children(".default-poster, img").trigger("click");
 				});
 
@@ -4430,6 +4503,10 @@ class Musicco {
 					} else {
 						resetPlaylists();
 					}
+				});
+
+				$(document).on("updatePip", function() {
+					showPictureInPictureWindow();
 				});
 
 				$(document).on("change", "#playlist_select", function() {
@@ -4619,7 +4696,8 @@ if(!AuthManager::isAccessAllowed()) {
 			<span id="loadingInfo">
 				<span class="blink1">&#9834;</span><span class="blink2">&#9834;</span><span class="blink3">&#9834;</span>&nbsp;<span id="toast_text"></span>
 			</span>
-			<span id="pipToggle" class="toggle"><a href="#"><i class="fa-regular fa-clone fa-fw"></i>&nbsp;</a></span>
+			<span id="pipOn" class="pipToggles toggle"><a href="#"><i class="fa-regular fa-clone fa-fw"></i>&nbsp;</a></span>
+			<span id="pipOff" class="pipToggles toggle" style="display:none;"><a href="#"><i class="fa-solid fa-clone fa-fw"></i>&nbsp;</a></span>
 			<?php
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
 					print "<span id=\"logout\"><a href=\"?logout\"><i class=\"fas fa-sign-out-alt fa-fw\"></i>&nbsp;</a></span>";

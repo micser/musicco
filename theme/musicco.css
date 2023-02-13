@@ -1792,7 +1792,8 @@
 		}
 
 		#ham i,
-		#logout a {
+		#logout a,
+		.pipToggles a {
 			font-size: var(--text-small);
 		}
 
