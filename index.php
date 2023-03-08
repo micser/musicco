@@ -6125,6 +6125,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<div class='bold yellow'>3.2.3 (in development)</div>";
+				$aboutString.="<li>Upgrade to jquery 3.6.4</li>";
 				$aboutString.="<li>Upgrade to color-thief 2.4.0</li>";
 			$aboutString.="</ul>";
 			$aboutString.="<ul>";
