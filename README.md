@@ -48,7 +48,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 
 | Library                                                                             | Bundled | Latest                                                                                                                                                                    |
 |:----------------------------------------------------------------------------------- |:--------:| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
-| [color-thief](https://github.com/lokesh/color-thief)                                | 2.3.2    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/lokesh/color-thief)](https://github.com/lokesh/color-thief/releases/latest)                   |
+| [color-thief](https://github.com/lokesh/color-thief)                                | 2.4.0    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/lokesh/color-thief)](https://github.com/lokesh/color-thief/releases/latest)                   |
 | [detect_swipe](https://github.com/micser/detect_swipe)                              | 2.1.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/detect_swipe)](https://github.com/micser/detect_swipe/releases/latest)                 |
 | [fancytree](https://github.com/mar10/fancytree)                                     | 2.38.3   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/fancytree)](https://github.com/mar10/fancytree/releases/latest)                         |
 | [fontawesome](https://github.com/FortAwesome/Font-Awesome)                          | 6.3.0   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/FortAwesome/Font-Awesome)](https://github.com/FortAwesome/Font-Awesome/releases/latest)       |
@@ -75,7 +75,7 @@ musicco scans your music folder and builds a database of your music collection, 
 # 📒 Changelog
 
 ## v3.2.3 (in development)
-* No changes yet!
+* Upgrade to color-thief 2.4.0
 
 ## v3.2.2
 * Allow filtering listening history
