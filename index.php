@@ -816,7 +816,7 @@ class Musicco {
 		-->
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 		<link rel="stylesheet" type="text/css" href="lib/font-awesome/css/all.min.css">
-		<link rel="stylesheet" type="text/css" href='//fonts.googleapis.com/css?family=Montserrat' >
+		<link rel="stylesheet" type="text/css" href='lib/Montserrat/Montserrat.css' >
 		<link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.min.css">
 		<link rel="stylesheet" type="text/css" href="lib/fancytree/skin-awesome/ui.fancytree.min.css">
 		<link rel="stylesheet" type="text/css" href="theme/musicco.css" >
@@ -6134,6 +6134,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.2.3 (in development)</li>";
 				$aboutString.="<ul>";
+					$aboutString.="<li>Embedd font resources</li>";
 					$aboutString.="<li>Upgrade to wavesurfer 6.6.0</li>";
 					$aboutString.="<li>Upgrade to jquery 3.6.4</li>";
 					$aboutString.="<li>Upgrade to color-thief 2.4.0</li>";
@@ -6310,7 +6311,7 @@ function refreshdb($quiet) {
 		$wizard .= "<head>";
 		$wizard .= "<link rel='icon' type='image/png' href='app/icon-192x192.png' sizes='192x192'>";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='lib/font-awesome/css/all.min.css'>";
-		$wizard .= "<link rel='stylesheet' type='text/css' href='//fonts.googleapis.com/css?family=Montserrat' >";
+		$wizard .= "<link rel='stylesheet' type='text/css' href='lib/Montserrat/Montserrat.css' >";
 		$wizard .= "<link rel='stylesheet' type='text/css' href='theme/musicco.css' >";
 		$wizard .= "<script type='text/javascript' src='lib/jquery/jquery.min.js'></script>";
 		$wizard .= "<script type='text/javascript'>";
