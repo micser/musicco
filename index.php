@@ -31,8 +31,8 @@ $_CONFIG['appInfo'] = "(//musicco.app)";
 $_CONFIG['lang'] = "en";
 
 // Charset. Use the one that suits for you. 
-// Default: $_CONFIG['charset'] = "UTF-8";
-$_CONFIG['charset'] = "UTF-8";
+// Default: $_CONFIG['charset'] = "utf-8";
+$_CONFIG['charset'] = "utf-8";
 
 // The name of the folder containing your music.
 // Create a 'music' symbolic link to your music root folder
@@ -401,7 +401,11 @@ $_TRANSLATIONS["en"] = array(
 	"summer" => "Last Summer",
 	"fall" => "Last Fall",
 	"wiki_band" => " (band)",
-	"wiki_musician" => " (musician)"
+	"wiki_musician" => " (musician)",
+	"image_viewer" => "image viewer",
+	"shared_album_cover" => "shared album cover",
+	"album_art" => "album art",
+	"application_icon" => "application icon"
 );
 
 
@@ -518,7 +522,11 @@ $_TRANSLATIONS["fr"] = array(
 	"summer" => "Cet été",
 	"fall" => "Cet automne",
 	"wiki_band" => " (groupe)",
-	"wiki_musician" => " (musicien)"
+	"wiki_musician" => " (musicien)",
+	"image_viewer" => "image",
+	"shared_album_cover" => "couverture album partagé",
+	"album_art" => "couverture",
+	"application_icon" => "icône de l'application"
 );
 
 /***************************************************************************/
@@ -812,8 +820,7 @@ class Musicco {
 		<link rel="stylesheet" type="text/css" href="lib/jquery-ui/jquery-ui.min.css">
 		<link rel="stylesheet" type="text/css" href="lib/fancytree/skin-awesome/ui.fancytree.min.css">
 		<link rel="stylesheet" type="text/css" href="theme/musicco.css" >
-		<meta http-equiv="Content-Type" content="text/html; charset=<?php print $this->getConfig('charset'); ?>">
-		<!-- <meta charset="<?php print $this->getConfig('charset'); ?>" /> -->
+		<meta charset="<?php print $this->getConfig('charset'); ?>" />
 		<link rel="apple-touch-icon" sizes="57x57" href="app/apple-touch-icon-57x57.png">
 		<link rel="apple-touch-icon" sizes="60x60" href="app/apple-touch-icon-60x60.png">
 		<link rel="apple-touch-icon" sizes="72x72" href="app/apple-touch-icon-72x72.png">
@@ -1149,7 +1156,7 @@ class Musicco {
 					var isCurrent = $(this).hasClass("currentTrack") ? true : false;
 					var contentId = $(this).index("#playlist li[data-nature=track]");
 					var queueItem;
-					var mediaInfo = new chrome.cast.media.MediaInfo(contentId, "audio/mpeg");
+					var mediaInfo = new chrome.cast.media.MediaInfo(contentId, "audio/mp3");
 					mediaInfo.contentUrl = buildMediaSrc(getBaseURL() + $(this).data("parentfolder"), $(this).data("path"));
 					mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
 					mediaInfo.metadata.metadataType = chrome.cast.media.MetadataType.MUSIC_TRACK;
@@ -3076,7 +3083,7 @@ class Musicco {
 			}
 
 			function isAndroid() {
-			return /(android)/i.test(navigator.userAgent);
+			return /(android)/i.test(navigator.userAgentData.platform);
 			}
 
 			function notificationSupported() {
@@ -3193,7 +3200,7 @@ class Musicco {
 				$.ajax({
 					type: "GET",
 					dataType: "jsonP",
-					url: '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=opensearch&limit=50&search='+artist,
+					url: '//<?php print $this->getConfig('lang') ?>.wikipedia.org/w/api.php?action=opensearch&limit=10&search='+artist,
 					complete: function(data){
 						var numResults = data.responseJSON[1].length;
 						var resultLocation = 0;
@@ -3936,9 +3943,9 @@ class Musicco {
 					$.ajax({
 						url: window.location.href,
 						headers: {
-							"Pragma": "no-cache",
+							"Pragma": "no-store",
 							"Expires": -1,
-							"Cache-Control": "no-cache"
+							"Cache-Control": "no-store"
 						}
 					}).done(function () {
 						window.location.reload(true);
@@ -4545,7 +4552,7 @@ class Musicco {
 		<title><?php if(Musicco::getConfig('appName') != null) print Musicco::getConfig('appName'); ?></title>
 	</head>
 	<body id="viewer">
-	<div id="hidden"><img src="app/apple-touch-icon-precomposed.png"/></div>
+	<div id="hidden"><img src="app/apple-touch-icon-precomposed.png" title="<?php print $this->getString("application_icon"); ?>"/></div>
 	<div id="loading"></div>
 <?php 
 if(isset($_ERROR) && strlen($_ERROR) > 0) {
@@ -4560,7 +4567,7 @@ if(!AuthManager::isAccessAllowed()) {
 		<!-- START: Modal Dialogues -->
 		<div id="helpPanel" class="modal"><?php print getHelp(); ?></div>
 		<div id="aboutPanel" class="modal"><?php print getAbout(); ?></div>
-		<div id="imageViewerPanel" class="modal"><img src=""/><div></div></div>
+		<div id="imageViewerPanel" class="modal"><img src="" title="<?php print $this->getString("image_viewer"); ?>"/><div></div></div>
 		<!--
 		<div id="lyricsViewerPanel" class="modal"><iframe id="lyricsIframe" src=""></iframe></div>
 		-->
@@ -4574,7 +4581,7 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="sharing-banner" class="modal">
 			<div id="shared-album-cover" class="boxed">
 				<?php print Musicco::logo("logo-share"); ?>
-				<img src="" style="display: none;" />
+				<img src="" style="display: none;" title="<?php print $this->getString("shared_album_cover"); ?>"/>
 			</div>
 			<div id="shared-album-qr"></div>
 			<div id="shared-album-title" class="big"></div>
@@ -4774,7 +4781,7 @@ if(!AuthManager::isAccessAllowed()) {
 		<div id="big-player">
 			<div id="playerPanel">
 				<div id="big-cover">
-					<img id="album-art" />
+					<img id="album-art" title="<?php print $this->getString("album_art"); ?>"/>
 					<?php print Musicco::logo("logo-player"); ?>
 					<div class="right" id="big-volume-bar"></div>
 					<div id="updateCoverArt" class="guestPlay">
@@ -4917,7 +4924,7 @@ if(!AuthManager::isAccessAllowed()) {
 			exit;
 	} elseif (isset($_GET['head'])) {
 			$url =$_GET['url']; 
-			header('Content-type: application/xml');
+			header('Content-type: text/xml');
 			header('Charset: UTF-8');
 			logMessage("Heading url: ".$url);
 			stream_context_set_default(array('http' => array('method' => 'HEAD')));
@@ -4926,7 +4933,7 @@ if(!AuthManager::isAccessAllowed()) {
 			exit;
 	} elseif (isset($_GET['fetch'])) {
 			$url =$_GET['url']; 
-			header('Content-type: application/xml');
+			header('Content-type: text/xml');
 			header('Charset: UTF-8');
 			logMessage("Fetching url: ".$url);
 			return print_r(file_get_contents_utf8($url));
@@ -4963,7 +4970,7 @@ if(!AuthManager::isAccessAllowed()) {
 			$album = $_GET['album'];
 			$track = $_GET['track'];
 			$handle = fopen($album.$track, "rb");
-			header('Content-Type: audio/mpeg');
+			header('Content-Type: audio/mp3');
 			header('Content-Disposition: attachment;filename="'.$track.'"');
 			ob_end_clean();
 			fpassthru($handle);
@@ -5024,7 +5031,8 @@ $favourites_list = "";
 function checkStatus($user) {
 	debugMessage(__FUNCTION__);
 	header('Content-Type: text/event-stream');
-	header('Cache-Control: no-cache');
+	header('Cache-Control: no-store');
+	header('X-Content-Type-Options: nosniff');
 	$status = [];
 	$userId = getId($user);
 	if ($userId != 0) {
@@ -6124,152 +6132,154 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'>Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.3 (in development)</div>";
-				$aboutString.="<li>Upgrade to wavesurfer 6.6.0</li>";
-				$aboutString.="<li>Upgrade to jquery 3.6.4</li>";
-				$aboutString.="<li>Upgrade to color-thief 2.4.0</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.2</div>";
-				$aboutString.="<li>Allow filtering listening history</li>";
-				$aboutString.="<li>Display progress bar as a waveform</li>";
-				$aboutString.="<li>Fix medium viewer css not being triggered</li>";
-				$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
-				$aboutString.="<li>Upgraded to fancytree 2.38.3</li>";
-				$aboutString.="<li>Upgraded to jquery-ui 1.13.2</li>";
-				$aboutString.="<li>Upgraded to jquery 3.6.3</li>";
-				$aboutString.="<li>Upgraded to font-awesome 6.3.0</li>";
-				$aboutString.="<li>Added visible icons to trigger Player Panel shortcuts</li>";
-				$aboutString.="<li>Improved annotated lyrics styling</li>";
-				$aboutString.="<li>Remove icon clutter on smaller screens</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.1 (9th May 2022)</div>";
-				$aboutString.="<li>Fixed library refresh on successful quick scan</li>";
-				$aboutString.="<li>Upgrade to font-awesome 6.1.0</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.2.0 (26th January 2022)</div>";
-				$aboutString.="<li>Automatically build a smart playlist of all new music</li>";
-				$aboutString.="<li>Quickly refresh newly renamed albums</li>";
-				$aboutString.="<li>Improved rotation detection</li>";
-				$aboutString.="<li>Improved show old filter state</li>";
-				$aboutString.="<li>Improved dynamic theme colours</li>";
-				$aboutString.="<li>Improved library rebuild speed</li>";
-				$aboutString.="<li>Minor Listening History improvements</li>";
-				$aboutString.="<li>Improved Uncover dialogue</li>";
-				$aboutString.="<li>Minor bug fixes</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.1.2 (13th October 2021)</div>";
-				$aboutString.="<li>Fixed script error when displayign uncover dialogue</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.1.1 (13th October 2021)</div>";
-				$aboutString.="<li>Fixed cover art display in uncover dialogue</li>";
-				$aboutString.="<li>Fixed taphold events</li>";
-				$aboutString.="<li>Minor UI fixes</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.1 (12th October 2021)</div>";
-				$aboutString.="<li>Read album art from id3 tag</li>";
-				$aboutString.="<li>Save \"Show old albums\" option between sessions</li>";
-				$aboutString.="<li>Added an option to keep screen on</li>";
-				$aboutString.="<li>Fixed some issues with casting on Android</li>";
-				$aboutString.="<li>Improved QR Code styling</li>";
-				$aboutString.="<li>Fix adding of duplicate albums in playlist</li>";
-				$aboutString.="<li>Added confirmation dialogs before clearing items</li>";
-				$aboutString.="<li>Improved sharing dialog</li>";
-				$aboutString.="<li>Improved uncover dialog</li>";
-				$aboutString.="<li>Improved lyrics provider</li>";
-				$aboutString.="<li>Improved landscape view on mobile</li>";
-				$aboutString.="<li>Dependency updates</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>3.0 (4th December 2020)</div>";
-				$aboutString.="<li>Added casting directly from player</li>";
-				$aboutString.="<li>Allow viewing listening history</li>";
-				$aboutString.="<li>Allow re-running the setup wizard</li>";
-				$aboutString.="<li>Fixed an issue where the mini toolbar would show up when unwanted</li>";
-				$aboutString.="<li>Minor UI refresh around info panel, header, player controls, context menus and album art</li>";
-				$aboutString.="<li>Fixed transparency effects</li>";
-				$aboutString.="<li>Improved layout for widescreen devices</li>";
-				$aboutString.="<li>Improved browse panel performance</li>";
-				$aboutString.="<li>Save active panel setting</li>";
-				$aboutString.="<li>Notify clients if they are out of date</li>";
-				$aboutString.="<li>Dependency updates</li>";
-				$aboutString.="<li>Minor bugfixes</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>2.0 (28th October 2018)</div>";
-				$aboutString.="<li>Use native html audio instead of jplayer / jplayerPlaylist</li>";
-				$aboutString.="<li>Refreshed UI</li>";
-				$aboutString.="<li>Theme selector and dynamic theme</li>";
-				$aboutString.="<li>Added support for multiple playlists per user</li>";
-				$aboutString.="<li>Added support for marking albums and tracks as favourites</li>";
-				$aboutString.="<li>Improved controls for touchcreen browsers</li>";
-				$aboutString.="<li>Added support for rich notifications on Android using Media Session API</li>";
-				$aboutString.="<li>Added play/pause and skip actions to desktop notification</li>";
-				$aboutString.="<li>Added support for quickly adding an album without scanning the entire library</li>";
-				$aboutString.="<li>Save your favourite albums</li>";
-				$aboutString.="<li>Handle accent-insensitive search</li>";
-				$aboutString.="<li>Improved webapp manifest so you can add musicco to your Android home screen</li>";
-				$aboutString.="<li>Fixed many other things!</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>1.3 (24th September 2016)</div>";
-				$aboutString.="<li>Improved sharing banner to display more info</li>";
-				$aboutString.="<li>Added a new template for square windows to highlight album art more</li>";
-				$aboutString.="<li>Added seeking in current track with 1-9 keys</li>";
-				$aboutString.="<li>Fixed playlist management issues when moving or deleting albums</li>";
-				$aboutString.="<li>Made it possible to move albums to the beginning / end of the playlist with a shift-click</li>";
-				$aboutString.="<li>Remove all previous albums with shift-click or all following albums with control-click</li>";
-				$aboutString.="<li>Added keyboard support in search results</li>";
-				$aboutString.="<li>Added search links when no artist or lyrics are found</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>1.2 (May 3rd 2016)</div>";
-				$aboutString.="<li>Removed Android client, work on making the player responsive instead</li>";
-				$aboutString.="<li>Work on database performance </li>";
-				$aboutString.="<li>Loading of .lrc files as long as they have the same name of the song currently playing</li>";
-				$aboutString.="<li>Allow users to upload their own album covers for the currently playing song from the web player</li>";
-				$aboutString.="<li>Reorder albums in the current playlist</li>";
-				$aboutString.="<li>Allow sharing a link to an album to guest users</li>";
-				$aboutString.="<li>New default theme</li>";
-				$aboutString.="<li>Improved artist info from Wikipedia</li>";
-				$aboutString.="<li>Use auth tokens for logging in instead of credentials</li>";
-				$aboutString.="<li>More pattern configuration options for more custom library tree structures</li>";
-				$aboutString.="<li>Shift-click previous/next buttons (or shift-use arrow keys) to skip to the next album in the playlist</li>";
-				$aboutString.="<li>Added search links when no artist or lyrics are found</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>1.1 (25 September 2014)</div>";
-				$aboutString.="<li>Android client and under-the-hood improvements to suppport it</li>";
-				$aboutString.="<li>Added configuration option for cover name and log file</li>";
-				$aboutString.="<li>Improved playlist panel</li>";
-				$aboutString.="<li>Fixed download option for administrators in the playlist and the browser panels</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>1.0.3</div>";
-				$aboutString.="<li>More elegant management of the Fetch Cover button to provide more information about the cover fetching progress</li>";
-				$aboutString.="<li>Nicer playlist screen that groups tracks by album</li>";
-				$aboutString.="<li>Upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions</li>";
-				$aboutString.="<li>HTML notifications are working again in this version, and keyboard actions are improved as a result</li>";
-				$aboutString.="<li>New feature <i>Uncover!</i> adds 5 random albums to your playlist</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>1.0.2</div>";
-				$aboutString.="<li>Fixed minor display bugs introduced by 1.0.1 with z-index management</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>1.0.1</div>";
-				$aboutString.="<li>Improved cover management when downloading from cover art provider</li>";
-				$aboutString.="<li>Added a button to manually fetch a cover</li>";
-				$aboutString.="<li>Improved artist information panel and added an icon to indicate that some information is still being loaded from the server</li>";
-			$aboutString.="</ul>";
-			$aboutString.="<ul>";
-				$aboutString.="<div class='bold yellow'>1.0 (27 April 2013)</div>";
-				$aboutString.="<li>Initial release</li>";
+				$aboutString.="<li class='bold yellow'>3.2.3 (in development)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Upgrade to wavesurfer 6.6.0</li>";
+					$aboutString.="<li>Upgrade to jquery 3.6.4</li>";
+					$aboutString.="<li>Upgrade to color-thief 2.4.0</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>3.2.2 (9th February 2023)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Allow filtering listening history</li>";
+					$aboutString.="<li>Display progress bar as a waveform</li>";
+					$aboutString.="<li>Fix medium viewer css not being triggered</li>";
+					$aboutString.="<li>Load album art when queing musinc instead of when playing it</li>";
+					$aboutString.="<li>Upgraded to fancytree 2.38.3</li>";
+					$aboutString.="<li>Upgraded to jquery-ui 1.13.2</li>";
+					$aboutString.="<li>Upgraded to jquery 3.6.3</li>";
+					$aboutString.="<li>Upgraded to font-awesome 6.3.0</li>";
+					$aboutString.="<li>Added visible icons to trigger Player Panel shortcuts</li>";
+					$aboutString.="<li>Improved annotated lyrics styling</li>";
+					$aboutString.="<li>Remove icon clutter on smaller screens</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>3.2.1 (9th May 2022)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Fixed library refresh on successful quick scan</li>";
+					$aboutString.="<li>Upgrade to font-awesome 6.1.0</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>3.2.0 (26th January 2022)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Automatically build a smart playlist of all new music</li>";
+					$aboutString.="<li>Quickly refresh newly renamed albums</li>";
+					$aboutString.="<li>Improved rotation detection</li>";
+					$aboutString.="<li>Improved show old filter state</li>";
+					$aboutString.="<li>Improved dynamic theme colours</li>";
+					$aboutString.="<li>Improved library rebuild speed</li>";
+					$aboutString.="<li>Minor Listening History improvements</li>";
+					$aboutString.="<li>Improved Uncover dialogue</li>";
+					$aboutString.="<li>Minor bug fixes</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>3.1.2 (13th October 2021)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Fixed script error when displayign uncover dialogue</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>3.1.1 (13th October 2021)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Fixed cover art display in uncover dialogue</li>";
+					$aboutString.="<li>Fixed taphold events</li>";
+					$aboutString.="<li>Minor UI fixes</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>3.1.0 (12th October 2021)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Read album art from id3 tag</li>";
+					$aboutString.="<li>Save \"Show old albums\" option between sessions</li>";
+					$aboutString.="<li>Added an option to keep screen on</li>";
+					$aboutString.="<li>Fixed some issues with casting on Android</li>";
+					$aboutString.="<li>Improved QR Code styling</li>";
+					$aboutString.="<li>Fix adding of duplicate albums in playlist</li>";
+					$aboutString.="<li>Added confirmation dialogs before clearing items</li>";
+					$aboutString.="<li>Improved sharing dialog</li>";
+					$aboutString.="<li>Improved uncover dialog</li>";
+					$aboutString.="<li>Improved lyrics provider</li>";
+					$aboutString.="<li>Improved landscape view on mobile</li>";
+					$aboutString.="<li>Dependency updates</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>3.0.0 (4th December 2020)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Added casting directly from player</li>";
+					$aboutString.="<li>Allow viewing listening history</li>";
+					$aboutString.="<li>Allow re-running the setup wizard</li>";
+					$aboutString.="<li>Fixed an issue where the mini toolbar would show up when unwanted</li>";
+					$aboutString.="<li>Minor UI refresh around info panel, header, player controls, context menus and album art</li>";
+					$aboutString.="<li>Fixed transparency effects</li>";
+					$aboutString.="<li>Improved layout for widescreen devices</li>";
+					$aboutString.="<li>Improved browse panel performance</li>";
+					$aboutString.="<li>Save active panel setting</li>";
+					$aboutString.="<li>Notify clients if they are out of date</li>";
+					$aboutString.="<li>Dependency updates</li>";
+					$aboutString.="<li>Minor bugfixes</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>2.0.0 (28th October 2018)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Use native html audio instead of jplayer / jplayerPlaylist</li>";
+					$aboutString.="<li>Refreshed UI</li>";
+					$aboutString.="<li>Theme selector and dynamic theme</li>";
+					$aboutString.="<li>Added support for multiple playlists per user</li>";
+					$aboutString.="<li>Added support for marking albums and tracks as favourites</li>";
+					$aboutString.="<li>Improved controls for touchcreen browsers</li>";
+					$aboutString.="<li>Added support for rich notifications on Android using Media Session API</li>";
+					$aboutString.="<li>Added play/pause and skip actions to desktop notification</li>";
+					$aboutString.="<li>Added support for quickly adding an album without scanning the entire library</li>";
+					$aboutString.="<li>Save your favourite albums</li>";
+					$aboutString.="<li>Handle accent-insensitive search</li>";
+					$aboutString.="<li>Improved webapp manifest so you can add musicco to your Android home screen</li>";
+					$aboutString.="<li>Fixed many other things!</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>1.3.0 (24th September 2016)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Improved sharing banner to display more info</li>";
+					$aboutString.="<li>Added a new template for square windows to highlight album art more</li>";
+					$aboutString.="<li>Added seeking in current track with 1-9 keys</li>";
+					$aboutString.="<li>Fixed playlist management issues when moving or deleting albums</li>";
+					$aboutString.="<li>Made it possible to move albums to the beginning / end of the playlist with a shift-click</li>";
+					$aboutString.="<li>Remove all previous albums with shift-click or all following albums with control-click</li>";
+					$aboutString.="<li>Added keyboard support in search results</li>";
+					$aboutString.="<li>Added search links when no artist or lyrics are found</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>1.2.0 (May 3rd 2016)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Removed Android client, work on making the player responsive instead</li>";
+					$aboutString.="<li>Work on database performance </li>";
+					$aboutString.="<li>Loading of .lrc files as long as they have the same name of the song currently playing</li>";
+					$aboutString.="<li>Allow users to upload their own album covers for the currently playing song from the web player</li>";
+					$aboutString.="<li>Reorder albums in the current playlist</li>";
+					$aboutString.="<li>Allow sharing a link to an album to guest users</li>";
+					$aboutString.="<li>New default theme</li>";
+					$aboutString.="<li>Improved artist info from Wikipedia</li>";
+					$aboutString.="<li>Use auth tokens for logging in instead of credentials</li>";
+					$aboutString.="<li>More pattern configuration options for more custom library tree structures</li>";
+					$aboutString.="<li>Shift-click previous/next buttons (or shift-use arrow keys) to skip to the next album in the playlist</li>";
+					$aboutString.="<li>Added search links when no artist or lyrics are found</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>1.1.0 (25 September 2014)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Android client and under-the-hood improvements to suppport it</li>";
+					$aboutString.="<li>Added configuration option for cover name and log file</li>";
+					$aboutString.="<li>Improved playlist panel</li>";
+					$aboutString.="<li>Fixed download option for administrators in the playlist and the browser panels</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>1.0.3</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>More elegant management of the Fetch Cover button to provide more information about the cover fetching progress</li>";
+					$aboutString.="<li>Nicer playlist screen that groups tracks by album</li>";
+					$aboutString.="<li>Upgraded to jplayer 2.4.0/JQuery 2.0.3 and adapted the CSS for better display on mobile screens with a 320x480 resolutions</li>";
+					$aboutString.="<li>HTML notifications are working again in this version, and keyboard actions are improved as a result</li>";
+					$aboutString.="<li>New feature <i>Uncover!</i> adds 5 random albums to your playlist</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>1.0.2</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Fixed minor display bugs introduced by 1.0.1 with z-index management</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>1.0.1</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Improved cover management when downloading from cover art provider</li>";
+					$aboutString.="<li>Added a button to manually fetch a cover</li>";
+					$aboutString.="<li>Improved artist information panel and added an icon to indicate that some information is still being loaded from the server</li>";
+				$aboutString.="</ul>";
+				$aboutString.="<li class='bold yellow'>1.0.0 (27 April 2013)</li>";
+				$aboutString.="<ul>";
+					$aboutString.="<li>Initial release</li>";
+				$aboutString.="</ul>";
 			$aboutString.="</ul>";
 		$aboutString.="</div>";
 		return $aboutString;
