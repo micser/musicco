@@ -6102,7 +6102,7 @@ function refreshdb($quiet) {
 		debugMessage(__FUNCTION__);
 		$aboutString="<div id='aboutBox' autofocus>";
 			$aboutString.="<div class='bold'><a tabindex='-1' target='_blank' href='//musicco.app'>".Musicco::logo("logo-about")."</a></div>";
-			$aboutString.="<div class='bold big'><a tabindex='-1' target='_blank' href='//musicco.app'>musicco</a></div>";
+			$aboutString.="<div class='bold big'><a tabindex='-1' target='_blank' href='//musicco.app'><i class='fa-solid fa-guitar'></i> musicco</a></div>";
 			$aboutString.="<div class='bold'>A web based player for your music collection</div>";
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div>musicco is a light-weight, web-based streaming music player for your local library</div>";
@@ -6130,10 +6130,11 @@ function refreshdb($quiet) {
 				$aboutString.="</div>"; 
 			}
 			$aboutString.="<div><br/></div>";
-			$aboutString.="<div class='bold big'>Release History</div>";
+			$aboutString.="<div class='bold big'><i class='fa-solid fa-cubes-stacked'></i> Release History</div>";
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.2.3 (in development)</li>";
 				$aboutString.="<ul>";
+					$aboutString.="<li>Upgrade to font-awesome 6.4.0</li>";
 					$aboutString.="<li>Embedd font resources</li>";
 					$aboutString.="<li>Upgrade to wavesurfer 6.6.0</li>";
 					$aboutString.="<li>Upgrade to jquery 3.6.4</li>";
