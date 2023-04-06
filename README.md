@@ -76,6 +76,7 @@ musicco scans your music folder and builds a database of your music collection, 
 # 📒 Changelog
 
 ## v3.2.3 (in development)
+* Queue icon in uncover dialog is hard to hit
 * Cannot play tracks that contain a #
 * Upgrade to wavesurfer 6.6.3
 * Upgrade to font-awesome 6.4.0

@@ -293,13 +293,12 @@
 		max-width: 60%;
 	}
 
-	.uncoverLink > .default-poster:hover ~ .play-last,
-	.uncoverLink > img:hover ~ .play-last {
+	.uncoverLinkPoster:hover > .play-last {
 		display: block;
 	}
 
-	.uncoverLink > .default-poster:hover,
-	.uncoverLink > img:hover {
+	.uncoverLinkPoster:hover > .default-poster,
+	.uncoverLinkPoster:hover > img {
 		opacity: .1;
 	}
 

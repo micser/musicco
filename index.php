@@ -4331,23 +4331,25 @@ class Musicco {
 										var hitLink ="<span class=\"uncoverLink\" id=\"uncoverLink" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\" data-artist=\"" + artist + "\" data-album=\"" + album + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + artist + "\" data-type=\"1\" data-year=\"" + year + "\">";
 										hitLink += "<input type=\"checkbox\" class=\"fa-input\" checked id=\"uncoverLink_select" + i +"\" onclick='toggleCheckbox(\"uncoverLink_select" + i +"\")' />";
 										hitLink += "<label for=\"uncoverLink_select" + i + "\"><i class=\"fas fa-toggle-on\"></i></label>";
+										hitLink += "<div class=\"uncoverLinkPoster\">";
 										hitLink += (coverUrl) ? "<img src=\"" + coverUrl + "\"/>" : getDefaultPoster();
-										hitLink += "<i class=\"fas fa-bars fa-fw uncover_actions\"></i>";
 										hitLink += playLastIcon();
+										hitLink += "</div>";
+										hitLink += "<i class=\"fas fa-bars fa-fw uncover_actions\"></i>";
 										hitLink += "<br/>";
 										hitLink += artist + " - " + album;
 										hitLink += "</span>";
-									$("#uncoverLinks").append(hitLink);
-									var thisHit = "#uncoverLink"+i;
-									if (!Object.values(existingPaths).includes($(thisHit).data("parentfolder") + $(thisHit).data("path"))) {
-										existingPaths.push($(thisHit).data("parentfolder") + $(thisHit).data("path"));
-									} else {
-										$(thisHit).remove();
-									}
+										$("#uncoverLinks").append(hitLink);
+										var thisHit = "#uncoverLink"+i;
+										if (!Object.values(existingPaths).includes($(thisHit).data("parentfolder") + $(thisHit).data("path"))) {
+											existingPaths.push($(thisHit).data("parentfolder") + $(thisHit).data("path"));
+										} else {
+											$(thisHit).remove();
+										}
 									});
 								}
 							if (method == "feeling_lucky") {
-								$.when($(".fa-toggle-on").closest(".uncoverLink").children(".default-poster, img").trigger("click")).done(function() {
+								$.when($(".fa-toggle-on").closest(".uncoverLink").find(".default-poster, img").trigger("click")).done(function() {
 									$(".uncoverLink").remove();
 								});
 							} else {
@@ -4358,16 +4360,15 @@ class Musicco {
 				});
 
 				$(document).on("click", "#queueSelected", function(event) {
-					console.log($(".fa-toggle-on").closest(".uncoverLink").children(".default-poster, img"));
-					$(".fa-toggle-on").closest(".uncoverLink").children(".default-poster, img").trigger("click");
+					$(".fa-toggle-on").closest(".uncoverLink").find(".default-poster, img").trigger("click");
 				});
 
 				$(document).on("click taphold", "#uncover_more", function(event) {
 					$(".uncoverLink").remove();
 				});
 
-				$(document).on("click", ".uncoverLink > svg, .uncoverLink > img", function(event) {
-					var parent = $(this).parent(".uncoverLink");
+				$(document).on("click", ".uncoverLinkPoster > svg, .uncoverLinkPoster > img", function(event) {
+					var parent = $(this).parent(".uncoverLinkPoster").parent(".uncoverLink");
 					queueMusic(parent.data("parentfolder") + parent.data("path"), parent.data("title"), Insert.last);
 				});
 
@@ -6134,6 +6135,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.2.3 (in development)</li>";
 				$aboutString.="<ul>";
+					$aboutString.="<li>Queue icon in uncover dialog is hard to hit</li>";
 					$aboutString.="<li>Cannot play tracks that contain a #</li>";
 					$aboutString.="<li>Upgrade to wavesurfer 6.6.3</li>";
 					$aboutString.="<li>Upgrade to font-awesome 6.4.0</li>";
