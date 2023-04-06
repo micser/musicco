@@ -76,13 +76,14 @@ musicco scans your music folder and builds a database of your music collection, 
 # 📒 Changelog
 
 ## v3.2.3 (in development)
+* Cannot play tracks that contain a #
 * Upgrade to wavesurfer 6.6.3
 * Upgrade to font-awesome 6.4.0
 * Embedd font resources
 * Upgrade to jquery 3.6.4
 * Upgrade to color-thief 2.4.0
 
-## v3.2.2
+## v3.2.2 (9th February 2023)
 * Allow filtering listening history
 * Display progress bar as a waveform
 * Fix medium viewer css not being triggered
@@ -95,11 +96,11 @@ musicco scans your music folder and builds a database of your music collection, 
 * Improved annotated lyrics styling
 * Remove icon clutter on smaller screens
 
-## v3.2.1
+## v3.2.1 (9th May 2022)
 * Fixed library refresh on successful quick scan
 * Upgrade to font-awesome 6.1.1
 
-## v3.2.0
+## v3.2.0 (26th January 2022)
 * Quickly refresh newly renamed albums
 * Automatically build a smart playlist of all new music
 * Improved rotation detection
@@ -110,15 +111,15 @@ musicco scans your music folder and builds a database of your music collection, 
 * Improved Uncover dialogue
 * Minor bug fixes
 
-## v3.1.2
+## v3.1.2 (13th October 2021)
 * Fixed script error when displaying uncover dialogue
 
-## v3.1.1
+## v3.1.1 (13th October 2021)
 * Fixed cover art display in uncover dialogue
 * Fixed taphold events
 * Minor UI Fixes
 
-## v3.1.0
+## v3.1.0 (12th October 2021)
 * Read album art from id3 tag
 * Save "Show old albums" option between sessions
 * Added an option to keep screen on
@@ -132,7 +133,7 @@ musicco scans your music folder and builds a database of your music collection, 
 * Improved landscape view on mobile
 * Dependency updates
 
-## v3.0.0
+## v3.0.0 (4th December 2020)
 * Added casting directly from player
 * Allow viewing listening history
 * Allow re-running the setup wizard
@@ -146,18 +147,18 @@ musicco scans your music folder and builds a database of your music collection, 
 * Dependency updates
 * Minor bugfixes
 
-## v2.0.3
+## v2.0.3 (25th April 2020)
 * Fixed issue playing files containing a #
 * Fixed general scrolling issue of long lists
 
-## v2.0.2
+## v2.0.2 (21st January 2020)
 * Fixed issues for screens with 1024x768 resolutions
 * Improved URL handling for cover uploads
 
-## v2.0.1
+## v2.0.1 (11th September 2019)
 * Fixed background blur for recent Chrome versions
 
-## v2.0.0
+## v2.0.0 (28th October 2018)
 * Use native html audio instead of jplayer / jplayerPlaylist
 * Refreshed UI
 * Theme selector and dynamic theme
@@ -172,10 +173,10 @@ musicco scans your music folder and builds a database of your music collection, 
 * Improved webapp manifest so you can add musicco to your Android home screen
 * Fixed many other things
 
-## v1.3.5
+## v1.3.5 (24th May 2017)
 * Bug fixes centered around track seeking and resuming current play position, added Uncover button to header in square mode.
 
-## v1.3.4
+## v1.3.4 (11th November 2016)
 * Save current play time in the playlist, show album year in the banner
 
 ## v1.3.3
@@ -187,7 +188,7 @@ musicco scans your music folder and builds a database of your music collection, 
 ## v1.3.1
 * Quick fix for left and right arrows skipping 2 tracks instead of 1
 
-## v1.3
+## v1.3.0 (24th September 2016)
 * Improved sharing banner to display more info
 * Added a new template for square windows to highlight album art more
 * Added seeking in current track with 1-9 keys
@@ -202,7 +203,7 @@ musicco scans your music folder and builds a database of your music collection, 
 ## v1.2.1
 * Compatibility fixes for different versions of Apache / php / sqlite
 
-## v1.2
+## v1.2.0 (May 3rd 2016)
 * Removed Android client, work on making the player responsive instead
 * Work on database performance
 * Loading of .lrc files as long as they have the same name of the song currently playing
@@ -215,7 +216,7 @@ musicco scans your music folder and builds a database of your music collection, 
 * More pattern configuration options for more custom library tree structures
 * Shift-click previous/next buttons (or shift-use arrow keys) to skip to the next album in the playlist
 
-## v1.1
+## v1.1.0 (25 September 2014)
 * Android client and under-the-hood improvements to suppport it
 * Added configuration option for cover name and log file
 * Improved playlist panel
@@ -236,5 +237,5 @@ musicco scans your music folder and builds a database of your music collection, 
 * Added a button to manually fetch a cover
 * Improved artist information panel and added an icon to indicate that some information is still being loaded from the server
 
-## v1.0
+## v1.0.0 (27 April 2013)
 * initial release

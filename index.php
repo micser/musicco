@@ -1498,7 +1498,7 @@ class Musicco {
 			}
 
 			function buildMediaSrc(parentfolder, path) {
-				return encodeURI(parentfolder + path).replace("#", "%23");
+				return encodeURI(parentfolder + path).replaceAll("#", "%23");
 			}
 
 			function updateUI() {
@@ -4326,7 +4326,7 @@ class Musicco {
 										}
 										var coverUrl = cover;
 										if (coverUrl) { 
-											coverUrl = coverUrl.replace("#", "%23");
+											coverUrl = coverUrl.replaceAll("#", "%23");
 										}
 										var hitLink ="<span class=\"uncoverLink\" id=\"uncoverLink" + i +"\" data-parentfolder=\""+ levelUp +"\" data-title=\"" + parentfolderItem + "\" data-path=\"" + parentfolderItem + "\" data-artist=\"" + artist + "\" data-album=\"" + album + "\" data-cover=\"" + cover + "\" data-songtitle=\"" + artist + "\" data-type=\"1\" data-year=\"" + year + "\">";
 										hitLink += "<input type=\"checkbox\" class=\"fa-input\" checked id=\"uncoverLink_select" + i +"\" onclick='toggleCheckbox(\"uncoverLink_select" + i +"\")' />";
@@ -6134,6 +6134,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.2.3 (in development)</li>";
 				$aboutString.="<ul>";
+					$aboutString.="<li>Cannot play tracks that contain a #</li>";
 					$aboutString.="<li>Upgrade to wavesurfer 6.6.3</li>";
 					$aboutString.="<li>Upgrade to font-awesome 6.4.0</li>";
 					$aboutString.="<li>Embedd font resources</li>";
