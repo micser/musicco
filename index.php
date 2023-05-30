@@ -6135,6 +6135,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.2.3 (in development)</li>";
 				$aboutString.="<ul>";
+					$aboutString.="<li>Improve css layouts to work with various pixel densities</li>";
 					$aboutString.="<li>Upgrade to js-cookie 3.0.4</li>";
 					$aboutString.="<li>Queue icon in uncover dialog is hard to hit</li>";
 					$aboutString.="<li>Cannot play tracks that contain a #</li>";

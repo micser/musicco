@@ -76,6 +76,7 @@ musicco scans your music folder and builds a database of your music collection, 
 # 📒 Changelog
 
 ## v3.2.3 (in development)
+* Improve css layouts to work with various pixel densities
 * Upgrade to js-cookie 3.0.4
 * Queue icon in uncover dialog is hard to hit
 * Cannot play tracks that contain a #

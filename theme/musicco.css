@@ -1945,7 +1945,7 @@
 
 	}
 
-	@media (max-height: 480px) {
+	@media (max-height: 480px), (min-aspect-ratio: 18/9) {
 
 		/* special cases for landscape mode on skinny mobiles */
 
@@ -2040,7 +2040,7 @@
 
 }
 
-@media (max-height: 480px) {
+@media (max-height: 480px), (min-aspect-ratio: 18/9) {
 
 	#playlist-controls {
 		display: none;
