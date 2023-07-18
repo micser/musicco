@@ -2717,29 +2717,32 @@ class Musicco {
 				var user = "<?php echo AuthManager::getUserName(); ?>";
 				if (user!="") {
 					$.post('?', {loadPlaylist: '', u: user, i: clientId, n: name}, function(response) {
-						var data = JSON.parse(response.playlist)[0];
-						var needsBuilding = (data !=null)? data.build: false;
-						if (needsBuilding) {
-							var root = data.path;
-							queueMusic(root, "", Insert.top);
-						} else {
-							var tracksArray = groupBy(JSON.parse(response.playlist), "album");
-							if (Object.keys(tracksArray).length) {
-								insertFirst(tracksArray);
-								player.currentTime = parseInt(response.time);
-								loadTrack(parseInt(response.current, 0));
-								if (isCasting) {
-									loadCastQueue(false);
+						try {
+							var data = JSON.parse(response.playlist)[0];
+							var needsBuilding = (data !=null)? data.build: false;
+							if (needsBuilding) {
+								var root = data.path;
+								queueMusic(root, "", Insert.top);
+							} else {
+								var tracksArray = groupBy(JSON.parse(response.playlist), "album");
+								if (Object.keys(tracksArray).length) {
+									insertFirst(tracksArray);
+									player.currentTime = parseInt(response.time);
+									loadTrack(parseInt(response.current, 0));
+									if (isCasting) {
+										loadCastQueue(false);
+									}
 								}
 							}
-						}
-						adjustPlaylistControls();
-						$("#loading").hide();
-						hideSpinner();
-						if (isGuestPlay()) {
-							setTimeout(function() {
-								togglePanel("#playlistPanel");
-							}, 3000);
+							if (isGuestPlay()) {
+								setTimeout(function() {
+									togglePanel("#playlistPanel");
+								}, 3000);
+							}
+						} finally {
+							$("#loading").hide();
+							adjustPlaylistControls();
+							hideSpinner();
 						}
 					}, "json");
 				}
@@ -6135,6 +6138,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.2.3 (in development)</li>";
 				$aboutString.="<ul>";
+					$aboutString.="<li>Clear progress bar when an error occurs loading the playlist</li>";
 					$aboutString.="<li>Improve css layouts to work with various pixel densities</li>";
 					$aboutString.="<li>Upgrade to js-cookie 3.0.4</li>";
 					$aboutString.="<li>Queue icon in uncover dialog is hard to hit</li>";
