@@ -6140,7 +6140,7 @@ function refreshdb($quiet) {
 				$aboutString.="<ul>";
 					$aboutString.="<li>Clear progress bar when an error occurs loading the playlist</li>";
 					$aboutString.="<li>Improve css layouts to work with various pixel densities</li>";
-					$aboutString.="<li>Upgrade to js-cookie 3.0.4</li>";
+					$aboutString.="<li>Upgrade to js-cookie 3.0.5</li>";
 					$aboutString.="<li>Queue icon in uncover dialog is hard to hit</li>";
 					$aboutString.="<li>Cannot play tracks that contain a #</li>";
 					$aboutString.="<li>Upgrade to wavesurfer 6.6.3</li>";

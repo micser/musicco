@@ -57,7 +57,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 | [jQuery-ui](https://github.com/jquery/jquery-ui)                                    | 1.13.2   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-ui)](https://github.com/jquery/jquery-ui/releases/latest)                       |
 | [jQuery-ui-contextmenu](https://github.com/mar10/jquery-ui-contextmenu)             | 1.18.1   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/jquery-ui-contextmenu)](https://github.com/mar10/jquery-ui-contextmenu/releases/latest) |
 | [jquery-taphold](https://github.com/micser/jquery-taphold)                          | 1.1.0    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/jquery-taphold)](https://github.com/micser/jquery-taphold/releases/latest)      |
-| [js-cookie](https://github.com/js-cookie/js-cookie)                                 | 3.0.4    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/js-cookie/js-cookie)](https://github.com/js-cookie/js-cookie/releases/latest)                 |
+| [js-cookie](https://github.com/js-cookie/js-cookie)                                 | 3.0.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/js-cookie/js-cookie)](https://github.com/js-cookie/js-cookie/releases/latest)                 |
 | [jsmediatags](https://github.com/aadsm/jsmediatags)                                 | 3.9.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/aadsm/jsmediatags)](https://github.com/aadsm/jsmediatags/releases/latest)                     |
 | [Monserrat](https://github.com/JulietaUla/Montserrat)                               | 7.222    | [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/JulietaUla/Montserrat)](https://github.com/JulietaUla/Montserrat/tags)                       |
 | [normalise](https://github.com/micser/normalise)                                    | 1.0.0    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/normalise)](https://github.com/micser/normalise/releases/latest)                       |
@@ -78,7 +78,7 @@ musicco scans your music folder and builds a database of your music collection, 
 ## v3.2.3 (in development)
 * Clear progress bar when an error occurs loading the playlist
 * Improve css layouts to work with various pixel densities
-* Upgrade to js-cookie 3.0.4
+* Upgrade to js-cookie 3.0.5
 * Queue icon in uncover dialog is hard to hit
 * Cannot play tracks that contain a #
 * Upgrade to wavesurfer 6.6.3
