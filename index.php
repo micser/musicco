@@ -6144,7 +6144,7 @@ function refreshdb($quiet) {
 					$aboutString.="<li>Queue icon in uncover dialog is hard to hit</li>";
 					$aboutString.="<li>Cannot play tracks that contain a #</li>";
 					$aboutString.="<li>Upgrade to wavesurfer 6.6.3</li>";
-					$aboutString.="<li>Upgrade to font-awesome 6.4.0</li>";
+					$aboutString.="<li>Upgrade to font-awesome 6.4.2</li>";
 					$aboutString.="<li>Embedd font resources</li>";
 					$aboutString.="<li>Upgrade to jquery 3.7.0</li>";
 					$aboutString.="<li>Upgrade to color-thief 2.4.0</li>";
