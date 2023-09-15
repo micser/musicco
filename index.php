@@ -1398,8 +1398,7 @@ class Musicco {
 				document.documentElement.style.setProperty("--" + id, value);
 				document.documentElement.style.setProperty("--" + id + "-transparent", transparentValue);
 				document.documentElement.style.setProperty("--" + id + "-highlight", highlightValue);
-				wavesurfer.setWaveColor(value);
-				wavesurfer.setProgressColor(highlightValue);
+				wavesurfer.setOptions({ waveColor: value, progressColor: highlightValue });
 			}
 
 			function componentToHex(c) {
@@ -1535,7 +1534,7 @@ class Musicco {
 				$(track).addClass("currentTrack");
 				$.each($(track).data(), function(key, value) { nowPlaying[key] = value; });
 				player.src = buildMediaSrc($(track).data("parentfolder"), $(track).data("path"));
-				wavesurfer.load(player);
+				wavesurfer.load(player.src);
 				refreshPlaylist();
 				updateUI();
 			}
@@ -3833,7 +3832,7 @@ class Musicco {
 				});
 
 				if (wavesurfer != null) {
-					wavesurfer.drawer.on('click', function (e, progress) {
+					wavesurfer.on('click', function (progress) {
 						jump(progress);
 						$("#waveform").trigger("blur");
 					});
@@ -6143,7 +6142,7 @@ function refreshdb($quiet) {
 					$aboutString.="<li>Upgrade to js-cookie 3.0.5</li>";
 					$aboutString.="<li>Queue icon in uncover dialog is hard to hit</li>";
 					$aboutString.="<li>Cannot play tracks that contain a #</li>";
-					$aboutString.="<li>Upgrade to wavesurfer 6.6.4</li>";
+					$aboutString.="<li>Upgrade to wavesurfer 7.3.1</li>";
 					$aboutString.="<li>Upgrade to font-awesome 6.4.2</li>";
 					$aboutString.="<li>Embedd font resources</li>";
 					$aboutString.="<li>Upgrade to jquery 3.7.1</li>";
