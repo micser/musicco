@@ -6135,9 +6135,9 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'><i class='fa-solid fa-cubes-stacked'></i> Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<li class='bold yellow'>3.2.4 (in development)</li>";
+				$aboutString.="<li class='bold yellow'>3.2.4 (16th September 2023)</li>";
 					$aboutString.="<ul>";
-						$aboutString.="<li>No changes yet!</li>";
+						$aboutString.="<li>Fix unwanted horizontal scrolling in documentation</li>";
 					$aboutString.="</ul>";
 				$aboutString.="</li>";
 				$aboutString.="<li class='bold yellow'>3.2.3 (16th September 2023)</li>";
