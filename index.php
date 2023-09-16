@@ -6137,6 +6137,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.2.3 (in development)</li>";
 				$aboutString.="<ul>";
+					$aboutString.="<li>Upgraded website and documentation</li>";
 					$aboutString.="<li>Fixed opening of images in artist bio</li>";
 					$aboutString.="<li>Clear progress bar when an error occurs loading the playlist</li>";
 					$aboutString.="<li>Improve css layouts to work with various pixel densities</li>";

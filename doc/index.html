@@ -1,689 +1,340 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>musicco</title>
-<meta name="description" content="">
-<meta name="author" content="">
+<!DOCTYPE HTML>
+<!--
+	Adapted from:
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>musicco</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+		<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="img/apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="img/apple-touch-icon-114x114.png">
+		<link rel="stylesheet" href='assets/Montserrat/Montserrat.css' >
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
 
-<!-- Favicons
-		================================================== -->
-<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
-<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
-<link rel="apple-touch-icon" sizes="72x72" href="img/apple-touch-icon-72x72.png">
-<link rel="apple-touch-icon" sizes="114x114" href="img/apple-touch-icon-114x114.png">
-
-<!-- Bootstrap -->
-<link rel="stylesheet" type="text/css"  href="css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="fonts/font-awesome/css/font-awesome.css">
-
-<!-- Slider
-		================================================== -->
-<link href="css/owl.carousel.css" rel="stylesheet" media="screen">
-<link href="css/owl.theme.css" rel="stylesheet" media="screen">
-
-<!-- Stylesheet
-		================================================== -->
-<link rel="stylesheet" type="text/css"  href="css/style.css">
-<link rel="stylesheet" type="text/css" href="css/animate.min.css">
-<link href='//fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
-<script type="text/javascript" src="js/modernizr.custom.js"></script>
-
-<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-<!--[if lt IE 9]>
-			<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-		<![endif]-->
-</head>
-<body>
-<div id="preloader">
-	<div id="status"> <i class="fa fa-spinner fa-5x fa-pulse" aria-hidden="true"></i></div>
-</div>
-<!-- Navigation
-		==========================================-->
-<nav id="menu" class="navbar navbar-default navbar-fixed-top">
-	<div class="container"> 
-		<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-			<a class="navbar-brand color" href="index.html"><img width="32px" height="32px" style="display: inline;" src="img/apple-touch-icon.png" />musicco<strong></strong></a> </div>
-		
-		<!-- Collect the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#home" class="page-scroll">Download</a></li>
-				<li><a href="#overview" class="page-scroll">Overview</a></li>
-				<li><a href="#features" class="page-scroll">Features</a></li>
-				<li><a href="#contact" class="page-scroll">Contact</a></li>
-			</ul>
-		</div>
-		<!-- /.navbar-collapse --> 
-	</div>
-	<!-- /.container-fluid --> 
-</nav>
-
-<!-- Header -->
-<header class="text-center" name="home">
-	<div class="intro-text">
-		<div class="relief">
-			<h1 class="wow fadeInDown"><strong><span class="color">musicco</span></strong></h1>
-			<p class="wow fadeInDown">a web player for your music library</p>
-			<a target="_blank" href="https://github.com/micser/musicco/releases" class="btn btn-default btn-lg page-scroll wow fadeInUp" data-wow-delay="200ms">download</a>
-			<a target="_blank" href="https://www.musicco.app/demo" class="btn btn-default btn-lg page-scroll wow fadeInUp" data-wow-delay="200ms">live demo</a> 
-		</div>
-	</div>
-</header>
-
-<!-- About Section -->
-<div id="overview">
-	<div class="container">
-		<div class="section-title text-center wow fadeInDown">
-			<h2><strong>Overview</strong></h2>
-			<hr>
-			<div class="clearfix"></div>
-			<p>musicco is a web player for your music library</p>
-			<p>Host it on a NAS and start streaming your music from any browser.</p>
-		</div>
-		<div class="row">
-			<div class="col-md-6 wow fadeInLeft"> <img src="img/about.png" class="img-responsive"> </div>
-			<div class="col-md-6 wow fadeInRight">
-				<h4>What is musicco?</h4>
-				<p>musicco is a small web application that lets you browse your music library and queue tracks.</p>
-				<p>All of this from a browser.</p>
-				<p>It's not revolutionary, it just solves a few very specific problems I had...</p>
-				<div class="space"></div>
-				<h4>So why did you make musicco?</h4>
-				<p>I was tired of syncing music onto devices, only to realise it takes forever or I forgot the particular album I wanted to listen to at home that day. Commercial music streaming services are all fine, but what about that obscure album I bought from a band at a show that I listen to andnobody knows about? What about the music I spent ages ripping from CDs at high bitrate? Oh, and don't get me started on id3 tags, my library is properly organised in Artist &gt; Album folders, I don't need to worry about wrongly-tagged files or players that don't sort tags properly.</p>
-				<div class="space"></div>
-				<h4>How does it work?</h4>
-				<p>The concept behind musicco is nothing new. In fact, it is largely inspired by <a target="_blank" href="https://github.com/henrik242/musicbrowser">musicbrowser</a>, another cool, lightweight music streaming solution.</p>
-				<p>It is also technically based on <a target="_blank" href="http://encode-explorer.siineiolekala.net/">encode explorer</a>, a simple and efficient PHP file browser.</p>
-				<p>The rest of the work was just putting a UI on top of a HTML5 audio player to create playlists and integrate cover art, artist and lyrics information (from <a href="http://coverartarchive.org/">Cover Art Archive</a>, <a target="_blank" href="https://www.wikipedia.org">Wikipedia</a> and <a href="http://www.chartlyrics.com/">ChartLyrics</a>).</p>
-			</div>
-		</div>
-		<div class="section-title text-center wow fadeInDown">
-			<h2><strong>Why do I need musicco?</strong></h2>
-			<div class="clearfix"></div>
-			<div class="space"></div><div class="list-style">
-				<div class="row">
-					<div class="col-lg-6 col-sm-6 col-xs-12">
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
 						<ul>
-							<li>Do you have a music collection you want to be able to access from a browser?</li>
-							<li>Do you have a NAS that is not powerful enough for solutions like Subsonic, Squeezebox or an iTunes Server?</li>
+							<li><a href="#intro">musicco</a></li>
+							<li><a href="#one">Features</a></li>
+							<li><a href="#two">Background</a></li>
+							<li><a href="#three">Contact</a></li>
 						</ul>
-					</div>
-					<div class="col-lg-6 col-sm-6 col-xs-12">
-						<ul>
-							<li>Do you just want something that works and is easy to set up?</li>
-							<li>Do you need a music player that does not require flash?</li>
-							<li>Do you want to use the same music player on your desktop and your phone?</li>
-						</ul>
-					</div>
+					</nav>
 				</div>
-				<h4><strong>Then you should probably give musicco a go!</strong></h4>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Intro -->
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1><img width="32px" height="32px" src="img/apple-touch-icon.png"> musicco</h1>
+							<h2>A web player for your music library</h2>
+							<ul class="actions">
+								<li><a href="https://github.com/micser/musicco/releases" class="button scrolly primary icon brands fa-github">download</a></li>
+								<li><a href="https://www.musicco.app/demo" class="button scrolly primary icon solid fa-wave-square">demo</a></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- One -->
+					<section id="one" class="wrapper style2 spotlights">
+						<section class="odd">
+							<a class="image"><img src="img/features/responsive.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Web Music Magic!</h2>
+									<p>musicco is a web player for your music library<br/>Host it on a NAS and start streaming your music from any browser</p>
+									<p>musicco uses HTML5 audio and does not require flash to play mp3s.</p>
+									<p>Create awesome playlists you can really play from any device with musicco's completely responsive UI!</p>
+								</div>
+							</div>
+						</section>
+						<section class="even">
+							<a class="image"><img src="img/features/playlists.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Your Playlists, anywhere</h2>
+									<p>Create your playlists, they will be saved automatically so you can resume from any other device.</p>
+									<p>Songs are grouped by album so you can easily move items up and down the playlist.</p>
+								</div>
+							</div>
+						</section>
+						<section class="odd">
+							<a class="image"><img src="img/features/library.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Folder-Based Music Library</h2>
+									<p>Your entire music library is displayed the way you organised it on your hard drive. No tagging is necessary.</p>
+									<p>For best results, musicco assumes that your music library is organised by artist / [year] album /01_song.mp3</p>
+									<p>But basically, songs will be detected in any folder in your library.</p>
+									<p>No files are modified. No id3 tags are read. The only modifications made in your library folder are that a cover is downloaded if none exists when a song is played for the first time.</p>
+									<p>Use the filter text to filter the top folders</p>
+									<p>You can directly add a folder or expand it to see what files it contains.</p>
+									<p>Click the info icon to view more information about an artist.</p>
+								</div>
+							</div>
+						</section>
+						<section class="even">
+							<a class="image"><img src="img/features/search.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Search all the things!</h2>
+									<p>Click the magnifying glass to search for a song in your library.</p>
+									<p>Click any search result to add it to your playlist.</p>
+								</div>
+							</div>
+						</section>
+						<section class="odd">
+							<a class="image"><img src="img/features/uncover.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Surprise me!</h2>
+									<p>Not sure what you're in the mood for? Click the Uncover button to automatically load random albums from your library.</p>
+									<p>Uncover has three modes:</p>
+									<ul>
+										<li>Click Uncover to load 5 random albums from your library</li>
+										<li>Shift-click Uncover to load 5 unheard random albums from your library</li>
+										<li>Alt-click Uncover to start playing a random album from the ones already in your playlist</li>
+									</ul>
+								</div>
+							</div>
+						</section>
+						<section class="even">
+							<a class="image"><img src="img/features/lyrics.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Sing along to songs you don't know</h2>
+									<p>If you carefully collected lrc lyrics files, musicco will load them directly as long as they have the same name as the track currently playing.</p>
+									<p>Not a collector? Click the lyrics icon to view lyrics for the current track from <a target="_blank" href="https://www.chartlyrics.com/">Chartlyrics</a></p>
+								</div>
+							</div>
+						</section>
+						<section class="odd">
+							<a class="image"><img src="img/features/artistinfo.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Full Bio</h2>
+									<p>Where are they from again? What was their second album called? Wikipedia probably knows, and the information is always available in musicco's info panel.</p>
+									<p>Go on, click it, click links, get lost on wikipedia right from your music player.</p>
+								</div>
+							</div>
+						</section>
+						<section class="even">
+							<a class="image"><img src="img/features/keyboard.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Keyboard Support</h2>
+									<p>Mouse? Boring. You can use most of musicco right from your keyboard.</p>
+									<h4>Playback</h4>
+									<ul>
+										<li>&larr;: previous track</li>
+										<li>&rarr;: next track</li>
+										<li>Shift + &larr;: previous album</li>
+										<li>Shift + &rarr;: next album</li>
+										<li>&uarr;: volume up</li>
+										<li>&darr;: volume down</li>
+										<li>&lt;space&gt;: play/pause</li>
+										<li>You can also use media keys on <br/>most multimedia keyboards</li>
+									</ul>
+									<h4>Main</h4>
+									<ul>
+										<li>b: show/hide browser</li>
+										<li>/: go to filter box in browser</li>
+										<li>s: show/hide search</li>
+										<li>p: show/hide playlist</li>
+										<li>i: show/hide Artist Information</li>
+										<li>l: show/hide lyrics</li>
+										<li>g: show Settings</li>
+										<li>Esc: hide all panels</li>
+									</ul>
+									<h4>Ninja</h4>
+									<ul>
+										<li>Shift + Uncover: add new albums to playlist</li>
+										<li>Alt + Uncover: play a random album from the playlist</li>
+									</ul>
+									<h4>Browser</h4>
+									<ul>
+										<li>j/k: highlight previous/next item</li>
+										<li>o: open current selection</li>
+										<li>a: queue current selection</li>
+									</ul>
+									<h4>Touch</h4>
+									<ul>
+										<li>Swipe left/right to go to the next album</li>
+										<li>Swipe up/down to change volume</li>
+										<li>Long press support and more!</li>
+									</ul>
+								</div>
+							</div>
+						</section>
+						<section class="odd">
+							<a class="image"><img src="img/features/authentication.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Authentication and Sharing</h2>
+									<p>You can (and probably should) require a login for musicco. There are two levels of users: guests and administrators. The main difference is that guest accounts do not have the right to update the music library or download individual tracks. When a login is required, your playlists are saved across sessions for your user only.</p>
+									<p>Want to share a permalink to an album? You can do that by clicking the link icon in the playlist. You will get a link to the album that you can open in a guest session.</p>
+								</div>
+							</div>
+						</section>
+						<section class="even">
+							<a class="image"><img src="img/features/installation.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Easy Installation</h2>
+									<h3>Requirements</h3>
+									<ul>
+										<li>A web server with php and sqlite support and access to your music library</li>
+										<li>A web browser that supports html audio</li>
+										<li>There are no OS-specific requirements, and it runs great on a 500MHz CPU with 32MB of RAM (like a <a target="_blank" href="http://dns323.kood.org/">DNS-323</a> for example)</li>
+									</ul>
+									<h3>Installation</h3>
+									<ol>
+										<li>Extract the distribution archive into the root of your webserver</li>
+										<li>Place your music in the music folder or create a symbolic link to the root of your music directory to replace the music folder</li>
+										<li>Open up a browser, complete the setup wizard and click on "Update Library". It may take a few minutes for this operation to finish if you have several thousand files.</li>
+									</ol>
+								</div>
+							</div>
+						</section>
+						<section class="odd">
+							<a class="image"><img src="img/features/configuration.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>Configuration</h2>
+									<p>You can modify the main settings the first time you access the app.</p>
+									<p>You can modify the configuration of musicco by editing index.php and config.php. and following the instructions in the file itself.</p>
+									<p>You can currently configure:</p>
+									<ul>
+										<li>the name of the webapp</li>
+										<li>the default language (English and French come built-in, but you can add your own)</li>
+										<li>the character set for reading file names</li>
+										<li>the name of the folder containing your music collection</li>
+										<li>whether or not to require a login to use the app</li>
+										<li>the list of users allowed to use the app</li>
+										<li>how new music is highlighted</li>
+										<li>the default name for album art files</li>
+										<li>the extension for downloaded cover art files</li>
+										<li>whether to load lyrics from local .lrc files</li>
+										<li>whether to download missing album art automatically</li>
+									</ul>
+								</div>
+							</div>
+						</section>
+						<section class="even">
+							<a class="image"><img src="img/features/advanced.png" /></a>
+							<div class="content">
+								<div class="inner">
+									<h2>For Advanced Users</h2>
+									<h4>Automating Library Rebuilds</h4>
+									<p>Instead of manually clicking and waiting for the library to rebuild itself, you can use a cronjob to trigger an update by calling index.php with the parameter builddb</p>
+									<p>The example below shows how to trigger a library rebuild every night at midnight:</p>
+									<p>0 0 * * * "/bin/cd /srv/wwwroot/musicco && /bin/php /srv/wwwroot/musicco/index.php builddb >> /var/log/www/server.log"</p>
+									<h4>Feature Requests</h4>
+									<p>If you did not find the feature you were looking for, suggest it in the <a target="_blank" href="https://github.com/micser/musicco/issues/">bug tracker</a>!</p>
+								</div>
+							</div>
+						</section>
+					</section>
+
+
+				<!-- Two -->
+					<section id="two" class="wrapper style3 fade-up">
+						<div class="inner">
+							<h2>Background</h2>
+							<h3>What is musicco?</h3>
+							<p>musicco is a small web application that lets you browse your music library and queue tracks<br/>
+							All of this from a browser<br/>
+							It's not revolutionary, it just solves a few very specific problems I had...</p>
+							<h3>So why did you make musicco?</h3>
+							<p>I was tired of syncing music onto devices, only to realise it takes forever or I forgot the particular album I wanted to listen to at home that day. Commercial music streaming services are all fine, but what about that obscure album I bought from a band at a show that I listen to and nobody knows about? What about the music I spent ages ripping from CDs at high bitrate? Oh, and don't get me started on id3 tags, my library is properly organised in Artist &gt; Album folders, I don't need to worry about wrongly-tagged files or players that don't sort tags properly.</p>
+							<h3>How does it work?</h3>
+							<p>The concept behind musicco is nothing new. In fact, it is largely inspired by <a target="_blank" href="https://github.com/henrik242/musicbrowser">musicbrowser</a>, another cool, lightweight music streaming solution.</p>
+							<p>It is also technically based on <a target="_blank" href="http://encode-explorer.siineiolekala.net/">encode explorer</a>, a simple and efficient PHP file browser.</p>
+							<p>The rest of the work was just putting a UI on top of a HTML5 audio player to create playlists and integrate cover art, artist and lyrics information (from <a href="http://coverartarchive.org/">Cover Art Archive</a>, <a target="_blank" href="https://www.wikipedia.org">Wikipedia</a> and <a href="http://www.chartlyrics.com/">ChartLyrics</a>).</p>
+							<h3>Why do I need musicco?</h3>
+							<div class="features">
+								<section>
+									<span class="icon solid major fa-check"></span>
+									<p>Do you have a music collection you want to be able to access from a browser?</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-check"></span>
+									<p>Do you have a NAS that is not powerful enough for solutions like Subsonic, Squeezebox or an iTunes Server?</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-check"></span>
+									<p>Do you just want something that works and is easy to set up?</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-check"></span>
+									<p>Do you need a music player that does not require flash?</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-check"></span>
+									<p>Do you want to use the same music player on your desktop and your phone?</p>
+								</section>
+								<section>
+									<span class="icon solid major fa-check"></span>
+									<p>Do you always want to know more about an artist's background and work?</p>
+								</section>
+							</div>
+							<ul class="actions">
+								<li><a href="https://github.com/micser/musicco" class="button scrolly large primary icon solid fa-thumbs-up">Then you should probably give musicco a go!</a></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- Three -->
+					<section id="three" class="wrapper style1 fade-up">
+						<div class="inner">
+							<h2>Contact</h2>
+							<p>Wanna get in touch, request a feature or follow our blog? Use the buttons below.</p>
+							<div class="style1">
+								<section>
+									<ul class="icons">
+										<li><a href="https://twitter.com/musiccoapp" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="https://github.com/micser/musicco/issues" class="icon solid fa-bug"><span class="label">Issues</span></a></li>
+										<li><a href="https://github.com/micser/musicco" class="icon brands fa-github"><span class="label">Code</span></a></li>
+										<li><a href="https://github.com/micser/musicco/wiki" class="icon brands fa-wordpress"><span class="label">Instagram</span></a></li>
+									</ul>
+								</section>
+							</div>
+						</div>
+					</section>
+
 			</div>
-		</div>
-	</div>
-</div>
 
-<!-- Portfolio Section -->
-<div id="features" class="text-center">
-	<div class="container"> <!-- Container -->
-		<div class="section-title wow fadeInDown">
-			<h2><strong>Features</strong></h2>
-			<hr>
-			<div class="clearfix"></div>
-			<p>&nbsp;</p>
-		</div>
-		<div class="row">
-			<div class="portfolio-items">
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-player" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Web Music Magic!</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/responsive.png" class="img-responsive"> </a> </div>
-					</div>
+		<!-- Footer -->
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li><a href="https://www.musicco.app">musicco</a></li>
+					</ul>
 				</div>
+			</footer>
 
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-playlists" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Your Playlists, anywhere</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/playlists.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
 
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-library" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Folder-Based Music Library</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/library.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-search" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Search all the things!</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/search.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-uncover" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Surprise me!</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/uncover.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-lyrics" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Sing along to songs you don't know</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/lyrics.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-artistinfo" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Full Bio</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/artistinfo.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-keyboard" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Keyboard Support</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/keyboard.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-authentication" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Authentication and Sharing</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/authentication.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-installation" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Installation</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/installation.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-configuration" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>Configuration</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/configuration.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-md-3 col-lg-3 web">
-					<div class="portfolio-item wow fadeInUp" data-wow-delay="200ms">
-						<div class="hover-bg"> <a href="#features-advanced" class="portfolio-link" data-toggle="modal">
-							<div class="hover-text">
-								<h4>For Advanced Users</h4>
-								<div class="clearfix"></div>
-								<i class="fa fa-plus"></i> </div>
-							<img src="img/features/advanced.png" class="img-responsive"> </a> </div>
-					</div>
-				</div>
-
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Contact Section -->
-<div id="contact" class="text-center">
-	<div class="container">
-		<div class="section-title wow fadeInDown">
-			<h2><strong>Contact</strong> us</h2>
-			<hr>
-			<p>Wanna get in touch, request a feature or follow our blog? Use the buttons below.</p>
-		</div>
-		<div class="social">
-			<ul>
-				<li><a href="https://twitter.com/musiccoapp"><i class="fa fa-twitter"></i></a></li>
-				<li><a href="https://github.com/micser/musicco/issues"><i class="fa fa-bug"></i></a></li>
-				<li><a href="https://github.com/micser/musicco"><i class="fa fa-code-fork"></i></a></li>
-				<li><a href="https://github.com/micser/musicco/wiki/"><i class="fa fa-wordpress"></i></a></li>
-			</ul>
-		</div>
-	</div>
-</div>
-
-<div id="footer">
-	<div class="container">
-			<p><a href="https://www.musicco.app" rel="nofollow">musicco</a> - Design by <a target="_blank" href="http://www.templategarden.com" rel="nofollow">TemplateGarden</a></p>
-	</div>
-</div>
-
-<!-- Feature details --> 
-
-<!-- player -->
-<div class="portfolio-modal modal fade" id="features-player" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Web Music Magic!</h2>
-						<img class="img-responsive img-centered" src="img/features/player.png" alt="">
-						<div>musicco uses HTML5 audio and does not require flash to play mp3s.</div>
-						<div>Create awesome playlists you can really play from any device with musicco's completely responsive UI!</div>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- playlists -->
-<div class="portfolio-modal modal fade" id="features-playlists" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Your Playlists, anywhere</h2>
-						<img class="img-responsive img-centered" src="img/features/playlists.png" alt="">
-						<div>Create your playlists, they will be saved automatically so you can resume from any other device.</div>
-						<div>Songs are grouped by album so you can easily move items up and down the playlist.</div>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Library -->
-<div class="portfolio-modal modal fade" id="features-library" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Folder-Based Music Library</h2>
-						<img class="img-responsive img-centered" src="img/features/library.png" alt="">
-						<div>Your entire music library is displayed the way you organised it on your hard drive. No tagging is necessary.</div>
-						<div>For best results, musicco assumes that your music library is organised by artist / [year] album /01_song.mp3</div>
-						<div>But basically, songs will be detected in any folder in your library.</div>
-						<div>No files are modified. No id3 tags are read. The only modifications made in your library folder are that a cover is downloaded if none exists when a song is played for the first time.</div>
-						<div>Use the filter text to filter the top folders</div>
-						<div>You can directly add a folder or expand it to see what files it contains.</div>
-						<div>Click the info icon to view more information about an artist.</div>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Search -->
-<div class="portfolio-modal modal fade" id="features-search" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Search all the things!</h2>
-						<img class="img-responsive img-centered" src="img/features/search.png" alt="">
-						<div>Click the magnifying glass to search for a song in your library.</div>
-						<div>Click any search result to add it to your playlist.</div>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- uncover -->
-<div class="portfolio-modal modal fade" id="features-uncover" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Surprise me!</h2>
-						<img class="img-responsive img-centered" src="img/features/uncover.png" alt="">
-						<div>Not sure what you're in the mood for? Click the Uncover button to automatically load random albums from your library.</div>
-						<div>Uncover has three modes:</div>
-						<ul>
-							<li>Click Uncover to load 5 random albums from your library</li>
-							<li>Shift-click Uncover to load 5 unheard random albums from your library</li>
-							<li>Alt-click Uncover to start playing a random album from the ones already in your playlist</li>
-						</ul>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- lyrics -->
-<div class="portfolio-modal modal fade" id="features-lyrics" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Sing along to songs you don't know</h2>
-						<img class="img-responsive img-centered" src="img/features/lyrics.png" alt="">
-						<div>If you carefully collected lrc lyrics files, musicco will load them directly as long as they have the same name as the track currently playing.</div>
-						<div>Not a collector? Click the lyrics icon to view lyrics for the current track from <a target="_blank" href="https://www.chartlyrics.com/">Chartlyrics</a></div>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-
-<!-- Artist Info -->
-<div class="portfolio-modal modal fade" id="features-artistinfo" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Full Bio</h2>
-						<img class="img-responsive img-centered" src="img/features/artistinfo.png" alt="">
-						<div>Where are they from again? What was their second album called? Wikipedia probably knows, and the information is always available in musicco's info panel.</div>
-						<div>Go on, click it, click links, get lost on wikipedia right from your music player.</div>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- keyboard support -->
-<div class="portfolio-modal modal fade" id="features-keyboard" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Keyboard Support</h2>
-						<img class="img-responsive img-centered" src="img/features/keyboard.png" alt="">
-						<div>Mouse? Boring. You can use most of musicco right from your keyboard.</div>
-						<h4>Playback</h4>
-						<ul>
-							<li>&larr;: previous track</li>
-							<li>&rarr;: next track</li>
-							<li>Shift + &larr;: previous album</li>
-							<li>Shift + &rarr;: next album</li>
-							<li>&uarr;: volume up</li>
-							<li>&darr;: volume down</li>
-							<li>&lt;space&gt;: play/pause</li>
-							<li>You can also use media keys on <br/>most multimedia keyboards</li>
-						</ul>
-						<h4>Main</h4>
-						<ul>
-							<li>b: show/hide browser</li>
-							<li>/: go to filter box in browser</li>
-							<li>s: show/hide search</li>
-							<li>p: show/hide playlist</li>
-							<li>i: show/hide Artist Information</li>
-							<li>l: show/hide lyrics</li>
-							<li>g: show Settings</li>
-							<li>Esc: hide all panels</li>
-						</ul>
-						<h4>Ninja</h4>
-						<ul>
-							<li>Shift + Uncover: add new albums to playlist</li>
-							<li>Alt + Uncover: play a random album from the playlist</li>
-						</ul>
-						<h4>Browser</h4>
-						<ul>
-							<li>j/k: highlight previous/next item</li>
-							<li>o: open current selection</li>
-							<li>a: queue current selection</li>
-						</ul>
-						<h4>Touch</h4>
-						<ul>
-							<li>Swipe left/right to go to the next album</li>
-							<li>Swipe up/down to change volume</li>
-							<li>Long press support and more!</li>
-						</ul>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Authentication -->
-<div class="portfolio-modal modal fade" id="features-authentication" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Authentication and Sharing</h2>
-						<img class="img-responsive img-centered" src="img/features/authentication.png" alt="">
-						<div>You can (and probably should) require a login for musicco. There are two levels of users: guests and administrators. The main difference is that guest accounts do not have the right to update the music library or download individual tracks. When a login is required, your playlists are saved across sessions for your user only.</div>
-						<div>Want to share a permalink to an album? You can do that by clicking the link icon in the playlist. You will get a link to the album that you can open in a guest session.</div>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Installation -->
-<div class="portfolio-modal modal fade" id="features-installation" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Easy Installation</h2>
-						<img class="img-responsive img-centered" src="img/features/installation.png" alt="">
-						<h3>Requirements</h3>
-						<ul>
-							<li>A web server with php and sqlite support and access to your music library</li>
-							<li>A web browser that supports html audio</li>
-							<li>There are no OS-specific requirements, and it runs great on a 500MHz CPU with 32MB of RAM (like a <a target="_blank" href="http://dns323.kood.org/">DNS-323</a> for example)</li>
-						</ul>
-						<h3>Installation</h3>
-						<ol>
-							<li>Extract the distribution archive into the root of your webserver</li>
-							<li>Place your music in the music folder or create a symbolic link to the root of your music directory to replace the music folder</li>
-							<li>Open up a browser, complete the setup wizard and click on "Update Library". It may take a few minutes for this operation to finish if you have several thousand files.</li>
-						</ol>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Configuration -->
-<div class="portfolio-modal modal fade" id="features-configuration" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>Configuration</h2>
-						<img class="img-responsive img-centered" src="img/features/configuration.png" alt="">
-						<p>You can modify the main settings the first time you access the app.</p>
-						<p>You can modify the configuration of musicco by editing index.php and config.php. and following the instructions in the file itself.</p>
-						<p>You can currently configure:</p>
-						<ul>
-							<li>the name of the webapp</li>
-							<li>the default language (English and French come built-in, but you can add your own)</li>
-							<li>the character set for reading file names</li>
-							<li>the name of the folder containing your music collection</li>
-							<li>whether or not to require a login to use the app</li>
-							<li>the list of users allowed to use the app</li>
-							<li>how new music is highlighted</li>
-							<li>the default name for album art files</li>
-							<li>the extension for downloaded cover art files</li>
-							<li>whether to load lyrics from local .lrc files</li>
-							<li>whether to download missing album art automatically</li>
-						</ul>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- advanced features -->
-<div class="portfolio-modal modal fade" id="features-advanced" tabindex="-1" role="dialog" aria-hidden="true">
-	<div class="modal-content">
-		<div class="close-modal" data-dismiss="modal">
-			<div class="lr">
-				<div class="rl"> </div>
-			</div>
-		</div>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-8 col-lg-offset-2">
-					<div class="modal-body"> 
-						<h2>For Advanced Users</h2>
-						<img class="img-responsive img-centered" src="img/features/advanced.png" alt="">
-						<h4>Automating Library Rebuilds</h4>
-						<div>Instead of manually clicking and waiting for the library to rebuild itself, you can use a cronjob to trigger an update by calling index.php with the parameter builddb</div>
-						<div>The example below shows how to trigger a library rebuild every night at midnight:</div>
-						<div>0 0 * * * "/bin/cd /srv/wwwroot/musicco && /bin/php /srv/wwwroot/musicco/index.php builddb >> /var/log/www/server.log"</div>
-						<h4>Feature Requests</h4>
-						<div>If you did not find the feature you were looking for, suggest it in the <a target="_blank" href="https://github.com/micser/musicco/issues/">bug-tracker</a>!</div>
-						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) --> 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> 
-<script type="text/javascript" src="js/jquery.1.11.1.js"></script> 
-<!-- Include all compiled plugins (below), or include individual files as needed --> 
-<script type="text/javascript" src="js/bootstrap.js"></script> 
-<script type="text/javascript" src="js/SmoothScroll.js"></script> 
-<script type="text/javascript" src="js/wow.min.js"></script> 
-<script type="text/javascript" src="js/jquery.prettyPhoto.js"></script> 
-<script type="text/javascript" src="js/jquery.isotope.js"></script> 
-<script type="text/javascript" src="js/jqBootstrapValidation.js"></script> 
-<script type="text/javascript" src="js/contact_me.js"></script> 
-<script type="text/javascript" src="js/owl.carousel.js"></script> 
-
-<!-- Javascripts
-		================================================== --> 
-<script type="text/javascript" src="js/main.js"></script>
-</body>
+	</body>
 </html>
