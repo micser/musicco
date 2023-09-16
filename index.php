@@ -13,8 +13,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "3.2.4";
-$_CONFIG['appVersion'] = "3.2.4";
+// Default: $_CONFIG['appVersion'] = "3.2.5";
+$_CONFIG['appVersion'] = "3.2.5";
 
 // The database version compatible with this version. This is for information purposes only, since
 // no backwards compatibility really exists
@@ -6135,6 +6135,11 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'><i class='fa-solid fa-cubes-stacked'></i> Release History</div>";
 			$aboutString.="<ul>";
+				$aboutString.="<li class='bold yellow'>3.2.5 (in development)</li>";
+					$aboutString.="<ul>";
+						$aboutString.="<li>No changes yet!</li>";
+					$aboutString.="</ul>";
+				$aboutString.="</li>";
 				$aboutString.="<li class='bold yellow'>3.2.4 (16th September 2023)</li>";
 					$aboutString.="<ul>";
 						$aboutString.="<li>Fix unwanted horizontal scrolling in documentation</li>";
