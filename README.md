@@ -75,7 +75,7 @@ musicco scans your music folder and builds a database of your music collection, 
 
 # 📒 Changelog
 
-## v3.2.3 (in development)
+## v3.2.3 (16th September 2023)
 * Upgraded website and documentation
 * Fixed opening of images in artist bio
 * Clear progress bar when an error occurs loading the playlist
