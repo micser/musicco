@@ -3233,12 +3233,12 @@ class Musicco {
 									$("#infoPanelText").find("#toctogglecheckbox").hide();
 									$("#infoPanelText").find(".mw-editsection").hide();
 									$("#infoPanelText").find(".navbox").hide();
-									$("#infoPanelText").find('.image').removeAttr("href", ""); 
-									$("#infoPanelText").find('.new').removeAttr("href", ""); 
-									$("#infoPanelText").find('.external, .extiw').attr("target", "_blank"); 
-									$("#infoPanelText").find('a').removeClass("new"); 
-									$("#infoPanelText").find('.infobox-subheader').removeClass("infobox-subheader"); 
-									$("#infoPanelText").find('.sidebar').removeClass("sidebar"); 
+									$("#infoPanelText").find('.mw-file-description').removeAttr("href", "");
+									$("#infoPanelText").find('.new').removeAttr("href", "");
+									$("#infoPanelText").find('.external, .extiw').attr("target", "_blank");
+									$("#infoPanelText").find('a').removeClass("new");
+									$("#infoPanelText").find('.infobox-subheader').removeClass("infobox-subheader");
+									$("#infoPanelText").find('.sidebar').removeClass("sidebar");
 									$("#infoPanelText").find('a[href^="/wiki/"]').addClass("infoPanelLink");
 									$("#infoPanelText").find('a[href^="#"]').addClass("infoPanelAnchor");
 								}
@@ -4541,9 +4541,9 @@ class Musicco {
 				document.execCommand("copy");
 			});
 
-			$(document).on("click", "#infoPanel a.image", function() {
+			$(document).on("click", "#infoPanel a.mw-file-description", function() {
 				var image = $(this).children("img").attr("srcset").split(',').pop().trim().split(' ')[0];
-				var legend = $(this).children("img").attr("alt");
+				var legend = $(this).children("img").attr("alt") || "";
 				$("#imageViewerPanel img").attr("src", image);
 				$("#imageViewerPanel div").text(legend);
 				$("#imageViewerPanel").dialog("open");
@@ -6137,6 +6137,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.2.3 (in development)</li>";
 				$aboutString.="<ul>";
+					$aboutString.="<li>Fixed opening of images in artist bio</li>";
 					$aboutString.="<li>Clear progress bar when an error occurs loading the playlist</li>";
 					$aboutString.="<li>Improve css layouts to work with various pixel densities</li>";
 					$aboutString.="<li>Upgrade to js-cookie 3.0.5</li>";
