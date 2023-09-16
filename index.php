@@ -6142,7 +6142,7 @@ function refreshdb($quiet) {
 					$aboutString.="<li>Upgrade to js-cookie 3.0.5</li>";
 					$aboutString.="<li>Queue icon in uncover dialog is hard to hit</li>";
 					$aboutString.="<li>Cannot play tracks that contain a #</li>";
-					$aboutString.="<li>Upgrade to wavesurfer 7.3.1</li>";
+					$aboutString.="<li>Upgrade to wavesurfer 7.3.2</li>";
 					$aboutString.="<li>Upgrade to font-awesome 6.4.2</li>";
 					$aboutString.="<li>Embedd font resources</li>";
 					$aboutString.="<li>Upgrade to jquery 3.7.1</li>";
