@@ -807,8 +807,6 @@
 	}
 
 	#waveform-container {
-		height: 50px;
-		overflow: hidden;
 		position: absolute;
 		bottom: 0;
 		width: 100%;
@@ -821,11 +819,8 @@
 
 	#waveform:hover {
 		opacity: 1;
-		transition: opacity .1s ease;
-	}
-
-	#waveform > wave {
 		cursor: pointer!important;
+		transition: opacity .1s ease;
 	}
 
 	.toggles,

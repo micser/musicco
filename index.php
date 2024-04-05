@@ -1398,7 +1398,11 @@ class Musicco {
 				document.documentElement.style.setProperty("--" + id, value);
 				document.documentElement.style.setProperty("--" + id + "-transparent", transparentValue);
 				document.documentElement.style.setProperty("--" + id + "-highlight", highlightValue);
-				wavesurfer.setOptions({ waveColor: value, progressColor: highlightValue });
+				const ctx = document.createElement('canvas').getContext('2d')
+				const gradient = ctx.createLinearGradient(0, 0, 0, 150)
+				gradient.addColorStop(0, highlightValue)
+				gradient.addColorStop(0.2, value)
+				wavesurfer.setOptions({ waveColor: gradient, progressColor: highlightValue });
 			}
 
 			function componentToHex(c) {
@@ -3596,10 +3600,11 @@ class Musicco {
 						maxBufferSize: (isAndroid())? 30 * 1000 * 1000 : null,
 						cursorWidth: 0,
 						responsive: true,
-						barGap: 1,
-						barWidth: 1,
-						barRadius: 1,
-						height: 100,
+						barGap: 2,
+						barWidth: 2,
+						barRadius: 2,
+						barAlign: 'bottom',
+						height: 50,
 						normalize: true,
 						pixelRatio: 1,
 						partialRender: true,
@@ -6138,6 +6143,7 @@ function refreshdb($quiet) {
 				$aboutString.="<li class='bold yellow'>3.2.5 (in development)</li>";
 					$aboutString.="<ul>";
 						$aboutString.="<li>Upgrade to wavesurfer 7.3.6</li>";
+						$aboutString.="<li>waveform style improvements</li>";
 					$aboutString.="</ul>";
 				$aboutString.="</li>";
 				$aboutString.="<li class='bold yellow'>3.2.4 (16th September 2023)</li>";

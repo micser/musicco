@@ -77,6 +77,7 @@ musicco scans your music folder and builds a database of your music collection, 
 
 ## v3.2.5 (in development)
 * Upgrade to wavesurfer 7.3.6
+* waveform style improvements
 
 ## v3.2.4 (16th September 2023)
 * Fix unwanted horizontal scrolling in documentation
