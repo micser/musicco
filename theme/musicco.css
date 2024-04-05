@@ -848,7 +848,8 @@
 	.fa-input ~ label:hover,
 	i.tooltip,
 	i.polling,
-	.shortcut {
+	.shortcut,
+	.searchResultFilter ~ label {
 		cursor: pointer;
 	}
 
@@ -1194,9 +1195,22 @@
 		margin-left: -.75em;
 	}
 
-	#searchText {
+	#searchText,
+	#searchResultFilters {
 		width: 70%;
 		margin-left: -.5em;
+	}
+
+
+	/* Search Result Filters styling */
+
+	#searchResultFilters {
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: row;
+		justify-content: flex-start;
+		margin: 1em;
+		margin-left: -.7em;
 	}
 
 	#loadingInfo,
@@ -1204,6 +1218,25 @@
 		display: none;
 		z-index: 3;
 		margin-right: 1em;
+	}
+
+	.searchResultFilter {
+		display: none;
+	}
+
+	.searchResultFilter ~ label {
+		border-radius: .3em;
+		padding: .4em;
+		margin-right: .5em;
+		color: var(--text-highlight);
+		background-color: var(--background-highlight);
+		padding: .2em .5em;
+	}
+
+	.searchResultFilter:checked + label,
+	.searchResultFilter ~ label:hover {
+		background-color: var(--text);
+		color: var(--text-highlight);
 	}
 
 	.big {
@@ -2087,7 +2120,8 @@
 		width: 80%;
 	}
 
-	#searchText {
+	#searchText,
+	#searchResultFilters {
 		width: 75%;
 	}
 

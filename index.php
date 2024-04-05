@@ -13,8 +13,8 @@ $_CONFIG['appName'] = "musicco";
 
 // The application version. This is used for sending as part of the user-agent string
 // as part of fair use of external services APIs.
-// Default: $_CONFIG['appVersion'] = "3.2.5";
-$_CONFIG['appVersion'] = "3.2.5";
+// Default: $_CONFIG['appVersion'] = "3.3.0";
+$_CONFIG['appVersion'] = "3.3.0";
 
 // The database version compatible with this version. This is for information purposes only, since
 // no backwards compatibility really exists
@@ -3057,6 +3057,8 @@ class Musicco {
 
 				function toggleSearch() {
 					togglePanel("#searchPanel");
+						$('.searchResultFilter').prop("checked", false);
+						$('#searchResultFilters').hide();
 						$('#hits ul').remove();
 						$('#searchText').select();
 						$('#searchText').focus();
@@ -4151,6 +4153,9 @@ class Musicco {
 						} else {
 							resultString="<?php print $this->getString("noResultsForThisSearch"); ?>";
 						}
+							$('#searchResultFilters').show();
+							$('.searchResultFilter').prop("checked", false);
+							$('.searchResultFilter[value="all"]').prop("checked", true);
 							$("#searchResults").html(resultString);
 							$('#clear').focus();
 						}, "json");
@@ -4161,6 +4166,38 @@ class Musicco {
 					$('#hits ul').remove();
 					$('#searchText').val('');
 					toggleSearch();
+				});
+
+				$('.searchResultFilter + label').on("click", function() {
+					$('.searchResultFilter').prop("checked", false);
+					var target = $(this).attr("for");
+					$('.searchResultFilter[value="' + target + '"]').prop("checked", true);
+					var query = $('#searchText').val();
+					$('#hits ul').hide();
+					switch (target) {
+						case "artists":
+							$("#hits span.searchResultParent[data-parentfolder='']").parent("ul").show();
+						break;
+						case "albums":
+							var candidates = $("#hits span.searchResultParent[data-album*='" + query + "' i]").not("[data-parentfolder='']");
+							candidates.each(function() {
+								if ($(this).parent("ul").children("li").has("span[data-folder=true]").length) {
+									$(this).parent("ul").show()
+								}
+							});
+						break;
+						case "songs":
+							var candidates = $("#hits span.searchResultParent").not("[data-parentfolder='']");
+							candidates.each(function() {
+								if ($(this).parent("ul").children("li").has("span[data-folder=false]").length) {
+									$(this).parent("ul").show()
+								}
+							});
+						break;
+						default:
+						$('#hits ul').show();
+						break;
+					}
 				});
 
 					$(document).on("click", ".historyArtist", function() {
@@ -4676,7 +4713,14 @@ if(!AuthManager::isAccessAllowed()) {
 							<a class="btn" id="clear" tabindex="1" href="#"><i class="fas fa-border fa-times"></i></a>
 						</span>
 					</form>
-					<div id="hits" class="card"></div>
+					<div id="hits" class="card">
+						<span id="searchResultFilters" style="display: none;">
+							<input type="radio" class="searchResultFilter" value="all" /><label for="all">All</label>
+							<input type="radio" class="searchResultFilter" value="artists" /><label for="artists">Artists</label>
+							<input type="radio" class="searchResultFilter" value="albums" /><label for="albums">Albums</label>
+							<input type="radio" class="searchResultFilter" value="songs" /><label for="songs">Songs</label>
+						</span>
+					</div>
 					<div id="searchResults"></div>
 				</div>
 				<div id="playlistPanel" class="panel">
@@ -6140,8 +6184,9 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'><i class='fa-solid fa-cubes-stacked'></i> Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<li class='bold yellow'>3.2.5 (in development)</li>";
+				$aboutString.="<li class='bold yellow'>3.3.0 (in development)</li>";
 					$aboutString.="<ul>";
+						$aboutString.="<li>Allow filtering search results by artist, album or song</li>";
 						$aboutString.="<li>Upgrade to wavesurfer 7.7.8</li>";
 						$aboutString.="<li>Upgrade to font-awesome 6.5.2</li>";
 						$aboutString.="<li>waveform style improvements</li>";

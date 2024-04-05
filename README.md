@@ -75,7 +75,8 @@ musicco scans your music folder and builds a database of your music collection, 
 
 # 📒 Changelog
 
-## v3.2.5 (in development)
+## v3.3.0 (in development)
+* Allow filtering search results by artist, album or song
 * Upgrade to wavesurfer 7.7.8
 * Upgrade to font-awesome 6.5.2
 * waveform style improvements
