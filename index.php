@@ -4155,7 +4155,7 @@ class Musicco {
 						}
 							$('#searchResultFilters').show();
 							$('.searchResultFilter').prop("checked", false);
-							$('.searchResultFilter[value="all"]').prop("checked", true);
+							$('#all').prop("checked", true);
 							$("#searchResults").html(resultString);
 							$('#clear').focus();
 						}, "json");
@@ -4171,7 +4171,7 @@ class Musicco {
 				$('.searchResultFilter + label').on("click", function() {
 					$('.searchResultFilter').prop("checked", false);
 					var target = $(this).attr("for");
-					$('.searchResultFilter[value="' + target + '"]').prop("checked", true);
+					$("#" + target).prop("checked", true);
 					var query = $('#searchText').val();
 					$('#hits ul').hide();
 					switch (target) {
@@ -4653,7 +4653,7 @@ if(!AuthManager::isAccessAllowed()) {
 				<span id="mini-controls" class="big-controls">
 					<span class="big-jp-previous-album" oncontextmenu="return false;">&nbsp;</span>
 					<span class="big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
-					<input type="checkbox" class="play-pause" /><label oncontextmenu="return false;"><i class="fas fa-fw"></i></label>
+					<input type="checkbox" id="play-pause-mini" class="play-pause" /><label for="play-pause-mini" oncontextmenu="return false;"><i class="fas fa-fw"></i></label>
 					<span class="big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
 					<span class="big-jp-next-album" oncontextmenu="return false;">&nbsp;</span>
 					&nbsp;
@@ -4715,10 +4715,10 @@ if(!AuthManager::isAccessAllowed()) {
 					</form>
 					<div id="hits" class="card">
 						<span id="searchResultFilters" style="display: none;">
-							<input type="radio" class="searchResultFilter" value="all" /><label for="all">All</label>
-							<input type="radio" class="searchResultFilter" value="artists" /><label for="artists">Artists</label>
-							<input type="radio" class="searchResultFilter" value="albums" /><label for="albums">Albums</label>
-							<input type="radio" class="searchResultFilter" value="songs" /><label for="songs">Songs</label>
+							<input type="radio" class="searchResultFilter" id="all" /><label for="all">All</label>
+							<input type="radio" class="searchResultFilter" id="artists" /><label for="artists">Artists</label>
+							<input type="radio" class="searchResultFilter" id="albums" /><label for="albums">Albums</label>
+							<input type="radio" class="searchResultFilter" id="songs" /><label for="songs">Songs</label>
 						</span>
 					</div>
 					<div id="searchResults"></div>
@@ -4884,7 +4884,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<div id="controls" class="spread big-controls">
 						<span class="big-jp-previous-album" oncontextmenu="return false;"></span>
 						<span class="left big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
-						<input type="checkbox" class="play-pause" /><label oncontextmenu="return false;"><i class="fas fa-5x fa-fw"></i></label>
+						<input type="checkbox" id="play-pause-main" class="play-pause" /><label for="play-pause-main" oncontextmenu="return false;"><i class="fas fa-5x fa-fw"></i></label>
 						<span class="right big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
 						<span class="big-jp-next-album" oncontextmenu="return false;"></span>
 					</div>
