@@ -6190,7 +6190,7 @@ function refreshdb($quiet) {
 						$aboutString.="<li>Upgrade to color-thief 2.6.0</li>";
 						$aboutString.="<li>Upgrade to wavesurfer 7.8.6</li>";
 						$aboutString.="<li>Upgrade to font-awesome 6.6.0</li>";
-						$aboutString.="<li>Upgrade to jquery-ui 1.14.0</li>";
+						$aboutString.="<li>Upgrade to jquery-ui 1.14.1</li>";
 						$aboutString.="<li>waveform style improvements</li>";
 					$aboutString.="</ul>";
 				$aboutString.="</li>";

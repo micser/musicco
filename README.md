@@ -54,7 +54,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 | [fontawesome](https://github.com/FortAwesome/Font-Awesome)                          | 6.6.0   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/FortAwesome/Font-Awesome)](https://github.com/FortAwesome/Font-Awesome/releases/latest)       |
 | [jQuery](https://github.com/jquery/jquery)                                          | 3.7.1    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery)](https://github.com/jquery/jquery/releases/latest)                             |
 | [jQuery-qrcode](https://github.com/lrsjng/jquery-qrcode)                            | 0.18.0   | [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/lrsjng/jquery-qrcode)](https://github.com/lrsjng/jquery-qrcode/tags)                                  |
-| [jQuery-ui](https://github.com/jquery/jquery-ui)                                    | 1.14.0   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-ui)](https://github.com/jquery/jquery-ui/releases/latest)                       |
+| [jQuery-ui](https://github.com/jquery/jquery-ui)                                    | 1.14.1   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-ui)](https://github.com/jquery/jquery-ui/releases/latest)                       |
 | [jQuery-ui-contextmenu](https://github.com/mar10/jquery-ui-contextmenu)             | 1.18.1   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/jquery-ui-contextmenu)](https://github.com/mar10/jquery-ui-contextmenu/releases/latest) |
 | [jquery-taphold](https://github.com/micser/jquery-taphold)                          | 1.1.0    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/jquery-taphold)](https://github.com/micser/jquery-taphold/releases/latest)      |
 | [js-cookie](https://github.com/js-cookie/js-cookie)                                 | 3.0.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/js-cookie/js-cookie)](https://github.com/js-cookie/js-cookie/releases/latest)                 |
@@ -80,7 +80,7 @@ musicco scans your music folder and builds a database of your music collection, 
 * Upgrade to color-thief 2.6.0
 * Upgrade to wavesurfer 7.8.6
 * Upgrade to font-awesome 6.6.0
-* Upgrade to jquery-ui 1.14.0
+* Upgrade to jquery-ui 1.14.1
 * waveform style improvements
 
 ## v3.2.4 (16th September 2023)
