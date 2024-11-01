@@ -61,7 +61,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 | [jsmediatags](https://github.com/aadsm/jsmediatags)                                 | 3.9.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/aadsm/jsmediatags)](https://github.com/aadsm/jsmediatags/releases/latest)                     |
 | [Monserrat](https://github.com/JulietaUla/Montserrat)                               | 9.000    | [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/JulietaUla/Montserrat)](https://github.com/JulietaUla/Montserrat/tags)                       |
 | [normalise](https://github.com/micser/normalise)                                    | 1.0.0    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/normalise)](https://github.com/micser/normalise/releases/latest)                       |
-| [wavesurfer](https://github.com/micser/wavesurfer.js)                         | 7.8.6 x micser    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/katspaugh/wavesurfer.js)](https://github.com/katspaugh/wavesurfer.js/releases/latest)                       |
+| [wavesurfer](https://github.com/micser/wavesurfer.js)                         | 7.8.8 x micser    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/katspaugh/wavesurfer.js)](https://github.com/katspaugh/wavesurfer.js/releases/latest)                       |
 
 # 💗 Love
 
@@ -79,7 +79,7 @@ musicco scans your music folder and builds a database of your music collection, 
 * Allow filtering search results by artist, album or song
 * Upgrade to Montserrat 9.000
 * Upgrade to color-thief 2.6.0
-* Upgrade to wavesurfer 7.8.6
+* Upgrade to wavesurfer 7.8.8
 * Upgrade to font-awesome 6.6.0
 * Upgrade to jquery-ui 1.14.1
 * waveform style improvements
