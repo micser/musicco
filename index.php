@@ -6189,7 +6189,7 @@ function refreshdb($quiet) {
 						$aboutString.="<li>Allow filtering search results by artist, album or song</li>";
 						$aboutString.="<li>Upgrade to Montserrat 9.000</li>";
 						$aboutString.="<li>Upgrade to color-thief 2.6.0</li>";
-						$aboutString.="<li>Upgrade to wavesurfer 7.8.8</li>";
+						$aboutString.="<li>Upgrade to wavesurfer 7.8.11</li>";
 						$aboutString.="<li>Upgrade to font-awesome 6.7.2</li>";
 						$aboutString.="<li>Upgrade to jquery-ui 1.14.1</li>";
 						$aboutString.="<li>waveform style improvements</li>";
