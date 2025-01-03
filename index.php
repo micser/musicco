@@ -6184,7 +6184,7 @@ function refreshdb($quiet) {
 			$aboutString.="<div><br/></div>";
 			$aboutString.="<div class='bold big'><i class='fa-solid fa-cubes-stacked'></i> Release History</div>";
 			$aboutString.="<ul>";
-				$aboutString.="<li class='bold yellow'>3.3.0 (in development)</li>";
+				$aboutString.="<li class='bold yellow'>3.3.0 (3rd January 2025)</li>";
 					$aboutString.="<ul>";
 						$aboutString.="<li>Allow filtering search results by artist, album or song</li>";
 						$aboutString.="<li>Upgraded to fancytree 2.38.4</li>";

@@ -75,7 +75,7 @@ musicco scans your music folder and builds a database of your music collection, 
 
 # 📒 Changelog
 
-## v3.3.0 (in development)
+## v3.3.0 (3rd January 2025)
 * Allow filtering search results by artist, album or song
 * Upgrade to fancytree 2.38.4
 * Upgrade to Montserrat 9.000
