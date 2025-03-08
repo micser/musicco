@@ -3065,9 +3065,15 @@ class Musicco {
 				}
 
 				function scrollPlaylist() {
-					if (hasPlaylist() && $("#playlist").is(":visible") && Date.now() - lastInteraction > playlistResfreshDelay) {
-						var target = $('#playlistPanel');
+					if (Date.now() - lastInteraction > playlistResfreshDelay) {
 						var elementToView = ($(".currentAlbum").height() < window.innerHeight - 100) ? ".currentAlbum" : ".currentTrack";
+						scrollPlaylistTo(elementToView);
+					}
+				}
+
+				function scrollPlaylistTo(elementToView) {
+					if (hasPlaylist() && $("#playlist").is(":visible")) {
+						var target = $('#playlistPanel');
 						if (isPortrait() || isMedium()) {
 							target = $('#panelContainer');
 						}
@@ -3807,6 +3813,7 @@ class Musicco {
 						target = $("#playlist > li").last();
 					}
 					target.after($(this).parents("li"));
+					scrollPlaylistTo($(this));
 					$("#playlist").trigger("updated");
 				});
 
@@ -3817,6 +3824,7 @@ class Musicco {
 						target = $("#playlist > li").first();
 					}
 					target.before($(this).parents("li"));
+					scrollPlaylistTo($(this));
 					$("#playlist").trigger("updated");
 				});
 
@@ -6186,6 +6194,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.3.1 (in development)</li>";
 					$aboutString.="<ul>";
+						$aboutString.="<li>Scroll playlist to follow albums being moved up and down</li>";
 						$aboutString.="<li>Upgrade to wavesurfer 7.9.1</li>";
 					$aboutString.="</ul>";
 				$aboutString.="</li>";
