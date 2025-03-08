@@ -6186,7 +6186,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.3.1 (in development)</li>";
 					$aboutString.="<ul>";
-						$aboutString.="<li>Upgrade to wavesurfer 7.8.14</li>";
+						$aboutString.="<li>Upgrade to wavesurfer 7.9.1</li>";
 					$aboutString.="</ul>";
 				$aboutString.="</li>";
 				$aboutString.="<li class='bold yellow'>3.3.0 (3rd January 2025)</li>";
