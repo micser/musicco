@@ -3711,7 +3711,7 @@ class Musicco {
 				$( ".modal" ).dialog({
 					modal: true,
 					autoOpen: false,
-					width: isPortrait() ? "100%": "40%",
+					width: isPortrait() ? "100%": "80%",
 					height: $(window).height(),
 					show: { effect: "fade", duration: 400 },
 					hide: { effect: "fold", duration: 200 }
@@ -6194,6 +6194,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.3.1 (in development)</li>";
 					$aboutString.="<ul>";
+						$aboutString.="<li>Improve image viewer layout</li>";
 						$aboutString.="<li>Scroll playlist to follow albums being moved up and down</li>";
 						$aboutString.="<li>Upgrade to wavesurfer 7.9.1</li>";
 					$aboutString.="</ul>";

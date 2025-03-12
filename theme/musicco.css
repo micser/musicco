@@ -1314,7 +1314,9 @@
 	}
 
 	#imageViewerPanel img {
-		max-width: 100%;
+		max-height: 95%;
+		width: 95%;
+		object-fit: cover;
 	}
 	
 	#shared-album-qr,
