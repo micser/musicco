@@ -76,6 +76,7 @@ musicco scans your music folder and builds a database of your music collection, 
 # 📒 Changelog
 
 ## v3.3.1 (in development)
+* Update play/pause state correctly
 * Improve image viewer layout
 * Scroll playlist to follow albums being moved up and down
 * Upgrade to wavesurfer 7.9.1

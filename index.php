@@ -997,7 +997,7 @@ class Musicco {
 					function(event) {
 						console.debug("PLAYER_STATE_CHANGED");
 						console.debug(event);
-						switch (event.playerState) {
+						switch (event.value) {
 							case "PAUSED":
 								updatePlayPauseIcons(true);
 							break;
@@ -3405,7 +3405,6 @@ class Musicco {
 			}
 
 			function triggerPlayPause() {
-				var status = "";
 				savePlaylist();
 				if (isCasting) {
 					castController.playOrPause();
@@ -3413,11 +3412,11 @@ class Musicco {
 					if (player.paused) {
 						player.play();
 						$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 500);
+						updatePlayPauseIcons(true)
 					} else {
-						status = "isPaused";
 						$(player).animate({volume: 0}, 200, function(){player.pause()});
+						updatePlayPauseIcons(false)
 					}
-					updatePlayPauseIcons((status == "isPaused") ? true : false);
 				}
 				showNotification(status);
 			}
@@ -6194,6 +6193,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.3.1 (in development)</li>";
 					$aboutString.="<ul>";
+						$aboutString.="<li>Update play/pause state correctly</li>";
 						$aboutString.="<li>Improve image viewer layout</li>";
 						$aboutString.="<li>Scroll playlist to follow albums being moved up and down</li>";
 						$aboutString.="<li>Upgrade to wavesurfer 7.9.1</li>";
