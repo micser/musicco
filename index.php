@@ -1441,12 +1441,12 @@ class Musicco {
 			}
 
 			function volumeUp() {
-				$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") + 10);
+				$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") + 5);
 				saveSettings();
 			}
 
 			function volumeDown() {
-				$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") - 10);
+				$("#big-volume-bar").slider("value", $("#big-volume-bar").slider("option", "value") - 5);
 				saveSettings();
 			}
 
@@ -6192,6 +6192,7 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.3.1 (in development)</li>";
 					$aboutString.="<ul>";
+						$aboutString.="<li>Use smaller volume increments</li>";
 						$aboutString.="<li>Update play/pause state correctly</li>";
 						$aboutString.="<li>Improve image viewer layout</li>";
 						$aboutString.="<li>Scroll playlist to follow albums being moved up and down</li>";
