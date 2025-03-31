@@ -6196,7 +6196,7 @@ function refreshdb($quiet) {
 						$aboutString.="<li>Update play/pause state correctly</li>";
 						$aboutString.="<li>Improve image viewer layout</li>";
 						$aboutString.="<li>Scroll playlist to follow albums being moved up and down</li>";
-						$aboutString.="<li>Upgrade to wavesurfer 7.9.1</li>";
+						$aboutString.="<li>Upgrade to wavesurfer 7.9.4</li>";
 					$aboutString.="</ul>";
 				$aboutString.="</li>";
 				$aboutString.="<li class='bold yellow'>3.3.0 (3rd January 2025)</li>";
