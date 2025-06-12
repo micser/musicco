@@ -76,6 +76,7 @@ musicco scans your music folder and builds a database of your music collection, 
 # 📒 Changelog
 
 ## v3.3.1 (in development)
+* Upgrade to fancytree 2.38.5
 * Use smaller volume increments
 * Update play/pause state correctly
 * Improve image viewer layout

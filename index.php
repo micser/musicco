@@ -6193,6 +6193,7 @@ function refreshdb($quiet) {
 				$aboutString.="<li class='bold yellow'>3.3.1 (in development)</li>";
 					$aboutString.="<ul>";
 						$aboutString.="<li>Use smaller volume increments</li>";
+						$aboutString.="<li>Upgrade to fancytree 2.38.5</li>";
 						$aboutString.="<li>Update play/pause state correctly</li>";
 						$aboutString.="<li>Improve image viewer layout</li>";
 						$aboutString.="<li>Scroll playlist to follow albums being moved up and down</li>";
