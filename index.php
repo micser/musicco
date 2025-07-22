@@ -2510,7 +2510,7 @@ class Musicco {
 			}
 
 			function insertHistoryItem(artist, album) {
-					var markup = '<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyAlbum">' + album + '</span><br/><span class="historyArtist">' + artist + '</span></li>';
+					var markup = '<li><i class="' + randomIcon() + '"></i><span class="historyAlbum">' + album + '</span><br/><span class="historyArtist">' + artist + '</span></li>';
 					$('#history li:contains("' + album + '")').remove();
 					if ( $('#today li').length > 0 ) {
 						$("#today li:first").before(markup);
@@ -2537,7 +2537,7 @@ class Musicco {
 					$.post('?', {loadHistory: '', u: user}, function(response) {
 						var history = JSON.parse(response);
 						$.each(history, function (i, item) {
-							$(getRelativeDate(item.timestamp)).append('<li><i class="fa-fw ' + randomIcon() + '"></i><span class="historyAlbum">' + item.album + '</span><span class="right">' + printDate(item.timestamp) + '</span><br/><span class="historyArtist">' + item.artist + '</span></li>');
+							$(getRelativeDate(item.timestamp)).append('<li><i class="' + randomIcon() + '"></i><span class="historyAlbum">' + item.album + '</span><span class="right">' + printDate(item.timestamp) + '</span><br/><span class="historyArtist">' + item.artist + '</span></li>');
 							});
 					});
 				}
@@ -4149,7 +4149,7 @@ class Musicco {
 								hitListHeader += "<span class=\"searchResultParent\" data-folder=\"true\" data-songtitle=\"" + parentfolderSongTitle + "\" data-parentfolder=\"" + levelUp + "\" data-title=\"" + parentfolderTitle + "\" data-path=\"" + parentfolderItem + "\"" + hitData + ">" + parentfolderItemName + "</span>";
 								hitListHeader += "</ul>";
 								var hitListItem = "<li>";
-								hitListItem += "<i class=\"fa-fw " + icon + "\"></i><span class=\"searchResult " + extraClasses + "\" data-folder=\"" + isFolder + "\" data-songtitle=\"" + songtitle + "\" data-parentfolder=\"" + parentfolder + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path + "\"" + hitData + ">" + name + "</span>";
+								hitListItem += "<i class=\"" + icon + "\"></i><span class=\"searchResult " + extraClasses + "\" data-folder=\"" + isFolder + "\" data-songtitle=\"" + songtitle + "\" data-parentfolder=\"" + parentfolder + "\" data-title=\""+ name + optionalSlash +"\" data-path=\""+ path + "\"" + hitData + ">" + name + "</span>";
 								hitListItem += "</li>";
 								if ($("#" + hitListId).length < 1) {
 									$("#hits").append(hitListHeader);
@@ -4385,7 +4385,7 @@ class Musicco {
 										hitLink += (coverUrl) ? "<img src=\"" + coverUrl + "\"/>" : getDefaultPoster();
 										hitLink += playLastIcon();
 										hitLink += "</div>";
-										hitLink += "<i class=\"fas fa-bars fa-fw uncover_actions\"></i>";
+										hitLink += "<i class=\"fas fa-bars uncover_actions\"></i>";
 										hitLink += "<br/>";
 										hitLink += artist + " - " + album;
 										hitLink += "</span>";
@@ -4655,20 +4655,20 @@ if(!AuthManager::isAccessAllowed()) {
 		<!-- START: header -->
 		<div id="header" class="spread nowrap">
 			<span>
-				<span id="ham"><i class="fas fa-bars fa-fw"></i></span>
+				<span id="ham"><i class="fas fa-bars"></i></span>
 				<span id="mini-controls" class="big-controls">
 					<span class="big-jp-previous-album" oncontextmenu="return false;">&nbsp;</span>
-					<span class="big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward fa-fw"></i>&nbsp;</span>
-					<input type="checkbox" id="play-pause-mini" class="play-pause" /><label for="play-pause-mini" oncontextmenu="return false;"><i class="fas fa-fw"></i></label>
-					<span class="big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward fa-fw"></i>&nbsp;</span>
+					<span class="big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward"></i>&nbsp;</span>
+					<input type="checkbox" id="play-pause-mini" class="play-pause" /><label for="play-pause-mini" oncontextmenu="return false;"><i class="fas"></i></label>
+					<span class="big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward"></i>&nbsp;</span>
 					<span class="big-jp-next-album" oncontextmenu="return false;">&nbsp;</span>
 					&nbsp;
 					&nbsp;
-					<span class="uncover guestPlay toggles editTools" oncontextmenu="return false;"><i class="fas fa-magic fa-fw"></i>&nbsp;</span>
+					<span class="uncover guestPlay toggles editTools" oncontextmenu="return false;"><i class="fas fa-magic"></i>&nbsp;</span>
 					&nbsp;
 					&nbsp;
-					<span class="big-volume-down toggles"><i class="fas fa-volume-down fa-fw"></i>&nbsp;</span>
-					<span class="big-volume-down toggles"><i class="fas fa-volume-up fa-fw"></i>&nbsp;</span>
+					<span class="big-volume-down toggles"><i class="fas fa-volume-down"></i>&nbsp;</span>
+					<span class="big-volume-down toggles"><i class="fas fa-volume-up"></i>&nbsp;</span>
 				</span>
 			</span>
 			<span id="refreshPanel">
@@ -4679,7 +4679,7 @@ if(!AuthManager::isAccessAllowed()) {
 			</span>
 			<?php
 				if(AuthManager::isAccessAllowed() && AuthManager::isUserLoggedIn()) {
-					print "<span id=\"logout\"><a href=\"?logout\"><i class=\"fas fa-sign-out-alt fa-fw\"></i>&nbsp;</a></span>";
+					print "<span id=\"logout\"><a href=\"?logout\"><i class=\"fas fa-sign-out-alt\"></i>&nbsp;</a></span>";
 				}
 			?>
 		</div>
@@ -4769,39 +4769,39 @@ if(!AuthManager::isAccessAllowed()) {
 				<div id="settingsPanel" class="panel">
 					<?php
 					if (AuthManager::isAdmin()) {
-						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-sync\"></i><span id=\"library_tools\"><span id=\"build_db\"><a>".$this->getString("reset_db")."</a></span><span> &bull; </span><span id=\"refresh_db\"><a>".$this->getString("refresh_db")."</a>&nbsp;</span><i class='tooltip fa fa-question-circle'><span class='tooltiptext'>".$this->getString("refresh_db_tip")."</span></i></span></div>";
-						print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-fw fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
-						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
-						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-fw fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
+						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-sync\"></i><span id=\"library_tools\"><span id=\"build_db\"><a>".$this->getString("reset_db")."</a></span><span> &bull; </span><span id=\"refresh_db\"><a>".$this->getString("refresh_db")."</a>&nbsp;</span><i class='tooltip fa fa-question-circle'><span class='tooltiptext'>".$this->getString("refresh_db_tip")."</span></i></span></div>";
+						print "<div class=\"settings guestPlay\"><i class=\"space-after fab fa-searchengin\"></i><span id=\"quick_scan\"><a>".$this->getString("quick_scan")."</a></span></div>";
+						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-trash\"></i><span id=\"remove_shared_links\"><a>".$this->getString("remove_shared_links")."</a></span></div>";
+						print "<div class=\"settings guestPlay\"><i class=\"space-after fas fa-minus-circle\"></i><span id=\"remove_temp_files\"><a>".$this->getString("remove_temp_files")."</a></span></div>";
 						if ($this->getConfig("canRerunWizard")) {
-							print "<div class=\"settings guestPlay\"><form id=\"setupForm\" action=\"?\" method=\"post\"><input name=\"rerunSetup\" style=\"display: none;\"/></form><i class=\"space-after fas fa-fw fa-hat-wizard\"></i><span id=\"run_setup\"><a>".$this->getString("run_setup")."</a></span></div>";
+							print "<div class=\"settings guestPlay\"><form id=\"setupForm\" action=\"?\" method=\"post\"><input name=\"rerunSetup\" style=\"display: none;\"/></form><i class=\"space-after fas fa-hat-wizard\"></i><span id=\"run_setup\"><a>".$this->getString("run_setup")."</a></span></div>";
 						}
 					}
 					?>
 					<div class="settings">
-						<i class="space-after fas fa-fw fa-bath"></i><span id="reload"><a><?php print $this->getString("reload"); ?></a></span>
+						<i class="space-after fas fa-bath"></i><span id="reload"><a><?php print $this->getString("reload"); ?></a></span>
 					</div>
 					<div class="guestPlay settings">
-						<i class="space-after fas fa-fw fa-history"></i><span id="clear_history"><a><?php print $this->getString("clear_history"); ?></a></span>
+						<i class="space-after fas fa-history"></i><span id="clear_history"><a><?php print $this->getString("clear_history"); ?></a></span>
 					</div>
 					<div class="settings">
-						<i class="space-after fas fa-fw fa-question"></i><span id="help"><a><?php print $this->getString("help"); ?></a></span>
+						<i class="space-after fas fa-question"></i><span id="help"><a><?php print $this->getString("help"); ?></a></span>
 					</div>
 					<div class="settings">
-						<i class="space-after fas fa-fw fa-info"></i><span id="about"><a><?php print $this->getString("about"); ?></a></span>
+						<i class="space-after fas fa-info"></i><span id="about"><a><?php print $this->getString("about"); ?></a></span>
 					</div>
 					<hr/>
 					<form id="theme_settings">
 						<div class="settings selected">
-							<i class="space-after fas fa-fw fa-palette"></i><span><?php print $this->getString("colours"); ?></span>
+							<i class="space-after fas fa-palette"></i><span><?php print $this->getString("colours"); ?></span>
 						</div>
 						<div class="settings-sub">
 							<input type="radio" id="dynamic" class="fa-input" name="option_theme" />
-							<label for="dynamic"><i class="fa fa-fw fa-dot-circle-o"></i><?php print $this->getString("dynamic"); ?></label>
+							<label for="dynamic"><i class="fa fa-dot-circle-o"></i><?php print $this->getString("dynamic"); ?></label>
 						</div>
 						<div class="settings-sub">
 							<input type="radio" id="preset" class="fa-input" name="option_theme" />
-							<label for="preset"><i class="fa fa-fw fa-dot-circle-o"></i><?php print $this->getString("select_theme"); ?></label>
+							<label for="preset"><i class="fa fa-dot-circle-o"></i><?php print $this->getString("select_theme"); ?></label>
 							<div class="theme_opts">
 								<a id="my_theme" class="tooltip space-after theme-selector settings-option">[<?php print $this->getString("your_theme"); ?>]<span class="tooltiptext"><div id="my_theme_background" class="theme-preview"></div><div id="my_theme_text" class="theme-preview"></div></span></a>
 								<?php
@@ -4813,7 +4813,7 @@ if(!AuthManager::isAccessAllowed()) {
 						</div>
 						<div class="settings-sub">
 							<input type="radio" id="custom" class="fa-input" name="option_theme" />
-							<label for="custom"><i class="fa fa-fw fa-dot-circle-o"></i><?php print $this->getString("define_theme"); ?></label>
+							<label for="custom"><i class="fa fa-dot-circle-o"></i><?php print $this->getString("define_theme"); ?></label>
 							<div class="theme_opts">
 								<div class="settings-option">
 									<input class="space-after" type="color" id="background" name="color" value="<?php print $this->getConfig("themes")[0][0]; ?>" />
@@ -4829,7 +4829,7 @@ if(!AuthManager::isAccessAllowed()) {
 					<hr/>
 					<div class="settings">
 						<input type="checkbox" id="wakelock" class="fa-input" />
-						<label for="wakelock"><i class="space-after fas fa-fw fa-toggle-off"></i><span><?php print $this->getString("keep_screen_on"); ?></span></label>
+						<label for="wakelock"><i class="space-after fas fa-toggle-off"></i><span><?php print $this->getString("keep_screen_on"); ?></span></label>
 					</div>
 				</div>
 			</div>
@@ -4878,20 +4878,20 @@ if(!AuthManager::isAccessAllowed()) {
 							echo '<google-cast-launcher class="toggles"></google-cast-launcher>';
 							}
 						 ?>
-						<span id="big-unmute" class="toggles selected"><i class="fas fa-volume-mute fa-2x fa-fw"></i></span>
-						<span id="big-mute" class="toggles"><i class="fas fa-volume-mute fa-2x fa-fw"></i></span>
-						<span id="clear-playlist" class="editTools guestPlay toggles"><i class="far fa-trash-alt fa-2x fa-fw"></i></span>
-						<span class="editTools guestPlay uncover toggles" oncontextmenu="return false;"><i class="fas fa-magic fa-2x fa-fw"></i></span>
-						<span id="shuffled" class="toggles"><i class="fas fa-random fa-2x fa-fw"></i></span>
-						<span id="loop" class="toggles"><i class="fas fa-redo fa-2x fa-fw"></i></span>
-						<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x fa-fw"></i></span>
-						<span id="big-volume-up" class="toggles"><i class="fas fa-volume-up fa-2x fa-fw"></i></span>
+						<span id="big-unmute" class="toggles selected"><i class="fas fa-volume-mute fa-2x"></i></span>
+						<span id="big-mute" class="toggles"><i class="fas fa-volume-mute fa-2x"></i></span>
+						<span id="clear-playlist" class="editTools guestPlay toggles"><i class="far fa-trash-alt fa-2x"></i></span>
+						<span class="editTools guestPlay uncover toggles" oncontextmenu="return false;"><i class="fas fa-magic fa-2x"></i></span>
+						<span id="shuffled" class="toggles"><i class="fas fa-random fa-2x"></i></span>
+						<span id="loop" class="toggles"><i class="fas fa-redo fa-2x"></i></span>
+						<span id="big-volume-down" class="toggles"><i class="fas fa-volume-down fa-2x"></i></span>
+						<span id="big-volume-up" class="toggles"><i class="fas fa-volume-up fa-2x"></i></span>
 					</div>
 					<div id="controls" class="spread big-controls">
 						<span class="big-jp-previous-album" oncontextmenu="return false;"></span>
-						<span class="left big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward fa-2x fa-fw"></i></span>
-						<input type="checkbox" id="play-pause-main" class="play-pause" /><label for="play-pause-main" oncontextmenu="return false;"><i class="fas fa-5x fa-fw"></i></label>
-						<span class="right big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward fa-2x fa-fw"></i></span>
+						<span class="left big-jp-previous" oncontextmenu="return false;"><i class="fas fa-step-backward fa-2x"></i></span>
+						<input type="checkbox" id="play-pause-main" class="play-pause" /><label for="play-pause-main" oncontextmenu="return false;"><i class="fas fa-5x"></i></label>
+						<span class="right big-jp-next" oncontextmenu="return false;"><i class="fas fa-step-forward fa-2x"></i></span>
 						<span class="big-jp-next-album" oncontextmenu="return false;"></span>
 					</div>
 				</div>
@@ -6429,7 +6429,7 @@ function refreshdb($quiet) {
 		$wizard .= "<legend>Access</legend>";
 		$wizard .= "<div>";
 		$wizard .= "<input class='fa-input' name='require_login' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('require_login')).">";
-		$wizard .= "<label for='require_login'><i class='fas fa-fw fa-toggle-on'></i>Require login</label>";
+		$wizard .= "<label for='require_login'><i class='fas fa-toggle-on'></i>Require login</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you require a login, you can have several users listening to their own playlists. If you want your installation to be completely open and all your user sharing the same playlists, leave this box unchecked.</span></i>";
 		$wizard .= "<div id='users'>";
 		$wizard .= "<label for='users'>Users</label>";
@@ -6461,22 +6461,22 @@ function refreshdb($quiet) {
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='loadLyricsFromFile' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('loadLyricsFromFile')).">";
-		$wizard .= "<label for='loadLyricsFromFile'><i class='fas fa-fw fa-toggle-on'></i>Load lyrics from local .lrc files</label>";
+		$wizard .= "<label for='loadLyricsFromFile'><i class='fas fa-toggle-on'></i>Load lyrics from local .lrc files</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to load .lrc lyrics files from disk. If a .lrc file with the same name as the audio  file exists in the same folder, its contents  will be loaded into the lyrics panel before  searching online for it.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='lookUpLyrics' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('lookUpLyrics')).">";
-		$wizard .= "<label for='lookUpLyrics'><i class='fas fa-fw fa-toggle-on'></i>Lookup lyrics online</label>";
+		$wizard .= "<label for='lookUpLyrics'><i class='fas fa-toggle-on'></i>Lookup lyrics online</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to lookup lyrics online to display them in the lyrics panel. When disabled, the lyrics panel only shows links to search for lyrics manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='downLoadMissingCovers' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('downLoadMissingCovers')).">";
-		$wizard .= "<label for='downLoadMissingCovers'><i class='fas fa-fw fa-toggle-on'></i>Download album art</label>";
+		$wizard .= "<label for='downLoadMissingCovers'><i class='fas fa-toggle-on'></i>Download album art</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>Whether to automatically download missing covers online. New covers will be saved to disk in the folder containing the song currently playing. Even when turning this off, you can still  trigger cover art search manually.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='isCastAllowed' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('isCastAllowed')).">";
-		$wizard .= "<label for='isCastAllowed'><i class='fas fa-fw fa-toggle-on'></i>Enable casting to compatible devices</label>";
+		$wizard .= "<label for='isCastAllowed'><i class='fas fa-toggle-on'></i>Enable casting to compatible devices</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>When checked, the google chromecast library is loaded and will enable casting to compatible devices on your network.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
@@ -6499,7 +6499,7 @@ function refreshdb($quiet) {
 		$wizard .= "<legend>System</legend>";
 		$wizard .= "<div>";
 		$wizard .= "<input name='canRerunWizard' class='fa-input' type='checkbox' ".getCheckboxStatus(Musicco::getConfig('canRerunWizard')).">";
-		$wizard .= "<label for='canRerunWizard'><i class='fas fa-fw fa-toggle-on'></i>Allow running this wizard from the web UI again</label>";
+		$wizard .= "<label for='canRerunWizard'><i class='fas fa-toggle-on'></i>Allow running this wizard from the web UI again</label>";
 		$wizard .= "<i class='tooltip fa fa-question-circle'><span class='tooltiptext'>If you uncheck this box, you will need physical access to the server to edit the configuration in the future. It is recommended to uncheck this box on installations where no login is required to avoid unwanted setup changes.</span></i>";
 		$wizard .= "</div>";
 		$wizard .= "</fieldset>";
