@@ -3410,12 +3410,10 @@ class Musicco {
 					castController.playOrPause();
 				} else {
 					if (player.paused) {
-						player.play();
-						$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 500);
+						$(player).animate({volume: ($("#big-volume-bar").slider("option", "value") / 100)}, 500, function(){updatePlayPauseIcons(false);player.play();});
 					} else {
-						$(player).animate({volume: 0}, 200, function(){player.pause()});
+						$(player).animate({volume: 0}, 200, function(){updatePlayPauseIcons(true);player.pause();});
 					}
-					updatePlayPauseIcons(true)
 				}
 				showNotification(status);
 			}
