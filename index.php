@@ -6192,13 +6192,14 @@ function refreshdb($quiet) {
 			$aboutString.="<ul>";
 				$aboutString.="<li class='bold yellow'>3.3.1 (in development)</li>";
 					$aboutString.="<ul>";
+						$aboutString.="<li>Improve medium layout, ensuring tabs fit on a single line</li>";
 						$aboutString.="<li>Use smaller volume increments</li>";
 						$aboutString.="<li>Upgrade to fancytree 2.38.5</li>";
 						$aboutString.="<li>Update play/pause state correctly</li>";
 						$aboutString.="<li>Improve image viewer layout</li>";
 						$aboutString.="<li>Scroll playlist to follow albums being moved up and down</li>";
 						$aboutString.="<li>Upgrade to wavesurfer 7.10.1</li>";
-						$aboutString.="<li>Upgrade to font-awesome 7.0.0</li>";
+						$aboutString.="<li>Upgrade to font-awesome 7.0.1</li>";
 					$aboutString.="</ul>";
 				$aboutString.="</li>";
 				$aboutString.="<li class='bold yellow'>3.3.0 (3rd January 2025)</li>";

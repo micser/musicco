@@ -51,7 +51,7 @@ Check out https://www.musicco.app for more information or try the demo at https:
 | [color-thief](https://github.com/lokesh/color-thief)                                | 2.6.0    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/lokesh/color-thief)](https://github.com/lokesh/color-thief/releases/latest)                   |
 | [detect_swipe](https://github.com/micser/detect_swipe)                              | 2.1.5    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/micser/detect_swipe)](https://github.com/micser/detect_swipe/releases/latest)                 |
 | [fancytree](https://github.com/mar10/fancytree)                                     | 2.38.5   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/mar10/fancytree)](https://github.com/mar10/fancytree/releases/latest)                         |
-| [fontawesome](https://github.com/FortAwesome/Font-Awesome)                          | 7.0.0   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/FortAwesome/Font-Awesome)](https://github.com/FortAwesome/Font-Awesome/releases/latest)       |
+| [fontawesome](https://github.com/FortAwesome/Font-Awesome)                          | 7.0.1   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/FortAwesome/Font-Awesome)](https://github.com/FortAwesome/Font-Awesome/releases/latest)       |
 | [jQuery](https://github.com/jquery/jquery)                                          | 3.7.1    | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery)](https://github.com/jquery/jquery/releases/latest)                             |
 | [jQuery-qrcode](https://github.com/lrsjng/jquery-qrcode)                            | 0.18.0   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/lrsjng/jquery-qrcode)](https://github.com/lrsjng/jquery-qrcode/releases/latest)                                  |
 | [jQuery-ui](https://github.com/jquery/jquery-ui)                                    | 1.14.1   | [![GitHub release (latest by date)](https://img.shields.io/github/v/release/jquery/jquery-ui)](https://github.com/jquery/jquery-ui/releases/latest)                       |
@@ -76,13 +76,14 @@ musicco scans your music folder and builds a database of your music collection, 
 # 📒 Changelog
 
 ## v3.3.1 (in development)
+* Improve medium layout, ensuring tabs fit on a single line
 * Upgrade to fancytree 2.38.5
 * Use smaller volume increments
 * Update play/pause state correctly
 * Improve image viewer layout
 * Scroll playlist to follow albums being moved up and down
 * Upgrade to wavesurfer 7.10.1
-* Upgrade to font-awesome 7.0.0
+* Upgrade to font-awesome 7.0.1
 
 ## v3.3.0 (3rd January 2025)
 * Allow filtering search results by artist, album or song
