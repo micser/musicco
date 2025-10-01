@@ -6198,7 +6198,7 @@ function refreshdb($quiet) {
 						$aboutString.="<li>Update play/pause state correctly</li>";
 						$aboutString.="<li>Improve image viewer layout</li>";
 						$aboutString.="<li>Scroll playlist to follow albums being moved up and down</li>";
-						$aboutString.="<li>Upgrade to wavesurfer 7.10.1</li>";
+						$aboutString.="<li>Upgrade to wavesurfer 7.11.0</li>";
 						$aboutString.="<li>Upgrade to font-awesome 7.1.0</li>";
 					$aboutString.="</ul>";
 				$aboutString.="</li>";
